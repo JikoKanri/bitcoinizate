@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoinizate | Arcade Retro</title>
+    <!-- Fuente Pixelada de Google Fonts -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --btc-orange: #F2A900;
+            --arcade-green: #00FF66;
+            --dark-bg: #0D0D0D;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #FFF;
+            font-family: 'Press Start 2P', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Efecto tubo catódico (CRT) antiguo */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--btc-orange);
+            font-size: 2.5rem;
+            text-shadow: 4px 4px 0px #FFF, -4px -4px 0px #000;
+            margin-bottom: 10px;
+            animation: glow 2s infinite alternate;
+        }
+
+        .subtitle {
+            color: var(--arcade-green);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        /* Contenedor de la lista de juegos */
+        .arcade-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Tarjeta de cada juego */
+        .game-card {
+            background: #1A1A1A;
+            border: 4px dashed var(--btc-orange);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .game-card:hover {
+            background: #262626;
+            transform: scale(1.05);
+            border-style: solid;
+            box-shadow: 0 0 15px var(--btc-orange);
+        }
+
+        .game-card h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+            color: #FFF;
+        }
+
+        .game-card p {
+            font-size: 0.6rem;
+            line-height: 1.5;
+            color: #AAA;
+            margin: 15px 0;
+        }
+
+        .btn-play {
+            background: var(--arcade-green);
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-play:hover {
+            background: #FFF;
+            box-shadow: 0 4px 0px var(--btc-orange);
+        }
+
+        .coming-soon {
+            border-color: #444;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .coming-soon:hover {
+            transform: none;
+            box-shadow: none;
+            background: #1A1A1A;
+            border-style: dashed;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.5rem;
+            color: #666;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px var(--btc-orange), 4px 4px 0px #000; }
+            to { text-shadow: 0 0 20px var(--btc-orange), 4px 4px 0px #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>₿ BITCOINIZATE </h1>
+        <div class="subtitle">INSERT COIN TO PROCEED</div>
+    </header>
+
+    <main class="arcade-container">
+        
+        <!-- JUEGO 1: FLAPPY BTC -->
+        <div class="game-card">
+            <h2>FLAPPY BITCOIN</h2>
+            <p>Esquiva las velas rojas del mercado y las regulaciones para llevar el precio a la luna.</p>
+            <a href="./flappy-btc/index.html" class="btn-play">JUGAR</a>
+        </div>
+
+        <!-- JUEGO 2: PROXIMAMENTE -->
+        <div class="game-card coming-soon">
+            <h2>SPACE INFLATION</h2>
+            <p>Defiende tus satoshis destruyendo las oleadas de billetes fiat impresos por los bancos centrales.</p>
+            <button class="btn-play" style="background:#444; cursor:not-allowed;" disabled>BLOQUEADO</button>
+        </div>
+
+        <!-- JUEGO 3: PROXIMAMENTE -->
+        <div class="game-card coming-soon">
+            <h2>SAT-MAN</h2>
+            <p>Recorre el laberinto recolectando satoshis mientras huyes de los fantasmas del FMI.</p>
+            <button class="btn-play" style="background:#444; cursor:not-allowed;" disabled>BLOQUEADO</button>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© 2026 BITCOINIZATE.COM - CÓDIGO ABIERTO BAJO LICENCIA MIT</p>
+    </footer>
+
+</body>
+</html>
