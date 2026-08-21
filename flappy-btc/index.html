@@ -1,1 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flappy Bitcoin | Bitcoinizate</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0d0d0d;
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        /* Contenedor del Arcade */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            max-width: 400px;
+            height: 75vh;
+            max-height: 600px;
+            border: 4px solid #F2A900;
+            background: #111;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(242, 169, 0, 0.4);
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(#0b0b1a, #111122);
+        }
+        
+        /* Interfaz flotante retro */
+        .ui-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        #score-display { 
+            top: 20px; 
+            font-size: 1rem; 
+            color: #00FF66; 
+            text-shadow: 2px 2px #000; 
+        }
+        
+        #menu-display {
+            top: 40%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            line-height: 2;
+            color: #F2A900;
+            padding: 0 20px;
+            text-shadow: 2px 2px #000;
+        }
+        
+        .btn-back {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #1A1A1A;
+            color: #F2A900;
+            border: 3px solid #F2A900;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-back:hover { 
+            background: #F2A900; 
+            color: #000; 
+        }
+    </style>
+</head>
+<body>
 
+    <div id="game-container">
+        <div id="score-display" class="ui-text">SATS: 0</div>
+        <div id="menu-display" class="ui-text">
+            FLAPPY BITCOIN<br><br>
+            <span style="color:#FFF; font-size:0.55rem;">ESQUIVA LAS VELAS ROJAS</span><br><br>
+            TAP / SPACE<br>TO JUMP & START
+        </div>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+    </div>
+
+    <a href="../index.html" class="btn-back"><- VOLVER AL MENÚ</a>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreDisplay = document.getElementById("score-display");
+        const menuDisplay = document.getElementById("menu-display");
+
+        let gameState = "MENU"; // MENU, PLAYING, GAMEOVER
+        let score = 0;
+
+        // Físicas del Bitcoin (Jugador)
+        const btc = {
+            x: 60,
+            y: 250,
+            radius: 18,
+            velocity: 0,
+            gravity: 0.38,
+            jump: -6.8
+        };
+
+        // Obstáculos (Velas bajistas del mercado)
+        let pipes = [];
+        const pipeWidth = 65;
+        const pipeGap = 160;
+        const pipeSpeed = 2.6;
+        let pipeTimer = 0;
+
+        function resetGame() {
+            btc.y = 250;
+            btc.velocity = 0;
+            pipes = [];
+            score = 0;
+            pipeTimer = 0;
+            scoreDisplay.innerText = "SATS: 0";
+        }
+
+        function startGame() {
+            gameState = "PLAYING";
+            menuDisplay.style.display = "none";
+            resetGame();
+        }
+
+        function gameOver() {
+            gameState = "GAMEOVER";
+            menuDisplay.innerHTML = "REKT!<br><br><span style='color:#FFF;'>QUEDASTE APALANCADO</span><br><br>SATS ACUMULADOS: " + score + "<br><br>TAP TO RESTART";
+            menuDisplay.style.display = "block";
+        }
+
+        function handleAction() {
+            if (gameState === "MENU" || gameState === "GAMEOVER") {
+                startGame();
+            } else if (gameState === "PLAYING") {
+                btc.velocity = btc.jump;
+            }
+        }
+
+        // --- CONTROLES INTUITIVOS ---
+        window.addEventListener("keydown", (e) => { 
+            if (e.code === "Space" || e.code === "ArrowUp") { 
+                e.preventDefault(); 
+                handleAction(); 
+            } 
+        });
+        canvas.addEventListener("touchstart", (e) => { 
+            e.preventDefault(); 
+            handleAction(); 
+        }, { passive: false });
+        canvas.addEventListener("mousedown", (e) => { 
+            e.preventDefault(); 
+            handleAction(); 
+        });
+
+        // --- BUCLE LOGÍCO ---
+        function update() {
+            if (gameState === "PLAYING") {
+                btc.velocity += btc.gravity;
+                btc.y += btc.velocity;
+
+                // Límites físicos de la pantalla
+                if (btc.y + btc.radius > canvas.height || btc.y - btc.radius < 0) {
+                    gameOver();
+                }
+
+                // Spawneo de bloques enemigos
+                pipeTimer++;
+                if (pipeTimer % 95 === 0) {
+                    let minHeight = 60;
+                    let maxHeight = canvas.height - pipeGap - 60;
+                    let topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+                    pipes.push({
+                        x: canvas.width,
+                        top: topHeight,
+                        bottom: canvas.height - (topHeight + pipeGap),
+                        passed: false
+                    });
+                }
+
+                // Desplazamiento y Colisiones
+                for (let i = pipes.length - 1; i >= 0; i--) {
+                    pipes[i].x -= pipeSpeed;
+
+                    // Hitbox cuadrada simplificada para estética retro
+                    if (
+                        btc.x + btc.radius - 2 > pipes[i].x &&
+                        btc.x - btc.radius + 2 < pipes[i].x + pipeWidth &&
+                        (btc.y - btc.radius + 2 < pipes[i].top || btc.y + btc.radius - 2 > canvas.height - pipes[i].bottom)
+                    ) {
+                        gameOver();
+                    }
+
+                    // Sumar Satoshis al superar el peligro
+                    if (!pipes[i].passed && pipes[i].x + pipeWidth < btc.x) {
+                        pipes[i].passed = true;
+                        score += 10; // ¡Sumamos de a 10 sats!
+                        scoreDisplay.innerText = "SATS: " + score;
+                    }
+
+                    if (pipes[i].x + pipeWidth < 0) {
+                        pipes.splice(i, 1);
+                    }
+                }
+            }
+        }
+
+        // --- RENDERIZADO GRÁFICO (Canvas) ---
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar cuadrícula de fondo retro (Estilo Cyberpunk/Arcade)
+            ctx.strokeStyle = "#111125";
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let j=0; j<canvas.height; j+=40) {
+                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+            }
+
+            // Dibujar las Velas Rojas (Velas bajistas de mercado)
+            pipes.forEach(p => {
+                ctx.fillStyle = "#FF3333"; // Rojo pánico
+                ctx.fillRect(p.x, 0, pipeWidth, p.top);
+                ctx.fillRect(p.x, canvas.height - p.bottom, pipeWidth, p.bottom);
+                
+                // Línea central de la vela financiera (Mecha)
+                ctx.strokeStyle = "#FF3333";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(p.x + pipeWidth/2, p.top);
+                ctx.lineTo(p.x + pipeWidth/2, p.top + 25);
+                ctx.moveTo(p.x + pipeWidth/2, canvas.height - p.bottom);
+                ctx.lineTo(p.x + pipeWidth/2, canvas.height - p.bottom - 25);
+                ctx.stroke();
+
+                // Borde retro pixelado blanco
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(p.x, 0, pipeWidth, p.top);
+                ctx.strokeRect(p.x, canvas.height - p.bottom, pipeWidth, p.bottom);
+            });
+
+            // Dibujar Moneda Bitcoin
+            ctx.beginPath();
+            ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "#F2A900"; 
+            ctx.fill();
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.closePath();
+
+            // Símbolo de la "₿"
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "bold 18px monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("₿", btc.x, btc.y + 1);
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>
