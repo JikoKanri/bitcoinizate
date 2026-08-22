@@ -1,34 +1,35 @@
-// SUPABASE-LIB.JS V2.1 - MOTOR DE RUTAS CLOUD RECTIFICADO Y ALINEADO CON LA API REST
+// SUPABASE-LIB.JS V2.2 - CONECTOR DE RUTAS CLOUD RETROCOMPATIBLE BLINDADO
+const DB_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; // <-- Pega tu API URL real aquí
+const DB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; // <-- Tu anon key real aquí
+
 (function(g,f){typeof exports==='object'&&typeof module!=='undefined'?f(exports):typeof define==='function'&&define.amd?define(['exports'],f):(g=typeof globalThis!=='undefined'?globalThis:g||self,f(g.supabase=g.supabase||{}));})(this,(function(exports){'use strict';
-const createClient=(url,key)=>{
-    if(!url||!key)throw new Error("URL and Anon Key are strictly required.");
-    // Las cabeceras de red ahora viajan limpias y con el tipado exacto que exige Supabase
-    const headers={'apikey':key,'Authorization':`Bearer ${key}`};
+const createClient=()=>{
+    const headers={'apikey':DB_KEY,'Authorization':`Bearer ${DB_KEY}`};
     return{
         auth:{
-            getSession:async()=>{try{const r=await fetch(`${url}/auth/v1/user`,{headers});if(r.status===401||r.status===404)return{data:{session:null},error:null};return{data:{session:{user:await r.json()}},error:null}}catch(e){return{data:{session:null},error:e}}},
-            signUp:async(c)=>{try{const r=await fetch(`${url}/auth/v1/signup`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});return{data:await r.json(),error:null}}catch(e){return{data:{user:null},error:e}}},
-            signInWithPassword:async(c)=>{try{const r=await fetch(`${url}/auth/v1/token?grant_type=password`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});const d=await r.json();return{data:{user:d.user,session:d},error:null}}catch(e){return{data:{user:null},error:e}}},
+            getSession:async()=>{try{const r=await fetch(`${DB_URL}/auth/v1/user`,{headers});if(r.status===401||r.status===404)return{data:{session:null},error:null};const u=await r.json();if(!u||u.error)return{data:{session:null},error:null};return{data:{session:{user:u}},error:null}}catch(e){return{data:{session:null},error:e}}},
+            signUp:async(c)=>{try{const r=await fetch(`${DB_URL}/auth/v1/signup`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});return{data:await r.json(),error:null}}catch(e){return{data:{user:null},error:e}}},
+            signInWithPassword:async(c)=>{try{const r=await fetch(`${DB_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});const d=await r.json();return{data:{user:d.user,session:d},error:null}}catch(e){return{data:{user:null},error:e}}},
             signOut:async()=>{return{error:null}}
         },
         from:(table)=>{return{
             select:(cols)=>({
                 order:(o,opts)=>({
                     limit:(l)=>({
-                        then:async(cb)=>{try{const r=await fetch(`${url}/rest/v1/${table}?select=${cols}&order=${o}.${opts.ascending?'asc':'desc'}&limit=${l}`,{headers});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
+                        then:async(cb)=>{try{const r=await fetch(`${DB_URL}/rest/v1/${table}?select=${cols}&order=${o}.${opts.ascending?'asc':'desc'}&limit=${l}`,{headers});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
                     })
                 }),
                 eq:(field,val)=>({
-                    single:async()=>{try{const r=await fetch(`${url}/rest/v1/${table}?${field}=eq.${val}`,{headers:{...headers,'Accept':'application/vnd.pgrst.object+json','Prefer':'handling=strict'}});return{data:await r.json(),error:null}}catch(e){return{data:null,error:e}}}
+                    single:async()=>{try{if(!val)return{data:null,error:new Error("Invalid selection")};const r=await fetch(`${DB_URL}/rest/v1/${table}?${field}=eq.${val}`,{headers:{...headers,'Accept':'application/vnd.pgrst.object+json'}});return{data:await r.json(),error:null}}catch(e){return{data:null,error:e}}}
                 })
             }),
             update:(fields)=>({
                 eq:(field,val)=>({
-                    then:async(cb)=>{try{const r=await fetch(`${url}/rest/v1/${table}?${field}=eq.${val}`,{method:'PATCH',headers:{...headers,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(fields)});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
+                    then:async(cb)=>{try{const r=await fetch(`${DB_URL}/rest/v1/${table}?${field}=eq.${val}`,{method:'PATCH',headers:{...headers,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(fields)});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
                 })
             }),
             insert:(arr)=>({
-                then:async(cb)=>{try{const r=await fetch(`${url}/rest/v1/${table}`,{method:'POST',headers:{...headers,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(arr)});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
+                then:async(cb)=>{try{const r=await fetch(`${DB_URL}/rest/v1/${table}`,{method:'POST',headers:{...headers,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(arr)});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
             })
         }}
     };
