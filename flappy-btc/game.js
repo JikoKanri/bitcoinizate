@@ -41,7 +41,7 @@ let animatedWidthWidth = 65;
 let targetLineY = 300;
 let currentLineY = 300;
 let chartOffset = 0;
-// GAME.JS - PARTE 2 DE 3: TRADING ENGINE, COMPRA/VENTA Y LOGÍCA DE ENTRADAS
+// GAME.JS - PARTE 2 DE 3: TRADING ENGINE, COMPRA/VENTA Y LOGÍCA DE ENTRADAS LIBERADA
 function resetGame() {
     btc.y = 250;
     btc.velocity = 0;
@@ -71,6 +71,7 @@ function resetGame() {
 }
 
 function startGame() {
+    // Si el jugador no inició sesión, el botón abre el formulario de registro
     if (typeof currentUser === "undefined" || !currentUser) {
         const authModal = document.getElementById("auth-modal");
         if (authModal) authModal.style.display = "flex";
@@ -161,7 +162,13 @@ if (btnSellMobile) {
     btnSellMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeSell(); }, { passive: false });
 }
 
+// --- DESBLOQUEO CRÍTICO DEL TECLADO PARA LOS MODALES DE INGRESO ---
 window.addEventListener("keydown", (e) => {
+    // Si el usuario está parado sobre cualquier caja de texto (Input), liberamos las teclas
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+        return; // Permite escribir contraseñas y correos sin interferir con el juego
+    }
+
     let key = e.key.toLowerCase();
     if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || key === "w") {
         e.preventDefault();
@@ -173,8 +180,17 @@ window.addEventListener("keydown", (e) => {
     }
 }, { capture: true });
 
-container.addEventListener("touchstart", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); }, { passive: false });
-container.addEventListener("mousedown", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); });
+container.addEventListener("touchstart", (e) => { 
+    if (document.activeElement.tagName === "INPUT") return;
+    e.preventDefault(); 
+    if (gameState === "PLAYING") jump(); 
+}, { passive: false });
+
+container.addEventListener("mousedown", (e) => { 
+    if (document.activeElement.tagName === "INPUT") return;
+    e.preventDefault(); 
+    if (gameState === "PLAYING") jump(); 
+});
 // GAME.JS - PARTE 3 DE 3: LOGÍCA DE ACTUALIZACIÓN, CANVAS Y REJILLAS LÓGICAS
 function update() {
     let currentSpeed = baseSpeed;
@@ -329,27 +345,28 @@ function draw() {
     for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
     for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
 
-    let isBlinkingRed = (activePower === "BULL" && powerTimer < 120 && Math.floor(powerTimer / 10) % 2 === 0);
-    pipes.forEach(p => {
-        ctx.fillStyle = isBlinkingRed ? "#FF3333" : ((activePower === "BULL") ? "#00FF66" : "#FF3333");
-        ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;
-        ctx.fillRect(p.x, 0, animatedWidthWidth, p.top); ctx.fillRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
-        ctx.strokeRect(p.x, 0, animatedWidthWidth, p.top); ctx.strokeRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
+    if (gameState === "PLAYING") {
+        let isBlinkingRed = (activePower === "BULL" && powerTimer < 120 && Math.floor(powerTimer / 10) % 2 === 0);
+        pipes.forEach(p => {
+            ctx.fillStyle = isBlinkingRed ? "#FF3333" : ((activePower === "BULL") ? "#00FF66" : "#FF3333");
+            ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;
+            ctx.fillRect(p.x, 0, animatedWidthWidth, p.top); ctx.fillRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
+            ctx.strokeRect(p.x, 0, animatedWidthWidth, p.top); ctx.strokeRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
 
-        ctx.beginPath(); ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 2;
-        let centerX = p.x + (animatedWidthWidth / 2);
-        ctx.moveTo(centerX, p.top); ctx.lineTo(centerX, p.top + 35);
-        ctx.moveTo(centerX, canvas.height - p.bottom); ctx.lineTo(centerX, canvas.height - p.bottom - 35);
-        ctx.stroke();
-    });
+            ctx.beginPath(); ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 2;
+            let centerX = p.x + (animatedWidthWidth / 2);
+            ctx.moveTo(centerX, p.top); ctx.lineTo(centerX, p.top + 35);
+            ctx.moveTo(centerX, canvas.height - p.bottom); ctx.lineTo(centerX, canvas.height - p.bottom - 35);
+            ctx.stroke();
+        });
 
-    items.forEach(it => {
-        ctx.beginPath(); ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
-        if (it.type === "BULL") ctx.fillStyle = "#00FF66"; if (it.type === "LASER") ctx.fillStyle = "#FF3333";
-        if (it.type === "BEAR") ctx.fillStyle = "#FF3333"; if (it.type === "COLD") ctx.fillStyle = "#00CCFF";
-        if (it.type === "SWAN") ctx.fillStyle = "#1e1e24";
-        ctx.fill(); ctx.strokeStyle = (it.type === "SWAN") ? "#FF3333" : "#FFF"; ctx.lineWidth = it.type === "SWAN" ? 3 : 2; ctx.stroke();
- ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; 
+        items.forEach(it => {
+            ctx.beginPath(); ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
+            if (it.type === "BULL") ctx.fillStyle = "#00FF66"; if (it.type === "LASER") ctx.fillStyle = "#FF3333";
+            if (it.type === "BEAR") ctx.fillStyle = "#FF3333"; if (it.type === "COLD") ctx.fillStyle = "#00CCFF";
+            if (it.type === "SWAN") ctx.fillStyle = "#1e1e24";
+            ctx.fill(); ctx.strokeStyle = (it.type === "SWAN") ? "#FF3333" : "#FFF"; ctx.lineWidth = it.type === "SWAN" ? 3 : 2; ctx.stroke();
+        ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; 
         ctx.font = it.type === "SWAN" ? "bold 20px monospace" : "bold 14px monospace";
         ctx.textAlign = "center"; 
         ctx.textBaseline = "middle";
