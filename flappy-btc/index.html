@@ -1,50 +1,104 @@
+<!-- PARTE 1 DE 7: ESTRUCTURA HTML PRINCIPAL V2.1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Choppy Bitcoin | Bitcoinizate</title>
-    <!-- Enlace al laboratorio visual externo -->
+    <!-- Librería oficial de Supabase desde CDN estable -->
+    <script src="https://jsdelivr.net"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="game-container">
-        <!-- MARCADORES FINANCIEROS DE LA BILLETERA (HUD SUPERIOR) -->
-        <div id="wallet-hud" class="ui-text-hud">
+        <!-- BARRA SUPERIOR DE CONEXIÓN CLOUD -->
+        <div id="auth-bar">
+            <button id="btn-show-auth" class="btn-auth-nav">[ LOGIN / SIGN UP ]</button>
+            <span id="user-profile-tag" style="display: none; color: #33CCFF; cursor: pointer;"></span>
+        </div>
+
+        <!-- BALANCE FINANCIERO DEL TRADER (HUD) -->
+        <div id="wallet-hud" class="ui-text-hud" style="top: 35px;">
             <div id="usd-display" style="color: #00FF66;">CASH: $1000.00 USD</div>
             <div id="btc-display" style="color: #F2A900;">HOLD: 0.00000000 BTC</div>
         </div>
         
-        <!-- TEXTO DE POWERUPS VIGENTES GIGANTE Y TENUE EN EL MEDIO -->
         <div id="status-display" class="ui-text"></div>
-        <div id="cold-storage-display" class="ui-text-hud" style="top: 80px; font-size: 0.85rem; color: #00CCFF;">COLD STORAGE: 0</div>
+        <div id="cold-storage-display" class="ui-text-hud" style="top: 95px; font-size: 0.85rem; color: #00CCFF;">COLD STORAGE: 0</div>
         
-        <!-- TICKER DE PRECIO EN VIVO (ABAJO A LA IZQUIERDA) -->
         <div id="price-ticker" class="ui-text-ticker">PRICE: $25000</div>
 
-        <!-- BOTONES MÓVILES AUXILIARES PARA ANDROID (ABAJO A LA DERECHA) -->
+        <!-- CONTROLES AUXILIARES TÁCTILES -->
         <div id="mobile-trade-controls">
             <button class="btn-trade buy" id="btn-buy-mobile">BUY (B)</button>
             <button class="btn-trade sell" id="btn-sell-mobile">SELL (S)</button>
         </div>
         
-        <!-- CAPA INTERACTIVA DE MENÚ ARCADE -->
+        <!-- PANTALLA ARCADE CON RANKING GLOBAL NEÓN INTEGRADO -->
         <div id="menu-overlay">
             <div id="menu-text">
-                CHOPPY BITCOIN<br><br>
-                <span style="color:#FFF; font-size:0.85rem;">SURVIVE & TRADE THE MARKET</span>
+                CHOPPY BITCOIN<br>
+                <span style="color:#FFF; font-size:0.75rem;">GLOBAL LEADERBOARD</span>
+                <pre id="leaderboard-box" style="font-family: monospace; font-size: 0.8rem; color: #00FF66; margin: 15px 0; text-align: left; width: 100%; min-height: 90px; background: rgba(0,0,0,0.5); padding: 8px; border: 1px dashed #F2A900; white-space: pre-wrap;"></pre>
             </div>
-            <button class="btn-start" id="start-trigger">START TRADING</button>
+            <button class="btn-start" id="start-trigger">LOADING ENGINE...</button>
         </div>
 
-        <div id="version-display">v1.9.5-simulation</div>
+        <!-- MODAL FLOTANTE DE INGRESO (LOGIN / SIGN UP) -->
+        <div id="auth-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div id="modal-auth-title">TRADER SIGN IN</div>
+                <input type="text" id="arcade-honeypot" style="display:none;" tabindex="-1" autocomplete="off">
+                
+                <div class="input-group">
+                    <label>EMAIL:</label>
+                    <input type="email" id="auth-email" placeholder="email@domain.com">
+                </div>
+                <div class="input-group">
+                    <label>PASSWORD:</label>
+                    <input type="password" id="auth-password" placeholder="******">
+                </div>
+                <div class="input-group" id="group-alias" style="display: none;">
+                    <label>TRADER ALIAS:</label>
+                    <input type="text" id="auth-username" placeholder="Satoshi77" maxlength="12">
+                </div>
+                <div class="modal-buttons">
+                    <button id="btn-submit-auth" class="btn-modal-action">LOGIN</button>
+                    <button id="btn-toggle-auth" class="btn-modal-secondary">NEED ACCOUNT?</button>
+                    <button id="btn-close-auth" class="btn-modal-secondary">CLOSE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL FLOTANTE DE CONFIGURACIÓN DEL PERFIL PRIVADO -->
+        <div id="profile-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-title" style="color: #33CCFF;">MY TRADER PROFILE</div>
+                <div id="profile-score-info" style="font-size: 0.85rem; margin-bottom: 15px; color: #00FF66;">HIGH SCORE: 0.00000000 BTC</div>
+                <div class="input-group">
+                    <label>ON-CHAIN ADDRESS:</label>
+                    <input type="text" id="profile-btc-addr" placeholder="bc1...">
+                </div>
+                <div class="input-group">
+                    <label>LIGHTNING ADDRESS:</label>
+                    <input type="text" id="profile-ln-addr" placeholder="alias@wallet.com">
+                </div>
+                <div class="modal-buttons">
+                    <button id="btn-save-profile" class="btn-modal-action" style="background: #33CCFF;">UPDATE ADDR</button>
+                    <button id="btn-logout" class="btn-modal-secondary" style="color: #FF3333;">LOGOUT</button>
+                    <button id="btn-close-profile" class="btn-modal-secondary">CLOSE</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="version-display">v1.9.5-fixed</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
 
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
 
-    <!-- CARGA SECUENCIAL AL FINAL ABSOLUTO PARA GARANTIZAR LA EXISTENCIA DE LA UI -->
+    <!-- CARGA CRÍTICA: Primero el audio, luego los flujos de la nube, y al final el render -->
     <script src="audio.js"></script>
     <script src="auth.js"></script>
     <script src="game.js"></script>
