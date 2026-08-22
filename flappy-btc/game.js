@@ -14,6 +14,11 @@ const priceTicker = document.getElementById("price-ticker");
 const btnBuyMobile = document.getElementById("btn-buy-mobile");
 const btnSellMobile = document.getElementById("btn-sell-mobile");
 
+// GAME.JS - ADICIÓN DE VARIABLE BASE DE CONTROL DE USUARIOS
+if (typeof currentUser === "undefined") {
+    var currentUser = null; 
+}
+
 let gameState = "MENU";
 let btcPrice = 25000;         
 let walletUSD = 1000.00;      
