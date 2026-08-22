@@ -71,7 +71,6 @@ function resetGame() {
 }
 
 function startGame() {
-    // Si el jugador no inició sesión, el botón abre el formulario de registro
     if (typeof currentUser === "undefined" || !currentUser) {
         const authModal = document.getElementById("auth-modal");
         if (authModal) authModal.style.display = "flex";
@@ -162,13 +161,10 @@ if (btnSellMobile) {
     btnSellMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeSell(); }, { passive: false });
 }
 
-// --- DESBLOQUEO CRÍTICO DEL TECLADO PARA LOS MODALES DE INGRESO ---
 window.addEventListener("keydown", (e) => {
-    // Si el usuario está parado sobre cualquier caja de texto (Input), liberamos las teclas
     if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
-        return; // Permite escribir contraseñas y correos sin interferir con el juego
+        return; 
     }
-
     let key = e.key.toLowerCase();
     if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || key === "w") {
         e.preventDefault();
@@ -366,7 +362,7 @@ function draw() {
             if (it.type === "BEAR") ctx.fillStyle = "#FF3333"; if (it.type === "COLD") ctx.fillStyle = "#00CCFF";
             if (it.type === "SWAN") ctx.fillStyle = "#1e1e24";
             ctx.fill(); ctx.strokeStyle = (it.type === "SWAN") ? "#FF3333" : "#FFF"; ctx.lineWidth = it.type === "SWAN" ? 3 : 2; ctx.stroke();
-        ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; 
+ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; 
         ctx.font = it.type === "SWAN" ? "bold 20px monospace" : "bold 14px monospace";
         ctx.textAlign = "center"; 
         ctx.textBaseline = "middle";
