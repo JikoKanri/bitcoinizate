@@ -110,6 +110,13 @@
             90% { transform: translate(2px, 2px) rotate(0deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
+        #version-display {
+    bottom: 12px;
+    right: 15px;
+    font-size: 0.45rem;
+    color: #444; /* Gris oscuro para que no distraiga al jugar */
+    text-align: right;
+}
     </style>
 </head>
 <body>
@@ -122,6 +129,7 @@
             <span style="color:#FFF; font-size:0.52rem;">SURVIVE THE MARKET</span><br><br>
             TAP / SPACE / CLICK<br>TO JUMP & START
         </div>
+        <div id="version-display" class="ui-text">v1.1.0-beta</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
 
