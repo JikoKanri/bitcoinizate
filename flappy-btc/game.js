@@ -78,7 +78,7 @@ function gameOver() {
 
 function triggerRescue() {
     coldStorageLives--;
-    coldStorageDisplay.innerText = "COOLD STORAGE: " + coldStorageLives;
+    coldStorageDisplay.innerText = "COLD STORAGE: " + coldStorageLives;
     invulnerableTimer = 90;
     btc.y = 300;
     btc.velocity = 0;
@@ -100,7 +100,6 @@ function triggerAction(e) {
     else if (gameState === "PLAYING") jump();
 }
 
-// ASENTAMIENTO DE DISPARADORES DE CLIC UNIFICADOS ABAJO DE LAS VARIABLES
 startTrigger.addEventListener("click", triggerAction);
 startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
 
@@ -124,14 +123,14 @@ function update() {
         if (activePower === "BULL") {
             currentSpeed = baseSpeed * 1.45;
             document.body.className = "bull-mode-global";
-            targetLineY = 120;
+            targetLineY = -100; 
             statusText += "BULL RUN\n" + Math.ceil(powerTimer / 60) + "s ";
             powerTimer--;
             if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
         } else if (activePower === "BEAR") {
             currentSpeed = baseSpeed * 1.45;
             document.body.className = "bear-mode-global";
-            targetLineY = 480;
+            targetLineY = 700; 
             statusText += "BEAR CRASH\n" + Math.ceil(powerTimer / 60) + "s ";
             powerTimer--;
             if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
@@ -183,14 +182,16 @@ function update() {
             if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
                 if (items[j].type === "SWAN") {
                     playExplosionTone();
-                    if (activePower === "BULL") { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
+                    if (activePower === "BULL") { activePower = "NONE"; document.body.className = ""; }
                     laserActive = false;
                     speakRandomSwan();
                     if (coldStorageLives > 0) {
                         coldStorageLives = 0;
                         coldStorageDisplay.innerText = "COLD STORAGE: 0";
                     } else {
-                        gameOver();
+                        activePower = "BEAR";
+                        powerTimer = 360;
+                        document.body.className = "bear-mode-global";
                     }
                 } else if (items[j].type === "LASER") {
                     if (laserActive) laserTimer += 360; else { laserActive = true; laserTimer = 360; }
