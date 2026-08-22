@@ -1,12 +1,12 @@
-<!-- PARTE 1 DE 7: ESTRUCTURA HTML PRINCIPAL V2.1 -->
+<!-- PARTE 1 DE 3: ESTRUCTURA HTML V2.2 CON CDN ALTERNATIVO INMUNE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Choppy Bitcoin | Bitcoinizate</title>
-    <!-- Librería oficial de Supabase desde CDN estable -->
-    <script src="https://jsdelivr.net"></script>
+    <!-- Servidor de respaldo unpkg de alta disponibilidad para Supabase -->
+    <script src="https://unpkg.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -98,7 +98,7 @@
 
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
 
-    <!-- CARGA CRÍTICA: Primero el audio, luego los flujos de la nube, y al final el render -->
+    <!-- Carga ordenada por cascada -->
     <script src="audio.js"></script>
     <script src="auth.js"></script>
     <script src="game.js"></script>
