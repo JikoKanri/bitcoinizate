@@ -1,15 +1,23 @@
-// AUTH.JS - PARTE 1 DE 2: LLAVES DE BASE DE DATOS Y COMPROBACIÓN ASÍNCRONA
-const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co/rest/v1/"; 
-const SUPABASE_KEY = "sb_publishable_MJn5-gsw8CyQ-TlV2YzUHA_jlkO4Bzl"; 
+// AUTH.JS - COMPROBACIÓN MAESTRA DE CONEXIÓN CON VARIABLES DE RESPALDO
+const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; 
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; 
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase = null;
+
+// Intenta inicializar la librería usando cualquiera de los dos selectores de CDN del navegador
+try {
+    if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } else if (typeof window.Supabase !== "undefined" && window.Supabase.createClient) {
+        supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+} catch (err) {
+    console.error("Supabase script allocation crashed:", err);
+}
 
 let currentUser = null;
 let currentProfile = null;
 
-const authBar = document.getElementById("auth-bar");
-const btnShowAuth = document.getElementById("btn-show-auth");
-const userProfileTag = document.getElementById("user-profile-tag");
 const authModal = document.getElementById("auth-modal");
 const profileModal = document.getElementById("profile-modal");
 
