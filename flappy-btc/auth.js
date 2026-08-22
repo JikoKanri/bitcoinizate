@@ -1,22 +1,25 @@
-// AUTH.JS - PARTE 1 DE 2: CONFIGURACIÓN CLOUD Y CONTROL DE SESIONES
-const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; 
+// AUTH.JS - CONFIGURACIÓN DE CONEXIÓN MAESTRA RECTIFICADA V3.8
+const SUPABASE_URL = "https://supabase.co"; // <-- REPLAZA POR TU URL REAL (LA DE CARACTERES RAROS)
+const SUPABASE_KEY = "PEGA_ACÁ_TU_ANON_KEY_GIGANTE_QUE_EMPIEZA_CON_eyJ"; // <-- TU ANON KEY REAL
 
 let supabase = null;
 
+// Bloque de inicialización estándar nativo directo de la documentación oficial
 try {
-    if (typeof window.Supabase !== "undefined" && window.Supabase.createClient) {
-        supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase Engine conectado (Mayúscula).");
-    } else if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
+    // Si la librería se cargó mediante el script de unpkg, el constructor "createClient" vive acá:
+    if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase Engine conectado (Minúscula).");
+        console.log("¡Éxito! Motor de Supabase inicializado y conectado a la nube.");
     } else {
-        console.error("Error: Librería de Supabase no detectada.");
+        console.error("Error crítico: El objeto global de Supabase no está presente en la memoria del navegador.");
     }
 } catch (err) {
-    console.error("Supabase client crash:", err);
+    console.error("Falló la inicialización del cliente de Supabase:", err);
 }
+
+// DECLARACIÓN ÚNICA DE VARIABLES GLOBALES DE SESIÓN
+let currentUser = null;
+let currentProfile = null;
 
 // DECLARACIÓN ÚNICA GLOBALES DE USUARIO (Sin repetir abajo)
 let currentUser = null;
