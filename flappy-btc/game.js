@@ -1,4 +1,4 @@
-// GAME.JS - PARTE 1 DE 4: REFERENCIAS E INICIALIZACIÓN FÍSICA
+// GAME.JS - PARTE 1 DE 2: MOTOR FÍSICO ARCADE E INPUTS DE TRADING
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const container = document.getElementById("game-container");
@@ -13,11 +13,6 @@ const btcDisplay = document.getElementById("btc-display");
 const priceTicker = document.getElementById("price-ticker");
 const btnBuyMobile = document.getElementById("btn-buy-mobile");
 const btnSellMobile = document.getElementById("btn-sell-mobile");
-
-// GAME.JS - ADICIÓN DE VARIABLE BASE DE CONTROL DE USUARIOS
-if (typeof currentUser === "undefined") {
-    var currentUser = null; 
-}
 
 let gameState = "MENU";
 let btcPrice = 25000;         
@@ -42,7 +37,7 @@ let animatedWidthWidth = 65;
 let targetLineY = 300;
 let currentLineY = 300;
 let chartOffset = 0;
-// GAME.JS - PARTE 2 DE 4: EVENTOS DEL TECLADO, COMPRA/VENTA Y CONTROL GENERAL
+
 function resetGame() {
     btc.y = 250;
     btc.velocity = 0;
@@ -72,6 +67,7 @@ function resetGame() {
 }
 
 function startGame() {
+    // Lee de forma segura el usuario logueado en auth.js sin duplicar variables
     if (typeof currentUser === "undefined" || !currentUser) {
         const authModal = document.getElementById("auth-modal");
         if (authModal) authModal.style.display = "flex";
@@ -147,13 +143,19 @@ function triggerAction(e) {
     else if (gameState === "PLAYING") jump();
 }
 
-startTrigger.addEventListener("click", triggerAction);
-startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
+if (startTrigger) {
+    startTrigger.addEventListener("click", triggerAction);
+    startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
+}
 
-btnBuyMobile.addEventListener("click", (e) => { e.stopPropagation(); executeBuy(); });
-btnBuyMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeBuy(); }, { passive: false });
-btnSellMobile.addEventListener("click", (e) => { e.stopPropagation(); executeSell(); });
-btnSellMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeSell(); }, { passive: false });
+if (btnBuyMobile) {
+    btnBuyMobile.addEventListener("click", (e) => { e.stopPropagation(); executeBuy(); });
+    btnBuyMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeBuy(); }, { passive: false });
+}
+if (btnSellMobile) {
+    btnSellMobile.addEventListener("click", (e) => { e.stopPropagation(); executeSell(); });
+    btnSellMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeSell(); }, { passive: false });
+}
 
 window.addEventListener("keydown", (e) => {
     let key = e.key.toLowerCase();
@@ -169,7 +171,7 @@ window.addEventListener("keydown", (e) => {
 
 container.addEventListener("touchstart", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); }, { passive: false });
 container.addEventListener("mousedown", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); });
-// GAME.JS - PARTE 3 DE 4: BUCLE FÍSICO DE VELAS Y COLISIÓN DE FONDOS
+// GAME.JS - PARTE 2 DE 2: PROCESAMIENTO DE CANVAS, MECHAS Y LOOP GENERAL
 function update() {
     let currentSpeed = baseSpeed;
     if (gameState === "PLAYING") {
@@ -297,16 +299,14 @@ function update() {
             if (pipes[i] && pipes[i].x + 65 < 0) pipes.splice(i, 1);
         }
     } else {
-        // PERMITIR SCROLL PASIVO DEL CHART EN EL MENÚ INICIAL
         chartOffset += baseSpeed * 0.4;
     }
     currentLineY += (targetLineY - currentLineY) * 0.05;
 }
-// GAME.JS - PARTE 4 DE 4: RENDERIZADO DEL PUNTO MÓVIL CENTRAL Y LOOP ACTIVO
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // --- CHART DE FONDO HASTA LA MITAD ---
     ctx.beginPath(); ctx.strokeStyle = "rgba(242, 169, 0, 0.15)"; ctx.lineWidth = 3;
     let midPointX = canvas.width / 2; 
     for (let i = 0; i <= midPointX; i += 10) {
@@ -316,13 +316,11 @@ function draw() {
     }
     ctx.stroke();
 
-    // Dibujado del Punto Central Neón Ticker
     let currentTickerY = currentLineY + (Math.sin((midPointX + chartOffset) * 0.04) * 35) + (Math.cos((midPointX + chartOffset) * 0.01) * 15);
     ctx.beginPath(); ctx.arc(midPointX, currentTickerY, 6, 0, Math.PI * 2);
     ctx.fillStyle = activePower === "BULL" ? "#00FF66" : (activePower === "BEAR" ? "#FF3333" : "#F2A900");
     ctx.shadowBlur = 15; ctx.shadowColor = ctx.fillStyle; ctx.fill(); ctx.shadowBlur = 0; 
 
-    // Cuadrícula Reforzada de Fondo
     ctx.strokeStyle = (activePower === "BEAR") ? "#4a1212" : (activePower === "BULL" ? "#124a12" : "#222244"); ctx.lineWidth = 1.2;
     for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
     for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
@@ -348,16 +346,29 @@ function draw() {
             if (it.type === "BEAR") ctx.fillStyle = "#FF3333"; if (it.type === "COLD") ctx.fillStyle = "#00CCFF";
             if (it.type === "SWAN") ctx.fillStyle = "#1e1e24";
             ctx.fill(); ctx.strokeStyle = (it.type === "SWAN") ? "#FF3333" : "#FFF"; ctx.lineWidth = it.type === "SWAN" ? 3 : 2; ctx.stroke();
-            ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; ctx.font = it.type === "SWAN" ? "bold 20px monospace" : "bold 14px monospace";
-            ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            let sym = it.type === "BULL" ? "▲" : (it.type === "LASER" ? "🕶" : (it.type === "BEAR" ? "▼" : (it.type === "COLD" ? "🔒" : "🦢")));
-            ctx.fillText(sym, it.x, it.y);
-        });
+        ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; 
+        ctx.font = it.type === "SWAN" ? "bold 20px monospace" : "bold 14px monospace";
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle";
+        
+        let sym = it.type === "BULL" ? "▲" : (it.type === "LASER" ? "🕶" : (it.type === "BEAR" ? "▼" : (it.type === "COLD" ? "🔒" : "🦢")));
+        ctx.fillText(sym, it.x, it.y);
+    });
 
-        if (invulnerableTimer === 0 || Math.floor(invulnerableTimer / 4) % 2 === 0) {
-            ctx.beginPath(); ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2); ctx.fillStyle = "#F2A900"; ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 20px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("B", btc.x, btc.y + 1);
-        }
+    if (invulnerableTimer === 0 || Math.floor(invulnerableTimer / 4) % 2 === 0) {
+        ctx.beginPath(); 
+        ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2); 
+        ctx.fillStyle = "#F2A900"; 
+        ctx.fill(); 
+        ctx.strokeStyle = "#FFFFFF"; 
+        ctx.lineWidth = 3; 
+        ctx.stroke();
+        
+        ctx.fillStyle = "#FFFFFF"; 
+        ctx.font = "bold 20px monospace"; 
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle";
+        ctx.fillText("B", btc.x, btc.y + 1);
     }
 }
 
@@ -367,5 +378,4 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-// ARRANQUE PASIVO DE BUCE GRÁFICO (Soluciona la congelación de pantalla inicial)
 loop();
