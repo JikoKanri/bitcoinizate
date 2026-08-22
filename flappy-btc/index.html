@@ -149,7 +149,7 @@
             musicInterval = setInterval(() => {
                 if (gameState !== "PLAYING") return;
                 
-                // NOTAS CARGADAS FIJAS EN MATRICES COMPLETAS
+                // LAS MATRICES AHORA TIENEN LOS VALORES NUMÉRICOS EXPUESTOS SIN RECORTES
                 if (activePower === "BEAR") {
                     let bearNotes =; 
                     playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.05);
@@ -224,7 +224,7 @@
                         if (items[j].type === "LASER") { laserActive = true; laserTimer = 360; playTone(480, "triangle", 0.25); }
                         else { 
                             activePower = items[j].type; powerTimer = 360; 
-                            if (activePower === "BULL") { playTone(550, "sine", 0.15); container.className = "bull-mode"; }
+                            if (items[j].type === "BULL") { playTone(550, "sine", 0.15); container.className = "bull-mode"; }
                             else { playTone(160, "sawtooth", 0.45); container.className = "bear-mode"; }
                         }
                         items.splice(j, 1); continue;
