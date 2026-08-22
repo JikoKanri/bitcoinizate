@@ -1,18 +1,24 @@
-// AUTH.JS - PARTE 1 DE 2: CONEXIÓN CLOUD INDESTRUCTIBLE Y SESIONES
-const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; // <-- PEGA TU URL REAL DE CARACTERES RAROS ACÁ
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; // <-- PEGA TU CLAVE ANON REAL ACÁ
+// AUTH.JS - CABECERA RECTIFICADA SIN DEPENDENCIAS EXTERNAS DE RED
+const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; // <-- Pega tu API URL real acá
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; // <-- Tu anon key real acá
 
 let supabase = null;
 
 try {
     if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("¡Éxito! Motor de Supabase inicializado y conectado a la nube.");
+        console.log("¡Éxito Incondicional! Librería local enlazada a la nube de Supabase.");
     } else {
-        console.error("Error crítico: El objeto global de Supabase no está presente.");
+        console.error("Error: Inicializador proxy local ausente.");
     }
 } catch (err) {
-    console.error("Falló la inicialización del cliente de Supabase:", err);
+    console.error("Supabase engine initiation failed:", err);
+}
+
+let currentUser = null;
+let currentProfile = null;
+let isSignUpMode = false;
+
 }
 
 // --- DECLARACIÓN ÚNICA DE GLOBALES (SIN REPETIR ABAJO) ---
