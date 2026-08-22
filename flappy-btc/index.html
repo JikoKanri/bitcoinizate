@@ -18,6 +18,7 @@
             min-height: 100vh;
             overflow: hidden;
             touch-action: none;
+            user-select: none;
         }
         
         #game-container {
@@ -31,6 +32,7 @@
             overflow: hidden;
             box-shadow: 0 0 20px rgba(242, 169, 0, 0.4);
             transition: transform 0.1s ease;
+            cursor: pointer;
         }
         
         canvas {
@@ -40,7 +42,7 @@
             background: linear-gradient(#0b0b1a, #111122);
         }
 
-        /* --- EFECTOS DEL BEAR MARKET (POWER DOWN) --- */
+        /* --- FILTRO CAÓTICO DEL BEAR MARKET --- */
         .bear-mode {
             animation: screenShake 0.15s infinite;
             filter: cubic-bezier(0.1, 0.7, 1.0, 0.1) hue-rotate(-50deg) contrast(170%) saturate(200%);
@@ -118,10 +120,10 @@
         <div id="status-display" class="ui-text"></div>
         <div id="menu-display" class="ui-text">
             FLAPPY BITCOIN<br><br>
-            <span style="color:#FFF; font-size:0.55rem;">SURVIVE THE MARKET</span><br><br>
-            TAP / SPACE<br>TO JUMP & START
+            <span style="color:#FFF; font-size:0.52rem;">SURVIVE THE MARKET</span><br><br>
+            TAP / SPACE / CLICK<br>TO JUMP & START
         </div>
-        <canvas id="gameCanvas" width="400" height="600" tabindex="1" style="outline:none;"></canvas>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
 
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
@@ -134,7 +136,7 @@
         const statusDisplay = document.getElementById("status-display");
         const menuDisplay = document.getElementById("menu-display");
 
-        // Audio System (Web Audio API - 8-Bit Generator)
+        // Sistema Web Audio API (Sintetizador 8-Bits)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration) {
             try {
@@ -154,9 +156,7 @@
         let gameState = "MENU"; 
         let score = 0;
         let highscore = 0;
-
-        // Modifiers & Timers
-        let activePower = "NONE"; // BULL, LASER, BEAR, NONE
+        let activePower = "NONE"; 
         let powerTimer = 0;
 
         const btc = { x: 60, y: 250, radius: 18, velocity: 0, gravity: 0.38, jump: -6.8 };
@@ -184,7 +184,7 @@
 
         function gameOver() {
             gameState = "GAMEOVER";
-            playTone(150, "sawtooth", 0.4);
+            playTone(120, "sawtooth", 0.5); 
             if(score > highscore) highscore = score;
             menuDisplay.innerHTML = "REKT!<br><br><span style='color:#FFF;'>LIQUIDATED</span><br><br>SCORE: " + score + "<br>TOP SCORE: " + highscore + "<br><br>TAP TO RESTART";
             menuDisplay.style.display = "block";
@@ -196,24 +196,22 @@
                 startGame();
             } else if (gameState === "PLAYING") {
                 btc.velocity = btc.jump;
-                playTone(400, "square", 0.08);
+                playTone(420, "square", 0.07); 
             }
         }
 
-        // --- GLOBAL INPUT FIX ---
+        // --- CONTROLES UNIVERSALES ---
         window.addEventListener("keydown", (e) => { 
-            if (e.code === "Space" || e.key === " " || e.code === "ArrowUp") { 
+            if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || e.key === "w" || e.key === "W") { 
                 e.preventDefault(); 
                 handleAction(); 
             } 
         }, { capture: true });
-        canvas.addEventListener("touchstart", (e) => { e.preventDefault(); handleAction(); }, { passive: false });
-        canvas.addEventListener("mousedown", (e) => { e.preventDefault(); handleAction(); });
+        container.addEventListener("touchstart", (e) => { e.preventDefault(); handleAction(); }, { passive: false });
+        container.addEventListener("mousedown", (e) => { e.preventDefault(); handleAction(); });
 
-        // --- GAME LOOP ---
         function update() {
             if (gameState === "PLAYING") {
-                // Handle Active Statuses
                 let currentSpeed = baseSpeed;
                 pipeGap = 160;
 
@@ -223,11 +221,11 @@
                         statusDisplay.innerText = `BULL RUN! (${Math.ceil(powerTimer/60)}s)`;
                         statusDisplay.style.color = "#00FF66";
                     } else if (activePower === "LASER") {
-                        currentSpeed = baseSpeed * 0.5; // Slow down
+                        currentSpeed = baseSpeed * 0.5; 
                         statusDisplay.innerText = `LASER EYES! (${Math.ceil(powerTimer/60)}s)`;
                         statusDisplay.style.color = "#33CCFF";
                     } else if (activePower === "BEAR") {
-                        currentSpeed = baseSpeed * 1.35; // Fast chaos
+                        currentSpeed = baseSpeed * 1.35; 
                         statusDisplay.innerText = `BEAR CRASH! (${Math.ceil(powerTimer/60)}s)`;
                         statusDisplay.style.color = "#FF3333";
                     }
@@ -254,9 +252,12 @@
                     
                     pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - (topHeight + pipeGap), passed: false });
 
-                    // Spawn Items Aleatoriamente (Bull, Laser o Bear)
                     if (Math.random() < 0.45) {
                         let rand = Math.random();
                         let itemType = "BULL";
                         if (rand > 0.33 && rand < 0.66) itemType = "LASER";
-Usa el código con precaución.if (rand >= 0.66) itemType = "BEAR";items.push({x: canvas.width + pipeWidth + 30,y: topHeight + pipeGap / 2,type: itemType,radius: 12});}}// Process Items Collisionfor (let j = items.length - 1; j >= 0; j--) {items[j].x -= currentSpeed;let dist = Math.hypot(btc.x - items[j].x, btc.y - items[j].y);if (dist < btc.radius + items[j].radius) {activePower = items[j].type;powerTimer = 360; // 6 Seconds at 60fpsif (activePower === "BULL") {playTone(600, "sine", 0.25);setTimeout(() => playTone(800, "sine", 0.2), 80);} else if (activePower === "LASER") {playTone(500, "triangle", 0.3);} else if (activePower === "BEAR") {playTone(180, "sawtooth", 0.5);container.classList.add("bear-mode");}items.splice(j, 1);continue;}if (items[j].x < -20) items.splice(j, 1);}// Process Pipes Collisionfor (let i = pipes.length - 1; i >= 0; i--) {pipes[i].x -= currentSpeed;if (activePower !== "BULL") {if (btc.x + btc.radius - 3 > pipes[i].x &&btc.x - btc.radius + 3 < pipes[i].x + pipeWidth &&(btc.y - btc.radius + 3 < pipes[i].top || btc.y + btc.radius - 3 > canvas.height - pipes[i].bottom)) {gameOver();}}if (!pipes[i].passed && pipes[i].x + pipeWidth < btc.x) {pipes[i].passed = true;score += (activePower === "BULL") ? 2 : 1;scoreDisplay.innerText = "SCORE: " + score;playTone(900, "sine", 0.05);}if (pipes[i].x + pipeWidth < 0) pipes.splice(i, 1);}}}// --- RENDER ---function draw() {ctx.clearRect(0, 0, canvas.width, canvas.height);// Matrix background linesctx.strokeStyle = (activePower === "BEAR") ? "#301010" : "#111125";ctx.lineWidth = 1;for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }for(let j=0; j<canvas.height; j+=40) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }// Draw Pipespipes.forEach(p => {ctx.fillStyle = (activePower === "BULL") ? "#00FF66" : "#FF3333";ctx.fillRect(p.x, 0, pipeWidth, p.top);ctx.fillRect(p.x, canvas.height - p.bottom, pipeWidth, p.bottom);// Classic Pixel bordersctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;ctx.strokeRect(p.x, 0, pipeWidth, p.top);ctx.strokeRect(p.x, canvas.height - p.bottom, pipeWidth, p.bottom);});// Draw Powerups / Powerdownsitems.forEach(it => {ctx.beginPath(); ctx.arc(it.x, it.y, it.radius, 0, Math.PI*2);if (it.type === "BULL") ctx.fillStyle = "#00FF66";if (it.type === "LASER") ctx.fillStyle = "#33CCFF";if (it.type === "BEAR") ctx.fillStyle = "#FF3333";ctx.fill(); ctx.strokeStyle = "#FFF"; ctx.lineWidth = 2; ctx.stroke();ctx.fillStyle = "#000"; ctx.font = "bold 10px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";let sym = it.type === "BULL" ? "▲" : it.type === "LASER" ? "🕶" : "▼";ctx.fillText(sym, it.x, it.y);});// Draw Player BTCctx.beginPath(); ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2);ctx.fillStyle = "#F2A900"; ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 18px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";ctx.fillText("₿", btc.x, btc.y + 1);}function loop() { update(); draw(); requestAnimationFrame(loop); }window.focus();loop();
+                        if (rand >= 0.66) itemType = "BEAR";
+
+                        items.push({
+                            x: canvas.width + pipeWidth + 30,
+                y: topHeight + pipeGap / 2,type: itemType,radius: 14});}}for (let j = items.length - 1; j >= 0; j--) {items[j].x -= currentSpeed;let dist = Math.hypot(btc.x - items[j].x, btc.y - items[j].y);if (dist < btc.radius + items[j].radius) {activePower = items[j].type;powerTimer = 360;if (activePower === "BULL") {playTone(550, "sine", 0.15);setTimeout(() => playTone(850, "sine", 0.2), 60);} else if (activePower === "LASER") {playTone(480, "triangle", 0.25);} else if (activePower === "BEAR") {playTone(160, "sawtooth", 0.45);container.classList.add("bear-mode");}items.splice(j, 1);continue;}if (items[j].x < -20) items.splice(j, 1);}for (let i = pipes.length - 1; i >= 0; i--) {pipes[i].x -= currentSpeed;if (activePower !== "BULL") {if (btc.x + btc.radius - 3 > pipes[i].x &&btc.x - btc.radius + 3 < pipes[i].x + pipeWidth &&(btc.y - btc.radius + 3 < pipes[i].top || btc.y + btc.radius - 3 > canvas.height - pipes[i].bottom)) {gameOver();}}if (!pipes[i].passed && pipes[i].x + pipeWidth < btc.x) {pipes[i].passed = true;score += (activePower === "BULL") ? 2 : 1;scoreDisplay.innerText = "SCORE: " + score;playTone(880, "sine", 0.04);}if (pipes[i].x + pipeWidth < 0) pipes.splice(i, 1);}}}function draw() {ctx.clearRect(0, 0, canvas.width, canvas.height);ctx.strokeStyle = (activePower === "BEAR") ? "#351212" : "#121226";ctx.lineWidth = 1;for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }for(let j=0; j<canvas.height; j+=40) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }pipes.forEach(p => {ctx.fillStyle = (activePower === "BULL") ? "#00FF66" : "#FF3333";ctx.fillRect(p.x, 0, pipeWidth, p.top);ctx.fillRect(p.x, canvas.height - p.bottom, pipeWidth, p.bottom);ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;ctx.strokeRect(p.x, 0, pipeWidth, p.top);ctx.strokeRect(p.x, canvas.height - p.bottom, pipeWidth, p.bottom);});items.forEach(it => {ctx.beginPath(); ctx.arc(it.x, it.y, it.radius, 0, Math.PI*2);if (it.type === "BULL") ctx.fillStyle = "#00FF66";if (it.type === "LASER") ctx.fillStyle = "#33CCFF";if (it.type === "BEAR") ctx.fillStyle = "#FF3333";ctx.fill(); ctx.strokeStyle = "#FFF"; ctx.lineWidth = 2; ctx.stroke();ctx.fillStyle = "#000"; ctx.font = "bold 12px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";let sym = it.type === "BULL" ? "▲" : it.type === "LASER" ? "🕶" : "▼";ctx.fillText(sym, it.x, it.y);});ctx.beginPath(); ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2);ctx.fillStyle = "#F2A900"; ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 18px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";ctx.fillText("₿", btc.x, btc.y + 1);}function loop() { update(); draw(); requestAnimationFrame(loop); }loop();
