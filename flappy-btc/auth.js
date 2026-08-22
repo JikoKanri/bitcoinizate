@@ -1,32 +1,27 @@
-// AUTH.JS - CABECERA DE CONEXIÓN CON TOLERANCIA A ENTORNOS GENERACIONALES
-const SUPABASE_URL = "https://supabase.co"; 
-const SUPABASE_KEY = "PEGA_ACÁ_TU_ANON_KEY_GIGANTE_QUE_EMPIEZA_CON_eyJ"; 
+// AUTH.JS - PARTE 1 DE 2: CONFIGURACIÓN CLOUD Y CONTROL DE SESIONES
+const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; 
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; 
 
 let supabase = null;
 
-// Bloque de ingeniería seguro para capturar el constructor del CDN sin importar la versión
 try {
     if (typeof window.Supabase !== "undefined" && window.Supabase.createClient) {
         supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase V2 Engine conectado de forma exitosa (Mayúscula).");
+        console.log("Supabase Engine conectado (Mayúscula).");
     } else if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase Legacy Engine conectado de forma exitosa (Minúscula).");
+        console.log("Supabase Engine conectado (Minúscula).");
     } else {
-        console.error("Error crítico: La librería CDN de Supabase no está presente en la memoria del navegador.");
+        console.error("Error: Librería de Supabase no detectada.");
     }
 } catch (err) {
     console.error("Supabase client crash:", err);
 }
 
+// DECLARACIÓN ÚNICA GLOBALES DE USUARIO (Sin repetir abajo)
 let currentUser = null;
 let currentProfile = null;
 
-
-let currentUser = null;
-let currentProfile = null;
-
-// Elementos de la interfaz web recuperados globalmente
 const authBar = document.getElementById("auth-bar");
 const btnShowAuth = document.getElementById("btn-show-auth");
 const userProfileTag = document.getElementById("user-profile-tag");
@@ -102,7 +97,7 @@ function updateAuthUI(profile) {
     }
     fetchGlobalLeaderboard();
 }
-// AUTH.JS - PARTE 2 DE 2: RANKINGS DE LA NUBE Y ESCUCHAS DE INTERFAZ
+// AUTH.JS - PARTE 2 DE 2: RESPUESTAS DE FORMULARIOS Y TABLA DE POSICIONES
 async function handleAuthSubmit() {
     if (arcadeHoneypot && arcadeHoneypot.value !== "") {
         if (authModal) authModal.style.display = "none";
@@ -255,4 +250,3 @@ if (btnLogout) {
 }
 
 window.addEventListener("DOMContentLoaded", checkActiveSession);
-
