@@ -10,26 +10,41 @@
 <body>
 
     <div id="game-container">
-        <div id="score-display" class="ui-text">SCORE: 0</div>
-        <div id="status-display" class="ui-text"></div>
-        <div id="cold-storage-display" class="ui-text">COLD STORAGE: 0</div>
+        <!-- MARCADORES FINANCIEROS DE LA BILLETERA (HUD SUPERIOR) -->
+        <div id="wallet-hud" class="ui-text-hud">
+            <div id="usd-display" style="color: #00FF66;">CASH: $1000.00 USD</div>
+            <div id="btc-display" style="color: #F2A900;">HOLD: 0.00000000 BTC</div>
+        </div>
         
-        <!-- Capa interactiva de menú arcade -->
+        <!-- TEXTO DE POWERUPS VIGENTES GIGANTE Y TENUE EN EL MEDIO -->
+        <div id="status-display" class="ui-text"></div>
+        <div id="cold-storage-display" class="ui-text-hud" style="top: 80px; font-size: 0.85rem; color: #00CCFF;">COLD STORAGE: 0</div>
+        
+        <!-- TICKER DE PRECIO EN VIVO (ABAJO A LA IZQUIERDA) -->
+        <div id="price-ticker" class="ui-text-ticker">PRICE: $25000</div>
+
+        <!-- BOTONES MÓVILES AUXILIARES PARA ANDROID (ABAJO A LA DERECHA) -->
+        <div id="mobile-trade-controls">
+            <button class="btn-trade buy" id="btn-buy-mobile">BUY (B)</button>
+            <button class="btn-trade sell" id="btn-sell-mobile">SELL (S)</button>
+        </div>
+        
+        <!-- CAPA INTERACTIVA DE MENÚ ARCADE -->
         <div id="menu-overlay">
             <div id="menu-text">
                 CHOPPY BITCOIN<br><br>
-                <span style="color:#FFF; font-size:0.85rem;">SURVIVE THE MARKET</span>
+                <span style="color:#FFF; font-size:0.85rem;">SURVIVE & TRADE THE MARKET</span>
             </div>
-            <button class="btn-start" id="start-trigger">START GAME</button>
+            <button class="btn-start" id="start-trigger">START TRADING</button>
         </div>
 
-        <div id="version-display">v1.9.0-modular</div>
+        <div id="version-display">v1.9.5-simulation</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
 
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
 
-    <!-- Carga secuencial y segura de los módulos de JavaScript -->
+    <!-- CARGA SECUENCIAL Y SEGURA DE LOS MÓDULOS DE JAVASCRIPT -->
     <script src="audio.js"></script>
     <script src="game.js"></script>
 </body>
