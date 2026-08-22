@@ -7,21 +7,15 @@ let supabase = null;
 try {
     if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("¡Éxito Incondicional! Librería local enlazada a la nube de Supabase.");
+        console.log("¡Éxito! Motor de Supabase inicializado y conectado a la nube.");
     } else {
-        console.error("Error: Inicializador proxy local ausente.");
+        console.error("Error crítico: El objeto global de Supabase no está presente.");
     }
 } catch (err) {
-    console.error("Supabase engine initiation failed:", err);
+    console.error("Falló la inicialización del cliente de Supabase:", err);
 }
 
-let currentUser = null;
-let currentProfile = null;
-let isSignUpMode = false;
-
-}
-
-// --- DECLARACIÓN ÚNICA DE GLOBALES (SIN REPETIR ABAJO) ---
+// DECLARACIÓN ÚNICA DE GLOBALES (Garantiza el balance de alcances)
 let currentUser = null;
 let currentProfile = null;
 let isSignUpMode = false;
@@ -218,7 +212,6 @@ function toggleAuthMode() {
     }
 }
 
-// --- CONEXIÓN DE ESCUCHAS DE CLIC DE LA INTERFAZ ---
 if (btnShowAuth) btnShowAuth.addEventListener("click", () => { if (authModal) authModal.style.display = "flex"; });
 const btnCloseAuth = document.getElementById("btn-close-auth");
 if (btnCloseAuth) btnCloseAuth.addEventListener("click", () => { if (authModal) authModal.style.display = "none"; });
@@ -252,6 +245,4 @@ if (btnLogout) {
     });
 }
 
-// Inicialización automática al cargar el archivo
 window.addEventListener("DOMContentLoaded", checkActiveSession);
-
