@@ -44,6 +44,7 @@
             background: linear-gradient(#0b0b1a, #111122);
             transform: translateZ(0);
         }
+        /* --- FILTROS DE MERCADO MODIFICADOS --- */
         .bear-mode {
             animation: screenShake 0.15s infinite;
             filter: cubic-bezier(0.1, 0.7, 1.0, 0.1) hue-rotate(-50deg) contrast(170%) saturate(200%);
@@ -55,8 +56,7 @@
             border-color: #00FF66 !important;
             box-shadow: 0 0 30px rgba(0, 255, 102, 0.6) !important;
         }
-
-    <!-- PARTE 2 DE 3: INTERFAZ ARCADE Y SECUENCIADOR MUSICAL COMPLETO -->
+<!-- PARTE 2 DE 3: INTERFAZ ARCADE Y SECUENCIADOR MUSICAL COMPLETO -->
         .ui-text {
             position: absolute;
             width: 100%;
@@ -109,7 +109,7 @@
             <div id="menu-text">FLAPPY BITCOIN<br><br><span style="color:#FFF; font-size:0.85rem;">SURVIVE THE MARKET</span></div>
             <button class="btn-start" id="start-trigger">START GAME</button>
         </div>
-        <div id="version-display">v1.5.5-audio-fixed</div>
+        <div id="version-display">v1.6.0-stable</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
@@ -149,15 +149,15 @@
             musicInterval = setInterval(() => {
                 if (gameState !== "PLAYING") return;
                 
-                // NOTAS CORREGIDAS EN ESCALAS REALES (FRECUENCIAS HZ)
+                // NOTAS CARGADAS FIJAS EN MATRICES COMPLETAS
                 if (activePower === "BEAR") {
-                    let bearNotes =; // Fúnebre y grave
+                    let bearNotes =; 
                     playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.05);
                 } else if (activePower === "BULL") {
-                    let bullNotes =; // Frenética y alegre (escala mayor)
+                    let bullNotes =; 
                     playTone(bullNotes[musicStep % 8], "square", 0.12, 0.04);
                 } else {
-                    let normalNotes =; // Neutra arpegiada estilo retro
+                    let normalNotes =; 
                     playTone(normalNotes[musicStep % 8], "sine", 0.18, 0.05);
                 }
                 musicStep++;
@@ -201,9 +201,9 @@
                 statusDisplay.innerText = statusText;
                 if (activePower === "BULL") statusDisplay.style.color = "#00FF66"; else if (activePower === "BEAR") statusDisplay.style.color = "#FF3333"; else statusDisplay.style.color = "#33CCFF";
 
-                // --- ANIMACIÓN INTERPOLADA (SUAVE) DE LASER EYES ---
+                // --- ANIMACIÓN INTERPOLADA SUAVE DE LASER EYES ---
                 let targetWidth = laserActive ? 22 : 65; 
-                animatedWidthWidth += (targetWidth - animatedWidthWidth) * 0.08; // Suavizado progresivo frame a frame
+                animatedWidthWidth += (targetWidth - animatedWidthWidth) * 0.08;
 
                 btc.velocity += btc.gravity; btc.y += btc.velocity;
                 if (btc.y + btc.radius > canvas.height || btc.y - btc.radius < 0) gameOver();
@@ -218,7 +218,6 @@
                     }
                 }
 
-                // Colisiones con esferas de Items (El Toro cancela al Oso)
                 for (let j = items.length - 1; j >= 0; j--) {
                     items[j].x -= currentSpeed;
                     if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
@@ -233,14 +232,12 @@
                     if (items[j].x < -20) items.splice(j, 1);
                 }
 
-                // Colisiones y procesado de Velas de Mercado
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     pipes[i].x -= currentSpeed;
                     
-                    // Si es BULL MARKET, "come" las velas al tocarlas
                     if (btc.x + btc.radius > pipes[i].x && btc.x - btc.radius < pipes[i].x + animatedWidthWidth && (btc.y - btc.radius < pipes[i].top || btc.y + btc.radius > canvas.height - pipes[i].bottom)) {
                         if (activePower === "BULL") {
-                            pipes.splice(i, 1); // Desaparece la vela
+                            pipes.splice(i, 1);
                             score += 2; scoreDisplay.innerText = "SCORE: " + score;
                             playTone(720, "sine", 0.08, 0.1); continue;
                         } else { gameOver(); }
