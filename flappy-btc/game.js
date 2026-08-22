@@ -1,4 +1,4 @@
-// GAME.JS - PARTE 1 DE 4: VARIABLES FINANCIERAS EN BTC Y ENTRADAS DE MOTOR
+// GAME.JS - PARTE 1 DE 3: VARIABLES FINANCIERAS EN BTC Y ENTRADAS DE MOTOR
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const container = document.getElementById("game-container");
@@ -41,26 +41,12 @@ let animatedWidthWidth = 65;
 let targetLineY = 300;
 let currentLineY = 300;
 let chartOffset = 0;
-// GAME.JS - PARTE 2 DE 4: TRADING ENGINE, COMPRA/VENTA Y LOGÍCA DE DERROTA
+// GAME.JS - PARTE 2 DE 3: CONTROL DE ACCESO ESTRICTO Y LIBRO DE ÓRDENES
 function resetGame() {
-    btc.y = 250;
-    btc.velocity = 0;
-    pipes = [];
-    items = [];
-    pipeTimer = 0;
-    chartOffset = 0;
-    activePower = "NONE";
-    laserActive = false;
-    powerTimer = 0;
-    laserTimer = 0;
-    coldStorageLives = 0;
-    invulnerableTimer = 0;
-    targetLineY = 300;
-    currentLineY = 300;
-    
-    btcPrice = 25000;
-    walletUSD = 1000.00;
-    walletBTC = 0.00000000;
+    btc.y = 250; btc.velocity = 0; pipes = []; items = []; pipeTimer = 0; chartOffset = 0;
+    activePower = "NONE"; laserActive = false; powerTimer = 0; laserTimer = 0;
+    coldStorageLives = 0; invulnerableTimer = 0; targetLineY = 300; currentLineY = 300;
+    btcPrice = 25000; walletUSD = 1000.00; walletBTC = 0.00000000;
     
     document.body.className = "";
     if (usdDisplay) usdDisplay.innerText = "CASH: $" + walletUSD.toFixed(2) + " USD";
@@ -71,11 +57,14 @@ function resetGame() {
 }
 
 function startGame() {
-    if (typeof currentUser === "undefined" || !currentUser) {
+    // --- BLOQUEO ARCADE DE SEGURIDAD NATIVO ---
+    // Si la variable global no existe o no tiene un perfil cargado de Supabase, frena el juego
+    if (typeof currentUser === "undefined" || !currentUser || typeof currentProfile === "undefined" || !currentProfile) {
         const authModal = document.getElementById("auth-modal");
-        if (authModal) authModal.style.display = "flex";
-        return;
+        if (authModal) authModal.style.display = "flex"; // Abre obligatoriamente el modal flotante
+        return; // Detiene el hilo de ejecución para que el Bitcoin no empiece a volar
     }
+    
     if (typeof initAudio === "function") initAudio();
     resetGame();
     if (menuOverlay) menuOverlay.style.display = "none";
@@ -90,10 +79,7 @@ function gameOver() {
     if (typeof stopMusic === "function") stopMusic();
     if (typeof playTone === "function") playTone(120, "sawtooth", 0.5);
     if (typeof speakDaftPunk === "function") speakDaftPunk("Rekt! You got liquidated.");
-    
-    if (typeof submitNewHighScore === "function") {
-        submitNewHighScore(walletBTC); 
-    }
+    if (typeof submitNewHighScore === "function") submitNewHighScore(walletBTC);
 
     const menuText = document.getElementById("menu-text");
     if (menuText) {
@@ -107,9 +93,7 @@ function gameOver() {
 function triggerRescue() {
     coldStorageLives--;
     if (coldStorageDisplay) coldStorageDisplay.innerText = "COLD STORAGE: " + coldStorageLives;
-    invulnerableTimer = 90;
-    btc.y = 300;
-    btc.velocity = 0;
+    invulnerableTimer = 90; btc.y = 300; btc.velocity = 0;
     if (typeof playTone === "function") {
         playTone(330, "triangle", 0.15, 0.15);
         setTimeout(() => playTone(660, "sine", 0.2, 0.1), 100);
@@ -120,8 +104,7 @@ function triggerRescue() {
 function executeBuy() {
     if (gameState !== "PLAYING" || walletUSD <= 0) return;
     let btcBought = walletUSD / btcPrice;
-    walletBTC += btcBought;
-    walletUSD = 0.00;
+    walletBTC += btcBought; walletUSD = 0.00;
     if (usdDisplay) usdDisplay.innerText = "CASH: $0.00 USD";
     if (btcDisplay) btcDisplay.innerText = "HOLD: " + walletBTC.toFixed(8) + " BTC";
     if (typeof playTone === "function") playTone(587.33, "sine", 0.08, 0.1);
@@ -130,8 +113,7 @@ function executeBuy() {
 function executeSell() {
     if (gameState !== "PLAYING" || walletBTC <= 0) return;
     let usdGained = walletBTC * btcPrice;
-    walletUSD += usdGained;
-    walletBTC = 0.00000000;
+    walletUSD += usdGained; walletBTC = 0.00000000;
     if (usdDisplay) usdDisplay.innerText = "CASH: $" + walletUSD.toFixed(2) + " USD";
     if (btcDisplay) btcDisplay.innerText = "HOLD: 0.00000000 BTC";
     if (typeof playTone === "function") playTone(880, "sine", 0.08, 0.1);
@@ -149,12 +131,11 @@ function triggerAction(e) {
     if (gameState === "MENU" || gameState === "GAMEOVER") startGame();
     else if (gameState === "PLAYING") jump();
 }
-// GAME.JS - PARTE 3 DE 4: CAPTURA DE TECLAS INPUT Y PROCESAMIENTO DE CANDLES
+
 if (startTrigger) {
     startTrigger.addEventListener("click", triggerAction);
     startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
 }
-
 if (btnBuyMobile) {
     btnBuyMobile.addEventListener("click", (e) => { e.stopPropagation(); executeBuy(); });
     btnBuyMobile.addEventListener("touchstart", (e) => { e.stopPropagation(); e.preventDefault(); executeBuy(); }, { passive: false });
@@ -165,32 +146,13 @@ if (btnSellMobile) {
 }
 
 window.addEventListener("keydown", (e) => {
-    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
-        return; 
-    }
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return; 
     let key = e.key.toLowerCase();
     if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || key === "w") {
-        e.preventDefault();
-        if (gameState === "PLAYING") jump();
-    } else if (key === "b") {
-        executeBuy();
-    } else if (key === "s") {
-        executeSell();
-    }
+        e.preventDefault(); if (gameState === "PLAYING") jump();
+    } else if (key === "b") { executeBuy(); } else if (key === "s") { executeSell(); }
 }, { capture: true });
-
-container.addEventListener("touchstart", (e) => { 
-    if (document.activeElement.tagName === "INPUT") return;
-    e.preventDefault(); 
-    if (gameState === "PLAYING") jump(); 
-}, { passive: false });
-
-container.addEventListener("mousedown", (e) => { 
-    if (document.activeElement.tagName === "INPUT") return;
-    e.preventDefault(); 
-    if (gameState === "PLAYING") jump(); 
-});
-
+// GAME.JS - PARTE 3 DE 3: LOGÍCA DE RENDERS DE VELAS Y LOOP PASIVO CONTINUO
 function update() {
     let currentSpeed = baseSpeed;
     if (gameState === "PLAYING") {
@@ -199,34 +161,19 @@ function update() {
 
         let statusText = "";
         if (activePower === "BULL") {
-            currentSpeed = baseSpeed * 1.45;
-            document.body.className = "bull-mode-global";
-            targetLineY = -100; 
-            btcPrice += (125000 - btcPrice) * 0.02; 
-            statusText += "BULL RUN\n" + Math.ceil(powerTimer / 60) + "s ";
-            powerTimer--;
-            if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
+            currentSpeed = baseSpeed * 1.45; document.body.className = "bull-mode-global"; targetLineY = -100; 
+            btcPrice += (125000 - btcPrice) * 0.02; statusText += "BULL RUN\n" + Math.ceil(powerTimer / 60) + "s ";
+            powerTimer--; if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
         } else if (activePower === "BEAR") {
-            currentSpeed = baseSpeed * 1.45;
-            document.body.className = "bear-mode-global";
-            targetLineY = 700; 
-            btcPrice += (8000 - btcPrice) * 0.03; 
-            statusText += "BEAR CRASH\n" + Math.ceil(powerTimer / 60) + "s ";
-            powerTimer--;
-            if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
+            currentSpeed = baseSpeed * 1.45; document.body.className = "bear-mode-global"; targetLineY = 700; 
+            btcPrice += (8000 - btcPrice) * 0.03; statusText += "BEAR CRASH\n" + Math.ceil(powerTimer / 60) + "s ";
+            powerTimer--; if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
         } else {
-            targetLineY = 300;
-            btcPrice += (28000 + Math.sin(chartOffset * 0.05) * 4500 - btcPrice) * 0.01; 
+            targetLineY = 300; btcPrice += (28000 + Math.sin(chartOffset * 0.05) * 4500 - btcPrice) * 0.01; 
         }
 
         if (priceTicker) priceTicker.innerText = "PRICE: $" + Math.floor(btcPrice);
-
-        if (laserActive) {
-            statusText += "\n👁️LASER " + Math.ceil(laserTimer / 60) + "s";
-            laserTimer--;
-            if (laserTimer <= 0) laserActive = false;
-        }
-
+        if (laserActive) { statusText += "\n👁️LASER " + Math.ceil(laserTimer / 60) + "s"; laserTimer--; if (laserTimer <= 0) laserActive = false; }
         if (statusDisplay) {
             statusDisplay.innerText = statusText;
             if (activePower === "BULL") statusDisplay.style.color = "#00FF66";
@@ -234,8 +181,7 @@ function update() {
             else statusDisplay.style.color = "#33CCFF";
         }
 
-        btc.velocity += btc.gravity;
-        btc.y += btc.velocity;
+        btc.velocity += btc.gravity; btc.y += btc.velocity;
         if (btc.y + btc.radius > canvas.height || btc.y - btc.radius < 0) {
             if (coldStorageLives > 0 && invulnerableTimer <= 0) triggerRescue(); else if (invulnerableTimer <= 0) gameOver();
         }
@@ -246,8 +192,7 @@ function update() {
             pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - (topHeight + pipeGap), passed: false });
 
             if (Math.random() < 0.45) {
-                let rand = Math.random();
-                let itemType = "BULL";
+                let rand = Math.random(); let itemType = "BULL";
                 if (rand > 0.20 && rand < 0.40) itemType = "LASER";
                 if (rand >= 0.40 && rand < 0.60) itemType = "BEAR";
                 if (rand >= 0.60 && rand < 0.85) itemType = "COLD";
@@ -259,27 +204,21 @@ function update() {
         for (let j = items.length - 1; j >= 0; j--) {
             items[j].x -= currentSpeed;
             if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
-                walletUSD += 500.00;
-                if (usdDisplay) usdDisplay.innerText = "CASH: $" + walletUSD.toFixed(2) + " USD";
+                walletUSD += 500.00; if (usdDisplay) usdDisplay.innerText = "CASH: $" + walletUSD.toFixed(2) + " USD";
 
                 if (items[j].type === "SWAN") {
                     if (typeof playExplosionTone === "function") playExplosionTone();
                     if (activePower === "BULL") { activePower = "NONE"; document.body.className = ""; }
-                    laserActive = false;
-                    if (typeof speakRandomSwan === "function") speakRandomSwan();
+                    laserActive = false; if (typeof speakRandomSwan === "function") speakRandomSwan();
                     if (coldStorageLives > 0) {
-                        coldStorageLives = 0;
-                        if (coldStorageDisplay) coldStorageDisplay.innerText = "COLD STORAGE: 0";
-                    } else {
-                        activePower = "BEAR"; powerTimer = 360; document.body.className = "bear-mode-global";
-                    }
+                        coldStorageLives = 0; if (coldStorageDisplay) coldStorageDisplay.innerText = "COLD STORAGE: 0";
+                    } else { activePower = "BEAR"; powerTimer = 360; document.body.className = "bear-mode-global"; }
                 } else if (items[j].type === "LASER") {
                     if (laserActive) laserTimer += 360; else { laserActive = true; laserTimer = 360; }
                     if (typeof playTone === "function") playTone(480, "triangle", 0.25);
                     if (typeof speakDaftPunk === "function") speakDaftPunk("L-L-LASER EYES!", true);
                 } else if (items[j].type === "COLD") {
-                    coldStorageLives++;
-                    if (coldStorageDisplay) coldStorageDisplay.innerText = "COLD STORAGE: " + coldStorageLives;
+                    coldStorageLives++; if (coldStorageDisplay) coldStorageDisplay.innerText = "COLD STORAGE: " + coldStorageLives;
                     if (typeof playTone === "function") playTone(600, "sine", 0.2, 0.1);
                     if (typeof speakDaftPunk === "function") speakDaftPunk("Cold storage secured!");
                 } else {
@@ -324,11 +263,9 @@ function update() {
     }
     currentLineY += (targetLineY - currentLineY) * 0.05;
 }
-// GAME.JS - PARTE 4 DE 4: GRÁFICO HISTÓRICO HASTA LA MITAD Y LOOP GENERAL
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // --- CHART DE FONDO HASTA LA MITAD ---
     ctx.beginPath(); ctx.strokeStyle = "rgba(242, 169, 0, 0.15)"; ctx.lineWidth = 3;
     let midPointX = canvas.width / 2; 
     for (let i = 0; i <= midPointX; i += 10) {
@@ -338,13 +275,11 @@ function draw() {
     }
     ctx.stroke();
 
-    // Dibujado del Ticker Central Neón Móvil
     let currentTickerY = currentLineY + (Math.sin((midPointX + chartOffset) * 0.04) * 35) + (Math.cos((midPointX + chartOffset) * 0.01) * 15);
     ctx.beginPath(); ctx.arc(midPointX, currentTickerY, 6, 0, Math.PI * 2);
     ctx.fillStyle = activePower === "BULL" ? "#00FF66" : (activePower === "BEAR" ? "#FF3333" : "#F2A900");
     ctx.shadowBlur = 15; ctx.shadowColor = ctx.fillStyle; ctx.fill(); ctx.shadowBlur = 0; 
 
-    // Cuadrícula Reforzada de Fondo
     ctx.strokeStyle = (activePower === "BEAR") ? "#4a1212" : (activePower === "BULL" ? "#124a12" : "#222244"); ctx.lineWidth = 1.2;
     for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
     for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
@@ -371,16 +306,27 @@ function draw() {
             if (it.type === "SWAN") ctx.fillStyle = "#1e1e24";
             ctx.fill(); ctx.strokeStyle = (it.type === "SWAN") ? "#FF3333" : "#FFF"; ctx.lineWidth = it.type === "SWAN" ? 3 : 2; ctx.stroke();
             ctx.fillStyle = (it.type === "SWAN") ? "#FF3333" : "#000"; ctx.font = it.type === "SWAN" ? "bold 20px monospace" : "bold 14px monospace";
-            ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            let sym = it.type === "BULL" ? "▲" : (it.type === "LASER" ? "🕶" : (it.type === "BEAR" ? "▼" : (it.type === "COLD" ? "🔒" : "🦢")));
-            ctx.fillText(sym, it.x, it.y);
-        });
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle";
+        
+        let sym = it.type === "BULL" ? "▲" : (it.type === "LASER" ? "🕶" : (it.type === "BEAR" ? "▼" : (it.type === "COLD" ? "🔒" : "🦢")));
+        ctx.fillText(sym, it.x, it.y);
+    });
 
-        if (invulnerableTimer === 0 || Math.floor(invulnerableTimer / 4) % 2 === 0) {
-            ctx.beginPath(); ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2); ctx.fillStyle = "#F2A900"; ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 20px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.fillText("B", btc.x, btc.y + 1);
-        }
+    if (invulnerableTimer === 0 || Math.floor(invulnerableTimer / 4) % 2 === 0) {
+        ctx.beginPath(); 
+        ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2); 
+        ctx.fillStyle = "#F2A900"; 
+        ctx.fill(); 
+        ctx.strokeStyle = "#FFFFFF"; 
+        ctx.lineWidth = 3; 
+        ctx.stroke();
+        
+        ctx.fillStyle = "#FFFFFF"; 
+        ctx.font = "bold 20px monospace"; 
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle";
+        ctx.fillText("B", btc.x, btc.y + 1);
     }
 }
 
