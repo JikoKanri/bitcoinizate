@@ -1,4 +1,14 @@
-// GAME.JS - PARTE A: CONSTANTES, CONFIGURACIÓN DE ENGINE E INPUTS
+// GAME.JS - PARTE 1 DE 3: VARIABLES BASE Y ESTADOS DEL MOTOR
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const container = document.getElementById("game-container");
+const scoreDisplay = document.getElementById("score-display");
+const statusDisplay = document.getElementById("status-display");
+const coldStorageDisplay = document.getElementById("cold-storage-display");
+const menuOverlay = document.getElementById("menu-overlay");
+const startTrigger = document.getElementById("start-trigger");
+const versionDisplay = document.getElementById("version-display");
+
 let gameState = "MENU";
 let score = 0;
 let highscore = 0;
@@ -21,7 +31,7 @@ let animatedWidthWidth = 65;
 let targetLineY = 300;
 let currentLineY = 300;
 let chartOffset = 0;
-
+// GAME.JS - PARTE 2 DE 3: CAPTURA DE EVENTOS E INICIO DE PARTIDA
 function resetGame() {
     btc.y = 250;
     btc.velocity = 0;
@@ -68,7 +78,7 @@ function gameOver() {
 
 function triggerRescue() {
     coldStorageLives--;
-    coldStorageDisplay.innerText = "COLD STORAGE: " + coldStorageLives;
+    coldStorageDisplay.innerText = "COOLD STORAGE: " + coldStorageLives;
     invulnerableTimer = 90;
     btc.y = 300;
     btc.velocity = 0;
@@ -90,38 +100,38 @@ function triggerAction(e) {
     else if (gameState === "PLAYING") jump();
 }
 
+// ASENTAMIENTO DE DISPARADORES DE CLIC UNIFICADOS ABAJO DE LAS VARIABLES
 startTrigger.addEventListener("click", triggerAction);
 startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
 
 window.addEventListener("keydown", (e) => {
     if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || e.key === "w" || e.key === "W") {
         e.preventDefault();
-        triggerAction();
+        if (gameState === "PLAYING") jump();
     }
 }, { capture: true });
 
-container.addEventListener("touchstart", (e) => { e.preventDefault(); triggerAction(); }, { passive: false });
-container.addEventListener("mousedown", (e) => { e.preventDefault(); triggerAction(); });
-// GAME.JS - PARTE B: CALCULO DE MAPA GRÁFICO Y COLISIÓN DE PODERES
+container.addEventListener("touchstart", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); }, { passive: false });
+container.addEventListener("mousedown", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); });
+// GAME.JS - PARTE 3 DE 3: LOGÍCA DE ACTUALIZACIÓN, DETECCIÓN DE VELAS Y LOOP
 function update() {
     if (gameState === "PLAYING") {
         let currentSpeed = baseSpeed;
         chartOffset += currentSpeed * 0.4;
         if (invulnerableTimer > 0) invulnerableTimer--;
 
-        // --- SISTEMA DE ACUMULACIÓN DE TIEMPO Y FONDOS ---
         let statusText = "";
         if (activePower === "BULL") {
             currentSpeed = baseSpeed * 1.45;
             document.body.className = "bull-mode-global";
-            targetLineY = 120; // Impulsa el chart al techo
+            targetLineY = 120;
             statusText += "BULL RUN\n" + Math.ceil(powerTimer / 60) + "s ";
             powerTimer--;
             if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
         } else if (activePower === "BEAR") {
             currentSpeed = baseSpeed * 1.45;
             document.body.className = "bear-mode-global";
-            targetLineY = 480; // Tira el chart al suelo
+            targetLineY = 480;
             statusText += "BEAR CRASH\n" + Math.ceil(powerTimer / 60) + "s ";
             powerTimer--;
             if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
@@ -162,24 +172,20 @@ function update() {
                 if (rand > 0.20 && rand < 0.40) itemType = "LASER";
                 if (rand >= 0.40 && rand < 0.60) itemType = "BEAR";
                 if (rand >= 0.60 && rand < 0.85) itemType = "COLD";
-                if (rand >= 0.85) itemType = "SWAN"; // Evento raro Cisne Negro
+                if (rand >= 0.85) itemType = "SWAN";
 
                 items.push({ x: canvas.width + 100, y: topHeight + 80, type: itemType, radius: itemType === "SWAN" ? 28 : 14 });
             }
         }
 
-        // Sistema de colisiones de ítems
         for (let j = items.length - 1; j >= 0; j--) {
             items[j].x -= currentSpeed;
             if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
-                
-                // IMPACTO DEL BLACK SWAN (CISNE NEGRO)
                 if (items[j].type === "SWAN") {
                     playExplosionTone();
                     if (activePower === "BULL") { activePower = "NONE"; document.body.className = ""; targetLineY = 300; }
-                    laserActive = false; // Corta todos los efectos positivos
+                    laserActive = false;
                     speakRandomSwan();
-                    
                     if (coldStorageLives > 0) {
                         coldStorageLives = 0;
                         coldStorageDisplay.innerText = "COLD STORAGE: 0";
@@ -197,7 +203,7 @@ function update() {
                     speakDaftPunk("Cold storage secured!");
                 } else {
                     if (activePower === items[j].type) {
-                        powerTimer += 360; // REGLA SUMATORIA: Acumula tiempo en lugar de pisar
+                        powerTimer += 360;
                         if (activePower === "BULL") speakDaftPunk("More green! Bull run extended!", true);
                     } else {
                         if (activePower === "BEAR" && items[j].type === "BULL") {
@@ -215,7 +221,6 @@ function update() {
             if (items[j].x < -35) items.splice(j, 1);
         }
 
-        // Colisión con Velas de Mercado (Candles)
         for (let i = pipes.length - 1; i >= 0; i--) {
             pipes[i].x -= currentSpeed;
             if (btc.x + btc.radius > pipes[i].x && btc.x - btc.radius < pipes[i].x + animatedWidthWidth && (btc.y - btc.radius < pipes[i].top || btc.y + btc.radius > canvas.height - pipes[i].bottom)) {
@@ -239,11 +244,10 @@ function update() {
         }
     }
 }
-// GAME.JS - PARTE C: DIBUJADO DE MECHAS DE FONDO Y BUCLE PRINCIPAL
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // --- CHART DE FONDO INTERACTIVO NEÓN ---
     ctx.beginPath();
     ctx.strokeStyle = "rgba(242, 169, 0, 0.15)";
     ctx.lineWidth = 3;
@@ -260,7 +264,6 @@ function draw() {
     for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
     for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
 
-    // Render de Velas con sus MECHAS DECORATIVAS (WICKS) sin daño físico
     let isBlinkingRed = (activePower === "BULL" && powerTimer < 120 && Math.floor(powerTimer / 10) % 2 === 0);
     pipes.forEach(p => {
         ctx.fillStyle = isBlinkingRed ? "#FF3333" : ((activePower === "BULL") ? "#00FF66" : "#FF3333");
@@ -272,7 +275,6 @@ function draw() {
         ctx.strokeRect(p.x, 0, animatedWidthWidth, p.top);
         ctx.strokeRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
 
-        // --- MECHAS SIN COLISIÓN (DECORATIVAS) ---
         ctx.beginPath();
         ctx.strokeStyle = "rgba(255,255,255,0.4)";
         ctx.lineWidth = 2;
@@ -282,7 +284,6 @@ function draw() {
         ctx.stroke();
     });
 
-    // Ítems arcade temáticos
     items.forEach(it => {
         ctx.beginPath();
         ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
@@ -304,7 +305,6 @@ function draw() {
         ctx.fillText(sym, it.x, it.y);
     });
 
-    // Moneda Bitcoin (Con parpadeo por rescate)
     if (invulnerableTimer === 0 || Math.floor(invulnerableTimer / 4) % 2 === 0) {
         ctx.beginPath();
         ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2);
@@ -329,4 +329,3 @@ function loop() {
 }
 
 loop();
-
