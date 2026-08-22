@@ -1,283 +1,103 @@
-<!-- PARTE 1 DE 3: ESTRUCTURA HTML Y ESTILOS CSS DINÁMICOS -->
+<!-- INDEX.HTML V3.9 - INFRAESTRUCTURA INTEGRAL CON ASSETS LOCALES -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flappy Bitcoin | Bitcoinizate</title>
-    <style>
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            -webkit-tap-highlight-color: rgba(0,0,0,0); 
-        }
-        body {
-            background-color: #0d0d0d;
-            color: #fff;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-            touch-action: none;
-            user-select: none;
-        }
-        #game-container {
-            position: relative;
-            width: 100vw;
-            max-width: 400px;
-            height: 75vh;
-            max-height: 600px;
-            border: 4px solid #F2A900;
-            background: #111;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(242, 169, 0, 0.4);
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(#0b0b1a, #111122);
-            transform: translateZ(0);
-        }
-        /* --- FILTROS DE MERCADO MODIFICADOS --- */
-        .bear-mode {
-            animation: screenShake 0.15s infinite;
-            filter: cubic-bezier(0.1, 0.7, 1.0, 0.1) hue-rotate(-50deg) contrast(170%) saturate(200%);
-            border-color: #FF3333 !important;
-            box-shadow: 0 0 30px rgba(255, 51, 51, 0.6) !important;
-        }
-        .bull-mode {
-            filter: hue-rotate(90deg) contrast(150%) saturate(180%);
-            border-color: #00FF66 !important;
-            box-shadow: 0 0 30px rgba(0, 255, 102, 0.6) !important;
-        }
-<!-- PARTE 2 DE 3: INTERFAZ ARCADE Y SECUENCIADOR MUSICAL COMPLETO -->
-        .ui-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            pointer-events: none;
-            z-index: 5;
-            letter-spacing: 1px;
-        }
-        #score-display { top: 20px; font-size: 1.4rem; color: #00FF66; text-shadow: 2px 2px #000; }
-        #status-display { top: 55px; font-size: 0.9rem; text-shadow: 1px 1px #000; }
-        #menu-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 11, 26, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            padding: 20px;
-        }
-        #menu-text { font-size: 1.1rem; line-height: 1.8; color: #F2A900; text-align: center; text-shadow: 2px 2px #000; margin-bottom: 30px; }
-        .btn-start {
-            background: #00FF66; color: #000; border: none; padding: 15px 30px;
-            font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #00aa44;
-        }
-        #version-display { position: absolute; bottom: 15px; right: 15px; font-size: 0.95rem; color: #F2A900; text-align: right; z-index: 12; pointer-events: none; text-shadow: 1px 1px #000; }
-        .btn-back { margin-top: 20px; padding: 12px 24px; background: #1A1A1A; color: #F2A900; border: 3px solid #F2A900; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; text-decoration: none; cursor: pointer; }
-        .btn-back:hover { background: #F2A900; color: #000; }
-        @keyframes screenShake {
-            0% { transform: translate(2px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(0px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(2px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(2px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-    </style>
+    <title>Choppy Bitcoin | Bitcoinizate</title>
+    <!-- Carga interna de la librería desde tu propio hosting en Vercel -->
+    <script src="supabase-lib.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div id="game-container">
-        <div id="score-display" class="ui-text">SCORE: 0</div>
-        <div id="status-display" class="ui-text"></div>
-        <div id="menu-overlay">
-            <div id="menu-text">FLAPPY BITCOIN<br><br><span style="color:#FFF; font-size:0.85rem;">SURVIVE THE MARKET</span></div>
-            <button class="btn-start" id="start-trigger">START GAME</button>
+        <!-- BARRA SUPERIOR DE SESIÓN -->
+        <div id="auth-bar">
+            <button id="btn-show-auth" class="btn-auth-nav">[ LOGIN / SIGN UP ]</button>
+            <span id="user-profile-tag" style="display: none; color: #33CCFF; cursor: pointer;"></span>
         </div>
-        <div id="version-display">v1.6.5-stable</div>
+
+        <!-- MARCADORES HUD -->
+        <div id="wallet-hud" style="position: absolute; width: 100%; display: flex; flex-direction: column; align-items: center; top: 35px; z-index: 6; font-size: 0.95rem; line-height: 1.4; text-shadow: 2px 2px #000; pointer-events: none;">
+            <div id="usd-display" style="color: #00FF66;">CASH: $1000.00 USD</div>
+            <div id="btc-display" style="color: #F2A900;">HOLD: 0.00000000 BTC</div>
+        </div>
+        
+        <div id="status-display" class="ui-text"></div>
+        <div id="cold-storage-display" class="ui-text" style="top: 95px; font-size: 0.85rem; color: #00CCFF; text-shadow: 1px 1px #000;">COLD STORAGE: 0</div>
+        
+        <div id="price-ticker" class="ui-text-ticker">PRICE: $25000</div>
+
+        <div id="mobile-trade-controls">
+            <button class="btn-trade buy" id="btn-buy-mobile">BUY (B)</button>
+            <button class="btn-trade sell" id="btn-sell-mobile">SELL (S)</button>
+        </div>
+        
+        <div id="menu-overlay">
+            <div id="menu-text">
+                CHOPPY BITCOIN<br>
+                <span style="color:#FFF; font-size:0.75rem;">GLOBAL LEADERBOARD</span>
+                <pre id="leaderboard-box" style="font-family: monospace; font-size: 0.8rem; color: #00FF66; margin: 15px 0; text-align: left; width: 100%; min-height: 90px; background: rgba(0,0,0,0.5); padding: 8px; border: 1px dashed #F2A900; white-space: pre-wrap;"></pre>
+            </div>
+            <button class="btn-start" id="start-trigger">LOGIN TO TRADE</button>
+        </div>
+
+        <div id="version-display">v2.0.0-cloud</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
+
+    <!-- MODAL FLOTANTE DE INGRESO -->
+    <div id="auth-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div id="modal-auth-title">TRADER SIGN IN</div>
+            <input type="text" id="arcade-honeypot" style="display:none;" tabindex="-1" autocomplete="off">
+            
+            <div class="input-group">
+                <label>EMAIL:</label>
+                <input type="email" id="auth-email" placeholder="email@domain.com">
+            </div>
+            <div class="input-group">
+                <label>PASSWORD:</label>
+                <input type="password" id="auth-password" placeholder="******">
+            </div>
+            <div class="input-group" id="group-alias" style="display: none;">
+                <label>TRADER ALIAS:</label>
+                <input type="text" id="auth-username" placeholder="Satoshi77" maxlength="12">
+            </div>
+            <div class="modal-buttons">
+                <button id="btn-submit-auth" class="btn-modal-action">LOGIN</button>
+                <button id="btn-toggle-auth" class="btn-modal-secondary">NEED ACCOUNT?</button>
+                <button id="btn-close-auth" class="btn-modal-secondary">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIGURACIÓN PERFIL PRIVADO -->
+    <div id="profile-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-title" style="color: #33CCFF;">MY TRADER PROFILE</div>
+            <div id="profile-score-info" style="font-size: 0.85rem; margin-bottom: 15px; color: #00FF66;">HIGH SCORE: 0.00000000 BTC</div>
+            <div class="input-group">
+                <label>ON-CHAIN ADDRESS:</label>
+                <input type="text" id="profile-btc-addr" placeholder="bc1...">
+            </div>
+            <div class="input-group">
+                <label>LIGHTNING ADDRESS:</label>
+                <input type="text" id="profile-ln-addr" placeholder="alias@wallet.com">
+            </div>
+            <div class="modal-buttons">
+                <button id="btn-save-profile" class="btn-modal-action" style="background: #33CCFF;">UPDATE ADDR</button>
+                <button id="btn-logout" class="btn-modal-secondary" style="color: #FF3333;">LOGOUT</button>
+                <button id="btn-close-profile" class="btn-modal-secondary">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const container = document.getElementById("game-container");
-        const scoreDisplay = document.getElementById("score-display");
-        const statusDisplay = document.getElementById("status-display");
-        const menuOverlay = document.getElementById("menu-overlay");
-        const startTrigger = document.getElementById("start-trigger");
-        const versionDisplay = document.getElementById("version-display");
 
-        let audioCtx = null;
-        let musicInterval = null;
-        let musicStep = 0;
-
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        function playTone(freq, type, duration, vol = 0.08) {
-            if (!audioCtx) return;
-            try {
-                let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
-                osc.type = type; osc.frequency.value = freq;
-                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + duration);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + duration);
-            } catch(e) {}
-        }
-
-        function startMusicSequencer() {
-            if (musicInterval) clearInterval(musicInterval);
-            musicInterval = setInterval(() => {
-                if (gameState !== "PLAYING") return;
-                
-                // SE CORRIGIÓ EL ERROR USANDO CONSTRUCTORES NATIVOS SIN CORCHETES
-                if (activePower === "BEAR") {
-                    let bearNotes = new Array(110, 130, 146, 130, 110, 98, 87, 98); 
-                    playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.05);
-                } else if (activePower === "BULL") {
-                    let bullNotes = new Array(261, 329, 392, 523, 392, 523, 659, 783); 
-                    playTone(bullNotes[musicStep % 8], "square", 0.12, 0.04);
-                } else {
-                    let normalNotes = new Array(146, 220, 293, 220, 164, 246, 329, 246); 
-                    playTone(normalNotes[musicStep % 8], "sine", 0.18, 0.05);
-                }
-                musicStep++;
-            }, 220); 
-        }
-
-        let gameState = "MENU"; let score = 0; let highscore = 0;
-        let activePower = "NONE"; let laserActive = false; let powerTimer = 0; let laserTimer = 0;
-        const btc = { x: 60, y: 250, radius: 18, velocity: 0, gravity: 0.38, jump: -6.8 };
-        let pipes = []; let items = []; const pipeWidth = 65; let pipeGap = 160; let baseSpeed = 2.6; let pipeTimer = 0;
-        let animatedWidthWidth = 65; 
-// PARTE 3 DE 3: LOGÍCA DE COLISIONES, INMUNIDAD CON VELOCIDAD Y CIERRE
-        function resetGame() {
-            btc.y = 250; btc.velocity = 0; pipes = []; items = []; score = 0; pipeTimer = 0;
-            activePower = "NONE"; laserActive = false; powerTimer = 0; laserTimer = 0;
-            container.className = ""; scoreDisplay.innerText = "SCORE: 0"; statusDisplay.innerText = "";
-        }
-        function startGame() { initAudio(); resetGame(); menuOverlay.style.display = "none"; gameState = "PLAYING"; playTone(440, "sine", 0.1); startMusicSequencer(); }
-        function gameOver() {
-            gameState = "GAMEOVER"; if(musicInterval) clearInterval(musicInterval); playTone(120, "sawtooth", 0.5); if(score > highscore) highscore = score;
-            document.getElementById("menu-text").innerHTML = "REKT!<br><br><span style='color:#FFF; font-size:0.9rem;'>LIQUIDATED</span><br><br>SCORE: " + score + "<br>TOP SCORE: " + highscore;
-            startTrigger.innerText = "RESTART"; menuOverlay.style.display = "flex"; container.className = "";
-        }
-        function jump() { if (gameState === "PLAYING") { btc.velocity = btc.jump; playTone(420, "square", 0.07); } }
-        function triggerAction(e) { if (e) { e.preventDefault(); e.stopPropagation(); } if (gameState === "MENU" || gameState === "GAMEOVER") startGame(); else if (gameState === "PLAYING") jump(); }
-
-        startTrigger.addEventListener("click", triggerAction); startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
-        window.addEventListener("keydown", (e) => { if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || e.key === "w" || e.key === "W") { e.preventDefault(); jump(); } }, { capture: true });
-        container.addEventListener("touchstart", (e) => { e.preventDefault(); jump(); }, { passive: false }); container.addEventListener("mousedown", (e) => { e.preventDefault(); jump(); });
-
-        function update() {
-            if (gameState === "PLAYING") {
-                let currentSpeed = baseSpeed;
-                
-                // --- PROCESAMIENTO DE COMBOS Y COEXISTENCIA ---
-                let statusText = "";
-                if (activePower === "BULL") { currentSpeed = baseSpeed * 1.45; container.className = "bull-mode"; statusText += "BULL RUN(" + Math.ceil(powerTimer/60) + "s) "; powerTimer--; if(powerTimer<=0) { activePower="NONE"; container.className=""; } }
-                else if (activePower === "BEAR") { currentSpeed = baseSpeed * 1.45; container.className = "bear-mode"; statusText += "BEAR CRASH(" + Math.ceil(powerTimer/60) + "s) "; powerTimer--; if(powerTimer<=0) { activePower="NONE"; container.className=""; } }
-                
-                if (laserActive) { statusText += "👁️LASER(" + Math.ceil(laserTimer/60) + "s)"; laserTimer--; if(laserTimer<=0) laserActive = false; }
-                statusDisplay.innerText = statusText;
-                if (activePower === "BULL") statusDisplay.style.color = "#00FF66"; else if (activePower === "BEAR") statusDisplay.style.color = "#FF3333"; else statusDisplay.style.color = "#33CCFF";
-
-                // --- ANIMACIÓN INTERPOLADA SUAVE DE LASER EYES ---
-                let targetWidth = laserActive ? 22 : 65; 
-                animatedWidthWidth += (targetWidth - animatedWidthWidth) * 0.08;
-
-                btc.velocity += btc.gravity; btc.y += btc.velocity;
-                if (btc.y + btc.radius > canvas.height || btc.y - btc.radius < 0) gameOver();
-
-                pipeTimer++;
-                if (pipeTimer % 95 === 0) {
-                    let topHeight = Math.floor(Math.random() * ((canvas.height - 280) - 60 + 1)) + 60;
-                    pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - (topHeight + pipeGap), passed: false });
-                    if (Math.random() < 0.45) {
-                        let rand = Math.random(); let itemType = (rand < 0.33) ? "BULL" : (rand < 0.66 ? "LASER" : "BEAR");
-                        items.push({ x: canvas.width + 100, y: topHeight + 80, type: itemType, radius: 14 });
-                    }
-                }
-
-                for (let j = items.length - 1; j >= 0; j--) {
-                    items[j].x -= currentSpeed;
-                    if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
-                        if (items[j].type === "LASER") { laserActive = true; laserTimer = 360; playTone(480, "triangle", 0.25); }
-                        else { 
-                            activePower = items[j].type; powerTimer = 360; 
-                            if (items[j].type === "BULL") { playTone(550, "sine", 0.15); container.className = "bull-mode"; }
-                            else { playTone(160, "sawtooth", 0.45); container.className = "bear-mode"; }
-                        }
-                        items.splice(j, 1); continue;
-                    }
-                    if (items[j].x < -20) items.splice(j, 1);
-                }
-
-                for (let i = pipes.length - 1; i >= 0; i--) {
-                    pipes[i].x -= currentSpeed;
-                    
-                    if (btc.x + btc.radius > pipes[i].x && btc.x - btc.radius < pipes[i].x + animatedWidthWidth && (btc.y - btc.radius < pipes[i].top || btc.y + btc.radius > canvas.height - pipes[i].bottom)) {
-                        if (activePower === "BULL") {
-                            pipes.splice(i, 1);
-                            score += 2; scoreDisplay.innerText = "SCORE: " + score;
-                            playTone(720, "sine", 0.08, 0.1); continue;
-                        } else { gameOver(); }
-                    }
-                    if (pipes[i] && !pipes[i].passed && pipes[i].x + animatedWidthWidth < btc.x) {
-                        pipes[i].passed = true; score += 1; scoreDisplay.innerText = "SCORE: " + score; playTone(880, "sine", 0.04);
-                    }
-                    if (pipes[i] && pipes[i].x + 65 < 0) pipes.splice(i, 1);
-                }
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = (activePower === "BEAR") ? "#351212" : (activePower === "BULL" ? "#123512" : "#121226"); ctx.lineWidth = 1;
-            for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
-            for(let j=0; j<canvas.height; j+=40) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }
-
-            pipes.forEach(p => {
-                ctx.fillStyle = (activePower === "BULL") ? "#00FF66" : "#FF3333";
-                ctx.fillRect(p.x, 0, animatedWidthWidth, p.top); ctx.fillRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
-                ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;
-                ctx.strokeRect(p.x, 0, animatedWidthWidth, p.top); ctx.strokeRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
-            });
-
-            items.forEach(it => {
-                ctx.beginPath(); ctx.arc(it.x, it.y, it.radius, 0, Math.PI*2);
-                if (it.type === "BULL") ctx.fillStyle = "#00FF66"; if (it.type === "LASER") ctx.fillStyle = "#33CCFF"; if (it.type === "BEAR") ctx.fillStyle = "#FF3333";
-                ctx.fill(); ctx.strokeStyle = "#FFF"; ctx.lineWidth = 2; ctx.stroke();
-                ctx.fillStyle = "#000"; ctx.font = "bold 14px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-                let sym = it.type === "BULL" ? "▲" : it.type === "LASER" ? "🕶" : "▼"; ctx.fillText(sym, it.x, it.y);
-            });
-
-            ctx.beginPath(); ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2); ctx.fillStyle = "#F2A900"; ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 20px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.fillText("B", btc.x, btc.y + 1);
-        }
-
-        function loop() { update(); draw(); requestAnimationFrame(loop); }
-        loop();
-    </script>
+    <script src="audio.js"></script>
+    <script src="auth.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>

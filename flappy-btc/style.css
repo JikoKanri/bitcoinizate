@@ -1,0 +1,273 @@
+/* STYLE.CSS V2.3 - CORRECCIÓN DE CAPAS (Z-INDEX) PARA MODALES CLOUD */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    -webkit-tap-highlight-color: rgba(0,0,0,0); 
+}
+
+body {
+    background-color: #0d0d0d;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    transition: filter 0.3s ease, background-color 0.3s ease;
+}
+
+/* --- INTERFACES GLOBALES DE PANTALLA COMPLETA --- */
+body.bear-mode-global {
+    animation: screenShake 0.15s infinite;
+    filter: hue-rotate(-50deg) contrast(170%) saturate(200%);
+    background-color: #200505;
+}
+
+body.bull-mode-global {
+    filter: hue-rotate(90deg) contrast(150%) saturate(180%);
+    background-color: #052010;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    max-width: 400px;
+    height: 75vh;
+    max-height: 600px;
+    border: 4px solid #F2A900;
+    background: #111;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(242, 169, 0, 0.4);
+    transition: border-color 0.3s ease;
+}
+
+body.bear-mode-global #game-container { border-color: #FF3333 !important; }
+body.bull-mode-global #game-container { border-color: #00FF66 !important; }
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#0b0b1a, #111122);
+    transform: translateZ(0);
+}
+
+/* --- BARRA SUPERIOR DE SESIÓN DE USUARIOS --- */
+#auth-bar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    z-index: 9;
+    font-size: 0.8rem;
+}
+.btn-auth-nav {
+    background: none;
+    border: none;
+    color: #F2A900;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-auth-nav:hover { color: #FFF; }
+
+/* --- DISEÑO DE LOS MARCADORES DEL HUD --- */
+.ui-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+    z-index: 5;
+    letter-spacing: 1px;
+}
+
+.ui-text-hud {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 15px;
+    z-index: 6;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-shadow: 2px 2px #000;
+    pointer-events: none;
+}
+
+#status-display { 
+    top: 25%; 
+    font-size: 2.2rem; 
+    font-weight: 900;
+    opacity: 0.18; 
+    text-shadow: 1px 1px #000;
+    line-height: 1.4;
+}
+
+.ui-text-ticker {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    font-size: 1.1rem;
+    color: #F2A900;
+    text-shadow: 2px 2px #000;
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* --- CONTROLES DE TRADING PARA MÓVILES --- */
+#mobile-trade-controls {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    z-index: 8;
+}
+
+.btn-trade {
+    padding: 10px 14px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 2px solid #FFF;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.btn-trade.buy { background: #00FF66; color: #000; border-color: #00aa44; }
+.btn-trade.sell { background: #FF3333; color: #fff; border-color: #aa1111; }
+.btn-trade:active { transform: translateY(2px); box-shadow: none; }
+
+/* --- CAPA DEL MENÚ ARCADE BASE --- */
+#menu-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(11, 11, 26, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10; /* Prioridad intermedia */
+    padding: 20px;
+}
+
+#menu-text { 
+    font-size: 1.1rem; 
+    line-height: 1.6; 
+    color: #F2A900; 
+    text-align: center; 
+    text-shadow: 2px 2px #000; 
+    margin-bottom: 20px; 
+    width: 100%;
+}
+
+.btn-start {
+    background: #00FF66; color: #000; border: none; padding: 15px 30px;
+    font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #00aa44;
+    z-index: 12;
+}
+
+/* --- CAPA MAESTRA DE MODALES (Z-INDEX MÁXIMO) --- */
+.modal-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50; /* ¡Subido a 50 para pasar al frente absoluto por encima de todo! */
+}
+.modal-content {
+    background: #111;
+    border: 4px solid #F2A900;
+    padding: 25px;
+    width: 85%;
+    max-width: 320px;
+    text-align: left;
+    box-shadow: 0 0 20px rgba(242, 169, 0, 0.4);
+}
+#modal-auth-title, .modal-title {
+    font-size: 1.2rem;
+    color: #F2A900;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px #000;
+}
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.input-group label {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+.input-group input {
+    background: #222;
+    border: 2px solid #444;
+    color: #fff;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+}
+.input-group input:focus {
+    border-color: #F2A900;
+    outline: none;
+}
+.modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+.btn-modal-action {
+    background: #00FF66;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-modal-secondary {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-modal-secondary:hover { color: #fff; }
+
+#version-display { 
+    position: absolute; bottom: 15px; right: 15px; font-size: 0.95rem; color: #444; text-align: right; z-index: 4; pointer-events: none; 
+}
+
+.btn-back { 
+    margin-top: 20px; padding: 12px 24px; background: #1A1A1A; color: #F2A900; border: 3px solid #F2A900; 
+    font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; text-decoration: none; cursor: pointer; 
+}
+.btn-back:hover { background: #F2A900; color: #000; }
+
+@keyframes screenShake {
+    0% { transform: translate(2px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(0px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(2px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(2px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
