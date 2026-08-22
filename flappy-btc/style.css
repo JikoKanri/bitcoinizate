@@ -1,3 +1,4 @@
+/* STYLE.CSS - CONFIGURACIÓN VISUAL DEL SIMULADOR DE TRADING */
 * { 
     box-sizing: border-box; 
     margin: 0; 
@@ -21,7 +22,7 @@ body {
     transition: filter 0.3s ease, background-color 0.3s ease;
 }
 
-/* --- INMERSIÓN GLOBAL PARA PANTALLA COMPLETA --- */
+/* --- INTERFACES GLOBALES DE PANTALLA COMPLETA --- */
 body.bear-mode-global {
     animation: screenShake 0.15s infinite;
     filter: hue-rotate(-50deg) contrast(170%) saturate(200%);
@@ -57,6 +58,7 @@ canvas {
     transform: translateZ(0);
 }
 
+/* --- DISEÑO DE LOS MARCADORES DEL HUD --- */
 .ui-text {
     position: absolute;
     width: 100%;
@@ -66,11 +68,18 @@ canvas {
     letter-spacing: 1px;
 }
 
-#score-display { 
-    top: 20px; 
-    font-size: 1.4rem; 
-    color: #00FF66; 
-    text-shadow: 2px 2px #000; 
+.ui-text-hud {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 15px;
+    z-index: 6;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-shadow: 2px 2px #000;
+    pointer-events: none;
 }
 
 #status-display { 
@@ -82,12 +91,41 @@ canvas {
     line-height: 1.4;
 }
 
-#cold-storage-display {
-    top: 60px;
-    font-size: 0.85rem;
-    color: #00CCFF;
-    text-shadow: 1px 1px #000;
+.ui-text-ticker {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    font-size: 1.1rem;
+    color: #F2A900;
+    text-shadow: 2px 2px #000;
+    z-index: 6;
+    pointer-events: none;
 }
+
+/* --- CONTROLES DE TRADING PARA MÓVILES --- */
+#mobile-trade-controls {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    z-index: 8;
+}
+
+.btn-trade {
+    padding: 10px 14px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 2px solid #FFF;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.btn-trade.buy { background: #00FF66; color: #000; border-color: #00aa44; }
+.btn-trade.sell { background: #FF3333; color: #fff; border-color: #aa1111; }
+.btn-trade:active { transform: translateY(2px); box-shadow: none; }
 
 #menu-overlay {
     position: absolute;
@@ -111,41 +149,21 @@ canvas {
 }
 
 .btn-start {
-    background: #00FF66; 
-    color: #000; 
-    border: none; 
-    padding: 15px 30px;
-    font-family: 'Courier New', Courier, monospace; 
-    font-size: 1.1rem; 
-    font-weight: bold; 
-    cursor: pointer; 
-    box-shadow: 0 4px 0 #00aa44;
+    background: #00FF66; color: #000; border: none; padding: 15px 30px;
+    font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #00aa44;
 }
 
 #version-display { 
-    position: absolute; 
-    bottom: 15px; 
-    right: 15px; 
-    font-size: 0.95rem; 
-    color: #F2A900; 
-    text-align: right; 
-    z-index: 12; 
-    pointer-events: none; 
-    text-shadow: 1px 1px #000; 
+    position: absolute; bottom: 15px; right: 15px; font-size: 0.95rem; color: #444; text-align: right; z-index: 4; pointer-events: none; 
 }
+
+body.bull-mode-global #version-display { color: rgba(0, 255, 102, 0.2); }
+body.bear-mode-global #version-display { color: rgba(255, 51, 51, 0.2); }
 
 .btn-back { 
-    margin-top: 20px; 
-    padding: 12px 24px; 
-    background: #1A1A1A; 
-    color: #F2A900; 
-    border: 3px solid #F2A900; 
-    font-family: 'Courier New', Courier, monospace; 
-    font-size: 0.9rem; 
-    text-decoration: none; 
-    cursor: pointer; 
+    margin-top: 20px; padding: 12px 24px; background: #1A1A1A; color: #F2A900; border: 3px solid #F2A900; 
+    font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; text-decoration: none; cursor: pointer; 
 }
-
 .btn-back:hover { background: #F2A900; color: #000; }
 
 @keyframes screenShake {
