@@ -3,6 +3,7 @@ let audioCtx = null;
 let musicInterval = null;
 let musicStep = 0;
 
+// Lista de frases Daft Punk aleatorias para el Cisne Negro
 const blackSwanPhrases = new Array(
     "Black swan!", "Cold storage lost!", "oh oh, Funds not SAFU!",
     "Coldcard randomness!", "China ban!", "in before oceans evaporation!", "You got FTX'd!"
@@ -71,7 +72,6 @@ function stopMusic() {
 function startMusicSequencer(getMarketState, getGameState) {
     if (musicInterval) clearInterval(musicInterval);
     musicInterval = setInterval(() => {
-        // Validación de protección: si no está jugando, el bucle musical descansa en silencio
         if (getGameState() !== "PLAYING") return;
         
         let currentPower = getMarketState();
