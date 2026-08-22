@@ -1,21 +1,19 @@
-// AUTH.JS - CABECERA RECTIFICADA SIN DEPENDENCIAS EXTERNAS DE RED
-const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; // <-- Pega tu API URL real acá
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; // <-- Tu anon key real acá
-
+// AUTH.JS - CABECERA SIMPLIFICADA V4.0 CON VINCULACIÓN MAESTRA DE HERENCIA
 let supabase = null;
 
 try {
     if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("¡Éxito! Motor de Supabase inicializado y conectado a la nube.");
+        // Ejecuta el constructor usando los datos hereditarios fijos sin duplicar URLs
+        supabase = window.supabase.createClient();
+        console.log("¡Éxito! Canal cloud unificado de forma exitosa.");
     } else {
-        console.error("Error crítico: El objeto global de Supabase no está presente.");
+        console.error("Error crítico: Inicializador proxy ausente.");
     }
 } catch (err) {
     console.error("Falló la inicialización del cliente de Supabase:", err);
 }
 
-// DECLARACIÓN ÚNICA DE GLOBALES (Garantiza el balance de alcances)
+// DECLARACIÓN ÚNICA DE GLOBALES
 let currentUser = null;
 let currentProfile = null;
 let isSignUpMode = false;
