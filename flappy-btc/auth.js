@@ -1,29 +1,24 @@
-// AUTH.JS - CONFIGURACIÓN DE CONEXIÓN MAESTRA RECTIFICADA V3.8
-const SUPABASE_URL = "https://supabase.co"; // <-- REPLAZA POR TU URL REAL (LA DE CARACTERES RAROS)
-const SUPABASE_KEY = "PEGA_ACÁ_TU_ANON_KEY_GIGANTE_QUE_EMPIEZA_CON_eyJ"; // <-- TU ANON KEY REAL
+// AUTH.JS - PARTE 1 DE 2: CONEXIÓN CLOUD INDESTRUCTIBLE Y SESIONES
+const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; // <-- PEGA TU URL REAL DE CARACTERES RAROS ACÁ
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; // <-- PEGA TU CLAVE ANON REAL ACÁ
 
 let supabase = null;
 
-// Bloque de inicialización estándar nativo directo de la documentación oficial
 try {
-    // Si la librería se cargó mediante el script de unpkg, el constructor "createClient" vive acá:
     if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         console.log("¡Éxito! Motor de Supabase inicializado y conectado a la nube.");
     } else {
-        console.error("Error crítico: El objeto global de Supabase no está presente en la memoria del navegador.");
+        console.error("Error crítico: El objeto global de Supabase no está presente.");
     }
 } catch (err) {
     console.error("Falló la inicialización del cliente de Supabase:", err);
 }
 
-// DECLARACIÓN ÚNICA DE VARIABLES GLOBALES DE SESIÓN
+// --- DECLARACIÓN ÚNICA DE GLOBALES (SIN REPETIR ABAJO) ---
 let currentUser = null;
 let currentProfile = null;
-
-// DECLARACIÓN ÚNICA GLOBALES DE USUARIO (Sin repetir abajo)
-let currentUser = null;
-let currentProfile = null;
+let isSignUpMode = false;
 
 const authBar = document.getElementById("auth-bar");
 const btnShowAuth = document.getElementById("btn-show-auth");
@@ -43,8 +38,6 @@ const profileScoreInfo = document.getElementById("profile-score-info");
 const profileBtcAddr = document.getElementById("profile-btc-addr");
 const profileLnAddr = document.getElementById("profile-ln-addr");
 const btnSaveProfile = document.getElementById("btn-save-profile");
-
-let isSignUpMode = false;
 
 async function checkActiveSession() {
     try {
@@ -100,7 +93,7 @@ function updateAuthUI(profile) {
     }
     fetchGlobalLeaderboard();
 }
-// AUTH.JS - PARTE 2 DE 2: RESPUESTAS DE FORMULARIOS Y TABLA DE POSICIONES
+// AUTH.JS - PARTE 2 DE 2: FORMULARIOS, RANKING GLOBAL Y ACCIONES DE LOS BOTONES
 async function handleAuthSubmit() {
     if (arcadeHoneypot && arcadeHoneypot.value !== "") {
         if (authModal) authModal.style.display = "none";
@@ -219,6 +212,7 @@ function toggleAuthMode() {
     }
 }
 
+// --- CONEXIÓN DE ESCUCHAS DE CLIC DE LA INTERFAZ ---
 if (btnShowAuth) btnShowAuth.addEventListener("click", () => { if (authModal) authModal.style.display = "flex"; });
 const btnCloseAuth = document.getElementById("btn-close-auth");
 if (btnCloseAuth) btnCloseAuth.addEventListener("click", () => { if (authModal) authModal.style.display = "none"; });
@@ -252,4 +246,6 @@ if (btnLogout) {
     });
 }
 
+// Inicialización automática al cargar el archivo
 window.addEventListener("DOMContentLoaded", checkActiveSession);
+
