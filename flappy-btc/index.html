@@ -109,7 +109,7 @@
             <div id="menu-text">FLAPPY BITCOIN<br><br><span style="color:#FFF; font-size:0.85rem;">SURVIVE THE MARKET</span></div>
             <button class="btn-start" id="start-trigger">START GAME</button>
         </div>
-        <div id="version-display">v1.6.0-stable</div>
+        <div id="version-display">v1.6.5-stable</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
@@ -149,15 +149,15 @@
             musicInterval = setInterval(() => {
                 if (gameState !== "PLAYING") return;
                 
-                // LAS MATRICES AHORA TIENEN LOS VALORES NUMÉRICOS EXPUESTOS SIN RECORTES
+                // SE CORRIGIÓ EL ERROR USANDO CONSTRUCTORES NATIVOS SIN CORCHETES
                 if (activePower === "BEAR") {
-                    let bearNotes =; 
+                    let bearNotes = new Array(110, 130, 146, 130, 110, 98, 87, 98); 
                     playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.05);
                 } else if (activePower === "BULL") {
-                    let bullNotes =; 
+                    let bullNotes = new Array(261, 329, 392, 523, 392, 523, 659, 783); 
                     playTone(bullNotes[musicStep % 8], "square", 0.12, 0.04);
                 } else {
-                    let normalNotes =; 
+                    let normalNotes = new Array(146, 220, 293, 220, 164, 246, 329, 246); 
                     playTone(normalNotes[musicStep % 8], "sine", 0.18, 0.05);
                 }
                 musicStep++;
@@ -211,7 +211,7 @@
                 pipeTimer++;
                 if (pipeTimer % 95 === 0) {
                     let topHeight = Math.floor(Math.random() * ((canvas.height - 280) - 60 + 1)) + 60;
-                    pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - (topHeight + 160), passed: false });
+                    pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - (topHeight + pipeGap), passed: false });
                     if (Math.random() < 0.45) {
                         let rand = Math.random(); let itemType = (rand < 0.33) ? "BULL" : (rand < 0.66 ? "LASER" : "BEAR");
                         items.push({ x: canvas.width + 100, y: topHeight + 80, type: itemType, radius: 14 });
