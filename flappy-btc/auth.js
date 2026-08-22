@@ -77,3 +77,150 @@ function updateAuthUI(profile) {
     }
     fetchGlobalLeaderboard();
 }
+// AUTH.JS - PARTE 2 DE 2: EJECUCIÓN CLOUD Y RENDERIZADO DEL LEADERBOARD
+async function handleAuthSubmit() {
+    if (arcadeHoneypot.value !== "") {
+        authModal.style.display = "none";
+        return;
+    }
+    const email = authEmail.value.trim();
+    const password = authPassword.value.trim();
+    const username = authUsername.value.trim();
+
+    if (!email || !password) {
+        alert("Enter credentials.");
+        return;
+    }
+    try {
+        if (isSignUpMode) {
+            if (!username) { alert("Enter trader alias."); return; }
+            const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+            if (authError) throw authError;
+
+            if (authData.user) {
+                const { error: profError } = await supabase
+                    .from('profiles')
+                    .insert([{ id: authData.user.id, username: username, high_score: 0 }]);
+                if (profError) throw profError;
+                alert("Account created successfully!");
+                toggleAuthMode();
+            }
+        } else {
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+            if (authError) throw authError;
+            currentUser = authData.user;
+            await loadUserProfile();
+            authModal.style.display = "none";
+        }
+    } catch (e) {
+        alert(e.message || "Authentication failed.");
+    }
+}
+
+async function updateProfileAddresses() {
+    if (!currentUser) return;
+    const btcAddr = profileBtcAddr.value.trim();
+    const lnAddr = profileLnAddr.value.trim();
+    try {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ btc_address: btcAddr, ln_address: lnAddr })
+            .eq('id', currentUser.id);
+
+        if (error) throw error;
+        alert("Addresses securely updated!");
+        await loadUserProfile();
+        profileModal.style.display = "none";
+    } catch (e) {
+        alert("Update failed: " + e.message);
+    }
+}
+
+async function fetchGlobalLeaderboard() {
+    const leaderboardBox = document.getElementById("leaderboard-box");
+    if (!leaderboardBox) return;
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('username, high_score')
+            .order('high_score', { ascending: false })
+            .limit(5);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+            let rankText = "";
+            data.forEach((trader, index) => {
+                let scoreVal = parseFloat(trader.high_score) || 0;
+                rankText += `${index + 1}. ${trader.username.toUpperCase().padEnd(10, "-")} ${scoreVal.toFixed(8)} BTC\n`;
+            });
+            leaderboardBox.innerText = rankText;
+        } else {
+            leaderboardBox.innerText = "No records yet.\nStack sats now!";
+        }
+    } catch (e) {
+        leaderboardBox.innerText = "Error connecting to cloud ranking.";
+    }
+}
+
+async function submitNewHighScore(finalBTC) {
+    if (!currentUser || !currentProfile) return;
+    let newScore = parseFloat(finalBTC) || 0;
+    let oldScore = parseFloat(currentProfile.high_score) || 0;
+    if (newScore <= oldScore) return;
+
+    try {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ high_score: newScore })
+            .eq('id', currentUser.id);
+
+        if (error) throw error;
+        await loadUserProfile();
+    } catch (e) {
+        console.error("Failed to submit score:", e);
+    }
+}
+
+function toggleAuthMode() {
+    isSignUpMode = !isSignUpMode;
+    if (isSignUpMode) {
+        document.getElementById("modal-auth-title").innerText = "TRADER SIGN UP";
+        groupAlias.style.display = "block";
+        btnSubmitAuth.innerText = "SIGN UP";
+        btnToggleAuth.innerText = "HAVE ACCOUNT?";
+    } else {
+        document.getElementById("modal-auth-title").innerText = "TRADER SIGN IN";
+        groupAlias.style.display = "none";
+        btnSubmitAuth.innerText = "LOGIN";
+        btnToggleAuth.innerText = "NEED ACCOUNT?";
+    }
+}
+
+btnShowAuth.addEventListener("click", () => { authModal.style.display = "flex"; });
+document.getElementById("btn-close-auth").addEventListener("click", () => { authModal.style.display = "none"; });
+btnToggleAuth.addEventListener("click", toggleAuthMode);
+btnSubmitAuth.addEventListener("click", handleAuthSubmit);
+
+userProfileTag.addEventListener("click", () => {
+    if (currentProfile) {
+        let maxScore = parseFloat(currentProfile.high_score) || 0;
+        profileScoreInfo.innerText = `HIGH SCORE: ${maxScore.toFixed(8)} BTC`;
+        profileBtcAddr.value = currentProfile.btc_address || "";
+        profileLnAddr.value = currentProfile.ln_address || "";
+        profileModal.style.display = "flex";
+    }
+});
+
+document.getElementById("btn-close-profile").addEventListener("click", () => { profileModal.style.display = "none"; });
+btnSaveProfile.addEventListener("click", updateProfileAddresses);
+
+document.getElementById("btn-logout").addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    currentUser = null; currentProfile = null;
+    updateAuthUI(null);
+    profileModal.style.display = "none";
+    location.reload();
+});
+
+window.addEventListener("DOMContentLoaded", checkActiveSession);
+
