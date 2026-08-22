@@ -1,17 +1,16 @@
-<!-- INDEX.HTML V3.9 - ENLACE DIRECTO DE ALTA DISPONIBILIDAD PARA EL CLIENTE CLOUD -->
+<!-- INDEX.HTML V3.9 - INFRAESTRUCTURA INTEGRAL CON ASSETS LOCALES -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Choppy Bitcoin | Bitcoinizate</title>
-    <!-- Ruta exacta e independiente al constructor de Supabase en cdnjs (Cloudflare) -->
-    <script src="https://cloudflare.com"></script>
+    <!-- Carga interna de la librería desde tu propio hosting en Vercel -->
+    <script src="supabase-lib.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- CONTENEDOR PRINCIPAL DEL JUEGO ARCADE -->
     <div id="game-container">
         <!-- BARRA SUPERIOR DE SESIÓN -->
         <div id="auth-bar">
@@ -19,7 +18,7 @@
             <span id="user-profile-tag" style="display: none; color: #33CCFF; cursor: pointer;"></span>
         </div>
 
-        <!-- INDICADORES FINANCIEROS DEL TRADER (HUD) -->
+        <!-- MARCADORES HUD -->
         <div id="wallet-hud" style="position: absolute; width: 100%; display: flex; flex-direction: column; align-items: center; top: 35px; z-index: 6; font-size: 0.95rem; line-height: 1.4; text-shadow: 2px 2px #000; pointer-events: none;">
             <div id="usd-display" style="color: #00FF66;">CASH: $1000.00 USD</div>
             <div id="btc-display" style="color: #F2A900;">HOLD: 0.00000000 BTC</div>
@@ -30,13 +29,11 @@
         
         <div id="price-ticker" class="ui-text-ticker">PRICE: $25000</div>
 
-        <!-- BOTONES AUXILIARES DE TRADING PARA MÓVILES -->
         <div id="mobile-trade-controls">
             <button class="btn-trade buy" id="btn-buy-mobile">BUY (B)</button>
             <button class="btn-trade sell" id="btn-sell-mobile">SELL (S)</button>
         </div>
         
-        <!-- PANTALLA DE MENÚ ARCADE CON RANKING NEÓN -->
         <div id="menu-overlay">
             <div id="menu-text">
                 CHOPPY BITCOIN<br>
@@ -76,7 +73,7 @@
         </div>
     </div>
 
-    <!-- MODAL FLOTANTE DE CONFIGURACIÓN DEL PERFIL PRIVADO -->
+    <!-- MODAL CONFIGURACIÓN PERFIL PRIVADO -->
     <div id="profile-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-title" style="color: #33CCFF;">MY TRADER PROFILE</div>
@@ -99,7 +96,6 @@
 
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
 
-    <!-- INYECCIÓN ASÍNCRONA EN ESTRICTO ORDEN DE JERARQUÍA -->
     <script src="audio.js"></script>
     <script src="auth.js"></script>
     <script src="game.js"></script>
