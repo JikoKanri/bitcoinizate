@@ -1,4 +1,4 @@
-// GAME.JS - PARTE 1 DE 2: MOTOR FÍSICO ARCADE E INPUTS DE TRADING
+// GAME.JS - PARTE 1 DE 3: VARIABLES FINANCIERAS EN BTC Y ENTRADAS DE MOTOR
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const container = document.getElementById("game-container");
@@ -8,12 +8,14 @@ const menuOverlay = document.getElementById("menu-overlay");
 const startTrigger = document.getElementById("start-trigger");
 const versionDisplay = document.getElementById("version-display");
 
+// Selectores del HUD de trading
 const usdDisplay = document.getElementById("usd-display");
 const btcDisplay = document.getElementById("btc-display");
 const priceTicker = document.getElementById("price-ticker");
 const btnBuyMobile = document.getElementById("btn-buy-mobile");
 const btnSellMobile = document.getElementById("btn-sell-mobile");
 
+// Variables de Simulación Económica (Maximalista)
 let gameState = "MENU";
 let btcPrice = 25000;         
 let walletUSD = 1000.00;      
@@ -25,6 +27,7 @@ let laserTimer = 0;
 let coldStorageLives = 0;
 let invulnerableTimer = 0;
 
+// Estructura de físicas arcade
 const btc = { x: 60, y: 250, radius: 18, velocity: 0, gravity: 0.38, jump: -6.8 };
 let pipes = [];
 let items = [];
@@ -34,10 +37,11 @@ let baseSpeed = 2.6;
 let pipeTimer = 0;
 let animatedWidthWidth = 65;
 
+// Control visual de la estela neón
 let targetLineY = 300;
 let currentLineY = 300;
 let chartOffset = 0;
-
+// GAME.JS - PARTE 2 DE 3: TRADING ENGINE, COMPRA/VENTA Y LOGÍCA DE ENTRADAS
 function resetGame() {
     btc.y = 250;
     btc.velocity = 0;
@@ -67,7 +71,6 @@ function resetGame() {
 }
 
 function startGame() {
-    // Lee de forma segura el usuario logueado en auth.js sin duplicar variables
     if (typeof currentUser === "undefined" || !currentUser) {
         const authModal = document.getElementById("auth-modal");
         if (authModal) authModal.style.display = "flex";
@@ -89,8 +92,9 @@ function gameOver() {
     if (typeof speakDaftPunk === "function") speakDaftPunk("Rekt! You got liquidated.");
     
     if (typeof submitNewHighScore === "function") {
-        submitNewHighScore(walletBTC);
+        submitNewHighScore(walletBTC); 
     }
+
     document.getElementById("menu-text").innerHTML = "REKT!<br><br><span style='color:#FFF; font-size:0.9rem;'>LIQUIDATED</span><br><br>LEFT CASH: $" + walletUSD.toFixed(2) + " USD<br>FINAL HOLD: " + walletBTC.toFixed(8) + " BTC";
     startTrigger.innerText = "RESTART";
     menuOverlay.style.display = "flex";
@@ -171,7 +175,7 @@ window.addEventListener("keydown", (e) => {
 
 container.addEventListener("touchstart", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); }, { passive: false });
 container.addEventListener("mousedown", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); });
-// GAME.JS - PARTE 2 DE 2: PROCESAMIENTO DE CANVAS, MECHAS Y LOOP GENERAL
+// GAME.JS - PARTE 3 DE 3: PROCESAMIENTO DE CANVAS, MECHAS Y LOOP GENERAL
 function update() {
     let currentSpeed = baseSpeed;
     if (gameState === "PLAYING") {
