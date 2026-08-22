@@ -1,16 +1,14 @@
-<!-- INDEX.HTML V3.6 - ESTRUCTURA MAESTRA INDEPENDIENTE CLOUD -->
+<!-- INDEX.HTML V3.7 - ENLACE DE RESPALDO DE ALTA DISPONIBILIDAD PARA LA NUBE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Choppy Bitcoin | Bitcoinizate</title>
-    <!-- Inyección directa de la compilación web empaquetada oficial -->
-    <script src="https://jsdelivr.net"></script>
+    <!-- Servidor de respaldo unpkg inmune a los bloqueos de red de jsdelivr -->
+    <script src="https://unpkg.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-
-
 <body>
 
     <!-- CONTENEDOR PRINCIPAL DEL JUEGO ARCADE -->
@@ -45,7 +43,6 @@
                 <span style="color:#FFF; font-size:0.75rem;">GLOBAL LEADERBOARD</span>
                 <pre id="leaderboard-box" style="font-family: monospace; font-size: 0.8rem; color: #00FF66; margin: 15px 0; text-align: left; width: 100%; min-height: 90px; background: rgba(0,0,0,0.5); padding: 8px; border: 1px dashed #F2A900; white-space: pre-wrap;"></pre>
             </div>
-            <!-- SE QUITA EL TEXTO TONTO: Ahora arranca listo para la acción de Supabase -->
             <button class="btn-start" id="start-trigger">LOGIN TO TRADE</button>
         </div>
 
@@ -53,7 +50,7 @@
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
 
-    <!-- MODAL FLOTANTE DE INGRESO: Ubicado AFUERA del juego para liberar el teclado del sistema -->
+    <!-- MODAL FLOTANTE DE INGRESO: AFUERA del contenedor del juego -->
     <div id="auth-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div id="modal-auth-title">TRADER SIGN IN</div>
@@ -102,7 +99,7 @@
 
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
 
-    <!-- INYECCIÓN ASÍNCRONA EN ESTRICTO ORDEN DE JEFATURA -->
+    <!-- INYECCIÓN ORDENADA SECUENCIAL AL FINAL DEL BODY -->
     <script src="audio.js"></script>
     <script src="auth.js"></script>
     <script src="game.js"></script>
