@@ -1,10 +1,9 @@
-// AUTH.JS - COMPROBACIÓN MAESTRA DE CONEXIÓN CON VARIABLES DE RESPALDO
+// AUTH.JS - PARTE 1 DE 2: CONFIGURACIÓN CLOUD Y CONTROL DE SESIONES
 const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; 
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; 
 
 let supabase = null;
 
-// Intenta inicializar la librería usando cualquiera de los dos selectores de CDN del navegador
 try {
     if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -12,12 +11,16 @@ try {
         supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 } catch (err) {
-    console.error("Supabase script allocation crashed:", err);
+    console.error("Supabase engine allocation crashed:", err);
 }
 
 let currentUser = null;
 let currentProfile = null;
 
+// Elementos de la interfaz web recuperados globalmente
+const authBar = document.getElementById("auth-bar");
+const btnShowAuth = document.getElementById("btn-show-auth");
+const userProfileTag = document.getElementById("user-profile-tag");
 const authModal = document.getElementById("auth-modal");
 const profileModal = document.getElementById("profile-modal");
 
@@ -38,6 +41,7 @@ let isSignUpMode = false;
 
 async function checkActiveSession() {
     try {
+        if (!supabase) return;
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
         if (session) {
@@ -53,7 +57,7 @@ async function checkActiveSession() {
 }
 
 async function loadUserProfile() {
-    if (!currentUser) return;
+    if (!currentUser || !supabase) return;
     try {
         const { data, error } = await supabase
             .from('profiles')
@@ -73,22 +77,26 @@ async function loadUserProfile() {
 function updateAuthUI(profile) {
     const startTrigger = document.getElementById("start-trigger");
     if (profile) {
-        btnShowAuth.style.display = "none";
-        userProfileTag.style.display = "inline-block";
-        userProfileTag.innerText = `[ ${profile.username.toUpperCase()} ]`;
+        if (btnShowAuth) btnShowAuth.style.display = "none";
+        if (userProfileTag) {
+            userProfileTag.style.display = "inline-block";
+            userProfileTag.innerText = `[ ${profile.username.toUpperCase()} ]`;
+        }
         if (startTrigger) startTrigger.innerText = "START TRADING";
     } else {
-        btnShowAuth.style.display = "inline-block";
-        userProfileTag.style.display = "none";
-        userProfileTag.innerText = "";
+        if (btnShowAuth) btnShowAuth.style.display = "inline-block";
+        if (userProfileTag) {
+            userProfileTag.style.display = "none";
+            userProfileTag.innerText = "";
+        }
         if (startTrigger) startTrigger.innerText = "LOGIN TO TRADE";
     }
     fetchGlobalLeaderboard();
 }
-// AUTH.JS - PARTE 2 DE 2: EJECUCIÓN CLOUD Y RENDERIZADO DEL LEADERBOARD
+// AUTH.JS - PARTE 2 DE 2: RANKINGS DE LA NUBE Y ESCUCHAS DE INTERFAZ
 async function handleAuthSubmit() {
-    if (arcadeHoneypot.value !== "") {
-        authModal.style.display = "none";
+    if (arcadeHoneypot && arcadeHoneypot.value !== "") {
+        if (authModal) authModal.style.display = "none";
         return;
     }
     const email = authEmail.value.trim();
@@ -118,7 +126,7 @@ async function handleAuthSubmit() {
             if (authError) throw authError;
             currentUser = authData.user;
             await loadUserProfile();
-            authModal.style.display = "none";
+            if (authModal) authModal.style.display = "none";
         }
     } catch (e) {
         alert(e.message || "Authentication failed.");
@@ -126,7 +134,7 @@ async function handleAuthSubmit() {
 }
 
 async function updateProfileAddresses() {
-    if (!currentUser) return;
+    if (!currentUser || !supabase) return;
     const btcAddr = profileBtcAddr.value.trim();
     const lnAddr = profileLnAddr.value.trim();
     try {
@@ -138,7 +146,7 @@ async function updateProfileAddresses() {
         if (error) throw error;
         alert("Addresses securely updated!");
         await loadUserProfile();
-        profileModal.style.display = "none";
+        if (profileModal) profileModal.style.display = "none";
     } catch (e) {
         alert("Update failed: " + e.message);
     }
@@ -146,7 +154,7 @@ async function updateProfileAddresses() {
 
 async function fetchGlobalLeaderboard() {
     const leaderboardBox = document.getElementById("leaderboard-box");
-    if (!leaderboardBox) return;
+    if (!leaderboardBox || !supabase) return;
     try {
         const { data, error } = await supabase
             .from('profiles')
@@ -171,7 +179,7 @@ async function fetchGlobalLeaderboard() {
 }
 
 async function submitNewHighScore(finalBTC) {
-    if (!currentUser || !currentProfile) return;
+    if (!currentUser || !currentProfile || !supabase) return;
     let newScore = parseFloat(finalBTC) || 0;
     let oldScore = parseFloat(currentProfile.high_score) || 0;
     if (newScore <= oldScore) return;
@@ -193,42 +201,49 @@ function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
     if (isSignUpMode) {
         document.getElementById("modal-auth-title").innerText = "TRADER SIGN UP";
-        groupAlias.style.display = "block";
-        btnSubmitAuth.innerText = "SIGN UP";
-        btnToggleAuth.innerText = "HAVE ACCOUNT?";
+        if (groupAlias) groupAlias.style.display = "block";
+        if (btnSubmitAuth) btnSubmitAuth.innerText = "SIGN UP";
+        if (btnToggleAuth) btnToggleAuth.innerText = "HAVE ACCOUNT?";
     } else {
         document.getElementById("modal-auth-title").innerText = "TRADER SIGN IN";
-        groupAlias.style.display = "none";
-        btnSubmitAuth.innerText = "LOGIN";
-        btnToggleAuth.innerText = "NEED ACCOUNT?";
+        if (groupAlias) groupAlias.style.display = "none";
+        if (btnSubmitAuth) btnSubmitAuth.innerText = "LOGIN";
+        if (btnToggleAuth) btnToggleAuth.innerText = "NEED ACCOUNT?";
     }
 }
 
-btnShowAuth.addEventListener("click", () => { authModal.style.display = "flex"; });
-document.getElementById("btn-close-auth").addEventListener("click", () => { authModal.style.display = "none"; });
-btnToggleAuth.addEventListener("click", toggleAuthMode);
-btnSubmitAuth.addEventListener("click", handleAuthSubmit);
+if (btnShowAuth) btnShowAuth.addEventListener("click", () => { if (authModal) authModal.style.display = "flex"; });
+const btnCloseAuth = document.getElementById("btn-close-auth");
+if (btnCloseAuth) btnCloseAuth.addEventListener("click", () => { if (authModal) authModal.style.display = "none"; });
+if (btnToggleAuth) btnToggleAuth.addEventListener("click", toggleAuthMode);
+if (btnSubmitAuth) btnSubmitAuth.addEventListener("click", handleAuthSubmit);
 
-userProfileTag.addEventListener("click", () => {
-    if (currentProfile) {
-        let maxScore = parseFloat(currentProfile.high_score) || 0;
-        profileScoreInfo.innerText = `HIGH SCORE: ${maxScore.toFixed(8)} BTC`;
-        profileBtcAddr.value = currentProfile.btc_address || "";
-        profileLnAddr.value = currentProfile.ln_address || "";
-        profileModal.style.display = "flex";
-    }
-});
+if (userProfileTag) {
+    userProfileTag.addEventListener("click", () => {
+        if (currentProfile) {
+            let maxScore = parseFloat(currentProfile.high_score) || 0;
+            if (profileScoreInfo) profileScoreInfo.innerText = `HIGH SCORE: ${maxScore.toFixed(8)} BTC`;
+            if (profileBtcAddr) profileBtcAddr.value = currentProfile.btc_address || "";
+            if (profileLnAddr) profileLnAddr.value = currentProfile.ln_address || "";
+            if (profileModal) profileModal.style.display = "flex";
+        }
+    });
+}
 
-document.getElementById("btn-close-profile").addEventListener("click", () => { profileModal.style.display = "none"; });
-btnSaveProfile.addEventListener("click", updateProfileAddresses);
+const btnCloseProfile = document.getElementById("btn-close-profile");
+if (btnCloseProfile) btnCloseProfile.addEventListener("click", () => { if (profileModal) profileModal.style.display = "none"; });
+if (btnSaveProfile) btnSaveProfile.addEventListener("click", updateProfileAddresses);
 
-document.getElementById("btn-logout").addEventListener("click", async () => {
-    await supabase.auth.signOut();
-    currentUser = null; currentProfile = null;
-    updateAuthUI(null);
-    profileModal.style.display = "none";
-    location.reload();
-});
+const btnLogout = document.getElementById("btn-logout");
+if (btnLogout) {
+    btnLogout.addEventListener("click", async () => {
+        if (supabase) await supabase.auth.signOut();
+        currentUser = null; currentProfile = null;
+        updateAuthUI(null);
+        if (profileModal) profileModal.style.display = "none";
+        location.reload();
+    });
+}
 
 window.addEventListener("DOMContentLoaded", checkActiveSession);
 
