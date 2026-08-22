@@ -180,20 +180,21 @@ async function fetchGlobalLeaderboard() {
 }
 
 // --- ENVÍO AUTOMÁTICO DE RÉCORDS AL MORIR ---
-async function submitNewHighScore(finalNetWorth) {
+async function submitNewHighScore(finalNetWorthInBTC) {
     if (!currentUser || !currentProfile) return;
-    if (finalNetWorth <= currentProfile.high_score) return;
+    // Compara directamente los balances de flotantes en BTC
+    if (finalNetWorthInBTC <= currentProfile.high_score) return;
 
     try {
         const { error } = await supabase
             .from('profiles')
-            .update({ high_score: Math.floor(finalNetWorth) })
+            .update({ high_score: parseFloat(finalNetWorthInBTC) }) // Guarda el flotante preciso de BTC
             .eq('id', currentUser.id);
 
         if (error) throw error;
-        await loadUserProfile(); // Recarga local de datos
+        await loadUserProfile(); 
     } catch (e) {
-        console.error("Failed to submit score:", e);
+        console.error("Failed to submit BTC score:", e);
     }
 }
 
