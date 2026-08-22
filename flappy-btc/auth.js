@@ -1,18 +1,27 @@
-// AUTH.JS - PARTE 1 DE 2: CONFIGURACIÓN CLOUD Y CONTROL DE SESIONES
-const SUPABASE_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; 
+// AUTH.JS - CABECERA DE CONEXIÓN CON TOLERANCIA A ENTORNOS GENERACIONALES
+const SUPABASE_URL = "https://supabase.co"; 
+const SUPABASE_KEY = "PEGA_ACÁ_TU_ANON_KEY_GIGANTE_QUE_EMPIEZA_CON_eyJ"; 
 
 let supabase = null;
 
+// Bloque de ingeniería seguro para capturar el constructor del CDN sin importar la versión
 try {
-    if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    } else if (typeof window.Supabase !== "undefined" && window.Supabase.createClient) {
+    if (typeof window.Supabase !== "undefined" && window.Supabase.createClient) {
         supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log("Supabase V2 Engine conectado de forma exitosa (Mayúscula).");
+    } else if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log("Supabase Legacy Engine conectado de forma exitosa (Minúscula).");
+    } else {
+        console.error("Error crítico: La librería CDN de Supabase no está presente en la memoria del navegador.");
     }
 } catch (err) {
-    console.error("Supabase engine allocation crashed:", err);
+    console.error("Supabase client crash:", err);
 }
+
+let currentUser = null;
+let currentProfile = null;
+
 
 let currentUser = null;
 let currentProfile = null;
