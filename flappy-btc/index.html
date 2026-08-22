@@ -1,4 +1,4 @@
-<!-- PARTE 1 DE 3: ESTRUCTURA HTML Y ESTILOS CSS GLOBALES -->
+<!-- PARTE 1 DE 4: ESTRUCTURA HTML Y ESTILOS CSS GLOBALES -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +12,6 @@
             padding: 0; 
             -webkit-tap-highlight-color: rgba(0,0,0,0); 
         }
-        /* --- FILTROS DE INMERSIÓN GLOBAL PARA TODA LA PANTALLA --- */
         body {
             background-color: #0d0d0d;
             color: #fff;
@@ -28,6 +27,7 @@
             user-select: none;
             transition: filter 0.3s ease, background-color 0.3s ease;
         }
+        /* --- FILTROS DINÁMICOS PARA TODA LA PANTALLA --- */
         body.bear-mode-global {
             animation: screenShake 0.15s infinite;
             filter: hue-rotate(-50deg) contrast(170%) saturate(200%);
@@ -49,8 +49,12 @@
             box-shadow: 0 0 20px rgba(242, 169, 0, 0.4);
             transition: border-color 0.3s ease;
         }
-        body.bear-mode-global #game-container { border-color: #FF3333 !important; }
-        body.bull-mode-global #game-container { border-color: #00FF66 !important; }
+        body.bear-mode-global #game-container { 
+            border-color: #FF3333 !important; 
+        }
+        body.bull-mode-global #game-container { 
+            border-color: #00FF66 !important; 
+        }
         canvas {
             display: block;
             width: 100%;
@@ -58,7 +62,7 @@
             background: linear-gradient(#0b0b1a, #111122);
             transform: translateZ(0);
         }
-<!-- PARTE 2 DE 3: INTERFAZ ARCADE, SISTEMA DE VOZ DAFT PUNK Y MUSICA -->
+<!-- PARTE 2 DE 4: INTERFAZ ARCADE Y CAPA DE AUDIO SINTÉTICO -->
         .ui-text {
             position: absolute;
             width: 100%;
@@ -111,7 +115,7 @@
             <div id="menu-text">CHOPPY BITCOIN<br><br><span style="color:#FFF; font-size:0.85rem;">SURVIVE THE MARKET</span></div>
             <button class="btn-start" id="start-trigger">START GAME</button>
         </div>
-        <div id="version-display">v1.7.0-choppy</div>
+        <div id="version-display">v1.7.5-stable</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
@@ -125,34 +129,39 @@
         const startTrigger = document.getElementById("start-trigger");
         const versionDisplay = document.getElementById("version-display");
 
-        let audioCtx = null; let musicInterval = null; let musicStep = 0;
+        let audioCtx = null; 
+        let musicInterval = null; 
+        let musicStep = 0;
 
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        // --- MOTOR DE SÍNTESIS DE VOZ ROBÓTICA GRAVE (DAFT PUNK STYLE) ---
         function speakDaftPunk(phrase) {
             try {
-                window.speechSynthesis.cancel(); // Detiene cualquier voz en cola
+                window.speechSynthesis.cancel();
                 let utterance = new SpeechSynthesisUtterance(phrase);
                 utterance.lang = 'en-US';
-                utterance.pitch = 0.5; // Voz cavernosa súper grave
-                utterance.rate = 0.85; // Arrastrado mecánico pesado
+                utterance.pitch = 0.5;
+                utterance.rate = 0.85;
                 window.speechSynthesis.speak(utterance);
             } catch(e) {}
         }
-
+// PARTE 3 DE 4: GENERACIÓN EN LÍNEA DE AUDIO Y DECLARACIÓN DE VARIABLES
         function playTone(freq, type, duration, vol = 0.08) {
             if (!audioCtx) return;
             try {
-                let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
-                osc.type = type; osc.frequency.value = freq;
+                let osc = audioCtx.createOscillator(); 
+                let gain = audioCtx.createGain();
+                osc.type = type; 
+                osc.frequency.value = freq;
                 gain.gain.setValueAtTime(vol, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + duration);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + duration);
+                osc.connect(gain); 
+                gain.connect(audioCtx.destination);
+                osc.start(); 
+                osc.stop(audioCtx.currentTime + duration);
             } catch(e) {}
         }
 
@@ -160,6 +169,7 @@
             if (musicInterval) clearInterval(musicInterval);
             musicInterval = setInterval(() => {
                 if (gameState !== "PLAYING") return;
+                
                 if (activePower === "BEAR") {
                     let bearNotes = new Array(110, 130, 146, 130, 110, 98, 87, 98);
                     playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.05);
@@ -174,106 +184,209 @@
             }, 220);
         }
 
-        let gameState = "MENU"; let score = 0; let highscore = 0;
-        let activePower = "NONE"; let laserActive = false; let powerTimer = 0; let laserTimer = 0;
+        let gameState = "MENU"; 
+        let score = 0; 
+        let highscore = 0;
+        let activePower = "NONE"; 
+        let laserActive = false; 
+        let powerTimer = 0; 
+        let laserTimer = 0;
+        
         const btc = { x: 60, y: 250, radius: 18, velocity: 0, gravity: 0.38, jump: -6.8 };
-        let pipes = []; let items = []; const pipeWidth = 65; let pipeGap = 160; let baseSpeed = 2.6; let pipeTimer = 0;
+        let pipes = []; 
+        let items = []; 
+        const pipeWidth = 65; 
+        let pipeGap = 160; 
+        let baseSpeed = 2.6; 
+        let pipeTimer = 0;
         let animatedWidthWidth = 65;
-        let chartOffset = 0; // Control del scroll del gráfico histórico de fondo
-// PARTE 3 DE 3: GRÁFICO HISTÓRICO DE FONDO, COMBOS, COLISIONES Y EVENTOS
+        let chartOffset = 0;
+// PARTE 4 DE 4: MOTOR DE EVENTOS, COLISIONES LOGARÍTMICAS Y CIERRES COMPLETOS
         function resetGame() {
-            btc.y = 250; btc.velocity = 0; pipes = []; items = []; score = 0; pipeTimer = 0; chartOffset = 0;
-            activePower = "NONE"; laserActive = false; powerTimer = 0; laserTimer = 0;
-            document.body.className = ""; scoreDisplay.innerText = "SCORE: 0"; statusDisplay.innerText = "";
+            btc.y = 250; 
+            btc.velocity = 0; 
+            pipes = []; 
+            items = []; 
+            score = 0; 
+            pipeTimer = 0; 
+            chartOffset = 0;
+            activePower = "NONE"; 
+            laserActive = false; 
+            powerTimer = 0; 
+            laserTimer = 0;
+            document.body.className = ""; 
+            scoreDisplay.innerText = "SCORE: 0"; 
+            statusDisplay.innerText = "";
         }
+
         function startGame() { 
-            initAudio(); resetGame(); menuOverlay.style.display = "none"; gameState = "PLAYING"; 
-            playTone(440, "sine", 0.1); startMusicSequencer();
+            initAudio(); 
+            resetGame(); 
+            menuOverlay.style.display = "none"; 
+            gameState = "PLAYING"; 
+            playTone(440, "sine", 0.1); 
+            startMusicSequencer();
             speakDaftPunk("Welcome to choppy bitcoin: survive the market!");
         }
-        function gameOver() {
-            gameState = "GAMEOVER"; if(musicInterval) clearInterval(musicInterval); playTone(120, "sawtooth", 0.5); if(score > highscore) highscore = score;
-            document.getElementById("menu-text").innerHTML = "REKT!<br><br><span style='color:#FFF; font-size:0.9rem;'>LIQUIDATED</span><br><br>SCORE: " + score + "<br>TOP SCORE: " + highscore;
-            startTrigger.innerText = "RESTART"; menuOverlay.style.display = "flex"; document.body.className = "";
-        }
-        function jump() { if (gameState === "PLAYING") { btc.velocity = btc.jump; playTone(420, "square", 0.07); } }
-        function triggerAction(e) { if (e) { e.preventDefault(); e.stopPropagation(); } if (gameState === "MENU" || gameState === "GAMEOVER") startGame(); else if (gameState === "PLAYING") jump(); }
 
-        startTrigger.addEventListener("click", triggerAction); startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
-        window.addEventListener("keydown", (e) => { if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || e.key === "w" || e.key === "W") { e.preventDefault(); jump(); } }, { capture: true });
-        container.addEventListener("touchstart", (e) => { e.preventDefault(); jump(); }, { passive: false }); container.addEventListener("mousedown", (e) => { e.preventDefault(); jump(); });
+        function gameOver() {
+            gameState = "GAMEOVER"; 
+            if (musicInterval) clearInterval(musicInterval); 
+            playTone(120, "sawtooth", 0.5); 
+            if (score > highscore) highscore = score;
+            
+            document.getElementById("menu-text").innerHTML = "REKT!<br><br><span style='color:#FFF; font-size:0.9rem;'>LIQUIDATED</span><br><br>SCORE: " + score + "<br>TOP SCORE: " + highscore;
+            startTrigger.innerText = "RESTART"; 
+            menuOverlay.style.display = "flex"; 
+            document.body.className = "";
+        }
+
+        function jump() { 
+            if (gameState === "PLAYING") { 
+                btc.velocity = btc.jump; 
+                playTone(420, "square", 0.07); 
+            } 
+        }
+
+        function triggerAction(e) { 
+            if (e) { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+            } 
+            if (gameState === "MENU" || gameState === "GAMEOVER") {
+                startGame(); 
+            } else if (gameState === "PLAYING") {
+                jump(); 
+            }
+        }
+
+        startTrigger.addEventListener("click", triggerAction); 
+        startTrigger.addEventListener("touchstart", triggerAction, { passive: false });
+        
+        window.addEventListener("keydown", (e) => { 
+            if (e.code === "Space" || e.key === " " || e.code === "ArrowUp" || e.key === "w" || e.key === "W") { 
+                e.preventDefault(); 
+                jump(); 
+            } 
+        }, { capture: true });
+        
+        container.addEventListener("touchstart", (e) => { 
+            e.preventDefault(); 
+            jump(); 
+        }, { passive: false }); 
+        
+        container.addEventListener("mousedown", (e) => { 
+            e.preventDefault(); 
+            jump(); 
+        });
 
         function update() {
             if (gameState === "PLAYING") {
                 let currentSpeed = baseSpeed;
-                chartOffset += currentSpeed * 0.4; // El gráfico histórico se mueve de fondo
+                chartOffset += currentSpeed * 0.4;
 
-                // --- MANEJO DE COMBOS ACUMULABLES COEXISTENTES ---
                 let statusText = "";
                 if (activePower === "BULL") { 
                     currentSpeed = baseSpeed * 1.45; 
                     document.body.className = "bull-mode-global"; 
-                    statusText += "BULL RUN(" + Math.ceil(powerTimer/60) + "s) "; 
-                    powerTimer--; if(powerTimer<=0) { activePower="NONE"; document.body.className=""; } 
+                    statusText += "BULL RUN(" + Math.ceil(powerTimer / 60) + "s) "; 
+                    powerTimer--; 
+                    if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; } 
                 } else if (activePower === "BEAR") { 
                     currentSpeed = baseSpeed * 1.45; 
                     document.body.className = "bear-mode-global"; 
-                    statusText += "BEAR CRASH(" + Math.ceil(powerTimer/60) + "s) "; 
-                    powerTimer--; if(powerTimer<=0) { activePower="NONE"; document.body.className=""; } 
+                    statusText += "BEAR CRASH(" + Math.ceil(powerTimer / 60) + "s) "; 
+                    powerTimer--; 
+                    if (powerTimer <= 0) { activePower = "NONE"; document.body.className = ""; } 
                 }
                 
-                if (laserActive) { statusText += "👁️LASER(" + Math.ceil(laserTimer/60) + "s)"; laserTimer--; if(laserTimer<=0) laserActive = false; }
+                if (laserActive) { 
+                    statusText += "👁️LASER(" + Math.ceil(laserTimer / 60) + "s)"; 
+                    laserTimer--; 
+                    if (laserTimer <= 0) laserActive = false; 
+                }
+                
                 statusDisplay.innerText = statusText;
-                if (activePower === "BULL") statusDisplay.style.color = "#00FF66"; else if (activePower === "BEAR") statusDisplay.style.color = "#FF3333"; else statusDisplay.style.color = "#33CCFF";
+                if (activePower === "BULL") {
+                    statusDisplay.style.color = "#00FF66";
+                } else if (activePower === "BEAR") {
+                    statusDisplay.style.color = "#FF3333";
+                } else {
+                    statusDisplay.style.color = "#33CCFF";
+                }
 
-                // --- INTERPOLACIÓN SUAVE (ANIMADA) DE LASER EYES ---
                 let targetWidth = laserActive ? 22 : 65; 
                 animatedWidthWidth += (targetWidth - animatedWidthWidth) * 0.08;
 
-                btc.velocity += btc.gravity; btc.y += btc.velocity;
+                btc.velocity += btc.gravity; 
+                btc.y += btc.velocity;
                 if (btc.y + btc.radius > canvas.height || btc.y - btc.radius < 0) gameOver();
 
                 pipeTimer++;
                 if (pipeTimer % 95 === 0) {
                     let topHeight = Math.floor(Math.random() * ((canvas.height - 280) - 60 + 1)) + 60;
                     pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - (topHeight + 160), passed: false });
+                    
                     if (Math.random() < 0.45) {
-                        let rand = Math.random(); let itemType = (rand < 0.33) ? "BULL" : (rand < 0.66 ? "LASER" : "BEAR");
+                        let rand = Math.random(); 
+                        let itemType = (rand < 0.33) ? "BULL" : (rand < 0.66 ? "LASER" : "BEAR");
                         items.push({ x: canvas.width + 100, y: topHeight + 80, type: itemType, radius: 14 });
                     }
                 }
 
-                // Colisiones con esferas (El Toro te da inmunidad contra el Oso y cancela el efecto)
                 for (let j = items.length - 1; j >= 0; j--) {
                     items[j].x -= currentSpeed;
                     if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
                         if (items[j].type === "LASER") { 
-                            laserActive = true; laserTimer = 360; 
-                            playTone(480, "triangle", 0.25); speakDaftPunk("Laser eyes!"); 
+                            laserActive = true; 
+                            laserTimer = 360; 
+                            playTone(480, "triangle", 0.25); 
+                            speakDaftPunk("Laser eyes!"); 
                         } else { 
-                            if (activePower === "BEAR" && items[j].type === "BULL") { activePower = "BULL"; powerTimer = 360; speakDaftPunk("Bull Market!"); document.body.className = "bull-mode-global"; }
-                            else if (activePower !== "BULL") { 
-                                activePower = items[j].type; powerTimer = 360; 
-                                if (activePower === "BULL") { playTone(550, "sine", 0.15); speakDaftPunk("Bull Market!"); document.body.className = "bull-mode-global"; }
-                                else { playTone(160, "sawtooth", 0.45); speakDaftPunk("Bear Market!"); document.body.className = "bear-mode-global"; }
+                            if (activePower === "BEAR" && items[j].type === "BULL") { 
+                                activePower = "BULL"; 
+                                powerTimer = 360; 
+                                speakDaftPunk("Bull Market!"); 
+                                document.body.className = "bull-mode-global"; 
+                            } else if (activePower !== "BULL") { 
+                                activePower = items[j].type; 
+                                powerTimer = 360; 
+                                if (activePower === "BULL") { 
+                                    playTone(550, "sine", 0.15); 
+                                    speakDaftPunk("Bull Market!"); 
+                                    document.body.className = "bull-mode-global"; 
+                                } else { 
+                                    playTone(160, "sawtooth", 0.45); 
+                                    speakDaftPunk("Bear Market!"); 
+                                    document.body.className = "bear-mode-global"; 
+                                }
                             }
                         }
-                        items.splice(j, 1); continue;
+                        items.splice(j, 1); 
+                        continue;
                     }
                     if (items[j].x < -20) items.splice(j, 1);
                 }
 
-                // Colisiones con Velas de Mercado
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     pipes[i].x -= currentSpeed;
+                    
                     if (btc.x + btc.radius > pipes[i].x && btc.x - btc.radius < pipes[i].x + animatedWidthWidth && (btc.y - btc.radius < pipes[i].top || btc.y + btc.radius > canvas.height - pipes[i].bottom)) {
                         if (activePower === "BULL") {
-                            pipes.splice(i, 1); score += 2; scoreDisplay.innerText = "SCORE: " + score;
-                            playTone(720, "sine", 0.08, 0.1); continue;
-                        } else { gameOver(); }
+                            pipes.splice(i, 1); 
+                            score += 2; 
+                            scoreDisplay.innerText = "SCORE: " + score;
+                            playTone(720, "sine", 0.08, 0.1); 
+                            continue;
+                        } else { 
+                            gameOver(); 
+                        }
                     }
                     if (pipes[i] && !pipes[i].passed && pipes[i].x + animatedWidthWidth < btc.x) {
-                        pipes[i].passed = true; score += 1; scoreDisplay.innerText = "SCORE: " + score; playTone(880, "sine", 0.04);
+                        pipes[i].passed = true; 
+                        score += 1; 
+                        scoreDisplay.innerText = "SCORE: " + score; 
+                        playTone(880, "sine", 0.04);
                     }
                     if (pipes[i] && pipes[i].x + 65 < 0) pipes.splice(i, 1);
                 }
@@ -283,47 +396,57 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // --- RENDERIZADO DEL CHART HISTÓRICO BTC/USD LOGARÍTMICO DE FONDO ---
-            ctx.beginPath(); ctx.strokeStyle = "rgba(242, 169, 0, 0.12)"; ctx.lineWidth = 3;
+            ctx.beginPath(); 
+            ctx.strokeStyle = "rgba(242, 169, 0, 0.12)"; 
+            ctx.lineWidth = 3;
             for (let i = 0; i < canvas.width + 40; i += 10) {
-                let graphX = i; let globalX = i + chartOffset;
-                // Simulación algorítmica de la curva logarítmica real de Bitcoin desde 2010 ($0.003) hasta la actualidad
+                let graphX = i; 
+                let globalX = i + chartOffset;
                 let graphY = canvas.height - 40 - (Math.log10(globalX * 0.05 + 1) * 160);
                 if (i === 0) ctx.moveTo(graphX, graphY); else ctx.lineTo(graphX, graphY);
                 if (Math.floor(globalX) % 350 === 0) {
-                    ctx.fillStyle = "rgba(255,255,255,0.06)"; ctx.font = "10px sans-serif";
+                    ctx.fillStyle = "rgba(255,255,255,0.06)"; 
+                    ctx.font = "10px sans-serif";
                     ctx.fillText("HISTORIC PRICE EVOLUTION", graphX, graphY - 10);
                 }
             }
             ctx.stroke();
 
-            // Rejilla de Fondo
-            ctx.strokeStyle = (activePower === "BEAR") ? "#351212" : (activePower === "BULL" ? "#123512" : "#121226"); ctx.lineWidth = 1;
-            for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
-            for(let j=0; j<canvas.height; j+=40) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }
+            ctx.strokeStyle = (activePower === "BEAR") ? "#351212" : (activePower === "BULL" ? "#123512" : "#121226"); 
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
+            for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
 
-            // Renderizado de Velas (Titilan en rojo los últimos 2 segundos del Bull Run)
             let isBlinkingRed = (activePower === "BULL" && powerTimer < 120 && Math.floor(powerTimer / 10) % 2 === 0);
             pipes.forEach(p => {
-                ctx.fillStyle = isBlinkingRed ? "#FF3333" : ((activePower === "BULL") ? "#00FF66" : "#FF3333");
-                ctx.fillRect(p.x, 0, animatedWidthWidth, p.top); ctx.fillRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
-                ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;
-                ctx.strokeRect(p.x, 0, animatedWidthWidth, p.top); ctx.strokeRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
-            });
+        ctx.fillStyle = isBlinkingRed ? "#FF3333" : ((activePower === "BULL") ? "#00FF66" : "#FF3333");
+        ctx.fillRect(p.x, 0, animatedWidthWidth, p.top);
+        ctx.fillRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(p.x, 0, animatedWidthWidth, p.top);
+        ctx.strokeRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
+    });
 
-            // Ítems temáticos con colores y formas solicitadas
-            items.forEach(it => {
-                ctx.beginPath(); ctx.arc(it.x, it.y, it.radius, 0, Math.PI*2);
-                if (it.type === "BULL") ctx.fillStyle = "#00FF66"; // Toro Verde
-                if (it.type === "LASER") ctx.fillStyle = "#FF3333"; // Gafas Láser Rojas
-                if (it.type === "BEAR") ctx.fillStyle = "#FF3333"; // Oso Rojo
-                ctx.fill(); ctx.strokeStyle = "#FFF"; ctx.lineWidth = 2; ctx.stroke();
-                ctx.fillStyle = "#000"; ctx.font = "bold 14px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-                let sym = it.type === "BULL" ? "▲" : it.type === "LASER" ? "🕶" : "▼"; ctx.fillText(sym, it.x, it.y);
-            });
+    items.forEach(it => {
+        ctx.beginPath();
+        ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
+        if (it.type === "BULL") ctx.fillStyle = "#00FF66";
+        if (it.type === "LASER") ctx.fillStyle = "#FF3333";
+        if (it.type === "BEAR") ctx.fillStyle = "#FF3333";
+        ctx.fill();
+        ctx.strokeStyle = "#FFF";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 14px monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        let sym = it.type === "BULL" ? "▲" : it.type === "LASER" ? "🕶" : "▼";
+        ctx.fillText(sym, it.x, it.y);
+    });
 
-            // Moneda Bitcoin
-ctx.beginPath();
+    ctx.beginPath();
     ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2);
     ctx.fillStyle = "#F2A900";
     ctx.fill();
