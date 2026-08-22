@@ -1,4 +1,4 @@
-// GAME.JS - PARTE 1 DE 3: VARIABLES BASE Y ESTADOS DEL MOTOR
+// GAME.JS - PARTE 1 DE 2: ENGINE DE TRADING E INPUTS UNIVERSALES
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const container = document.getElementById("game-container");
@@ -31,7 +31,7 @@ let animatedWidthWidth = 65;
 let targetLineY = 300;
 let currentLineY = 300;
 let chartOffset = 0;
-// GAME.JS - PARTE 2 DE 3: CAPTURA DE EVENTOS E INICIO DE PARTIDA
+
 function resetGame() {
     btc.y = 250;
     btc.velocity = 0;
@@ -55,21 +55,21 @@ function resetGame() {
 }
 
 function startGame() {
-    initAudio();
+    if (typeof initAudio === "function") initAudio();
     resetGame();
     menuOverlay.style.display = "none";
     gameState = "PLAYING";
-    playTone(440, "sine", 0.1);
-    startMusicSequencer(() => activePower);
-    speakDaftPunk("Welcome to choppy bitcoin: survive the market!");
+    if (typeof playTone === "function") playTone(440, "sine", 0.1);
+    if (typeof startMusicSequencer === "function") startMusicSequencer(() => activePower, () => gameState);
+    if (typeof speakDaftPunk === "function") speakDaftPunk("Welcome to choppy bitcoin: survive the market!");
 }
 
 function gameOver() {
     gameState = "GAMEOVER";
-    stopMusic();
-    playTone(120, "sawtooth", 0.5);
+    if (typeof stopMusic === "function") stopMusic();
+    if (typeof playTone === "function") playTone(120, "sawtooth", 0.5);
     if (score > highscore) highscore = score;
-    speakDaftPunk("Rekt! You got liquidated.");
+    if (typeof speakDaftPunk === "function") speakDaftPunk("Rekt! You got liquidated.");
     document.getElementById("menu-text").innerHTML = "REKT!<br><br><span style='color:#FFF; font-size:0.9rem;'>LIQUIDATED</span><br><br>SCORE: " + score + "<br>TOP SCORE: " + highscore;
     startTrigger.innerText = "RESTART";
     menuOverlay.style.display = "flex";
@@ -82,15 +82,17 @@ function triggerRescue() {
     invulnerableTimer = 90;
     btc.y = 300;
     btc.velocity = 0;
-    playTone(330, "triangle", 0.15, 0.15);
-    setTimeout(() => playTone(660, "sine", 0.2, 0.1), 100);
-    speakDaftPunk("Cold storage rescue!", true);
+    if (typeof playTone === "function") {
+        playTone(330, "triangle", 0.15, 0.15);
+        setTimeout(() => playTone(660, "sine", 0.2, 0.1), 100);
+    }
+    if (typeof speakDaftPunk === "function") speakDaftPunk("Cold storage rescue!", true);
 }
 
 function jump() {
     if (gameState === "PLAYING") {
         btc.velocity = btc.jump;
-        playTone(420, "square", 0.07);
+        if (typeof playTone === "function") playTone(420, "square", 0.07);
     }
 }
 
@@ -112,7 +114,7 @@ window.addEventListener("keydown", (e) => {
 
 container.addEventListener("touchstart", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); }, { passive: false });
 container.addEventListener("mousedown", (e) => { e.preventDefault(); if (gameState === "PLAYING") jump(); });
-// GAME.JS - PARTE 3 DE 3: LOGÍCA DE ACTUALIZACIÓN, DETECCIÓN DE VELAS Y LOOP
+// GAME.JS - PARTE 2 DE 2: MANEJO DE COLISIONES, VELAS Y RENDER DE CANVAS
 function update() {
     if (gameState === "PLAYING") {
         let currentSpeed = baseSpeed;
@@ -181,10 +183,11 @@ function update() {
             items[j].x -= currentSpeed;
             if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
                 if (items[j].type === "SWAN") {
-                    playExplosionTone();
+                    if (typeof playExplosionTone === "function") playExplosionTone();
                     if (activePower === "BULL") { activePower = "NONE"; document.body.className = ""; }
                     laserActive = false;
-                    speakRandomSwan();
+                    if (typeof speakRandomSwan === "function") speakRandomSwan();
+                    
                     if (coldStorageLives > 0) {
                         coldStorageLives = 0;
                         coldStorageDisplay.innerText = "COLD STORAGE: 0";
@@ -195,24 +198,29 @@ function update() {
                     }
                 } else if (items[j].type === "LASER") {
                     if (laserActive) laserTimer += 360; else { laserActive = true; laserTimer = 360; }
-                    playTone(480, "triangle", 0.25);
-                    speakDaftPunk("L-L-LASER EYES!", true);
+                    if (typeof playTone === "function") playTone(480, "triangle", 0.25);
+                    if (typeof speakDaftPunk === "function") speakDaftPunk("L-L-LASER EYES!", true);
                 } else if (items[j].type === "COLD") {
                     coldStorageLives++;
                     coldStorageDisplay.innerText = "COLD STORAGE: " + coldStorageLives;
-                    playTone(600, "sine", 0.2, 0.1);
-                    speakDaftPunk("Cold storage secured!");
+                    if (typeof playTone === "function") playTone(600, "sine", 0.2, 0.1);
+                    if (typeof speakDaftPunk === "function") speakDaftPunk("Cold storage secured!");
                 } else {
                     if (activePower === items[j].type) {
                         powerTimer += 360;
-                        if (activePower === "BULL") speakDaftPunk("More green! Bull run extended!", true);
+                        if (activePower === "BULL" && typeof speakDaftPunk === "function") speakDaftPunk("More green! Bull run extended!", true);
                     } else {
                         if (activePower === "BEAR" && items[j].type === "BULL") {
-                            activePower = "BULL"; powerTimer = 360; speakDaftPunk("B-B-BULL MARKET!", true);
+                            activePower = "BULL"; powerTimer = 360; if (typeof speakDaftPunk === "function") speakDaftPunk("B-B-BULL MARKET!", true);
                         } else if (activePower !== "BULL") {
                             activePower = items[j].type; powerTimer = 360;
-                            if (activePower === "BULL") { playTone(550, "sine", 0.15); speakDaftPunk("B-B-BULL MARKET!", true); }
-                            else { playTone(160, "sawtooth", 0.45); speakDaftPunk("B-E-EAR MARKET! CRASH!", true); }
+                            if (activePower === "BULL") { 
+                                if (typeof playTone === "function") playTone(550, "sine", 0.15); 
+                                if (typeof speakDaftPunk === "function") speakDaftPunk("B-B-BULL MARKET!", true); 
+                            } else { 
+                                if (typeof playTone === "function") playTone(160, "sawtooth", 0.45); 
+                                if (typeof speakDaftPunk === "function") speakDaftPunk("B-E-EAR MARKET! CRASH!", true); 
+                            }
                         }
                     }
                 }
@@ -229,7 +237,7 @@ function update() {
                     pipes.splice(i, 1);
                     score += 2;
                     scoreDisplay.innerText = "SCORE: " + score;
-                    playTone(720, "sine", 0.08, 0.1);
+                    if (typeof playTone === "function") playTone(720, "sine", 0.08, 0.1);
                     continue;
                 } else if (invulnerableTimer <= 0) {
                     if (coldStorageLives > 0) triggerRescue(); else gameOver();
@@ -239,7 +247,7 @@ function update() {
                 pipes[i].passed = true;
                 score += 1;
                 scoreDisplay.innerText = "SCORE: " + score;
-                playTone(880, "sine", 0.04);
+                if (typeof playTone === "function") playTone(880, "sine", 0.04);
             }
             if (pipes[i] && pipes[i].x + 65 < 0) pipes.splice(i, 1);
         }
