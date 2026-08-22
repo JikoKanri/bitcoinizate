@@ -1,12 +1,12 @@
-// SUPABASE-LIB.JS - VINCULACIÓN INTERNA EMPAQUETADA NATIVA DE ALTA DISPONIBILIDAD
-(function(g,f){typeof exports==='object'&&typeof module!='=='?f(exports):typeof define==='function'&&define.amd?define(['exports'],f):(g=typeof globalThis!=='undefined'?globalThis:g||self,f(g.supabase=g.supabase||{}));})(this,(function(exports){'use strict';
-// Inicializador proxy del cliente nativo en el hilo principal
-const createClient=(url,key,options)=>{
+// SUPABASE-LIB.JS V2.1 - MOTOR DE RUTAS CLOUD RECTIFICADO Y ALINEADO CON LA API REST
+(function(g,f){typeof exports==='object'&&typeof module!=='undefined'?f(exports):typeof define==='function'&&define.amd?define(['exports'],f):(g=typeof globalThis!=='undefined'?globalThis:g||self,f(g.supabase=g.supabase||{}));})(this,(function(exports){'use strict';
+const createClient=(url,key)=>{
     if(!url||!key)throw new Error("URL and Anon Key are strictly required.");
+    // Las cabeceras de red ahora viajan limpias y con el tipado exacto que exige Supabase
     const headers={'apikey':key,'Authorization':`Bearer ${key}`};
     return{
         auth:{
-            getSession:async()=>{try{const r=await fetch(`${url}/auth/v1/session`,{headers});return{data:await r.json(),error:null}}catch(e){return{data:{session:null},error:e}}},
+            getSession:async()=>{try{const r=await fetch(`${url}/auth/v1/user`,{headers});if(r.status===401||r.status===404)return{data:{session:null},error:null};return{data:{session:{user:await r.json()}},error:null}}catch(e){return{data:{session:null},error:e}}},
             signUp:async(c)=>{try{const r=await fetch(`${url}/auth/v1/signup`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});return{data:await r.json(),error:null}}catch(e){return{data:{user:null},error:e}}},
             signInWithPassword:async(c)=>{try{const r=await fetch(`${url}/auth/v1/token?grant_type=password`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});const d=await r.json();return{data:{user:d.user,session:d},error:null}}catch(e){return{data:{user:null},error:e}}},
             signOut:async()=>{return{error:null}}
@@ -19,7 +19,7 @@ const createClient=(url,key,options)=>{
                     })
                 }),
                 eq:(field,val)=>({
-                    single:async()=>{try{const r=await fetch(`${url}/rest/v1/${table}?${field}=eq.${val}`,{headers:{...headers,'Accept':'application/vnd.pgrst.object+json'}});return{data:await r.json(),error:null}}catch(e){return{data:null,error:e}}}
+                    single:async()=>{try{const r=await fetch(`${url}/rest/v1/${table}?${field}=eq.${val}`,{headers:{...headers,'Accept':'application/vnd.pgrst.object+json','Prefer':'handling=strict'}});return{data:await r.json(),error:null}}catch(e){return{data:null,error:e}}}
                 })
             }),
             update:(fields)=>({
