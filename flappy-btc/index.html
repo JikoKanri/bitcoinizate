@@ -1,4 +1,4 @@
-<!-- PARTE 1 DE 3: ESTRUCTURA HTML Y ESTILOS CSS DINÁMICOS --> test
+<!-- PARTE 1 DE 3: ESTRUCTURA HTML Y ESTILOS CSS DINÁMICOS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,7 +44,6 @@
             background: linear-gradient(#0b0b1a, #111122);
             transform: translateZ(0);
         }
-        /* --- FILTROS DE MERCADO MODIFICADOS --- */
         .bear-mode {
             animation: screenShake 0.15s infinite;
             filter: cubic-bezier(0.1, 0.7, 1.0, 0.1) hue-rotate(-50deg) contrast(170%) saturate(200%);
@@ -56,7 +55,8 @@
             border-color: #00FF66 !important;
             box-shadow: 0 0 30px rgba(0, 255, 102, 0.6) !important;
         }
-<!-- PARTE 2 DE 3: INTERFAZ ARCADE Y SECUENCIADOR MUSICAL 8-BITS -->
+
+    <!-- PARTE 2 DE 3: INTERFAZ ARCADE Y SECUENCIADOR MUSICAL COMPLETO -->
         .ui-text {
             position: absolute;
             width: 100%;
@@ -109,7 +109,7 @@
             <div id="menu-text">FLAPPY BITCOIN<br><br><span style="color:#FFF; font-size:0.85rem;">SURVIVE THE MARKET</span></div>
             <button class="btn-start" id="start-trigger">START GAME</button>
         </div>
-        <div id="version-display">v1.5.0-audio-adaptive</div>
+        <div id="version-display">v1.5.5-audio-fixed</div>
         <canvas id="gameCanvas" width="400" height="600"></canvas>
     </div>
     <a href="../index.html" class="btn-back"><- BACK TO MENU</a>
@@ -123,7 +123,6 @@
         const startTrigger = document.getElementById("start-trigger");
         const versionDisplay = document.getElementById("version-display");
 
-        // --- SISTEMA ADAPTATIVO DE AUDIO 8-BITS ---
         let audioCtx = null;
         let musicInterval = null;
         let musicStep = 0;
@@ -145,41 +144,32 @@
             } catch(e) {}
         }
 
-        // Sintetizador dinámico en segundo plano
         function startMusicSequencer() {
             if (musicInterval) clearInterval(musicInterval);
             musicInterval = setInterval(() => {
                 if (gameState !== "PLAYING") return;
                 
-                // Melodías según el estado del mercado
+                // NOTAS CORREGIDAS EN ESCALAS REALES (FRECUENCIAS HZ)
                 if (activePower === "BEAR") {
-                    // Marcha lúgubre, baja y tensa
-                    let bearNotes =;
-                    playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.06);
+                    let bearNotes =; // Fúnebre y grave
+                    playTone(bearNotes[musicStep % 8], "sawtooth", 0.22, 0.05);
                 } else if (activePower === "BULL") {
-                    // Melodía frenética, rápida y alegre (escala mayor)
-                    let bullNotes =;
-                    playTone(bullNotes[musicStep % 8], "square", 0.12, 0.05);
+                    let bullNotes =; // Frenética y alegre (escala mayor)
+                    playTone(bullNotes[musicStep % 8], "square", 0.12, 0.04);
                 } else {
-                    // Melodía base del juego en estado neutro
-                    let normalNotes =;
-                    playTone(normalNotes[musicStep % 8], "sine", 0.18, 0.06);
+                    let normalNotes =; // Neutra arpegiada estilo retro
+                    playTone(normalNotes[musicStep % 8], "sine", 0.18, 0.05);
                 }
                 musicStep++;
-            }, 200); // Ritmo constante de tempo continuo
+            }, 220); 
         }
 
-        // --- VARIABLES DEL MOTOR GRÁFICO Y ESTADOS ACUMULABLES ---
         let gameState = "MENU"; let score = 0; let highscore = 0;
-        let activePower = "NONE"; // BULL, BEAR, NONE
-        let laserActive = false;   // Laser Eyes corre en paralelo (Acumulable)
-        let powerTimer = 0;       // Temporizador para Bull/Bear
-        let laserTimer = 0;       // Temporizador independiente para Laser Eyes
-
+        let activePower = "NONE"; let laserActive = false; let powerTimer = 0; let laserTimer = 0;
         const btc = { x: 60, y: 250, radius: 18, velocity: 0, gravity: 0.38, jump: -6.8 };
         let pipes = []; let items = []; const pipeWidth = 65; let pipeGap = 160; let baseSpeed = 2.6; let pipeTimer = 0;
-        let animatedWidthWidth = 65; // Anchura base para animación suave de Laser Eyes
-// PARTE 3 DE 3: LOGÍCA DE COLISIONES AVANZADA, COMBOS Y ANIMACIÓN DE VELAS
+        let animatedWidthWidth = 65; 
+// PARTE 3 DE 3: LOGÍCA DE COLISIONES, INMUNIDAD CON VELOCIDAD Y CIERRE
         function resetGame() {
             btc.y = 250; btc.velocity = 0; pipes = []; items = []; score = 0; pipeTimer = 0;
             activePower = "NONE"; laserActive = false; powerTimer = 0; laserTimer = 0;
@@ -202,18 +192,18 @@
             if (gameState === "PLAYING") {
                 let currentSpeed = baseSpeed;
                 
-                // --- MANEJO ACUMULABLE DE TEMPORIZADORES Y COMBOS ---
+                // --- PROCESAMIENTO DE COMBOS Y COEXISTENCIA ---
                 let statusText = "";
-                if (activePower === "BULL") { currentSpeed = baseSpeed * 1.35; container.className = "bull-mode"; statusText += "BULL RUN(" + Math.ceil(powerTimer/60) + "s) "; powerTimer--; if(powerTimer<=0) { activePower="NONE"; container.className=""; } }
-                else if (activePower === "BEAR") { currentSpeed = baseSpeed * 1.35; container.className = "bear-mode"; statusText += "BEAR CRASH(" + Math.ceil(powerTimer/60) + "s) "; powerTimer--; if(powerTimer<=0) { activePower="NONE"; container.className=""; } }
+                if (activePower === "BULL") { currentSpeed = baseSpeed * 1.45; container.className = "bull-mode"; statusText += "BULL RUN(" + Math.ceil(powerTimer/60) + "s) "; powerTimer--; if(powerTimer<=0) { activePower="NONE"; container.className=""; } }
+                else if (activePower === "BEAR") { currentSpeed = baseSpeed * 1.45; container.className = "bear-mode"; statusText += "BEAR CRASH(" + Math.ceil(powerTimer/60) + "s) "; powerTimer--; if(powerTimer<=0) { activePower="NONE"; container.className=""; } }
                 
                 if (laserActive) { statusText += "👁️LASER(" + Math.ceil(laserTimer/60) + "s)"; laserTimer--; if(laserTimer<=0) laserActive = false; }
                 statusDisplay.innerText = statusText;
                 if (activePower === "BULL") statusDisplay.style.color = "#00FF66"; else if (activePower === "BEAR") statusDisplay.style.color = "#FF3333"; else statusDisplay.style.color = "#33CCFF";
 
-                // --- ANIMACIÓN INTERPOLADA SUAVE DE LASER EYES ---
-                let targetWidth = laserActive ? 25 : 65; // Pasa de 65px a 25px de ancho
-                animatedWidthWidth += (targetWidth - animatedWidthWidth) * 0.1; // Transición matemática suave
+                // --- ANIMACIÓN INTERPOLADA (SUAVE) DE LASER EYES ---
+                let targetWidth = laserActive ? 22 : 65; 
+                animatedWidthWidth += (targetWidth - animatedWidthWidth) * 0.08; // Suavizado progresivo frame a frame
 
                 btc.velocity += btc.gravity; btc.y += btc.velocity;
                 if (btc.y + btc.radius > canvas.height || btc.y - btc.radius < 0) gameOver();
@@ -228,7 +218,7 @@
                     }
                 }
 
-                // Colisiones con esferas de Items
+                // Colisiones con esferas de Items (El Toro cancela al Oso)
                 for (let j = items.length - 1; j >= 0; j--) {
                     items[j].x -= currentSpeed;
                     if (Math.hypot(btc.x - items[j].x, btc.y - items[j].y) < btc.radius + items[j].radius) {
@@ -247,12 +237,12 @@
                 for (let i = pipes.length - 1; i >= 0; i--) {
                     pipes[i].x -= currentSpeed;
                     
-                    // Si es BULL MARKET, "come" las velas al tocarlas de forma segura
+                    // Si es BULL MARKET, "come" las velas al tocarlas
                     if (btc.x + btc.radius > pipes[i].x && btc.x - btc.radius < pipes[i].x + animatedWidthWidth && (btc.y - btc.radius < pipes[i].top || btc.y + btc.radius > canvas.height - pipes[i].bottom)) {
                         if (activePower === "BULL") {
-                            pipes.splice(i, 1); // La vela es removida del documento
+                            pipes.splice(i, 1); // Desaparece la vela
                             score += 2; scoreDisplay.innerText = "SCORE: " + score;
-                            playTone(700, "sine", 0.08, 0.12); continue;
+                            playTone(720, "sine", 0.08, 0.1); continue;
                         } else { gameOver(); }
                     }
                     if (pipes[i] && !pipes[i].passed && pipes[i].x + animatedWidthWidth < btc.x) {
@@ -269,7 +259,6 @@
             for(let i=0; i<canvas.width; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
             for(let j=0; j<canvas.height; j+=40) { ctx.beginPath(); ctx.moveTo(0,j); ctx.lineTo(canvas.width,j); ctx.stroke(); }
 
-            // Renderizado de las tuberías usando el ancho animado progresivo
             pipes.forEach(p => {
                 ctx.fillStyle = (activePower === "BULL") ? "#00FF66" : "#FF3333";
                 ctx.fillRect(p.x, 0, animatedWidthWidth, p.top); ctx.fillRect(p.x, canvas.height - p.bottom, animatedWidthWidth, p.bottom);
@@ -286,7 +275,8 @@
             });
 
             ctx.beginPath(); ctx.arc(btc.x, btc.y, btc.radius, 0, Math.PI * 2); ctx.fillStyle = "#F2A900"; ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 20px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("B", btc.x, btc.y + 1);
+            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 20px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText("B", btc.x, btc.y + 1);
         }
 
         function loop() { update(); draw(); requestAnimationFrame(loop); }
