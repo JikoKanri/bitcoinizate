@@ -84,12 +84,13 @@
 
   function pop(x, y, text, color, kind) {
     const gain = kind === "gain";
+    const power = kind === "power";
     S.floats.push({
       x, y, text, color,
-      life: gain ? 0.825 : 1.1,
-      vy: gain ? -32 : -38,
-      size: gain ? 7 : 13,
-      maxA: gain ? 0.75 : 0.875,
+      life: gain || power ? 0.825 : 1.1,
+      vy: gain || power ? -32 : -38,
+      size: power ? 7.7 : gain ? 7 : 13,
+      maxA: gain || power ? 0.75 : 0.875,
     });
   }
 
@@ -129,8 +130,10 @@
 
   function applyLaser(on) {
     S.laserOn = on;
-    if (on) { S.laserT = POWER_S; S.widthT = 0.378; S.heightT = 0.9; }
-    else { S.laserT = 0; S.widthT = 1; S.heightT = 1; }
+    if (on) {
+      S.laserT = POWER_S; S.widthT = 0.378; S.heightT = 0.9;
+      if (S.power === "BEAR") endCycle();
+    } else { S.laserT = 0; S.widthT = 1; S.heightT = 1; }
   }
 
   function pipeEnds(p) {
@@ -205,7 +208,7 @@
   function endCycle() {
     if (S.power === "NONE") return;
     const dir = S.power === "BULL" ? 1 : -1;
-    const residual = dir * (0.012 + Math.random() * 0.028);
+    const residual = dir * (S.power === "BULL" ? 0.018 + Math.random() * 0.03 : 0.008 + Math.random() * 0.016);
     const wobble = (Math.random() - 0.4) * 0.035;
     S.price = Math.max(0.01, S.cycleStart * (1 + residual + wobble));
     if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + residual * 0.55 + wobble * 0.5));
@@ -216,7 +219,7 @@
     const color = it.type === "BULL" ? GREEN : it.type === "BEAR" ? RED : it.type === "COLD" ? "#33c6e8" : it.type === "LASER" ? "#e8902a" : "#c9a0ff";
     burst(it.x, it.y, color, 12);
     S.cash += 500;
-    pop(it.x, it.y - 18, "+500 usd", GREEN, "gain");
+    pop(it.x, it.y - 18, "+500 usd", GREEN, "power");
     if (it.type === "SWAN") {
       const pool = S.cold >= 1
         ? A.SWAN
@@ -234,6 +237,10 @@
       say("Laser eyes!", true); A.sfx.power(); return;
     }
     if (it.type === "COLD") { S.cold += 1; say("Cold storage secured!"); A.sfx.coin(); return; }
+    if (it.type === "BEAR" && S.laserOn) {
+      say("Bear vaporized!", true); A.sfx.wave();
+      return;
+    }
     beginCycle(it.type);
     const line = pickLine(it.type === "BULL" ? A.BULL : A.BEAR);
     if (line) say(line, true);
@@ -272,6 +279,8 @@
     if (S.phase !== "play" || S.btc <= 0) return;
     const btc = S.btc, usd = btc * S.price;
     S.cash += usd; S.btc = 0; S.sells++; A.sfx.sell();
+    const sellLine = pickLine(A.SELL);
+    if (sellLine) say(sellLine, true);
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(btc, "btc"), RED, "trade");
   }
@@ -286,6 +295,8 @@
     if (S.phase !== "play" || S.level < 2 || S.vt <= 0) return;
     const vt = S.vt, usd = vt * S.vtPrice;
     S.cash += usd; S.vt = 0; S.sells++; A.sfx.sell();
+    const sellLine = pickLine(A.SELL);
+    if (sellLine) say(sellLine, true);
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(vt, "vt"), RED, "trade");
   }
@@ -362,8 +373,8 @@
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * 0.05 * envelope + wobble * 0.45));
       if (S.powerT <= 0) endCycle();
     } else {
-      S.price = Math.max(0.01, S.price + (Math.random() - 0.5) * S.price * 0.012 * dt);
-      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtPrice + (Math.random() - 0.5) * S.vtPrice * 0.01 * dt);
+      S.price = Math.max(0.01, S.price + (Math.random() - 0.42) * S.price * 0.012 * dt + S.price * 0.0024 * dt);
+      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtPrice + (Math.random() - 0.45) * S.vtPrice * 0.01 * dt + S.vtPrice * 0.0012 * dt);
     }
     S.lifeT += dt; S.sampleAcc += dt;
     while (S.sampleAcc >= 0.12) {
@@ -412,8 +423,10 @@
     for (let j = S.items.length - 1; j >= 0; j--) {
       const it = S.items[j];
       it.x -= speed * dt;
-      if (S.laserOn && it.type === "SWAN" && it.x > S.bird.x - 8 && Math.abs(it.y - S.bird.y) < it.r + 14) {
-        burst(it.x, it.y, "#e8902a", 16); A.sfx.wave(); S.swans++; say("Black swan vaporized!", true);
+      if (S.laserOn && (it.type === "SWAN" || it.type === "BEAR") && it.x > S.bird.x - 8 && Math.abs(it.y - S.bird.y) < it.r + 14) {
+        burst(it.x, it.y, "#e8902a", 16); A.sfx.wave();
+        if (it.type === "SWAN") S.swans++;
+        say(it.type === "SWAN" ? "Black swan vaporized!" : "Bear vaporized!", true);
         S.items.splice(j, 1); continue;
       }
       const dx = S.bird.x - it.x, dy = S.bird.y - it.y;
