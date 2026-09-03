@@ -108,7 +108,7 @@
 
   function spoken(line) {
     if (line === "There is no second best") return "Therese no second best";
-    if (line === "You got F. T. X.'d!") return "you got F. T. exed";
+    if (line === "You got F. T. X.'d!") return "you got f.t.ext";
     return line;
   }
 
@@ -373,9 +373,9 @@
       const u = Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
       const envelope = Math.sin(Math.PI * u);
       const dir = S.power === "BULL" ? 1 : -1;
-      const wobble = Math.sin(S.cycleElapsed * 3.2) * 0.012;
-      S.price = Math.max(0.01, S.cycleStart * (1 + dir * 0.11 * envelope + wobble));
-      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * 0.05 * envelope + wobble * 0.45));
+      const wobble = Math.sin(S.cycleElapsed * 3.2) * 0.03;
+      S.price = Math.max(0.01, S.cycleStart * (1 + dir * 0.275 * envelope + wobble));
+      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * 0.125 * envelope + wobble * 0.45));
       if (S.powerT <= 0) endCycle();
     } else {
       S.price = Math.max(0.01, S.price + (Math.random() - 0.42) * S.price * 0.012 * dt + S.price * 0.0024 * dt);
