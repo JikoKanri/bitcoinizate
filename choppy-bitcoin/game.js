@@ -204,8 +204,13 @@
     }
     if (it.type === "COLD") { S.cold += 1; say("Cold storage secured!"); A.sfx.coin(); return; }
     beginCycle(it.type);
-    if (it.type === "BULL") { say("Bull market!", true); A.sfx.wave(); }
-    else { say("Bear market! Crash!", true); A.sfx.hit(); }
+    if (it.type === "BULL") {
+      const line = A.BULL[(Math.random() * A.BULL.length) | 0];
+      say(line, true); A.sfx.wave();
+    } else {
+      const line = A.BEAR[(Math.random() * A.BEAR.length) | 0];
+      say(line, true); A.sfx.hit();
+    }
   }
 
   function rescue() {
