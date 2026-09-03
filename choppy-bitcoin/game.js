@@ -59,7 +59,7 @@
     W: 400, H: 640,
     bird: { x: 72, y: 280, v: 0, r: 14 },
     pipes: [], items: [], particles: [], floats: [],
-    cash: 0, btc: 0, vt: 0, cold: 0, invuln: 0,
+    cash: 0, btc: 0, vt: 0, cold: 0, msig: 0, invuln: 0,
     power: "NONE", powerT: 0, laserOn: false, laserT: 0,
     widthMul: 1, widthT: 1, heightMul: 1, heightT: 1,
     price: 20000, vtPrice: 0,
@@ -189,7 +189,7 @@
     }
     S.lastGapY = gapY;
     S.spawnedPipes += 1;
-    S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false });
+    S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false });
     if (Math.random() < 0.48) {
       const type = pickItem();
       S.items.push({
@@ -197,6 +197,23 @@
         y: gapY + (Math.random() * 2 - 1) * gapH * (type === "SWAN" ? 0.18 : 0.12),
         type, r: type === "SWAN" ? 17 : 14,
       });
+    }
+  }
+
+  function tickHalve() {
+    if (S.phase !== "play") return;
+    if (S.halveLeft > 0) S.halveLeft -= 1;
+    if (S.halveLeft === 4) {
+      const pool = A.HALVE_SOON || ["Halving in sight!"];
+      say(pool[(Math.random() * pool.length) | 0], true, "halve");
+    }
+    if (S.halveLeft === 2) {
+      S.halveSide = Math.random() < 0.5 ? "up" : "down";
+      say(S.halveSide === "up" ? "look up!" : "look down!", true, "halve");
+    }
+    if (S.halveLeft === 0) {
+      spawnHalve();
+      S.halveLeft = HALVE_N;
     }
   }
 
@@ -218,6 +235,7 @@
     S.halveLeft = HALVE_N; S.halveBull = false; S.spawnedPipes = 0; S.halveSide = "up";
     S.swanBear = false; S.halveSpeechUntil = 0;
     S.cold = 0; S.invuln = 0;
+    if (!keepWallet) S.msig = 0;
     S.power = "NONE"; S.powerT = 0;
     applyLaser(false);
     S.widthMul = S.heightMul = 1;
@@ -271,20 +289,28 @@
     }
     if (x < S.W + 36) x = S.W + 56;
     const up = S.halveSide !== "down";
+    const r = 17;
+    let y;
+    if (up) y = Math.max(22, m.margin * 0.42);
+    else {
+      const box = $("trades") && $("trades").getBoundingClientRect();
+      const fieldR = field.getBoundingClientRect();
+      const btnTop = box && fieldR.height ? box.top - fieldR.top : S.H - 52;
+      y = Math.max(r + 8, btnTop - r - 10);
+    }
     S.items.push({
       x,
-      y: up ? Math.max(22, m.margin * 0.42) : S.H - Math.max(22, m.margin * 0.42),
+      y,
       type: "HALVE",
-      r: 17,
+      r,
     });
     A.sfx.cap();
   }
 
   function missHalve() {
-    const pool = A.HALVE_MISS || ["halving aborted", "the grinch stole halving", "bitcoin C.E.O to cancel halvings."];
+    const pool = A.HALVE_MISS || ["halving aborted", "the grinch stole halving", "bitcoin C.E.O to cancel halving."];
     const line = pool[(Math.random() * pool.length) | 0];
     if (line) say(line, true, "halve");
-    S.halveLeft = HALVE_N;
     S.halveSide = "up";
   }
 
@@ -310,21 +336,32 @@
     }
     if (it.type === "LASER") {
       if (S.laserOn) S.laserT += POWER_S; else applyLaser(true);
-      say("Laser eyes!", true); A.sfx.power(); return;
+      const line = pickLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"]);
+      say(line || "Laser eyes!", true);
+      A.sfx.power(); return;
     }
-    if (it.type === "COLD") { S.cold += 1; say("Cold storage secured!"); A.sfx.coin(); return; }
+    if (it.type === "COLD") {
+      S.cold += 1;
+      if (S.cold >= 10) {
+        S.cold -= 10;
+        S.msig += 1;
+        const line = Math.random() < 0.5 ? "Multisig enabled" : "Security improved to multisig";
+        say(line, true);
+      } else say("Cold storage secured!");
+      A.sfx.coin();
+      return;
+    }
     if (it.type === "BEAR" && S.laserOn) {
       A.sfx.wave();
       return;
     }
     if (it.type === "HALVE") {
       S.halvings += 1;
-      S.halveLeft = HALVE_N;
       beginCycle("BULL");
       S.halveBull = true;
       S.cycleDur = POWER_S * 1.2;
       S.powerT = S.cycleDur;
-      say("Halving!", true, "halve");
+      say("halving number " + S.halvings, true, "halve");
       A.sfx.cap();
       return;
     }
@@ -333,6 +370,23 @@
     if (line) say(line, true);
     if (it.type === "BULL") A.sfx.wave();
     else A.sfx.hit();
+  }
+
+  function hitFatal() {
+    if (S.invuln > 0) return;
+    if (S.cold > 0) { rescue(); return; }
+    if (S.msig > 0) {
+      S.msig -= 1;
+      S.cold = 9;
+      S.invuln = 1.4;
+      S.bird.v = metrics().jump * 0.7;
+      S.bird.y = Math.min(Math.max(S.bird.y, 70), S.H - 70);
+      say("Multisig rescue!", true);
+      A.sfx.coin();
+      burst(S.bird.x, S.bird.y, "#c8960a", 14);
+      return;
+    }
+    die();
   }
 
   function rescue() {
@@ -486,41 +540,36 @@
     }
     if (S.bird.y + S.bird.r > S.H - 4) {
       S.bird.y = S.H - 4 - S.bird.r;
-      if (S.invuln <= 0) { if (S.cold > 0) rescue(); else die(); }
+      if (S.invuln <= 0) hitFatal();
     }
     if (S.bird.y - S.bird.r < 0) { S.bird.y = S.bird.r; S.bird.v = 0; }
 
     const pw = m.pipeW * S.widthMul;
-    if (!S.pipes.length || S.spawnX - S.pipes[S.pipes.length - 1].x >= m.spacing) {
-      const nx = S.pipes.length ? S.pipes[S.pipes.length - 1].x + m.spacing : S.W + 40;
-      spawnPipe(nx); S.spawnX = nx;
+    let guard = 0;
+    while (guard++ < 8) {
+      const last = S.pipes[S.pipes.length - 1];
+      if (last && last.x > S.W - 8) break;
+      const nx = last ? last.x + m.spacing : S.W + 40;
+      spawnPipe(nx);
     }
     const hitR = S.bird.r * 0.78;
     for (let i = S.pipes.length - 1; i >= 0; i--) {
       const p = S.pipes[i];
       p.x -= speed * dt;
+      if (!p.seen && p.x <= S.W) {
+        p.seen = true;
+        tickHalve();
+      }
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.cash += 100; S.candles++; A.sfx.coin();
         pop(p.x + pw * 0.5, p.gapY, "+100 usd", GREEN, "gain");
-        if (S.halveLeft > 0) {
-          S.halveLeft -= 1;
-          if (S.halveLeft === 4) say("Halving in sight!", true, "halve");
-          if (S.halveLeft === 2) {
-            S.halveSide = Math.random() < 0.5 ? "up" : "down";
-            say(S.halveSide === "up" ? "look up!" : "look down!", true, "halve");
-          }
-          if (S.halveLeft <= 0) {
-            S.halveLeft = 0;
-            spawnHalve();
-          }
-        }
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
       if (inX) {
         const ends = pipeEnds(p);
         if (S.bird.y - hitR < ends.top + 2 || S.bird.y + hitR > ends.bot - 2) {
           if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); S.cash += 200; pop(p.x + pw * 0.5, S.bird.y - 16, "+200 usd", GREEN, "gain"); S.pipes.splice(i, 1); continue; }
-          else if (S.invuln <= 0) { if (S.cold > 0) rescue(); else die(); }
+          else if (S.invuln <= 0) hitFatal();
         }
       }
       if (p.x + pw < -60) S.pipes.splice(i, 1);
@@ -729,6 +778,7 @@
     $("h-btc").textContent = fmtBtc(S.btc);
     $("h-price").textContent = money(S.price);
     $("h-cold").textContent = String(S.cold);
+    $("h-msig").textContent = String(S.msig);
     $("h-vt").textContent = fmtVt(S.vt);
     $("h-vtpx").textContent = money(S.vtPrice);
     $("h-halve").textContent = String(S.halveLeft);
