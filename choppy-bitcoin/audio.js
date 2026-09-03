@@ -89,7 +89,7 @@
   A.HALVE_SOON = ["Halving in sight!","tick tock, next block"];
   A.BEAR = ["Bear market! Crash!","quantum conundrum!","Bukele all in ethereum","Bitcoin Depravement Proposals"];
   A.SELL = ["shame on you, nocoiner!","short it!"];
-  A.HALVE_MISS = ["halving aborted","the grinch stole halving","bitcoin C.E.O to cancel halving."];
+  A.HALVE_MISS = ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Peter Schiff stole the halving","Faketoshi stole the halving"];
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
