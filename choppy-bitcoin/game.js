@@ -307,9 +307,8 @@
     A.sfx.cap();
   }
 
-
   function missHalve() {
-    const pool = A.HALVE_MISS || ["Halving aborted", "The grinch stole the halving", "Bitcoin C.E.O to cancel halving"];
+    const pool = A.HALVE_MISS || ["Halving aborted", "The grinch stole the halving", "Bitcoin C.E.O to cancel halving", "Gary Gensler stole the halving", "Peter Schiff stole the halving", "Faketoshi stole the halving"];
     const line = pool[(Math.random() * pool.length) | 0];
     if (line) say(line, true, "halve");
     S.halveSide = "up";
