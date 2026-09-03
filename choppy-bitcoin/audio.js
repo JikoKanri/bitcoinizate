@@ -88,7 +88,7 @@
     }, 165);
   };
   A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
-  A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer"];
+  A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
   A.BEAR = ["Bear market! Crash!","quantum conundrum!","El Salvador all in ETH!","Bitcoin Depravement Proposals"];
   A.SELL = ["shame on you, nocoiner!","short it!"];
   let cachedVoice = null;
