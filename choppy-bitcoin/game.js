@@ -63,7 +63,7 @@
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
     tape: [], tapeVt: [], level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, buys: 0, sells: 0, swans: 0,
-    stats: null, welcomed: false, introCounted: false,
+    stats: null, welcomed: false, introCounted: false, speechUntil: 0,
   };
 
   function net() { return S.cash + S.btc * S.price + S.vt * S.vtPrice; }
@@ -82,19 +82,49 @@
     for (let i = 0; i < n; i++) S.particles.push({ x, y, vx: (Math.random() - 0.5) * 180, vy: (Math.random() - 0.5) * 180 - 20, life: 0.35 + Math.random() * 0.3, color });
   }
 
-  function pop(x, y, text, color) {
-    S.floats.push({ x, y, text, color, life: 1.1, vy: -38 });
+  function pop(x, y, text, color, kind) {
+    const gain = kind === "gain";
+    S.floats.push({
+      x, y, text, color,
+      life: gain ? 0.825 : 1.1,
+      vy: gain ? -32 : -38,
+      size: gain ? 7 : 13,
+      maxA: gain ? 0.75 : 0.875,
+    });
   }
 
   function fmtAmt(n, ticker) {
-    if (ticker === "USD") return Math.round(n).toLocaleString("en-US") + " USD";
-    if (ticker === "BTC") return (n >= 1 ? n.toFixed(4) : n.toFixed(6)) + " BTC";
-    return (n >= 1 ? n.toFixed(3) : n.toFixed(4)) + " " + ticker;
+    const tag = ticker.toLowerCase();
+    if (tag === "usd") return Math.round(n).toLocaleString("en-US") + " usd";
+    if (tag === "btc") return (n >= 1 ? n.toFixed(4) : n.toFixed(6)) + " btc";
+    return (n >= 1 ? n.toFixed(3) : n.toFixed(4)) + " " + tag;
+  }
+
+  function lineDur(line) {
+    if (!line) return 0;
+    return Math.max(0.75, line.length * 0.078);
   }
 
   function say(line, urgent) {
-    S.ticker = line; S.tickerT = 2.4;
+    if (!line) return;
+    S.ticker = line; S.tickerT = Math.max(1.5, lineDur(line));
+    S.speechUntil = S.lifeT + lineDur(line);
     A.speak(line, urgent);
+  }
+
+  function pickLine(pool) {
+    const short = pool.filter((l) => l.length <= 18);
+    const busy = S.lifeT < S.speechUntil - 0.12;
+    const m = metrics();
+    let speed = m.speed * S.speedMul;
+    if (S.power === "BULL" || S.power === "BEAR" || S.laserOn) speed *= 1.28;
+    let soon = false;
+    for (const it of S.items) {
+      const eta = (it.x - S.bird.x) / Math.max(40, speed);
+      if (eta > 0.08 && eta < 2.3) { soon = true; break; }
+    }
+    const bag = (!busy && !soon ? pool : short).concat([""]);
+    return bag[(Math.random() * bag.length) | 0];
   }
 
   function applyLaser(on) {
@@ -159,6 +189,7 @@
     S.lastGapY = S.bird.y; S.dead = false;
     S.cycleStart = S.price; S.cycleDur = POWER_S; S.cycleElapsed = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = [];
+    S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
     S.spawnX = first + m.spacing * 2;
@@ -185,7 +216,7 @@
     const color = it.type === "BULL" ? GREEN : it.type === "BEAR" ? RED : it.type === "COLD" ? "#33c6e8" : it.type === "LASER" ? "#e8902a" : "#c9a0ff";
     burst(it.x, it.y, color, 12);
     S.cash += 500;
-    pop(it.x, it.y - 18, "+500 usd", GREEN);
+    pop(it.x, it.y - 18, "+500 usd", GREEN, "gain");
     if (it.type === "SWAN") {
       const pool = S.cold >= 1
         ? A.SWAN
@@ -204,13 +235,10 @@
     }
     if (it.type === "COLD") { S.cold += 1; say("Cold storage secured!"); A.sfx.coin(); return; }
     beginCycle(it.type);
-    if (it.type === "BULL") {
-      const line = A.BULL[(Math.random() * A.BULL.length) | 0];
-      say(line, true); A.sfx.wave();
-    } else {
-      const line = A.BEAR[(Math.random() * A.BEAR.length) | 0];
-      say(line, true); A.sfx.hit();
-    }
+    const line = pickLine(it.type === "BULL" ? A.BULL : A.BEAR);
+    if (line) say(line, true);
+    if (it.type === "BULL") A.sfx.wave();
+    else A.sfx.hit();
   }
 
   function rescue() {
@@ -237,29 +265,29 @@
     if (S.phase !== "play" || S.cash <= 0 || S.price <= 0) return;
     const usd = S.cash, got = usd / S.price;
     S.btc += got; S.cash = 0; S.buys++; A.sfx.buy();
-    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "BTC"), GREEN);
-    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "USD"), RED);
+    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
+    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "usd"), RED, "trade");
   }
   function sellBtc() {
     if (S.phase !== "play" || S.btc <= 0) return;
     const btc = S.btc, usd = btc * S.price;
     S.cash += usd; S.btc = 0; S.sells++; A.sfx.sell();
-    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "USD"), GREEN);
-    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(btc, "BTC"), RED);
+    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
+    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(btc, "btc"), RED, "trade");
   }
   function buyVt() {
     if (S.phase !== "play" || S.level < 2 || S.cash <= 0 || S.vtPrice <= 0) return;
     const usd = S.cash, got = usd / S.vtPrice;
     S.vt += got; S.cash = 0; S.buys++; A.sfx.buy();
-    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "VT"), GREEN);
-    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "USD"), RED);
+    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "vt"), GREEN, "trade");
+    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "usd"), RED, "trade");
   }
   function sellVt() {
     if (S.phase !== "play" || S.level < 2 || S.vt <= 0) return;
     const vt = S.vt, usd = vt * S.vtPrice;
     S.cash += usd; S.vt = 0; S.sells++; A.sfx.sell();
-    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "USD"), GREEN);
-    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(vt, "VT"), RED);
+    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
+    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(vt, "vt"), RED, "trade");
   }
   function togglePause() {
     if (S.phase === "play") setPhase("paused");
@@ -369,13 +397,13 @@
       p.x -= speed * dt;
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.cash += 100; S.candles++; A.sfx.coin();
-        pop(p.x + pw * 0.5, p.gapY, "+100 usd", GREEN);
+        pop(p.x + pw * 0.5, p.gapY, "+100 usd", GREEN, "gain");
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
       if (inX) {
         const ends = pipeEnds(p);
         if (S.bird.y - hitR < ends.top + 2 || S.bird.y + hitR > ends.bot - 2) {
-          if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); S.cash += 200; pop(p.x + pw * 0.5, S.bird.y - 16, "+200 usd", GREEN); S.pipes.splice(i, 1); continue; }
+          if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); S.cash += 200; pop(p.x + pw * 0.5, S.bird.y - 16, "+200 usd", GREEN, "gain"); S.pipes.splice(i, 1); continue; }
           else if (S.invuln <= 0) { if (S.cold > 0) rescue(); else die(); }
         }
       }
@@ -419,24 +447,27 @@
     ctx.fillStyle = "rgba(255,255,255,0.16)"; ctx.fill();
     ctx.fillStyle = ink; ctx.strokeStyle = ink; ctx.lineWidth = 1.7; ctx.lineJoin = "round"; ctx.lineCap = "round";
     if (it.type === "BULL") {
-      ctx.lineWidth = Math.max(2, r * 0.16);
-      ctx.beginPath(); ctx.arc(-r * 0.06, r * 0.18, r * 0.5, -Math.PI * 0.92, -Math.PI * 0.18); ctx.stroke();
-      ctx.beginPath(); ctx.arc(r * 0.06, r * 0.18, r * 0.5, Math.PI * 1.18, Math.PI * 0.08, true); ctx.stroke();
-      ctx.beginPath(); ctx.ellipse(0, r * 0.22, r * 0.34, r * 0.3, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = fill; ctx.beginPath(); ctx.ellipse(0, r * 0.32, r * 0.16, r * 0.11, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = ink;
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 0.52);
+      ctx.lineTo(r * 0.48, r * 0.38);
+      ctx.lineTo(-r * 0.48, r * 0.38);
+      ctx.closePath(); ctx.fill();
     } else if (it.type === "BEAR") {
-      ctx.beginPath(); ctx.arc(-r * 0.36, -r * 0.28, r * 0.22, 0, Math.PI * 2); ctx.arc(r * 0.36, -r * 0.28, r * 0.22, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(0, r * 0.08, r * 0.46, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = fill;
-      ctx.beginPath(); ctx.arc(-r * 0.36, -r * 0.28, r * 0.1, 0, Math.PI * 2); ctx.arc(r * 0.36, -r * 0.28, r * 0.1, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(0, r * 0.22, r * 0.22, r * 0.14, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(0, r * 0.18, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = ink;
+      ctx.beginPath();
+      ctx.moveTo(0, r * 0.52);
+      ctx.lineTo(r * 0.48, -r * 0.38);
+      ctx.lineTo(-r * 0.48, -r * 0.38);
+      ctx.closePath(); ctx.fill();
     } else if (it.type === "LASER") {
-      ctx.lineWidth = Math.max(2.4, r * 0.2);
-      ctx.beginPath(); ctx.moveTo(-r * 0.82, 0); ctx.lineTo(-r * 0.32, 0); ctx.moveTo(r * 0.32, 0); ctx.lineTo(r * 0.82, 0); ctx.stroke();
-      ctx.fillStyle = "#f3efe6"; ctx.beginPath(); ctx.arc(0, 0, r * 0.34, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(0, 0, r * 0.16, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#e8902a"; ctx.beginPath(); ctx.arc(r * 0.05, 0, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = wash || "#d23a2a";
+      ctx.lineWidth = Math.max(2.2, r * 0.18);
+      ctx.lineCap = "butt";
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.92, -r * 0.16); ctx.lineTo(r * 0.92, -r * 0.16);
+      ctx.moveTo(-r * 0.92, r * 0.16); ctx.lineTo(r * 0.92, r * 0.16);
+      ctx.stroke();
     } else if (it.type === "COLD") {
       for (let a = 0; a < 6; a++) {
         const ang = (a * Math.PI) / 3;
@@ -532,10 +563,10 @@
       ctx.globalAlpha = Math.max(0, pt.life / 0.5);
       ctx.fillStyle = wash || pt.color; ctx.fillRect(pt.x, pt.y, 3, 3);
     }
-    ctx.font = "700 13px \"IBM Plex Mono\", monospace";
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const f of S.floats) {
-      ctx.globalAlpha = Math.max(0, Math.min(1, f.life / 0.35));
+      ctx.font = "700 " + f.size + "px \"IBM Plex Mono\", monospace";
+      ctx.globalAlpha = f.maxA * Math.max(0, Math.min(1, f.life / 0.28));
       ctx.fillStyle = f.color;
       ctx.fillText(f.text, f.x, f.y);
     }
