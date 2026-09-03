@@ -138,7 +138,6 @@
     S.laserOn = on;
     if (on) {
       S.laserT = POWER_S; S.widthT = 0.378; S.heightT = 0.9;
-      if (S.power === "BEAR") endCycle();
     } else { S.laserT = 0; S.widthT = 1; S.heightT = 1; }
   }
 
@@ -235,7 +234,8 @@
       A.sfx.boom();
       if (S.power === "BULL") { S.power = "NONE"; S.powerT = 0; }
       applyLaser(false);
-      if (S.cold > 0) S.cold = 0; else beginCycle("BEAR");
+      if (S.cold > 0) S.cold = 0;
+      beginCycle("BEAR");
       return;
     }
     if (it.type === "LASER") {
@@ -244,7 +244,7 @@
     }
     if (it.type === "COLD") { S.cold += 1; say("Cold storage secured!"); A.sfx.coin(); return; }
     if (it.type === "BEAR" && S.laserOn) {
-      say("Bear vaporized!", true); A.sfx.wave();
+      A.sfx.wave();
       return;
     }
     beginCycle(it.type);
@@ -429,9 +429,9 @@
       const it = S.items[j];
       it.x -= speed * dt;
       if (S.laserOn && (it.type === "SWAN" || it.type === "BEAR") && it.x > S.bird.x - 8 && Math.abs(it.y - S.bird.y) < it.r + 14) {
-        burst(it.x, it.y, "#e8902a", 16); A.sfx.wave();
-        if (it.type === "SWAN") S.swans++;
-        say(it.type === "SWAN" ? "Black swan vaporized!" : "Bear vaporized!", true);
+        burst(it.x, it.y, "#e8902a", 16);
+        if (it.type === "SWAN") { S.swans++; A.sfx.boom(); say("Black swan vaporized!", true); }
+        else A.sfx.wave();
         S.items.splice(j, 1); continue;
       }
       const dx = S.bird.x - it.x, dy = S.bird.y - it.y;
@@ -449,7 +449,7 @@
     const pal = {
       BULL: { fill: "#1f8a4c", ring: "#9dffc4", ink: "#04150c" },
       BEAR: { fill: "#a33a32", ring: "#ff9b92", ink: "#1a0605" },
-      LASER: { fill: "#c56a12", ring: "#ffd59a", ink: "#1a0e04" },
+      LASER: { fill: "#120806", ring: "#ffe7c2", ink: "#ff2d24" },
       COLD: { fill: "#1788a6", ring: "#9befff", ink: "#041318" },
       SWAN: { fill: "#161218", ring: "#f0e6f0", ink: "#f3efe6" },
     }[it.type];
@@ -479,12 +479,18 @@
       ctx.lineTo(-r * 0.48, -r * 0.38);
       ctx.closePath(); ctx.fill();
     } else if (it.type === "LASER") {
-      ctx.strokeStyle = wash || "#d23a2a";
-      ctx.lineWidth = Math.max(2.2, r * 0.18);
+      ctx.strokeStyle = wash ? "#04150c" : "#fff4e8";
+      ctx.lineWidth = Math.max(3.6, r * 0.28);
       ctx.lineCap = "butt";
       ctx.beginPath();
-      ctx.moveTo(-r * 0.92, -r * 0.16); ctx.lineTo(r * 0.92, -r * 0.16);
-      ctx.moveTo(-r * 0.92, r * 0.16); ctx.lineTo(r * 0.92, r * 0.16);
+      ctx.moveTo(-r * 0.92, -r * 0.18); ctx.lineTo(r * 0.92, -r * 0.18);
+      ctx.moveTo(-r * 0.92, r * 0.18); ctx.lineTo(r * 0.92, r * 0.18);
+      ctx.stroke();
+      ctx.strokeStyle = wash || "#ff2a22";
+      ctx.lineWidth = Math.max(2.1, r * 0.16);
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.92, -r * 0.18); ctx.lineTo(r * 0.92, -r * 0.18);
+      ctx.moveTo(-r * 0.92, r * 0.18); ctx.lineTo(r * 0.92, r * 0.18);
       ctx.stroke();
     } else if (it.type === "COLD") {
       for (let a = 0; a < 6; a++) {
