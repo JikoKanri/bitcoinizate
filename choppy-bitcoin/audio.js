@@ -8,7 +8,10 @@
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!ctx) ctx = new AC({ latencyHint: "interactive" });
       if (ctx.state === "suspended") ctx.resume();
-      if (window.speechSynthesis) window.speechSynthesis.getVoices();
+      if (window.speechSynthesis) {
+        window.speechSynthesis.getVoices();
+        pickVoice();
+      }
     },
     sfx: {}, speak() {}, cancelSpeech() {}, startMusic() {}, stopMusic() {},
   };
@@ -80,32 +83,53 @@
     }, 200);
   };
   A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
+  let cachedVoice = null;
+  function scoreVoice(v) {
+    const n = (v.name || "").toLowerCase();
+    const lang = (v.lang || "").toLowerCase();
+    if (lang.startsWith("es")) return -1000;
+    if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("argentina")) return -1000;
+    let s = 0;
+    if (lang.startsWith("en")) s += 40;
+    if (lang === "en-us" || lang === "en_us") s += 20;
+    if (n.includes("fred")) s += 120;
+    if (n.includes("ralph")) s += 90;
+    if (n.includes("daniel")) s += 70;
+    if (n.includes("alex")) s += 45;
+    if (n.includes("google us english")) s += 85;
+    if (n.includes("english united states") || n.includes("us english")) s += 70;
+    if (n.includes("google uk english male")) s += 75;
+    if (n.includes("microsoft david") || n.includes("microsoft mark")) s += 55;
+    if (n.includes("samsung") && n.includes("english")) s += 50;
+    if (n.includes("compact") || n.includes("novelty") || n.includes("robot") || n.includes("espeak")) s += 40;
+    if (n.includes("male")) s += 10;
+    if (n.includes("female") || n.includes("samantha") || n.includes("zira") || n.includes("karen")) s -= 25;
+    return s;
+  }
   function pickVoice() {
-    if (!window.speechSynthesis) return null;
+    if (!window.speechSynthesis) return cachedVoice;
     const voices = speechSynthesis.getVoices();
-    const en = voices.filter((v) => /^en([-_]|$)/i.test(v.lang));
-    const rank = (v) => {
-      const n = v.name.toLowerCase(); let s = 0;
-      if (n.includes("fred")) s += 80;
-      if (n.includes("daniel")) s += 55;
-      if (n.includes("google uk english male")) s += 60;
-      if (n.includes("google us english")) s += 50;
-      if (n.includes("microsoft david")) s += 48;
-      if (n.includes("male")) s += 12;
-      if (/en-gb/i.test(v.lang)) s += 12;
-      if (/^es/i.test(v.lang)) s -= 200;
-      return s;
-    };
-    en.sort((a, b) => rank(b) - rank(a));
-    return en[0] || null;
+    if (!voices.length) return cachedVoice;
+    const ranked = voices.slice().sort((a, b) => scoreVoice(b) - scoreVoice(a));
+    const best = ranked[0] && scoreVoice(ranked[0]) > 0 ? ranked[0] : null;
+    if (best) cachedVoice = best;
+    return cachedVoice;
+  }
+  if (typeof speechSynthesis !== "undefined") {
+    speechSynthesis.addEventListener("voiceschanged", pickVoice);
+    pickVoice();
   }
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
     if (!window.speechSynthesis) return;
     if (urgent) speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(line);
-    u.rate = 0.92; u.pitch = 0.55;
-    const v = pickVoice(); if (v) u.voice = v;
+    u.lang = "en-US";
+    u.rate = 0.78;
+    u.pitch = 0.18;
+    u.volume = 1;
+    const v = pickVoice();
+    if (v) { u.voice = v; u.lang = v.lang && v.lang.toLowerCase().startsWith("en") ? v.lang : "en-US"; }
     speechSynthesis.speak(u);
   };
 })();
