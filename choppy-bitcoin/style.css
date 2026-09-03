@@ -12,6 +12,7 @@ body { display: flex; flex-direction: column; }
 .speed-bar { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-bottom: 1px solid #2a2a2e; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #8a8680; }
 .spd { min-height: 32px; min-width: 40px; border: 1px solid #2a2a2e; background: transparent; color: #8a8680; font: inherit; cursor: pointer; }
 .spd.on { border-color: #c8960a; background: #c8960a; color: #09090b; }
+.home { margin-left: auto; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #c8960a; text-decoration: none; border: 1px solid #2a2a2e; font-size: 16px; letter-spacing: 0; text-transform: none; }
 .field { position: relative; flex: 1; min-height: 320px; overflow: hidden; }
 #c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 .field.bear { animation: shake 0.18s infinite; }
@@ -39,4 +40,3 @@ body { display: flex; flex-direction: column; }
 .overlay li { display: flex; justify-content: space-between; padding: 2px 0; }
 .overlay .k { color: #8a8680; }
 .cta { min-height: 44px; padding: 0 22px; background: #c8960a; color: #09090b; font-weight: 700; }
-.back { position: fixed; top: 8px; left: 8px; z-index: 20; color: #c8960a; text-decoration: none; font-size: 12px; background: rgba(10,10,12,0.75); padding: 6px 10px; border: 1px solid #c8960a; }
