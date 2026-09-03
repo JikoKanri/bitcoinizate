@@ -51,20 +51,20 @@
       const ac = bus();
       if (ac) {
         const now = ac.currentTime;
-        const n = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.38), ac.sampleRate);
+        const n = ac.createBuffer(1, Math.floor(ac.sampleRate * 0.5), ac.sampleRate);
         const d = n.getChannelData(0);
         for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
         const src = ac.createBufferSource(); src.buffer = n;
         const f = ac.createBiquadFilter(); f.type = "lowpass";
-        f.frequency.setValueAtTime(1100, now);
-        f.frequency.exponentialRampToValueAtTime(70, now + 0.34);
+        f.frequency.setValueAtTime(1400, now);
+        f.frequency.exponentialRampToValueAtTime(55, now + 0.42);
         const g = ac.createGain();
-        g.gain.setValueAtTime(0.24, now);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.36);
+        g.gain.setValueAtTime(0.42, now);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
         src.connect(f); f.connect(g); g.connect(ac.destination); src.start(now);
       }
-      beep(95, 0.22, "sawtooth", 0.1, 38);
-      beep(52, 0.34, "square", 0.07, 28, 0.03);
+      beep(110, 0.28, "sawtooth", 0.16, 32);
+      beep(48, 0.42, "square", 0.12, 22, 0.02);
     },
   };
   A.stopMusic = () => { if (musicInterval != null) { clearInterval(musicInterval); musicInterval = null; } };
@@ -76,11 +76,11 @@
     musicInterval = setInterval(() => {
       if (!isPlaying()) return;
       const p = getPower();
-      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.22, "sawtooth", 0.06);
-      else if (p === "BULL") beep(BULL[musicStep % 8], 0.11, "square", 0.04);
-      else beep(IDLE[musicStep % 8], 0.18, "sine", 0.05);
+      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.3, "sawtooth", 0.13);
+      else if (p === "BULL") beep(BULL[musicStep % 8], 0.18, "square", 0.1);
+      else beep(IDLE[musicStep % 8], 0.18, "sine", 0.045);
       musicStep++;
-    }, 200);
+    }, 180);
   };
   A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
   A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer"];
