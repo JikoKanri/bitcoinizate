@@ -83,6 +83,8 @@
     }, 200);
   };
   A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
+  A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer"];
+  A.BEAR = ["Bear market! Crash!","quantum conundrum!","El Salvador all in ETH!","Bitcoin Depravement Proposals"];
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
