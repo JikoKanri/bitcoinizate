@@ -77,15 +77,11 @@
     musicInterval = setInterval(() => {
       if (!isPlaying()) return;
       const p = getPower();
-      if (p === "BEAR") {
-        beep(BEAR[musicStep % 8], 0.34, "sawtooth", 0.2);
-        beep(BEAR[musicStep % 8] * 0.5, 0.4, "square", 0.1);
-      } else if (p === "BULL") {
-        beep(BULL[musicStep % 8], 0.2, "square", 0.16);
-        beep(BULL[musicStep % 8] * 2, 0.12, "triangle", 0.07);
-      } else beep(IDLE[musicStep % 8], 0.18, "sine", 0.032);
+      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.22, "sawtooth", 0.06);
+      else if (p === "BULL") beep(BULL[musicStep % 8], 0.11, "square", 0.04);
+      else beep(IDLE[musicStep % 8], 0.18, "sine", 0.05);
       musicStep++;
-    }, 165);
+    }, 200);
   };
   A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
   A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
