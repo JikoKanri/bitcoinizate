@@ -43,7 +43,12 @@
 
   function pickItem() {
     const bag = ["BULL","BULL","BULL","BULL","BULL","BULL","BULL","BULL","BEAR","BEAR","BEAR","BEAR","BEAR","LASER","LASER","COLD","COLD","COLD","SWAN","SWAN","SWAN","SWAN"];
-    return bag[(Math.random() * bag.length) | 0];
+    let type = bag[(Math.random() * bag.length) | 0];
+    if (type === "SWAN" && S.spawnedPipes < 7) {
+      const safe = bag.filter((t) => t !== "SWAN");
+      type = safe[(Math.random() * safe.length) | 0];
+    }
+    return type;
   }
 
   const S = {
@@ -63,6 +68,7 @@
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
     tape: [], tapeVt: [], level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, buys: 0, sells: 0, swans: 0,
+    halvings: 0, halveLeft: 210, halveBull: false, spawnedPipes: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0,
   };
 
@@ -164,6 +170,7 @@
       gapY = Math.max(minY, Math.min(maxY, gapY));
     }
     S.lastGapY = gapY;
+    S.spawnedPipes += 1;
     S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false });
     if (Math.random() < 0.48) {
       const type = pickItem();
@@ -188,7 +195,9 @@
       S.price = gauss(20000, 0, 40000);
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = S.cash; S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0;
+      S.halvings = 0;
     }
+    S.halveLeft = 210; S.halveBull = false; S.spawnedPipes = 0;
     S.cold = 0; S.invuln = 0;
     S.power = "NONE"; S.powerT = 0;
     applyLaser(false);
@@ -204,24 +213,57 @@
   }
 
   function beginCycle(type) {
+    if (type !== "BULL") S.halveBull = false;
     if (S.power === type) { S.powerT += POWER_S; S.cycleDur += POWER_S; return; }
     S.cycleStart = S.price; S.vtCycle = S.vtPrice;
     S.cycleDur = POWER_S; S.cycleElapsed = 0;
     S.power = type; S.powerT = POWER_S;
   }
 
+  function halveMinRise() {
+    return 15000 * Math.max(1, S.halvings);
+  }
+
   function endCycle() {
     if (S.power === "NONE") return;
     const dir = S.power === "BULL" ? 1 : -1;
-    const residual = dir * (S.power === "BULL" ? 0.018 + Math.random() * 0.03 : 0.008 + Math.random() * 0.016);
-    const wobble = (Math.random() - 0.4) * 0.035;
-    S.price = Math.max(0.01, S.cycleStart * (1 + residual + wobble));
-    if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + residual * 0.55 + wobble * 0.5));
-    S.power = "NONE"; S.powerT = 0;
+    let next;
+    if (S.halveBull && S.power === "BULL") {
+      const floor = S.cycleStart + halveMinRise();
+      const residual = 0.1 + Math.random() * 0.08;
+      next = Math.max(floor, S.cycleStart * (1 + residual));
+    } else {
+      const residual = dir * (S.power === "BULL" ? 0.018 + Math.random() * 0.03 : 0.008 + Math.random() * 0.016);
+      const wobble = (Math.random() - 0.4) * 0.035;
+      next = S.cycleStart * (1 + residual + wobble);
+    }
+    S.price = Math.max(0.01, next);
+    if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (S.halveBull ? 1.06 : 1 + (S.price / S.cycleStart - 1) * 0.55));
+    S.power = "NONE"; S.powerT = 0; S.halveBull = false;
+  }
+
+  function spawnHalve() {
+    if (S.items.some((it) => it.type === "HALVE")) return;
+    const top = Math.random() < 0.5;
+    S.items.push({
+      x: S.W + 36,
+      y: top ? 30 : S.H - 30,
+      type: "HALVE",
+      r: 17,
+    });
+    say("Halvening in sight!", true);
+    A.sfx.cap();
+  }
+
+  function missHalve() {
+    const pool = A.HALVE_MISS || ["halving aborted", "the grinch stole halving", "bitcoin C.E.O to cancel halvings."];
+    const line = pool[(Math.random() * pool.length) | 0];
+    if (line) say(line, true);
+    S.halveLeft = 210;
   }
 
   function collect(it) {
-    const color = it.type === "BULL" ? GREEN : it.type === "BEAR" ? RED : it.type === "COLD" ? "#33c6e8" : it.type === "LASER" ? "#e8902a" : "#c9a0ff";
+    const color = it.type === "BULL" || it.type === "HALVE" ? GREEN : it.type === "BEAR" ? RED : it.type === "COLD" ? "#33c6e8" : it.type === "LASER" ? "#e8902a" : "#c9a0ff";
     burst(it.x, it.y, color, 12);
     S.cash += 500;
     pop(it.x, it.y - 18, "+500 usd", GREEN, "power");
@@ -232,7 +274,7 @@
       const line = pool[(Math.random() * pool.length) | 0];
       S.ticker = line; S.tickerT = 2.4; A.speak(spoken(line), true);
       A.sfx.boom();
-      if (S.power === "BULL") { S.power = "NONE"; S.powerT = 0; }
+      if (S.power === "BULL") { S.power = "NONE"; S.powerT = 0; S.halveBull = false; }
       applyLaser(false);
       if (S.cold > 0) S.cold = 0;
       beginCycle("BEAR");
@@ -245,6 +287,17 @@
     if (it.type === "COLD") { S.cold += 1; say("Cold storage secured!"); A.sfx.coin(); return; }
     if (it.type === "BEAR" && S.laserOn) {
       A.sfx.wave();
+      return;
+    }
+    if (it.type === "HALVE") {
+      S.halvings += 1;
+      S.halveLeft = 210;
+      beginCycle("BULL");
+      S.halveBull = true;
+      S.cycleDur = POWER_S * 1.2;
+      S.powerT = S.cycleDur;
+      say("Halvening!", true);
+      A.sfx.cap();
       return;
     }
     beginCycle(it.type);
@@ -373,9 +426,10 @@
       const u = Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
       const envelope = Math.sin(Math.PI * u);
       const dir = S.power === "BULL" ? 1 : -1;
-      const wobble = Math.sin(S.cycleElapsed * 3.2) * 0.03;
-      S.price = Math.max(0.01, S.cycleStart * (1 + dir * 0.275 * envelope + wobble));
-      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * 0.125 * envelope + wobble * 0.45));
+      const amp = S.halveBull ? 0.62 : 0.275;
+      const wobble = Math.sin(S.cycleElapsed * 3.2) * (S.halveBull ? 0.05 : 0.03);
+      S.price = Math.max(0.01, S.cycleStart * (1 + dir * amp * envelope + wobble));
+      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * envelope + wobble * 0.45));
       if (S.powerT <= 0) endCycle();
     } else {
       S.price = Math.max(0.01, S.price + (Math.random() - 0.42) * S.price * 0.012 * dt + S.price * 0.0024 * dt);
@@ -414,6 +468,10 @@
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.cash += 100; S.candles++; A.sfx.coin();
         pop(p.x + pw * 0.5, p.gapY, "+100 usd", GREEN, "gain");
+        if (S.halveLeft > 0) {
+          S.halveLeft -= 1;
+          if (S.halveLeft === 0) spawnHalve();
+        }
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
       if (inX) {
@@ -436,7 +494,10 @@
       }
       const dx = S.bird.x - it.x, dy = S.bird.y - it.y;
       if (dx * dx + dy * dy < (hitR + it.r) * (hitR + it.r)) { collect(it); S.items.splice(j, 1); continue; }
-      if (it.x < -40) S.items.splice(j, 1);
+      if (it.x < -40) {
+        if (it.type === "HALVE") missHalve();
+        S.items.splice(j, 1);
+      }
     }
     const n = net();
     if (n > S.peakNet) S.peakNet = n;
@@ -452,7 +513,9 @@
       LASER: { fill: "#120806", ring: "#ffe7c2", ink: "#ff2d24" },
       COLD: { fill: "#1788a6", ring: "#9befff", ink: "#041318" },
       SWAN: { fill: "#161218", ring: "#f0e6f0", ink: "#f3efe6" },
+      HALVE: { fill: "#c8960a", ring: "#ffe7a0", ink: "#1a1204" },
     }[it.type];
+    if (!pal) return;
     const fill = wash || pal.fill;
     const ring = wash || pal.ring;
     const ink = wash ? "#04150c" : pal.ink;
@@ -503,6 +566,11 @@
         ctx.lineTo(bx + Math.cos(ang - 0.85) * r * 0.16, by + Math.sin(ang - 0.85) * r * 0.16);
         ctx.stroke();
       }
+    } else if (it.type === "HALVE") {
+      ctx.fillStyle = ink;
+      ctx.font = "700 " + Math.round(r * 1.05) + "px \"IBM Plex Mono\", monospace";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("½", 0, 1);
     } else {
       ctx.beginPath(); ctx.ellipse(r * 0.06, r * 0.2, r * 0.4, r * 0.26, -0.28, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.moveTo(-r * 0.02, r * 0.06); ctx.quadraticCurveTo(-r * 0.42, -r * 0.32, -r * 0.04, -r * 0.5); ctx.quadraticCurveTo(r * 0.16, -r * 0.52, r * 0.22, -r * 0.38);
@@ -620,6 +688,8 @@
     $("h-cold").textContent = String(S.cold);
     $("h-vt").textContent = fmtVt(S.vt);
     $("h-vtpx").textContent = money(S.vtPrice);
+    $("h-halve").textContent = String(S.halveLeft);
+    $("h-halves").textContent = String(S.halvings);
     const bonus = S.level >= 2;
     $("hud").className = "hud-grid " + (bonus ? "hud-3" : "hud-4");
     $("h-vt-wrap").classList.toggle("hide", !bonus);
@@ -629,7 +699,8 @@
     $("trades").classList.toggle("hide", !playing);
     $("pause-btn").classList.toggle("hide", !playing);
     let status = "";
-    if (S.power === "BULL") status = "BULL RUN  " + Math.ceil(S.powerT) + "s";
+    if (S.halveBull) status = "HALVENING  " + Math.ceil(S.powerT) + "s";
+    else if (S.power === "BULL") status = "BULL RUN  " + Math.ceil(S.powerT) + "s";
     else if (S.power === "BEAR") status = "BEAR CRASH  " + Math.ceil(S.powerT) + "s";
     if (S.laserOn) status = status ? status + "  ·  LASER " + Math.ceil(S.laserT) + "s" : "LASER  " + Math.ceil(S.laserT) + "s";
     $("status").textContent = status;

@@ -87,6 +87,7 @@
   A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
   A.BEAR = ["Bear market! Crash!","quantum conundrum!","El Salvador all in ETH!","Bitcoin Depravement Proposals"];
   A.SELL = ["shame on you, nocoiner!","short it!"];
+  A.HALVE_MISS = ["halving aborted","the grinch stole halving","bitcoin C.E.O to cancel halvings."];
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
