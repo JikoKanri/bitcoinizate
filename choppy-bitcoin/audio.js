@@ -84,10 +84,12 @@
     }, 200);
   };
   A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
-  A.BULL = ["Bull market!","To the moon!","We are SO back!","There is no second best","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
-  A.BEAR = ["Bear market! Crash!","quantum conundrum!","El Salvador all in ETH!","Bitcoin Depravement Proposals"];
+  A.BULL = ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
+  A.LASER = ["Laser eyes!","nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Going up forever Laura!","Unconfiscable power!","Do it for Scottie Pippen"];
+  A.HALVE_SOON = ["Halving in sight!","tick tock, next block"];
+  A.BEAR = ["Bear market! Crash!","quantum conundrum!","Bukele all in ethereum","Bitcoin Depravement Proposals"];
   A.SELL = ["shame on you, nocoiner!","short it!"];
-  A.HALVE_MISS = ["halving aborted","the grinch stole halving","bitcoin C.E.O to cancel halvings."];
+  A.HALVE_MISS = ["halving aborted","the grinch stole halving","bitcoin C.E.O to cancel halving."];
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
