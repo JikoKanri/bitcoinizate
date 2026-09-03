@@ -308,7 +308,7 @@
   }
 
   function missHalve() {
-    const pool = A.HALVE_MISS || ["halving aborted", "the grinch stole halving", "bitcoin C.E.O to cancel halving."];
+    const pool = A.HALVE_MISS || ["Halving aborted", "The grinch stole the halving", "Bitcoin C.E.O to cancel halving"];
     const line = pool[(Math.random() * pool.length) | 0];
     if (line) say(line, true, "halve");
     S.halveSide = "up";
@@ -556,7 +556,7 @@
     for (let i = S.pipes.length - 1; i >= 0; i--) {
       const p = S.pipes[i];
       p.x -= speed * dt;
-      if (!p.seen && p.x <= S.W) {
+      if (!p.seen && p.x <= S.W && p.x > S.W - Math.max(speed * dt, 6) - 2) {
         p.seen = true;
         tickHalve();
       }
