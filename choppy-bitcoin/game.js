@@ -106,11 +106,17 @@
     return Math.max(0.75, line.length * 0.078);
   }
 
+  function spoken(line) {
+    if (line === "There is no second best") return "Therese no second best";
+    if (line === "You got F. T. X.'d!") return "you got F. T. exed";
+    return line;
+  }
+
   function say(line, urgent) {
     if (!line) return;
     S.ticker = line; S.tickerT = Math.max(1.5, lineDur(line));
-    S.speechUntil = S.lifeT + lineDur(line);
-    A.speak(line, urgent);
+    S.speechUntil = S.lifeT + lineDur(spoken(line));
+    A.speak(spoken(line), urgent);
   }
 
   function pickLine(pool) {
@@ -225,7 +231,7 @@
         ? A.SWAN
         : A.SWAN.filter((l) => l !== "Cold storage lost!");
       const line = pool[(Math.random() * pool.length) | 0];
-      S.ticker = line; S.tickerT = 2.4; A.speak(line, true);
+      S.ticker = line; S.tickerT = 2.4; A.speak(spoken(line), true);
       A.sfx.boom();
       if (S.power === "BULL") { S.power = "NONE"; S.powerT = 0; }
       applyLaser(false);
@@ -336,7 +342,6 @@
   function startGame() {
     A.unlock(); A.sfx.start();
     if (!S.welcomed) { A.speak("Welcome to choppy bitcoin: survive the market!"); S.welcomed = true; }
-    resetWorld(false);
     if (!S.introCounted) { S.introCounted = true; startCount(); }
     else setPhase("play");
   }
