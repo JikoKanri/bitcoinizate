@@ -44,13 +44,57 @@
   async function checkActiveSession() {
     if (!supabase) { updateAuthUI(null); return; }
     const { data, error } = await supabase.auth.getSession();
-    if (error || !data.session || !data.session.user) {
+    if (error || !data.session) {
       currentUser = null; currentProfile = null;
       updateAuthUI(null);
       return;
     }
-    currentUser = data.session.user;
+    currentUser = data.session.user || { id: "" };
+    const rec = !!(data.session.type === "recovery" || loadType());
     await loadUserProfile();
+    if (rec) openReset();
+  }
+
+  function loadType() {
+    try {
+      const s = JSON.parse(localStorage.getItem("bitcoinizate-sb") || "null");
+      return s && s.type === "recovery";
+    } catch (e) { return false; }
+  }
+
+  async function sendReset() {
+    const email = ($("auth-email") && $("auth-email").value || "").trim();
+    if (!email) { setMsg("Enter your email first.", true); return; }
+    if (!supabase) { setMsg("Auth is offline.", true); return; }
+    setMsg("Sending reset mail…");
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: location.origin + "/choppy-bitcoin/"
+    });
+    if (error) setMsg(error.message || "Could not send mail.", true);
+    else setMsg("If that inbox exists, a reset link is on the way.");
+  }
+
+  function openReset() {
+    if ($("modal-auth-title")) $("modal-auth-title").textContent = "New password";
+    if ($("group-alias")) $("group-alias").classList.add("hide");
+    if ($("btn-submit-auth")) $("btn-submit-auth").textContent = "Save password";
+    $("btn-submit-auth").dataset.reset = "1";
+    if (authModal) authModal.classList.remove("hide");
+    setMsg("Choose a new password.");
+  }
+
+  async function saveNewPassword() {
+    const password = ($("auth-password") && $("auth-password").value || "").trim();
+    if (password.length < 8) { setMsg("Password must be at least 8 characters.", true); return; }
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) { setMsg(error.message || "Could not update password.", true); return; }
+    try {
+      const s = JSON.parse(localStorage.getItem("bitcoinizate-sb") || "null");
+      if (s) { delete s.type; localStorage.setItem("bitcoinizate-sb", JSON.stringify(s)); }
+    } catch (e) {}
+    if ($("btn-submit-auth")) delete $("btn-submit-auth").dataset.reset;
+    setMsg("Password saved. You are signed in.");
+    await checkActiveSession();
   }
 
   async function loadUserProfile() {
@@ -176,7 +220,11 @@
   if ($("btn-show-auth")) $("btn-show-auth").onclick = openAuth;
   if ($("btn-close-auth")) $("btn-close-auth").onclick = () => authModal && authModal.classList.add("hide");
   if ($("btn-toggle-auth")) $("btn-toggle-auth").onclick = toggleAuthMode;
-  if ($("btn-submit-auth")) $("btn-submit-auth").onclick = handleAuthSubmit;
+  if ($("btn-submit-auth")) $("btn-submit-auth").onclick = () => {
+    if ($("btn-submit-auth").dataset.reset === "1") saveNewPassword();
+    else handleAuthSubmit();
+  };
+  if ($("btn-forgot")) $("btn-forgot").onclick = (e) => { e.preventDefault(); sendReset(); };
   ["auth-email", "auth-password", "auth-username"].forEach((id) => {
     const el = $(id);
     if (el) el.addEventListener("keydown", (e) => { if (e.key === "Enter") handleAuthSubmit(); });

@@ -33,6 +33,28 @@
   function createClient() {
     const auth = {
       async getSession() {
+        if (typeof location !== "undefined" && location.hash && /access_token=/.test(location.hash)) {
+          const q = new URLSearchParams(location.hash.replace(/^#/, ""));
+          if (q.get("access_token")) {
+            const next = {
+              access_token: q.get("access_token"),
+              refresh_token: q.get("refresh_token"),
+              expires_at: q.get("expires_at") ? +q.get("expires_at") : Math.floor(Date.now() / 1000) + 3600,
+              user: null,
+              type: q.get("type") || ""
+            };
+            saveSess(next);
+            try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+            try {
+              const ur = await fetch(DB_URL + "/auth/v1/user", { headers: authHeaders(next.access_token) });
+              const u = await readJson(ur);
+              if (ur.ok && u && u.id) {
+                next.user = u;
+                saveSess(next);
+              }
+            } catch (e) {}
+          }
+        }
         const s = loadSess();
         if (!s || !s.access_token) return { data: { session: null }, error: null };
         if (s.expires_at && s.expires_at * 1000 < Date.now() + 15000) {
@@ -120,6 +142,37 @@
           return { data: { user: d.user, session: sess }, error: null };
         } catch (e) {
           return { data: { user: null, session: null }, error: e };
+        }
+      },
+      async resetPasswordForEmail(email, opts) {
+        try {
+          const redirectTo = (opts && opts.redirectTo) || (location.origin + location.pathname);
+          const r = await fetch(DB_URL + "/auth/v1/recover", {
+            method: "POST",
+            headers: authHeaders(DB_KEY),
+            body: JSON.stringify({ email, gotrue_meta_security: {}, redirect_to: redirectTo })
+          });
+          const d = await readJson(r);
+          if (!r.ok) return { data: null, error: apiError(d, "Could not send reset mail") };
+          return { data: {}, error: null };
+        } catch (e) {
+          return { data: null, error: e };
+        }
+      },
+      async updateUser({ password }) {
+        try {
+          const s = loadSess();
+          if (!s || !s.access_token) return { data: null, error: new Error("Not signed in") };
+          const r = await fetch(DB_URL + "/auth/v1/user", {
+            method: "PUT",
+            headers: authHeaders(s.access_token),
+            body: JSON.stringify({ password })
+          });
+          const d = await readJson(r);
+          if (!r.ok) return { data: null, error: apiError(d, "Could not update password") };
+          return { data: d, error: null };
+        } catch (e) {
+          return { data: null, error: e };
         }
       },
       async signOut() {
