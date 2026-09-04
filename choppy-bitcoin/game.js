@@ -106,6 +106,7 @@
     s.scores = s.scores || {};
     s.scores.choppy = Math.max(s.scores.choppy || 0, n);
     localStorage.setItem(KEY, JSON.stringify(s));
+    if (typeof window.submitNewHighScore === "function") window.submitNewHighScore(n);
     return s.scores.choppy;
   }
 
@@ -292,10 +293,16 @@
     S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false });
     if (Math.random() < 0.48) {
       const type = pickItem();
+      const r = type === "SWAN" ? 17 : 14;
+      const lo = gapY - gapH / 2 + r + 6;
+      const hi = gapY + gapH / 2 - r - 6;
+      const y = lo + Math.random() * Math.max(8, hi - lo);
       S.items.push({
         x: x + m.pipeW * S.widthMul * 0.5,
-        y: gapY + (Math.random() * 2 - 1) * gapH * (type === "SWAN" ? 0.18 : 0.12),
-        type, r: type === "SWAN" ? 17 : 14,
+        y,
+        lo, hi,
+        vy: (Math.random() < 0.5 ? -1 : 1) * (22 + Math.random() * 16),
+        type, r,
       });
     }
   }
@@ -756,6 +763,13 @@
     for (let j = S.items.length - 1; j >= 0; j--) {
       const it = S.items[j];
       it.x -= speed * dt;
+      if (it.type !== "HALVE") {
+        it.y += (it.vy || 0) * dt;
+        const lo = it.lo != null ? it.lo : 20;
+        const hi = it.hi != null ? it.hi : S.H - 20;
+        if (it.y <= lo) { it.y = lo; it.vy = Math.abs(it.vy || 26); }
+        else if (it.y >= hi) { it.y = hi; it.vy = -Math.abs(it.vy || 26); }
+      }
       if (S.laserOn && (it.type === "SWAN" || it.type === "BEAR") && it.x > S.bird.x - 8 && Math.abs(it.y - S.bird.y) < it.r + 14) {
         burst(it.x, it.y, "#e8902a", 16);
         if (it.type === "SWAN") { S.swans++; A.sfx.boom(); say("Black swan vaporized!", true); }
@@ -1023,6 +1037,45 @@
       cap.textContent = S.ticker || "";
       cap.classList.toggle("hide", !S.ticker || S.phase !== "play");
     }
+    paintJukeUi();
+  }
+
+  function paintJukeUi() {
+    const bar = $("juke-bar");
+    if (bar && A.jukeProgress) bar.style.width = Math.round((A.jukeProgress().pct || 0) * 100) + "%";
+    const stage = $("lyric-stage");
+    const titleEl = $("lyric-title");
+    const prevEl = $("lyric-prev");
+    const nowEl = $("lyric-now");
+    const nextEl = $("lyric-next");
+    const np = $("now-playing");
+    const live = S.jukeOn && A.jukePlaying && (A.jukePlaying() || (A.jukePaused && A.jukePaused()));
+    const id = (S.jukeList || [])[S.jukeTrack];
+    const song = id && A.SONGS && A.SONGS[id];
+    const cues = (song && song.lyrics) || [];
+    const onField = S.phase === "play" || S.phase === "paused";
+    const want = !!(jukeLyricsOn() && live && onField && song);
+    if (np) {
+      np.textContent = "";
+      np.classList.add("hide");
+    }
+    if (!stage) return;
+    stage.classList.toggle("hide", !want);
+    if (!want) return;
+    const pct = A.jukeProgress ? (A.jukeProgress().pct || 0) : 0;
+    let i = 0;
+    while (i + 1 < cues.length && cues[i + 1].p <= pct + 0.001) i++;
+    if (titleEl) titleEl.textContent = song.title || "";
+    if (prevEl) prevEl.textContent = cues[i - 1] ? cues[i - 1].text : "";
+    if (nextEl) nextEl.textContent = cues[i + 1] ? cues[i + 1].text : "";
+    if (!nowEl) return;
+    if (!cues.length) { nowEl.textContent = ""; return; }
+    const words = String(cues[i].text || "").split(/\s+/).filter(Boolean);
+    const end = cues[i + 1] ? cues[i + 1].p : 1;
+    const span = Math.max(0.001, end - cues[i].p);
+    const local = Math.max(0, Math.min(1, (pct - cues[i].p) / span));
+    const wi = words.length ? Math.min(words.length - 1, Math.floor(local * words.length)) : 0;
+    nowEl.innerHTML = words.map((w, k) => "<span class=\"w" + (k < wi ? " on" : k === wi ? " hot" : "") + "\">" + w + "</span>").join(" ");
   }
 
   function collectRunStats() {
@@ -1134,8 +1187,10 @@
       const rows = S.jukeList.map((sid, i) => {
         const t = (A.SONGS && A.SONGS[sid] && A.SONGS[sid].title) || sid;
         const off = S.jukeOff && S.jukeOff[sid];
-        return "<button type=\"button\" class=\"juke-track" + (i === S.jukeTrack ? " on" : "") + (off ? " dim" : "") + "\" data-juke=\"" + i + "\">" + (i + 1) + ". " + t + (off ? " · off" : "") + "</button>"
-          + "<button type=\"button\" class=\"juke-btn\" data-skip=\"" + sid + "\">" + (off ? "On" : "Off") + "</button>";
+        return "<div class=\"juke-line" + (i === S.jukeTrack ? " on" : "") + (off ? " dim" : "") + "\">"
+          + "<button type=\"button\" class=\"juke-track\" data-juke=\"" + i + "\">" + t + "</button>"
+          + "<button type=\"button\" class=\"juke-arm" + (off ? " off" : " on") + "\" data-skip=\"" + sid + "\" aria-label=\"" + (off ? "Enable" : "Disable") + "\">" + (off ? "✕" : "✓") + "</button>"
+          + "</div>";
       }).join("");
       const rpt = S.jukeRepeat || "off";
       return "<h1>Jukebox</h1><div class=\"juke retro\">"
@@ -1143,25 +1198,28 @@
         + "<p class=\"juke-now\">" + (song ? song.title : id) + "</p>"
         + "<p class=\"juke-gen\">" + (song && song.genre ? song.genre : "") + "</p>"
         + "<div class=\"juke-row\">"
-        + "<button type=\"button\" class=\"juke-btn\" id=\"juke-prev\">‹</button>"
-        + "<button type=\"button\" class=\"juke-btn juke-play" + (live ? " on" : "") + "\" id=\"juke-play\">" + (live ? "▶ Playing" : "▶ Play") + "</button>"
-        + "<button type=\"button\" class=\"juke-btn" + (paused ? " on" : "") + "\" id=\"juke-pause\">" + (paused ? "❚❚ Paused" : "❚❚ Pause") + "</button>"
-        + "<button type=\"button\" class=\"juke-btn\" id=\"juke-next\">›</button>"
+        + "<button type=\"button\" class=\"juke-btn ico\" id=\"juke-prev\" aria-label=\"Previous\">⏮</button>"
+        + "<button type=\"button\" class=\"juke-btn ico juke-play" + (live ? " on" : "") + "\" id=\"juke-play\" aria-label=\"Play\">▶</button>"
+        + "<button type=\"button\" class=\"juke-btn ico" + (paused ? " on" : "") + "\" id=\"juke-pause\" aria-label=\"Pause\">❚❚</button>"
+        + "<button type=\"button\" class=\"juke-btn ico\" id=\"juke-next\" aria-label=\"Next\">⏭</button>"
         + "</div>"
         + "<div class=\"juke-prog\"><div class=\"juke-prog-bar\" id=\"juke-bar\"></div></div>"
         + "<div class=\"juke-row\">"
-        + "<button type=\"button\" class=\"juke-btn" + (S.jukeShuffle ? " on" : "") + "\" id=\"juke-shuf\">Shuffle</button>"
-        + "<button type=\"button\" class=\"juke-btn" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\">Repeat " + rpt + "</button>"
-        + "<button type=\"button\" class=\"juke-btn" + (jukeLyricsOn() ? " on" : "") + "\" id=\"juke-lyr\">Lyrics</button>"
+        + "<button type=\"button\" class=\"juke-btn ico" + (S.jukeShuffle ? " on" : "") + "\" id=\"juke-shuf\" aria-label=\"Shuffle\">🔀</button>"
+        + "<button type=\"button\" class=\"juke-btn ico" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\" aria-label=\"Repeat\">" + (rpt === "one" ? "🔂" : "🔁") + "</button>"
+        + "<button type=\"button\" class=\"juke-btn ico" + (jukeLyricsOn() ? " on" : "") + "\" id=\"juke-lyr\" aria-label=\"Lyrics\">♪</button>"
         + "</div>"
         + "<div class=\"juke-list\">" + rows + "</div>"
         + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
     }
     if (panel === "sound") {
+      const themeOn = !A.muteTheme();
+      const sfxOn = !A.muteSfx();
+      const voiceOn = !A.muteVoice();
       return "<h1>Sound</h1><div class=\"mute-row\">"
-        + "<button type=\"button\" class=\"mute-tog\" id=\"mute-theme\">Bull/bear songs</button>"
-        + "<button type=\"button\" class=\"mute-tog\" id=\"mute-sfx\">Game FX</button>"
-        + "<button type=\"button\" class=\"mute-tog\" id=\"mute-voice\">Voices</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (themeOn ? "" : " on") + "\" id=\"mute-theme\">Bull/bear songs " + (themeOn ? "ON" : "OFF") + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (sfxOn ? "" : " on") + "\" id=\"mute-sfx\">Game FX " + (sfxOn ? "ON" : "OFF") + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (voiceOn ? "" : " on") + "\" id=\"mute-voice\">Voices " + (voiceOn ? "ON" : "OFF") + "</button>"
         + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
     }
     const fromPlay = S.optBack === "play" || S.phase === "paused";
@@ -1177,7 +1235,8 @@
     const go = $("go");
     if (go) go.onclick = () => {
       S.optPanel = null;
-      setPhase(S.optBack || "play");
+      if (S.optBack === "ready") { S.phase = "ready"; renderOverlay(); }
+      else setPhase(S.optBack || "play");
     };
     const helpBack = $("help-back");
     if (helpBack) helpBack.onclick = (e) => { e.stopPropagation(); S.optPanel = null; renderOverlay(); };
@@ -1214,9 +1273,16 @@
     };
     const ly = $("juke-lyr");
     if (ly) ly.onclick = (e) => { e.stopPropagation(); setJukeLyrics(!jukeLyricsOn()); renderOverlay(); };
+    const optHelp = $("opt-help");
     if (optHelp) optHelp.onclick = (e) => { e.stopPropagation(); S.optPanel = "help"; renderOverlay(); };
     const optSound = $("opt-sound");
     if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };
+    const mt = $("mute-theme");
+    if (mt) mt.onclick = (e) => { e.stopPropagation(); A.setMuteTheme(!A.muteTheme()); renderOverlay(); };
+    const ms = $("mute-sfx");
+    if (ms) ms.onclick = (e) => { e.stopPropagation(); A.setMuteSfx(!A.muteSfx()); renderOverlay(); };
+    const mv = $("mute-voice");
+    if (mv) mv.onclick = (e) => { e.stopPropagation(); A.setMuteVoice(!A.muteVoice()); renderOverlay(); };
   }
 
   function renderOverlay() {
@@ -1224,9 +1290,14 @@
     if (p === "play") { overlay.classList.add("hide"); overlay.innerHTML = ""; return; }
     overlay.classList.remove("hide");
     if (p === "ready") {
-      overlay.innerHTML = "<h1>Choppy Bitcoin</h1>" + tutorialBody()
-        + "<button class=\"cta\" id=\"go\">Play</button>";
-      $("go").onclick = startGame;
+      if (S.optPanel) {
+        overlay.innerHTML = pauseMarkup();
+        bindPauseUi();
+      } else {
+        overlay.innerHTML = "<h1>Choppy Bitcoin</h1>" + tutorialBody()
+          + "<button class=\"cta\" id=\"go\">Play</button>";
+        $("go").onclick = startGame;
+      }
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "perk") {
@@ -1304,7 +1375,11 @@
   if (optBtn) optBtn.onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
-    else if (S.phase === "ready") { S.optBack = "ready"; S.optPanel = null; renderOverlay(); }
+    else if (S.phase === "ready") {
+      S.optBack = "ready";
+      S.optPanel = S.optPanel ? null : "menu";
+      renderOverlay();
+    }
     else if (S.phase === "paused") { S.optPanel = null; setPhase(S.optBack || "play"); }
   };
   $("dca-btn").onpointerdown = (e) => {

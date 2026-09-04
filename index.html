@@ -103,16 +103,37 @@
     .faq p { margin: 8px 0 0; color: #b4b0a8; font-size: 13px; line-height: 1.5; }
     footer { margin-top: 36px; color: #6a6660; font-size: 11px; letter-spacing: 0.06em; }
     footer a { color: var(--gold); text-decoration: none; }
+    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
+    .brand { margin-bottom: 0; }
+    .auth-chip { background: transparent; border: 1px solid #3a3a40; color: var(--paper); min-height: 36px; padding: 0 12px; font: inherit; font-size: 12px; cursor: pointer; }
+    .auth-modal { position: fixed; inset: 0; z-index: 40; background: rgba(10,10,12,0.86); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .auth-card { width: min(360px, 100%); background: #121214; border: 1px solid var(--gold); padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .auth-card h2 { margin: 0 0 6px; font-size: 18px; }
+    .auth-card label { display: block; text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+    .auth-card input { width: 100%; margin-top: 4px; min-height: 36px; padding: 0 10px; border: 1px solid #3a3a40; background: #0a0a0c; color: var(--paper); font: inherit; }
+    .auth-card .cta { width: 100%; min-height: 44px; border: 0; background: var(--gold); color: #120c02; font: inherit; font-weight: 700; cursor: pointer; }
+    .text-btn { background: none; border: 0; color: var(--gold); font: inherit; font-size: 12px; cursor: pointer; }
+    .auth-msg { min-height: 16px; font-size: 12px; color: #b4b0a8; margin: 0; }
+    .auth-msg.bad { color: #ff9b92; }
+    .auth-card .hp { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }
+    .board { margin: 0; font-size: 11px; color: #b4b0a8; background: #0a0a0c; padding: 8px; border: 1px solid #2a2a2e; min-height: 64px; white-space: pre-wrap; }
+    .hide { display: none !important; }
     @media (min-width: 640px) { .chips { grid-template-columns: repeat(4, 1fr); } }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <header class="brand">
-      <img src="/favicon-192.png" width="48" height="48" alt="Bitcoinizate logo">
+    <header class="brand-row">
+      <div class="brand">
+        <img src="/favicon-192.png" width="48" height="48" alt="Bitcoinizate logo">
+        <div>
+          <h1>BITCOINIZATE</h1>
+          <p>Bitcoin arcade</p>
+        </div>
+      </div>
       <div>
-        <h1>BITCOINIZATE</h1>
-        <p>Bitcoin arcade</p>
+        <button type="button" class="auth-chip" id="btn-show-auth">Sign in</button>
+        <button type="button" class="auth-chip hide" id="user-profile-tag"></button>
       </div>
     </header>
     <h2>Choppy <span>Bitcoin</span></h2>
@@ -146,10 +167,37 @@
       </details>
       <details>
         <summary>Do I need an account?</summary>
-        <p>No. Hit Play. High score stays on this device.</p>
+        <p>No. Hit Play. An account is optional: it saves your high score to the cloud leaderboard.</p>
       </details>
     </section>
     <footer>© Bitcoinizate · <a href="https://bitcoinizate.com/">bitcoinizate.com</a> · <a href="https://bitcoinizate.com/choppy-bitcoin/">play Choppy Bitcoin</a></footer>
   </main>
+  <div id="auth-modal" class="auth-modal hide" role="dialog" aria-labelledby="modal-auth-title">
+    <div class="auth-card">
+      <h2 id="modal-auth-title">Sign in</h2>
+      <label class="hide" id="group-alias">Alias<input id="auth-username" autocomplete="username" maxlength="16"></label>
+      <label>Email<input id="auth-email" type="email" autocomplete="email"></label>
+      <label>Password<input id="auth-password" type="password" autocomplete="current-password"></label>
+      <input id="arcade-honeypot" class="hp" tabindex="-1" autocomplete="off">
+      <p id="auth-msg" class="auth-msg"></p>
+      <button type="button" class="cta" id="btn-submit-auth">Sign in</button>
+      <button type="button" class="text-btn" id="btn-toggle-auth">Need an account?</button>
+      <button type="button" class="text-btn" id="btn-close-auth">Close</button>
+    </div>
+  </div>
+  <div id="profile-modal" class="auth-modal hide" role="dialog">
+    <div class="auth-card">
+      <h2>Profile</h2>
+      <p id="profile-score-info"></p>
+      <label>BTC address<input id="profile-btc-addr" autocomplete="off"></label>
+      <label>Lightning<input id="profile-ln-addr" autocomplete="off"></label>
+      <pre id="leaderboard-box" class="board"></pre>
+      <button type="button" class="cta" id="btn-save-profile">Save</button>
+      <button type="button" class="text-btn" id="btn-logout">Sign out</button>
+      <button type="button" class="text-btn" id="btn-close-profile">Close</button>
+    </div>
+  </div>
+  <script src="/choppy-bitcoin/supabase-lib.js"></script>
+  <script src="/choppy-bitcoin/auth.js"></script>
 </body>
 </html>

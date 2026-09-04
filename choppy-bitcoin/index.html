@@ -41,6 +41,8 @@
       <div class="stat"><span>Next halving</span><b id="h-halve">21</b></div>
       <div class="stat"><span>Halvings</span><b id="h-halves">0/21</b></div>
       <div class="stat stat-opt">
+        <button type="button" id="btn-show-auth" class="opt-btn">Sign in</button>
+        <button type="button" id="user-profile-tag" class="opt-btn hide"></button>
         <button type="button" id="opt-btn" class="opt-btn">Options</button>
       </div>
     </div>
@@ -78,7 +80,34 @@
       <div id="overlay" class="overlay"></div>
     </div>
   </div>
+  <div id="auth-modal" class="auth-modal hide" role="dialog" aria-labelledby="modal-auth-title">
+    <div class="auth-card">
+      <h2 id="modal-auth-title">Sign in</h2>
+      <label class="hide" id="group-alias">Alias<input id="auth-username" autocomplete="username" maxlength="16"></label>
+      <label>Email<input id="auth-email" type="email" autocomplete="email"></label>
+      <label>Password<input id="auth-password" type="password" autocomplete="current-password"></label>
+      <input id="arcade-honeypot" class="hp" tabindex="-1" autocomplete="off">
+      <p id="auth-msg" class="auth-msg"></p>
+      <button type="button" class="cta" id="btn-submit-auth">Sign in</button>
+      <button type="button" class="text-btn" id="btn-toggle-auth">Need an account?</button>
+      <button type="button" class="text-btn" id="btn-close-auth">Close</button>
+    </div>
+  </div>
+  <div id="profile-modal" class="auth-modal hide" role="dialog">
+    <div class="auth-card">
+      <h2>Profile</h2>
+      <p id="profile-score-info"></p>
+      <label>BTC address<input id="profile-btc-addr" autocomplete="off"></label>
+      <label>Lightning<input id="profile-ln-addr" autocomplete="off"></label>
+      <pre id="leaderboard-box" class="board"></pre>
+      <button type="button" class="cta" id="btn-save-profile">Save</button>
+      <button type="button" class="text-btn" id="btn-logout">Sign out</button>
+      <button type="button" class="text-btn" id="btn-close-profile">Close</button>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.7.0/abcjs-basic-min.js" integrity="sha384-QEx1pDqNtno80p4xYN5Cqm5JcAAtUDUCHqFLq0UBhWRFoFzzNHumh20zFGG/9XMi" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="supabase-lib.js"></script>
+  <script src="auth.js"></script>
   <script src="audio.js"></script>
   <script src="game.js"></script>
 </body>

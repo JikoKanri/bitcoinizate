@@ -1,38 +1,225 @@
-// SUPABASE-LIB.JS V2.2 - CONECTOR DE RUTAS CLOUD RETROCOMPATIBLE BLINDADO
-const DB_URL = "https://xhewdrhfofwpzfogthai.supabase.co"; // <-- Pega tu API URL real aquí
-const DB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY"; // <-- Tu anon key real aquí
+(() => {
+  const DB_URL = "https://xhewdrhfofwpzfogthai.supabase.co";
+  const DB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoZXdkcmhmb2Z3cHpmb2d0aGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDM0OTMsImV4cCI6MjEwMjk3OTQ5M30.zch7bpyq2kaYaQeW4wMrQhkSPxyzzKKiD6jRLTWYidY";
+  const SK = "bitcoinizate-sb";
 
-(function(g,f){typeof exports==='object'&&typeof module!=='undefined'?f(exports):typeof define==='function'&&define.amd?define(['exports'],f):(g=typeof globalThis!=='undefined'?globalThis:g||self,f(g.supabase=g.supabase||{}));})(this,(function(exports){'use strict';
-const createClient=()=>{
-    const headers={'apikey':DB_KEY,'Authorization':`Bearer ${DB_KEY}`};
-    return{
-        auth:{
-            getSession:async()=>{try{const r=await fetch(`${DB_URL}/auth/v1/user`,{headers});if(r.status===401||r.status===404)return{data:{session:null},error:null};const u=await r.json();if(!u||u.error)return{data:{session:null},error:null};return{data:{session:{user:u}},error:null}}catch(e){return{data:{session:null},error:e}}},
-            signUp:async(c)=>{try{const r=await fetch(`${DB_URL}/auth/v1/signup`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});return{data:await r.json(),error:null}}catch(e){return{data:{user:null},error:e}}},
-            signInWithPassword:async(c)=>{try{const r=await fetch(`${DB_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(c)});const d=await r.json();return{data:{user:d.user,session:d},error:null}}catch(e){return{data:{user:null},error:e}}},
-            signOut:async()=>{return{error:null}}
-        },
-        from:(table)=>{return{
-            select:(cols)=>({
-                order:(o,opts)=>({
-                    limit:(l)=>({
-                        then:async(cb)=>{try{const r=await fetch(`${DB_URL}/rest/v1/${table}?select=${cols}&order=${o}.${opts.ascending?'asc':'desc'}&limit=${l}`,{headers});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
-                    })
-                }),
-                eq:(field,val)=>({
-                    single:async()=>{try{if(!val)return{data:null,error:new Error("Invalid selection")};const r=await fetch(`${DB_URL}/rest/v1/${table}?${field}=eq.${val}`,{headers:{...headers,'Accept':'application/vnd.pgrst.object+json'}});return{data:await r.json(),error:null}}catch(e){return{data:null,error:e}}}
-                })
-            }),
-            update:(fields)=>({
-                eq:(field,val)=>({
-                    then:async(cb)=>{try{const r=await fetch(`${DB_URL}/rest/v1/${table}?${field}=eq.${val}`,{method:'PATCH',headers:{...headers,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(fields)});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
-                })
-            }),
-            insert:(arr)=>({
-                then:async(cb)=>{try{const r=await fetch(`${DB_URL}/rest/v1/${table}`,{method:'POST',headers:{...headers,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(arr)});cb({data:await r.json(),error:null})}catch(e){cb({data:null,error:e})}}
-            })
-        }}
+  function loadSess() {
+    try { return JSON.parse(localStorage.getItem(SK) || "null"); } catch (e) { return null; }
+  }
+  function saveSess(s) {
+    if (!s || !s.access_token) localStorage.removeItem(SK);
+    else localStorage.setItem(SK, JSON.stringify(s));
+  }
+  function authHeaders(token) {
+    const t = token || (loadSess() && loadSess().access_token) || DB_KEY;
+    return {
+      apikey: DB_KEY,
+      Authorization: "Bearer " + t,
+      "Content-Type": "application/json"
     };
-};
-exports.createClient=createClient;Object.defineProperty(exports,'__esModule',{value:true});
-}));
+  }
+  async function readJson(r) {
+    const text = await r.text();
+    let d = null;
+    try { d = text ? JSON.parse(text) : null; } catch (e) { d = { msg: text }; }
+    return d;
+  }
+  function apiError(d, fallback) {
+    if (!d) return new Error(fallback);
+    const msg = d.msg || d.error_description || d.error || d.message || fallback;
+    return new Error(typeof msg === "string" ? msg : fallback);
+  }
+
+  function createClient() {
+    const auth = {
+      async getSession() {
+        const s = loadSess();
+        if (!s || !s.access_token) return { data: { session: null }, error: null };
+        if (s.expires_at && s.expires_at * 1000 < Date.now() + 15000) {
+          const ref = await auth.refresh();
+          if (ref.error) return { data: { session: null }, error: ref.error };
+        }
+        const cur = loadSess();
+        if (!cur) return { data: { session: null }, error: null };
+        return { data: { session: { user: cur.user, access_token: cur.access_token } }, error: null };
+      },
+      async refresh() {
+        const s = loadSess();
+        if (!s || !s.refresh_token) {
+          saveSess(null);
+          return { data: { session: null }, error: new Error("No refresh token") };
+        }
+        try {
+          const r = await fetch(DB_URL + "/auth/v1/token?grant_type=refresh_token", {
+            method: "POST",
+            headers: authHeaders(DB_KEY),
+            body: JSON.stringify({ refresh_token: s.refresh_token })
+          });
+          const d = await readJson(r);
+          if (!r.ok || !d.access_token) {
+            saveSess(null);
+            return { data: { session: null }, error: apiError(d, "Session expired") };
+          }
+          const next = {
+            access_token: d.access_token,
+            refresh_token: d.refresh_token || s.refresh_token,
+            expires_at: d.expires_at || Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
+            user: d.user || s.user
+          };
+          saveSess(next);
+          return { data: { session: next }, error: null };
+        } catch (e) {
+          return { data: { session: null }, error: e };
+        }
+      },
+      async signUp({ email, password, options }) {
+        try {
+          const body = { email, password };
+          if (options && options.data) body.data = options.data;
+          const r = await fetch(DB_URL + "/auth/v1/signup", {
+            method: "POST",
+            headers: authHeaders(DB_KEY),
+            body: JSON.stringify(body)
+          });
+          const d = await readJson(r);
+          if (!r.ok || d.error || d.msg && !d.id && !d.user && !d.access_token) {
+            return { data: { user: null, session: null }, error: apiError(d, "Sign up failed") };
+          }
+          const user = d.user || (d.id ? d : null);
+          if (d.access_token) {
+            saveSess({
+              access_token: d.access_token,
+              refresh_token: d.refresh_token,
+              expires_at: d.expires_at || Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
+              user: user
+            });
+          }
+          return { data: { user: user, session: d.access_token ? d : null }, error: null };
+        } catch (e) {
+          return { data: { user: null, session: null }, error: e };
+        }
+      },
+      async signInWithPassword({ email, password }) {
+        try {
+          const r = await fetch(DB_URL + "/auth/v1/token?grant_type=password", {
+            method: "POST",
+            headers: authHeaders(DB_KEY),
+            body: JSON.stringify({ email, password })
+          });
+          const d = await readJson(r);
+          if (!r.ok || !d.access_token) {
+            return { data: { user: null, session: null }, error: apiError(d, "Sign in failed") };
+          }
+          const sess = {
+            access_token: d.access_token,
+            refresh_token: d.refresh_token,
+            expires_at: d.expires_at || Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
+            user: d.user
+          };
+          saveSess(sess);
+          return { data: { user: d.user, session: sess }, error: null };
+        } catch (e) {
+          return { data: { user: null, session: null }, error: e };
+        }
+      },
+      async signOut() {
+        const s = loadSess();
+        try {
+          if (s && s.access_token) {
+            await fetch(DB_URL + "/auth/v1/logout", {
+              method: "POST",
+              headers: authHeaders(s.access_token)
+            });
+          }
+        } catch (e) {}
+        saveSess(null);
+        return { error: null };
+      }
+    };
+
+    function from(table) {
+      const rest = (path, opt) => fetch(DB_URL + "/rest/v1/" + table + path, opt);
+      return {
+        select(cols) {
+          return {
+            order(col, opts) {
+              return {
+                limit(n) {
+                  return {
+                    then: async (cb) => {
+                      try {
+                        const q = "?select=" + encodeURIComponent(cols)
+                          + "&order=" + col + "." + ((opts && opts.ascending) ? "asc" : "desc")
+                          + "&limit=" + n;
+                        const r = await rest(q, { headers: authHeaders() });
+                        const d = await readJson(r);
+                        if (!r.ok) cb({ data: null, error: apiError(d, "Select failed") });
+                        else cb({ data: Array.isArray(d) ? d : [], error: null });
+                      } catch (e) { cb({ data: null, error: e }); }
+                    }
+                  };
+                }
+              };
+            },
+            eq(field, val) {
+              return {
+                single: async () => {
+                  try {
+                    const r = await rest("?" + field + "=eq." + encodeURIComponent(val) + "&select=" + encodeURIComponent(cols), {
+                      headers: Object.assign({ Accept: "application/vnd.pgrst.object+json" }, authHeaders())
+                    });
+                    const d = await readJson(r);
+                    if (!r.ok) return { data: null, error: apiError(d, "Not found") };
+                    return { data: d, error: null };
+                  } catch (e) { return { data: null, error: e }; }
+                }
+              };
+            }
+          };
+        },
+        update(fields) {
+          return {
+            eq(field, val) {
+              return {
+                then: async (cb) => {
+                  try {
+                    const r = await rest("?" + field + "=eq." + encodeURIComponent(val), {
+                      method: "PATCH",
+                      headers: Object.assign({ Prefer: "return=representation" }, authHeaders()),
+                      body: JSON.stringify(fields)
+                    });
+                    const d = await readJson(r);
+                    if (!r.ok) cb({ data: null, error: apiError(d, "Update failed") });
+                    else cb({ data: d, error: null });
+                  } catch (e) { cb({ data: null, error: e }); }
+                }
+              };
+            }
+          };
+        },
+        insert(arr) {
+          return {
+            then: async (cb) => {
+              try {
+                const r = await rest("", {
+                  method: "POST",
+                  headers: Object.assign({ Prefer: "return=representation" }, authHeaders()),
+                  body: JSON.stringify(arr)
+                });
+                const d = await readJson(r);
+                if (!r.ok) cb({ data: null, error: apiError(d, "Insert failed") });
+                else cb({ data: d, error: null });
+              } catch (e) { cb({ data: null, error: e }); }
+            }
+          };
+        }
+      };
+    }
+
+    return { auth, from };
+  }
+
+  const g = typeof globalThis !== "undefined" ? globalThis : window;
+  g.supabase = g.supabase || {};
+  g.supabase.createClient = createClient;
+})();

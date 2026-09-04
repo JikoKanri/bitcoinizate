@@ -5,9 +5,12 @@
   let jukeTimer = null;
   let jukeOn = false;
   let jukeGen = 0;
-  let muteTheme = localStorage.getItem("choppy-mute-theme") === "1";
-  let muteSfx = localStorage.getItem("choppy-mute-sfx") === "1";
-  let muteVoice = localStorage.getItem("choppy-mute-voice") === "1";
+  let muteTheme = false;
+  let muteSfx = false;
+  let muteVoice = false;
+  localStorage.setItem("choppy-mute-theme", "0");
+  localStorage.setItem("choppy-mute-sfx", "0");
+  localStorage.setItem("choppy-mute-voice", "0");
 
   window.ArcadeAudio = {
     unlock() {
