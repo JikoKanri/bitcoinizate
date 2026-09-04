@@ -31,30 +31,79 @@
   }
 
   function createClient() {
+    async function takeUrlSession() {
+      if (typeof location === "undefined") return;
+      const hash = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+      const query = new URLSearchParams(location.search || "");
+      const token = hash.get("access_token") || query.get("access_token");
+      const refresh = hash.get("refresh_token") || query.get("refresh_token");
+      const typ = hash.get("type") || query.get("type") || "";
+      const code = query.get("code");
+      const tokenHash = query.get("token_hash") || query.get("token");
+      if (token) {
+        const next = {
+          access_token: token,
+          refresh_token: refresh,
+          expires_at: +(hash.get("expires_at") || query.get("expires_at") || 0) || Math.floor(Date.now() / 1000) + 3600,
+          user: null,
+          type: typ
+        };
+        saveSess(next);
+        try {
+          const ur = await fetch(DB_URL + "/auth/v1/user", { headers: authHeaders(next.access_token) });
+          const u = await readJson(ur);
+          if (ur.ok && u && u.id) { next.user = u; saveSess(next); }
+        } catch (e) {}
+        try { history.replaceState(null, "", location.pathname); } catch (e) {}
+        return;
+      }
+      if (code) {
+        try {
+          const r = await fetch(DB_URL + "/auth/v1/token?grant_type=pkce", {
+            method: "POST",
+            headers: authHeaders(DB_KEY),
+            body: JSON.stringify({ auth_code: code })
+          });
+          const d = await readJson(r);
+          if (r.ok && d.access_token) {
+            saveSess({
+              access_token: d.access_token,
+              refresh_token: d.refresh_token,
+              expires_at: d.expires_at || Math.floor(Date.now() / 1000) + (d.expires_in || 3600),
+              user: d.user,
+              type: typ || "recovery"
+            });
+          }
+        } catch (e) {}
+        try { history.replaceState(null, "", location.pathname); } catch (e) {}
+        return;
+      }
+      if (tokenHash && (typ === "recovery" || typ === "signup" || typ === "magiclink" || typ === "email")) {
+        try {
+          const r = await fetch(DB_URL + "/auth/v1/verify", {
+            method: "POST",
+            headers: authHeaders(DB_KEY),
+            body: JSON.stringify({ type: typ || "recovery", token: tokenHash })
+          });
+          const d = await readJson(r);
+          if (r.ok && (d.access_token || (d.session && d.session.access_token))) {
+            const sess = d.session || d;
+            saveSess({
+              access_token: sess.access_token,
+              refresh_token: sess.refresh_token,
+              expires_at: sess.expires_at || Math.floor(Date.now() / 1000) + 3600,
+              user: sess.user || d.user,
+              type: typ || "recovery"
+            });
+          }
+        } catch (e) {}
+        try { history.replaceState(null, "", location.pathname); } catch (e) {}
+      }
+    }
+
     const auth = {
       async getSession() {
-        if (typeof location !== "undefined" && location.hash && /access_token=/.test(location.hash)) {
-          const q = new URLSearchParams(location.hash.replace(/^#/, ""));
-          if (q.get("access_token")) {
-            const next = {
-              access_token: q.get("access_token"),
-              refresh_token: q.get("refresh_token"),
-              expires_at: q.get("expires_at") ? +q.get("expires_at") : Math.floor(Date.now() / 1000) + 3600,
-              user: null,
-              type: q.get("type") || ""
-            };
-            saveSess(next);
-            try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
-            try {
-              const ur = await fetch(DB_URL + "/auth/v1/user", { headers: authHeaders(next.access_token) });
-              const u = await readJson(ur);
-              if (ur.ok && u && u.id) {
-                next.user = u;
-                saveSess(next);
-              }
-            } catch (e) {}
-          }
-        }
+        await takeUrlSession();
         const s = loadSess();
         if (!s || !s.access_token) return { data: { session: null }, error: null };
         if (s.expires_at && s.expires_at * 1000 < Date.now() + 15000) {
@@ -63,7 +112,7 @@
         }
         const cur = loadSess();
         if (!cur) return { data: { session: null }, error: null };
-        return { data: { session: { user: cur.user, access_token: cur.access_token } }, error: null };
+        return { data: { session: { user: cur.user, access_token: cur.access_token, type: cur.type || "" } }, error: null };
       },
       async refresh() {
         const s = loadSess();
