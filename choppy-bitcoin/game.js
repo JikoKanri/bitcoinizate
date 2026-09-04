@@ -3,23 +3,79 @@
   const field = document.getElementById("field");
   const overlay = document.getElementById("overlay");
   const A = window.ArcadeAudio;
-  const POWER_S = 6;
+  const POWER_S = 5;
   const HALVE_N = 21;
+  const HALVE_GAP = 210;
   const GREEN = "#4f9d6e";
   const RED = "#c45c4a";
   const BTC = "#c8960a";
   const KEY = "bitcoinizate-v1";
 
   const $ = (id) => document.getElementById(id);
-  const money = (n) => "$" + Math.round(n).toLocaleString("en-US");
-  const fmtBtc = (n) => (n >= 1e6 ? (n / 1e6).toFixed(2) + "M BTC" : n >= 100 ? n.toFixed(2) + " BTC" : n.toFixed(5) + " BTC");
-  const fmtVt = (n) => (n >= 1000 ? n.toFixed(1) : n.toFixed(3)) + " VT";
+  const fmtUsd = (n) => {
+    const x = Number(n) || 0;
+    const a = Math.abs(x);
+    if (a >= 1e6) return (x < 0 ? "-" : "") + "$" + (a / 1e6).toFixed(2) + "M";
+    if (a >= 10000) return (x < 0 ? "-" : "") + "$" + (a / 1000).toFixed(1) + "k";
+    return (x < 0 ? "-$" : "$") + Math.round(a).toLocaleString("en-US");
+  };
+  const money = fmtUsd;
+  const fmtBtcAmt = (n) => {
+    const x = Number(n) || 0;
+    const a = Math.abs(x);
+    if (a >= 1e6) return (x < 0 ? "-" : "") + (a / 1e6).toFixed(2) + "M";
+    if (a >= 1000) return (x < 0 ? "-" : "") + (a / 1000).toFixed(2) + "k";
+    if (a >= 100) return (x < 0 ? "-" : "") + a.toFixed(2);
+    if (a >= 1) return (x < 0 ? "-" : "") + a.toFixed(4);
+    return (x < 0 ? "-" : "") + a.toFixed(6);
+  };
+  const fmtBtc = (n) => fmtBtcAmt(n) + " BTC";
+  const fmtVtAmt = (n) => fmtBtcAmt(n);
+  const fmtVt = (n) => fmtVtAmt(n) + " VT";
   const fmtTime = (t) => {
     const s = Math.max(0, Math.floor(t));
     return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
   };
+  function pairUsd(usd) {
+    const px = S.price > 0 ? S.price : 0;
+    const btc = px > 0 ? Number(usd) / px : 0;
+    return fmtUsd(usd) + " (" + fmtBtc(btc) + ")";
+  }
+  function badgeIco(kind) {
+    const wrap = (inner, fill, ring) =>
+      "<span class=\"help-ico\"><svg width=\"28\" height=\"28\" viewBox=\"-14 -14 28 28\">"
+      + "<circle r=\"13\" fill=\"" + fill + "\" stroke=\"" + ring + "\" stroke-width=\"1.8\"/>"
+      + inner + "</svg></span>";
+    if (kind === "hero") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#120c02\" font-family=\"Georgia,serif\">₿</text>", "#F2A900", "#ffe7a0");
+    if (kind === "cash") return wrap("<g>"
+      + "<rect x=\"-8\" y=\"-5\" width=\"5.2\" height=\"10\" fill=\"#1f8a4c\"/>"
+      + "<rect x=\"-8\" y=\"-7\" width=\"5.2\" height=\"2\" fill=\"#9dffc4\"/>"
+      + "<rect x=\"-1.2\" y=\"-3\" width=\"4.2\" height=\"8\" fill=\"#a33a32\"/>"
+      + "<rect x=\"-1.2\" y=\"-6\" width=\"4.2\" height=\"3\" fill=\"#ff9b92\"/>"
+      + "<rect x=\"4.4\" y=\"-4\" width=\"4.6\" height=\"9\" fill=\"#1f8a4c\"/>"
+      + "<rect x=\"4.4\" y=\"-6.5\" width=\"4.6\" height=\"2.5\" fill=\"#9dffc4\"/>"
+      + "</g>", "#141416", "#3a3a40");
+    if (kind === "bull") return wrap("<polygon points=\"0,-7 6.5,5.5 -6.5,5.5\" fill=\"#04150c\"/>", "#1f8a4c", "#9dffc4");
+    if (kind === "bear") return wrap("<polygon points=\"0,7 6.5,-5.5 -6.5,-5.5\" fill=\"#1a0605\"/>", "#a33a32", "#ff9b92");
+    if (kind === "halve") return wrap("<text x=\"0\" y=\"1\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"13\" font-weight=\"700\" fill=\"#1a1204\" font-family=\"IBM Plex Mono,monospace\">½</text>", "#c8960a", "#ffe7a0");
+    if (kind === "cold") return wrap("<g stroke=\"#041318\" stroke-width=\"1.5\" fill=\"none\"><path d=\"M0-7V7M-6.1-3.5 6.1 3.5M-6.1 3.5 6.1-3.5\"/><path d=\"M-2.2-5.4 0-3.6 2.2-5.4M-2.2 5.4 0 3.6 2.2 5.4\"/></g>", "#1788a6", "#9befff");
+    if (kind === "laser") return wrap("<g stroke-linecap=\"butt\"><path d=\"M-11-2.4H11M-11 2.4H11\" stroke=\"#fff4e8\" stroke-width=\"3.2\"/><path d=\"M-11-2.4H11M-11 2.4H11\" stroke=\"#ff2a22\" stroke-width=\"1.8\"/></g>", "#120806", "#ffe7c2");
+    if (kind === "swan") return wrap("<g fill=\"#f3efe6\"><ellipse cx=\"1\" cy=\"3\" rx=\"5.2\" ry=\"3.4\" transform=\"rotate(-16)\"/><path d=\"M-1 1 Q-6-4 -1-7 Q2-7 3-5\" fill=\"none\" stroke=\"#f3efe6\" stroke-width=\"1.8\"/><polygon points=\"2.4,-5.8 6.2,-5 2.4,-4.2\" fill=\"#c45c4a\"/></g>", "#161218", "#f0e6f0");
+    if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
+    return wrap("", "#141416", "#3a3a40");
+  }
+  function tutorialBody() {
+    return "<div class=\"help\">"
+      + "<p>" + badgeIco("hero") + " You are the ₿. Tap or press space to flap through the candle gaps. A wick or the floor liquidates you.</p>"
+      + "<p>" + badgeIco("cash") + " Candles pay cash. Buy BTC on the dip, sell on the rip. Score is cash plus BTC at the live price, in USD.</p>"
+      + "<p>" + badgeIco("bull") + " Bull pumps price. " + badgeIco("bear") + " Bear dumps it.</p>"
+      + "<p>" + badgeIco("swan") + " Black swan is a hard crash. " + badgeIco("halve") + " Halving is a fat bull — grab it up or down when told.</p>"
+      + "<p>" + badgeIco("cold") + " Cold storage saves a hit. Ten colds become one multisig life.</p>"
+      + "<p>" + badgeIco("laser") + " Laser eyes eat a bear and unlock a perk.</p>"
+      + "</div>";
+  }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy" };
+  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox" };
   function perkTitle(id, t) {
     const n = PERK_NAME[id] || id;
     return t <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, t)];
@@ -34,6 +90,7 @@
     }
     if (id === "adopt") return "bulls +" + (10 + t * 2) + "/" + (15 + t * 2) + "%, bears +" + Math.max(0, t - 1) + "/" + (4 + t) + "%";
     if (id === "manip") return "trend ×" + t;
+    if (id === "juke") return t <= 1 ? "jukebox · 2 random tunes" : "+4 random tunes";
     return "";
   }
 
@@ -77,7 +134,7 @@
     W: 400, H: 640,
     bird: { x: 72, y: 280, v: 0, r: 14 },
     pipes: [], items: [], particles: [], floats: [],
-    cash: 0, btc: 0, vt: 0, cold: 0, msig: 0, invuln: 0,
+    cash: 0, btc: 0, vt: 0, cold: 0, msig: 100, invuln: 0,
     power: "NONE", powerT: 0, laserOn: false, laserT: 0,
     widthMul: 1, widthT: 1, heightMul: 1, heightT: 1,
     price: 20000, vtPrice: 0,
@@ -87,13 +144,16 @@
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
     tape: [], tapeVt: [], level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
-    halvings: 0, halveLeft: HALVE_N, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
+    halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0,
     perkPick: "", dcaOn: false, trend: "equal", perkOffers: [],
-    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0 },
-    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1 },
+    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0 },
+    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1 },
     offerSeq: [7, 13, 24], nextOffer: 7, offersDone: 0,
+    optPanel: null, optBack: "ready",
+    sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
+    jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
   };
 
   function net() { return S.cash + S.btc * S.price + S.vt * S.vtPrice; }
@@ -253,7 +313,7 @@
     }
     if (S.halveLeft === 0) {
       spawnHalve();
-      S.halveLeft = HALVE_N;
+      S.halveLeft = HALVE_GAP;
     }
   }
 
@@ -271,11 +331,13 @@
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = S.cash; S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.dcaOn = false; S.trend = "equal"; S.perkOffers = []; S.speedMul = 1;
-      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0 };
-      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1 };
+      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0 };
+      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1 };
       S.offerSeq = [7, 13, 24]; S.nextOffer = 7; S.offersDone = 0;
+      S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
+      if (A.jukeStop) A.jukeStop();
     }
-    S.halveLeft = HALVE_N; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
+    S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
     S.swanBear = false; S.halveSpeechUntil = 0;
     S.cold = 0; S.invuln = 0;
     if (!keepWallet) S.msig = 0;
@@ -359,6 +421,7 @@
   }
 
   function missHalve() {
+    S.halveMiss = (S.halveMiss || 0) + 1;
     const pool = A.HALVE_MISS || ["Halving aborted", "The grinch stole the halving", "Bitcoin C.E.O to cancel halving", "Gary Gensler stole the halving", "Peter Schiff stole the halving", "Faketoshi stole the halving"];
     const line = pool[(Math.random() * pool.length) | 0];
     if (line) say(line, true, "halve");
@@ -378,7 +441,7 @@
       if (S.lifeT >= S.halveSpeechUntil) A.speak(spoken(line), true);
       A.sfx.boom();
       applyLaser(false);
-      if (S.cold > 0) S.cold = 0;
+      if (S.cold > 0) { S.coldLost = (S.coldLost || 0) + S.cold; S.cold = 0; }
       S.swanBear = true;
       beginCycle("BEAR");
       return;
@@ -443,7 +506,7 @@
   }
 
   function rescue() {
-    S.cold -= 1; S.invuln = 1.4;
+    S.cold -= 1; S.coldLost = (S.coldLost || 0) + 1; S.invuln = 1.4;
     S.bird.v = metrics().jump * 0.7;
     S.bird.y = Math.min(Math.max(S.bird.y, 70), S.H - 70);
     say("Cold storage rescue!", true); A.sfx.coin();
@@ -465,14 +528,15 @@
   function buyBtc() {
     if (S.phase !== "play" || S.cash <= 0 || S.price <= 0) return;
     const usd = S.cash, got = usd / S.price;
-    S.btc += got; S.cash = 0; S.buys++; A.sfx.buy();
+    S.btc += got; S.cash = 0; S.buys++; S.boughtBtc = true; A.sfx.buy();
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "usd"), RED, "trade");
   }
   function sellBtc() {
     if (S.phase !== "play" || S.btc <= 0) return;
     const btc = S.btc, usd = btc * S.price;
-    S.cash += usd; S.btc = 0; S.sells++; A.sfx.sell();
+    S.cash += usd; S.btc = 0; S.sells++;
+    if (S.power === "BEAR" || S.swanBear) S.sellsBear = (S.sellsBear || 0) + 1; A.sfx.sell();
     const sellLine = pickLine(A.SELL);
     if (sellLine) say(sellLine, true);
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
@@ -502,8 +566,8 @@
       setPhase("play");
       return;
     }
-    if (S.phase === "play") setPhase("paused");
-    else if (S.phase === "paused") setPhase("play");
+    if (S.phase === "play") { S.optBack = "play"; setPhase("paused"); }
+    else if (S.phase === "paused") setPhase(S.optBack || "play");
   }
 
   function pickPerk(kind) {
@@ -513,13 +577,14 @@
   }
 
   function grantPerk(kind) {
-    const cap = kind === "ff" ? 4 : 10;
+    const cap = kind === "ff" ? 4 : kind === "juke" ? 5 : 10;
     const t = kind === "dca" ? 1 : Math.min(cap, S.poolTier[kind] || 1);
     S.have[kind] = t;
     if (kind !== "dca") S.poolTier[kind] = Math.min(cap, t + 1);
     if (kind === "dca") S.dcaOn = true;
     if (kind === "ff") S.speedMul = ffMax();
     if (kind === "manip" && !S.trend) S.trend = "equal";
+    if (kind === "juke") fillJukebox();
   }
 
   function bumpOffer() {
@@ -534,12 +599,13 @@
   }
 
   function rollPerks() {
-    const ids = ["dca", "ff", "adopt", "manip", "candy"].filter((id) => {
+    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke"].filter((id) => {
       if (id === "dca") return S.have.dca <= 0;
       if (id === "ff") return S.have.ff < 4;
+      if (id === "juke") return (S.have.juke || 0) < 5;
       return (S.poolTier[id] || 1) <= 10;
     });
-    const bag = ids.length >= 2 ? ids : ["dca", "ff", "adopt", "manip", "candy"];
+    const bag = ids.length >= 2 ? ids : ["dca", "ff", "adopt", "manip", "candy", "juke"];
     const copy = bag.slice();
     const a = copy.splice((Math.random() * copy.length) | 0, 1)[0];
     const b = copy.splice((Math.random() * copy.length) | 0, 1)[0];
@@ -566,8 +632,13 @@
 
   function setPhase(p) {
     S.phase = p;
-    if (p === "play") A.startMusic(() => S.power, () => S.phase === "play");
-    else A.stopMusic();
+    const jukeLive = S.jukeOn && A.jukePlaying && A.jukePlaying();
+    if (p === "play") {
+      if (S.jukeOn && A.jukePaused && A.jukePaused()) A.jukeResume();
+      else if (!jukeLive) A.startMusic(() => S.power, () => S.phase === "play");
+    } else {
+      A.stopMusic();
+    }
     field.classList.toggle("bull", S.power === "BULL");
     field.classList.toggle("bear", S.power === "BEAR");
     field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
@@ -632,11 +703,11 @@
       if (S.level >= 2) S.tapeVt.push(S.vtPrice);
       S.sampleAcc -= 0.12;
     }
-    if (!S.hitCap && S.btc >= 21e6) {
+    if (!S.hitCap && (S.btc >= 21e6 || net() >= 21e6 * Math.max(0.01, S.price))) {
       S.hitCap = true; A.sfx.cap();
-      A.speak("Twenty one million. Go full Boglehead. Buy VT.", true);
-      S.stats = { time: S.lifeT, startCash: S.startCash, startPrice: S.startPrice, peakNet: S.peakNet, candles: S.candles, buys: S.buys, sells: S.sells, swans: S.swans, endCash: S.cash, endBtc: S.btc, endPrice: S.price, net: net() };
-      setPhase("level");
+      A.speak("Twenty one million. The float is yours.", true);
+      S.stats = collectRunStats();
+      setPhase("win");
       return;
     }
     if (S.laserOn) { S.laserT -= dt; if (S.laserT <= 0) applyLaser(false); }
@@ -889,7 +960,7 @@
     $("clock").textContent = fmtTime(S.lifeT);
     $("clock").classList.toggle("hide", S.phase === "ready" || S.phase === "count");
     $("h-cash").textContent = money(S.cash);
-    $("h-btc").textContent = fmtBtc(S.btc);
+    $("h-btc").textContent = fmtBtcAmt(S.btc);
     $("h-price").textContent = money(S.price);
     $("h-cold").textContent = String(S.cold);
     $("h-msig").textContent = String(S.msig);
@@ -947,8 +1018,205 @@
     if (S.laserOn) status = status ? status + "  ·  LASER " + Math.ceil(S.laserT) + "s" : "LASER  " + Math.ceil(S.laserT) + "s";
     $("status").textContent = status;
     $("status").classList.toggle("hide", !(status && S.phase === "play"));
-    $("ticker").textContent = S.ticker;
-    $("ticker").classList.toggle("hide", !(S.ticker && S.phase === "play"));
+    const cap = $("caption");
+    if (cap) {
+      cap.textContent = S.ticker || "";
+      cap.classList.toggle("hide", !S.ticker || S.phase !== "play");
+    }
+  }
+
+  function collectRunStats() {
+    return {
+      time: S.lifeT, startCash: S.startCash, startPrice: S.startPrice, peakNet: S.peakNet,
+      candles: S.candles, buys: S.buys, sells: S.sells, sellsBear: S.sellsBear || 0,
+      coldLost: S.coldLost || 0, boughtBtc: !!S.boughtBtc, swans: S.swans, lasers: S.lasers,
+      halvings: S.halvings || 0, halveMiss: S.halveMiss || 0,
+      endCash: S.cash, endBtc: S.btc, endPrice: S.price, net: net(),
+      haveSum: Object.keys(S.have).reduce((n, k) => n + (S.have[k] || 0), 0),
+      iabud: S.have.iabud || 0
+    };
+  }
+  function runAwards(st) {
+    const out = [];
+    if ((st.sells || 0) === 0) out.push({ name: "Maxi Soul", why: "Never sold BTC — not by hand, not by IAbud." });
+    if ((st.halveMiss || 0) === 0 && (st.halvings || 0) > 0) out.push({ name: "Halving Catcher", why: "Every halving that spawned was eaten." });
+    if (!st.boughtBtc) out.push({ name: "Nocoiner", why: "Never bought BTC." });
+    if ((st.halvings || 0) === 0) out.push({ name: "Greedy Miner", why: "Ate 0 halvings." });
+    if ((st.coldLost || 0) === 0) out.push({ name: "Opsec Warrior", why: "Lost 0 cold storage." });
+    if ((st.sellsBear || 0) >= 1) out.push({ name: "Paper Hands", why: "Sold BTC " + st.sellsBear + " time" + (st.sellsBear === 1 ? "" : "s") + " in a bear market." });
+    return out;
+  }
+  function jukeLyricsOn() { return localStorage.getItem("choppy-juke-lyrics") === "1"; }
+  function setJukeLyrics(on) { localStorage.setItem("choppy-juke-lyrics", on ? "1" : "0"); }
+  function jukeEnabledList() {
+    if (!S.jukeOff) S.jukeOff = {};
+    return (S.jukeList || []).filter((id) => !S.jukeOff[id]);
+  }
+  function fillJukebox() {
+    const all = (A.JUKE_CORE && A.JUKE_CORE.slice()) || Object.keys(A.SONGS || {});
+    if (!S.jukeUnlock) S.jukeUnlock = [];
+    const seen = {};
+    S.jukeUnlock.forEach((id) => { seen[id] = true; });
+    const extra = all.filter((id) => !seen[id]);
+    for (let i = extra.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      const tmp = extra[i]; extra[i] = extra[j]; extra[j] = tmp;
+    }
+    S.jukeUnlock = S.jukeUnlock.concat(extra);
+    const t = Math.max(0, S.have.juke || 0);
+    const n = t <= 0 ? 0 : Math.min(all.length, t <= 1 ? 2 : 2 + (t - 1) * 4);
+    S.jukeList = S.jukeUnlock.slice(0, n);
+    if (S.jukeTrack >= S.jukeList.length) S.jukeTrack = 0;
+  }
+  function jukeSelect(i) {
+    fillJukebox();
+    const n = S.jukeList.length;
+    if (!n) return;
+    S.jukeTrack = ((i % n) + n) % n;
+    if (S.jukeOn || (A.jukePaused && A.jukePaused())) {
+      S.jukeOn = false;
+      if (A.jukeStop) A.jukeStop();
+    }
+    renderOverlay();
+  }
+  function jukePlay() {
+    fillJukebox();
+    const pool = jukeEnabledList();
+    if (!pool.length || !A.jukePlay) return;
+    if (!pool.includes(S.jukeList[S.jukeTrack])) S.jukeTrack = S.jukeList.indexOf(pool[0]);
+    const id = S.jukeList[S.jukeTrack];
+    A.unlock();
+    A.stopMusic();
+    A.jukePlay(id);
+    S.jukeOn = true;
+    renderOverlay();
+  }
+  function jukePause() {
+    if (A.jukePaused && A.jukePaused()) {
+      if (A.jukeResume) A.jukeResume();
+    } else if (A.jukePause) A.jukePause();
+    renderOverlay();
+  }
+  A.onJukeEnd = function () {
+    if (!S.jukeOn) return;
+    fillJukebox();
+    const pool = jukeEnabledList();
+    if (!pool.length) { S.jukeOn = false; if (A.jukeStop) A.jukeStop(); return; }
+    const cur = S.jukeList[S.jukeTrack];
+    let next;
+    if (S.jukeRepeat === "one") next = cur;
+    else if (S.jukeShuffle) next = pool[(Math.random() * pool.length) | 0];
+    else {
+      const i = pool.indexOf(cur);
+      if (i >= 0 && i < pool.length - 1) next = pool[i + 1];
+      else if (S.jukeRepeat === "all") next = pool[0];
+      else { S.jukeOn = false; if (A.jukeStop) A.jukeStop(); renderOverlay(); return; }
+    }
+    S.jukeTrack = S.jukeList.indexOf(next);
+    if (A.jukePlay) A.jukePlay(next);
+    if (S.phase === "paused") renderOverlay();
+  };
+
+  function pauseMarkup() {
+    const panel = S.optPanel || "";
+    if (panel === "help") {
+      return "<h1>How to play</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">Back</button>";
+    }
+    if (panel === "juke") {
+      if ((S.have.juke || 0) <= 0) {
+        return "<h1>Jukebox</h1><p>Unlock the Jukebox perk first.</p><button class=\"cta\" id=\"help-back\">Back</button>";
+      }
+      fillJukebox();
+      const id = S.jukeList[S.jukeTrack] || "";
+      const live = !!(A.jukePlaying && A.jukePlaying());
+      const paused = !!(A.jukePaused && A.jukePaused());
+      const song = A.SONGS && A.SONGS[id];
+      const rows = S.jukeList.map((sid, i) => {
+        const t = (A.SONGS && A.SONGS[sid] && A.SONGS[sid].title) || sid;
+        const off = S.jukeOff && S.jukeOff[sid];
+        return "<button type=\"button\" class=\"juke-track" + (i === S.jukeTrack ? " on" : "") + (off ? " dim" : "") + "\" data-juke=\"" + i + "\">" + (i + 1) + ". " + t + (off ? " · off" : "") + "</button>"
+          + "<button type=\"button\" class=\"juke-btn\" data-skip=\"" + sid + "\">" + (off ? "On" : "Off") + "</button>";
+      }).join("");
+      const rpt = S.jukeRepeat || "off";
+      return "<h1>Jukebox</h1><div class=\"juke retro\">"
+        + "<p class=\"juke-lab\">Retro Jukebox</p>"
+        + "<p class=\"juke-now\">" + (song ? song.title : id) + "</p>"
+        + "<p class=\"juke-gen\">" + (song && song.genre ? song.genre : "") + "</p>"
+        + "<div class=\"juke-row\">"
+        + "<button type=\"button\" class=\"juke-btn\" id=\"juke-prev\">‹</button>"
+        + "<button type=\"button\" class=\"juke-btn juke-play" + (live ? " on" : "") + "\" id=\"juke-play\">" + (live ? "▶ Playing" : "▶ Play") + "</button>"
+        + "<button type=\"button\" class=\"juke-btn" + (paused ? " on" : "") + "\" id=\"juke-pause\">" + (paused ? "❚❚ Paused" : "❚❚ Pause") + "</button>"
+        + "<button type=\"button\" class=\"juke-btn\" id=\"juke-next\">›</button>"
+        + "</div>"
+        + "<div class=\"juke-prog\"><div class=\"juke-prog-bar\" id=\"juke-bar\"></div></div>"
+        + "<div class=\"juke-row\">"
+        + "<button type=\"button\" class=\"juke-btn" + (S.jukeShuffle ? " on" : "") + "\" id=\"juke-shuf\">Shuffle</button>"
+        + "<button type=\"button\" class=\"juke-btn" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\">Repeat " + rpt + "</button>"
+        + "<button type=\"button\" class=\"juke-btn" + (jukeLyricsOn() ? " on" : "") + "\" id=\"juke-lyr\">Lyrics</button>"
+        + "</div>"
+        + "<div class=\"juke-list\">" + rows + "</div>"
+        + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
+    }
+    if (panel === "sound") {
+      return "<h1>Sound</h1><div class=\"mute-row\">"
+        + "<button type=\"button\" class=\"mute-tog\" id=\"mute-theme\">Bull/bear songs</button>"
+        + "<button type=\"button\" class=\"mute-tog\" id=\"mute-sfx\">Game FX</button>"
+        + "<button type=\"button\" class=\"mute-tog\" id=\"mute-voice\">Voices</button>"
+        + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
+    }
+    const fromPlay = S.optBack === "play" || S.phase === "paused";
+    return "<h1>" + (fromPlay ? "Paused" : "Options") + "</h1>"
+      + "<div class=\"opt-menu\">"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">Sound</button>"
+      + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">Jukebox</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">Tutorial</button>"
+      + "</div>"
+      + "<button class=\"cta\" id=\"go\">" + (fromPlay ? "Resume" : "Back") + "</button>";
+  }
+  function bindPauseUi() {
+    const go = $("go");
+    if (go) go.onclick = () => {
+      S.optPanel = null;
+      setPhase(S.optBack || "play");
+    };
+    const helpBack = $("help-back");
+    if (helpBack) helpBack.onclick = (e) => { e.stopPropagation(); S.optPanel = null; renderOverlay(); };
+    const optJuke = $("opt-juke");
+    if (optJuke) optJuke.onclick = (e) => { e.stopPropagation(); S.optPanel = "juke"; renderOverlay(); };
+    const jp = $("juke-play");
+    if (jp) jp.onclick = (e) => { e.stopPropagation(); jukePlay(); };
+    const jpa = $("juke-pause");
+    if (jpa) jpa.onclick = (e) => { e.stopPropagation(); jukePause(); };
+    const jpr = $("juke-prev");
+    if (jpr) jpr.onclick = (e) => { e.stopPropagation(); jukeSelect(S.jukeTrack - 1); };
+    const jn = $("juke-next");
+    if (jn) jn.onclick = (e) => { e.stopPropagation(); jukeSelect(S.jukeTrack + 1); };
+    overlay.querySelectorAll("[data-juke]").forEach((btn) => {
+      btn.onclick = (e) => { e.stopPropagation(); jukeSelect(+btn.getAttribute("data-juke")); };
+    });
+    overlay.querySelectorAll("[data-skip]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const sid = btn.getAttribute("data-skip");
+        if (!S.jukeOff) S.jukeOff = {};
+        if (S.jukeOff[sid]) delete S.jukeOff[sid];
+        else if (jukeEnabledList().length > 1) S.jukeOff[sid] = true;
+        renderOverlay();
+      };
+    });
+    const sh = $("juke-shuf");
+    if (sh) sh.onclick = (e) => { e.stopPropagation(); S.jukeShuffle = !S.jukeShuffle; renderOverlay(); };
+    const rp = $("juke-rep");
+    if (rp) rp.onclick = (e) => {
+      e.stopPropagation();
+      S.jukeRepeat = S.jukeRepeat === "off" ? "all" : S.jukeRepeat === "all" ? "one" : "off";
+      renderOverlay();
+    };
+    const ly = $("juke-lyr");
+    if (ly) ly.onclick = (e) => { e.stopPropagation(); setJukeLyrics(!jukeLyricsOn()); renderOverlay(); };
+    if (optHelp) optHelp.onclick = (e) => { e.stopPropagation(); S.optPanel = "help"; renderOverlay(); };
+    const optSound = $("opt-sound");
+    if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };
   }
 
   function renderOverlay() {
@@ -956,7 +1224,8 @@
     if (p === "play") { overlay.classList.add("hide"); overlay.innerHTML = ""; return; }
     overlay.classList.remove("hide");
     if (p === "ready") {
-      overlay.innerHTML = "<h1>Choppy Bitcoin</h1><p>Flap the candles. Buy dips, sell rips. Net worth in USD is the score.</p><button class=\"cta\" id=\"go\">Start</button>";
+      overlay.innerHTML = "<h1>Choppy Bitcoin</h1>" + tutorialBody()
+        + "<button class=\"cta\" id=\"go\">Play</button>";
       $("go").onclick = startGame;
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
@@ -973,25 +1242,32 @@
         btn.onpointerdown = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
       });
     } else if (p === "paused") {
-      overlay.innerHTML = "<h1>Paused</h1><button class=\"cta\" id=\"go\">Resume</button>";
-      $("go").onclick = () => setPhase("play");
+      overlay.innerHTML = pauseMarkup();
+      bindPauseUi();
     } else if (p === "over") {
       overlay.innerHTML = "<p class=\"k\">Rekt · net worth</p><h1>" + money(net()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " x " + money(S.price) + (S.level >= 2 ? " + " + fmtVt(S.vt) + " x " + money(S.vtPrice) : "") + "</p><p class=\"k\">Best " + money(S.best) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">Try again</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
       $("go").onclick = replay;
-    } else if (p === "level" && S.stats) {
+    } else if (p === "win" && S.stats) {
       const st = S.stats;
-      overlay.innerHTML = "<p class=\"k\">TRACK COMPLETE</p><h1>Go full Boglehead</h1><p>Twenty one million bitcoin. The float is yours. Next: own the world. Buy VT.</p><ul>"
+      const awards = runAwards(st);
+      overlay.innerHTML = "<p class=\"k\">TWENTY ONE MILLION</p><h1>The float is yours</h1>"
+        + "<p>You stacked the cap. Here is the tape of the run.</p><ul>"
         + "<li><span class=\"k\">Time</span><span>" + fmtTime(st.time) + "</span></li>"
         + "<li><span class=\"k\">Start cash</span><span>" + money(st.startCash) + "</span></li>"
         + "<li><span class=\"k\">Start BTC px</span><span>" + money(st.startPrice) + "</span></li>"
+        + "<li><span class=\"k\">End BTC px</span><span>" + money(st.endPrice) + "</span></li>"
         + "<li><span class=\"k\">Peak net</span><span>" + money(st.peakNet) + "</span></li>"
         + "<li><span class=\"k\">Net worth</span><span>" + money(st.net) + "</span></li>"
         + "<li><span class=\"k\">BTC held</span><span>" + fmtBtc(st.endBtc) + "</span></li>"
         + "<li><span class=\"k\">Candles</span><span>" + st.candles + "</span></li>"
         + "<li><span class=\"k\">Buys / sells</span><span>" + st.buys + " / " + st.sells + "</span></li>"
+        + "<li><span class=\"k\">Halvings</span><span>" + (st.halvings || 0) + " caught · " + (st.halveMiss || 0) + " missed</span></li>"
         + "<li><span class=\"k\">Swans vaporized</span><span>" + st.swans + "</span></li></ul>"
-        + "<button class=\"cta\" id=\"go\">Bonus track · VT</button>";
-      $("go").onclick = continueBonus;
+        + "<div class=\"awards\"><p class=\"k\">Awards</p>"
+        + (awards.length ? awards.map((a) => "<p><span class=\"ia-act\">" + a.name + "</span> — " + a.why + "</p>").join("") : "<p>No extra medals. The cap is the medal.</p>")
+        + "</div>"
+        + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">Play again</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
+      $("go").onclick = replay;
     }
   }
 
@@ -1024,6 +1300,13 @@
   $("buy-vt").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); buyVt(); };
   $("sell-vt").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); sellVt(); };
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); togglePause(); };
+  const optBtn = $("opt-btn");
+  if (optBtn) optBtn.onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
+    else if (S.phase === "ready") { S.optBack = "ready"; S.optPanel = null; renderOverlay(); }
+    else if (S.phase === "paused") { S.optPanel = null; setPhase(S.optBack || "play"); }
+  };
   $("dca-btn").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (S.have.dca <= 0) return;
@@ -1050,6 +1333,7 @@
   });
 
   resetWorld(false);
+  fillJukebox();
   renderOverlay();
   renderHud();
   requestAnimationFrame(loop);

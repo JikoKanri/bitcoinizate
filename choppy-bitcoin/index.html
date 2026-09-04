@@ -1,16 +1,35 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Choppy Bitcoin | Bitcoinizate</title>
+  <title>Play Choppy Bitcoin | Bitcoinizate Arcade</title>
+  <meta name="description" content="Play Choppy Bitcoin: fly through candlesticks, buy dips, sell rips, survive black swans. Free Bitcoinizate arcade. Score is net worth in USD.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://bitcoinizate.com/choppy-bitcoin/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0a0c">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bitcoinizate">
+  <meta property="og:title" content="Play Choppy Bitcoin | Bitcoinizate">
+  <meta property="og:description" content="Candlestick Flappy plus trading. Score is net worth in USD.">
+  <meta property="og:url" content="https://bitcoinizate.com/choppy-bitcoin/">
+  <meta property="og:image" content="https://bitcoinizate.com/og-icon.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Play Choppy Bitcoin">
+  <meta name="twitter:image" content="https://bitcoinizate.com/og-icon.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <div id="hud" class="hud-grid hud-4">
       <div class="stat"><span>Cash</span><b id="h-cash">$0</b></div>
-      <div class="stat"><span>BTC</span><b id="h-btc">0 BTC</b></div>
+      <div class="stat"><span>BTC</span><b id="h-btc">0</b></div>
       <div class="stat"><span>BTC price</span><b id="h-price">$0</b></div>
       <div class="stat hide" id="h-vt-wrap"><span>VT</span><b id="h-vt">0 VT</b></div>
       <div class="stat hide" id="h-vtpx-wrap"><span>VT price</span><b id="h-vtpx">$0</b></div>
@@ -20,27 +39,35 @@
       </div>
       <div class="stat"><span>Laser eyes</span><b id="h-laser">0</b></div>
       <div class="stat"><span>Next halving</span><b id="h-halve">21</b></div>
-      <div class="stat"><span>Halvings</span><b id="h-halves">0</b></div>
+      <div class="stat"><span>Halvings</span><b id="h-halves">0/21</b></div>
+      <div class="stat stat-opt">
+        <button type="button" id="opt-btn" class="opt-btn">Options</button>
+      </div>
     </div>
     <div class="speed-bar">
       <span id="spd-lab" class="hide">Speed</span>
       <button type="button" data-speed="1" id="spd-1" class="spd on hide">1x</button>
       <button type="button" data-speed="2" id="spd-2" class="spd hide">2x</button>
       <button type="button" id="dca-btn" class="dca-tog hide" aria-pressed="false">DCA OFF</button>
-      <span id="trend-lab" class="hide">Trend</span>
-      <button type="button" id="trend-up" class="trend hide" data-trend="up">UP</button>
-      <button type="button" id="trend-eq" class="trend hide" data-trend="equal">EQ</button>
-      <button type="button" id="trend-dn" class="trend hide" data-trend="down">DN</button>
+      <button type="button" id="iabud-btn" class="dca-tog hide" aria-pressed="false">IABUD OFF</button>
+      <button type="button" id="trend-btn" class="hide">TREND OFF</button>
     </div>
     <div id="field" class="field">
       <canvas id="c"></canvas>
+      <div id="now-playing" class="hide"></div>
       <div id="clock">0:00</div>
+      <p id="caption" class="caption hide"></p>
       <p id="status" class="banner top hide"></p>
-      <p id="ticker" class="banner bot hide"></p>
+      <div id="lyric-stage" class="lyric-stage hide">
+        <p id="lyric-title" class="lyric-title"></p>
+        <p id="lyric-prev" class="lyric-side"></p>
+        <p id="lyric-now" class="lyric-now"></p>
+        <p id="lyric-next" class="lyric-side"></p>
+      </div>
       <div id="trades" class="trades hide">
         <div class="row">
-          <button id="buy-btc" class="buy">Buy BTC (B)</button>
-          <button id="sell-btc" class="sell">Sell BTC (S)</button>
+          <button id="buy-btc" class="buy">BUY BTC</button>
+          <button id="sell-btc" class="sell">SELL BTC</button>
         </div>
         <div class="row hide" id="vt-row">
           <button id="buy-vt" class="buy">Buy VT (V)</button>
@@ -51,6 +78,7 @@
       <div id="overlay" class="overlay"></div>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.7.0/abcjs-basic-min.js" integrity="sha384-QEx1pDqNtno80p4xYN5Cqm5JcAAtUDUCHqFLq0UBhWRFoFzzNHumh20zFGG/9XMi" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="audio.js"></script>
   <script src="game.js"></script>
 </body>
