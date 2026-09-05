@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Play Choppy Bitcoin | Bitcoinizate Arcade</title>
-  <meta name="description" content="Play Choppy Bitcoin: fly through candlesticks, buy dips, sell rips, survive black swans. Free Bitcoinizate arcade. Score is net worth in USD.">
+  <title>Play Choppy Bitcoin | Bitcoinizate</title>
+  <meta name="description" content="Free bitcoin-themed games. Fly through candles. Score is play-money net worth in BTC.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://bitcoinizate.com/choppy-bitcoin/">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -99,6 +99,9 @@
     <div class="auth-card">
       <h2>Profile</h2>
       <p id="profile-score-info"></p>
+      <label>Alias<input id="profile-alias" maxlength="16" autocomplete="username"></label>
+      <p id="alias-hint" class="auth-msg"></p>
+      <div id="profile-awards" class="awards"></div>
       <label>BTC address<input id="profile-btc-addr" autocomplete="off"></label>
       <label>Lightning<input id="profile-ln-addr" autocomplete="off"></label>
       <pre id="leaderboard-box" class="board"></pre>

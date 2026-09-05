@@ -7,7 +7,26 @@
   let currentProfile = null;
   let isSignUpMode = false;
 
-  const $ = (id) => document.getElementById(id);
+  const AWARD_FALLBACK = [
+    { id: "maxi", name: "Maxi Soul", why: "Never sold BTC — not by hand, not by A.I. bud." },
+    { id: "halver", name: "Halving Catcher", why: "Every halving that spawned was eaten." },
+    { id: "nocoiner", name: "Nocoiner", why: "Never bought BTC in that run." },
+    { id: "greedy", name: "Greedy Miner", why: "Ate 0 halvings." },
+    { id: "opsec", name: "Opsec Warrior", why: "Lost 0 cold storage." },
+    { id: "paper", name: "Paper Hands", why: "Sold BTC in a bear market." }
+  ];
+  function awardHtmlLocal() {
+    if (window.choppyAwardHtml) return window.choppyAwardHtml();
+    let owned = {};
+    try {
+      const bag = JSON.parse(localStorage.getItem("choppy-awards") || "{}");
+      owned = bag[window.choppyUserId || "guest"] || {};
+    } catch (e) {}
+    return AWARD_FALLBACK.map((a) => {
+      const on = !!owned[a.id];
+      return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + a.name + "</b> — " + a.why + "</p>";
+    }).join("");
+  }
   const authModal = $("auth-modal");
   const profileModal = $("profile-modal");
   const authMsg = $("auth-msg");
@@ -20,6 +39,26 @@
 
   function validAlias(s) {
     return /^[a-zA-Z0-9_]{3,16}$/.test(s);
+  }
+
+  function fmtScoreBtc(sats) {
+    const btc = (Number(sats) || 0) / 1e4;
+    if (btc >= 1) return btc.toFixed(4) + " BTC";
+    if (btc >= 0.0001) return btc.toFixed(6) + " BTC";
+    return btc.toFixed(8) + " BTC";
+  }
+
+  function aliasReady(profile) {
+    if (!profile || !profile.alias_changed_at) return true;
+    const t = Date.parse(profile.alias_changed_at);
+    if (!t) return true;
+    return Date.now() - t >= 30 * 24 * 3600 * 1000;
+  }
+
+  function aliasNextDate(profile) {
+    const t = Date.parse(profile && profile.alias_changed_at);
+    if (!t) return "";
+    return new Date(t + 30 * 24 * 3600 * 1000).toLocaleDateString();
   }
 
   function updateAuthUI(profile) {
@@ -50,6 +89,7 @@
       return;
     }
     currentUser = data.session.user || { id: "" };
+    window.choppyUserId = currentUser.id || "";
     const rec = !!(data.session.type === "recovery" || loadType());
     await loadUserProfile();
     if (rec) openReset();
@@ -135,6 +175,8 @@
       return;
     }
     currentProfile = data;
+    window.choppyUserId = currentUser.id || "";
+    if (Array.isArray(data.awards) && window.mergeChoppyAwards) window.mergeChoppyAwards(data.awards);
     updateAuthUI(currentProfile);
   }
 
@@ -185,8 +227,20 @@
     if (!currentUser || !supabase) return;
     const btcAddr = ($("profile-btc-addr") && $("profile-btc-addr").value || "").trim();
     const lnAddr = ($("profile-ln-addr") && $("profile-ln-addr").value || "").trim();
+    const aliasEl = $("profile-alias");
+    const nextAlias = aliasEl ? aliasEl.value.trim() : "";
+    const patch = { btc_address: btcAddr, ln_address: lnAddr };
+    if (nextAlias && currentProfile && nextAlias !== currentProfile.username) {
+      if (!validAlias(nextAlias)) { setMsg("Alias: 3–16 letters, numbers or _.", true); return; }
+      if (!aliasReady(currentProfile)) {
+        setMsg(((window.BZ && BZ.t("aliasWait")) || "Wait until ") + aliasNextDate(currentProfile), true);
+        return;
+      }
+      patch.username = nextAlias;
+      patch.alias_changed_at = new Date().toISOString();
+    }
     try {
-      await supabase.from("profiles").update({ btc_address: btcAddr, ln_address: lnAddr }).eq("id", currentUser.id);
+      await supabase.from("profiles").update(patch).eq("id", currentUser.id);
       await loadUserProfile();
       if (profileModal) profileModal.classList.add("hide");
     } catch (e) {
@@ -194,19 +248,19 @@
     }
   }
 
-  async function fetchGlobalLeaderboard() {
-    const box = $("leaderboard-box");
+  async function fetchGlobalLeaderboard(targetId) {
+    const box = $(targetId || "leaderboard-box") || $("site-board");
     if (!box || !supabase) return;
     try {
       let rows = [];
-      await supabase.from("profiles").select("username, highscore").order("highscore", { ascending: false }).limit(5).then((res) => {
+      await supabase.from("profiles").select("username, highscore").order("highscore", { ascending: false }).limit(10).then((res) => {
         if (res.error) throw res.error;
         rows = res.data || [];
       });
-      if (!rows.length) { box.textContent = "No records yet."; return; }
-      box.textContent = rows.map((t, i) => (i + 1) + ". " + (t.username || "?") + "  " + (Number(t.highscore) || 0)).join("\n");
+      if (!rows.length) { box.textContent = "—"; return; }
+      box.textContent = rows.map((row, i) => (i + 1) + ". @" + (row.username || "?") + "   " + fmtScoreBtc(row.highscore)).join("\n");
     } catch (e) {
-      box.textContent = "Leaderboard offline.";
+      box.textContent = "—";
     }
   }
 
@@ -275,9 +329,20 @@
   if ($("user-profile-tag")) {
     $("user-profile-tag").onclick = () => {
       if (!currentProfile) return;
-      if ($("profile-score-info")) $("profile-score-info").textContent = "High score  " + (Number(currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score) || 0);
+      if ($("profile-score-info")) $("profile-score-info").textContent = ((window.BZ && BZ.t("highScore")) || "High score") + "  " + fmtScoreBtc(currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score);
+      if ($("profile-alias")) {
+        $("profile-alias").value = currentProfile.username || "";
+        $("profile-alias").disabled = !aliasReady(currentProfile);
+      }
+      if ($("alias-hint")) {
+        $("alias-hint").textContent = aliasReady(currentProfile)
+          ? ((window.BZ && BZ.t("aliasMonth")) || "")
+          : ((window.BZ && BZ.t("aliasWait")) || "") + aliasNextDate(currentProfile);
+      }
       if ($("profile-btc-addr")) $("profile-btc-addr").value = currentProfile.btc_address || "";
       if ($("profile-ln-addr")) $("profile-ln-addr").value = currentProfile.ln_address || "";
+      const box = $("profile-awards");
+      if (box) box.innerHTML = awardHtmlLocal();
       if (profileModal) profileModal.classList.remove("hide");
     };
   }
@@ -287,12 +352,19 @@
     $("btn-logout").onclick = async () => {
       if (supabase) await supabase.auth.signOut();
       currentUser = null; currentProfile = null;
+      window.choppyUserId = "";
       updateAuthUI(null);
       if (profileModal) profileModal.classList.add("hide");
     };
   }
 
-  window.submitNewHighScore = submitNewHighScore;
+  window.persistAwards = async function (ids) {
+    if (!currentUser || !supabase || !ids) return;
+    try {
+      await supabase.from("profiles").update({ awards: ids }).eq("id", currentUser.id);
+    } catch (e) {}
+  };
+  window.refreshLeaderboard = fetchGlobalLeaderboard;
   window.openSignUp = function () {
     openAuth();
     if (!isSignUpMode) toggleAuthMode();

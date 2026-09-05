@@ -172,7 +172,8 @@ body { display: flex; flex-direction: column; }
 }
 .lang-sw { display: flex; gap: 6px; justify-content: center; margin: 0 0 8px; }
 .lang-sw button { min-width: 40px; min-height: 32px; border: 1px solid #3a3a40; background: #141416; color: #f3efe6; cursor: pointer; }
-.lang-sw button.on { border-color: #F2A900; color: #F2A900; }
+.aw-on { color: #f3efe6; }
+.aw-off { color: #6a6660; }
 .juke-btn.ico { min-width: 44px; min-height: 40px; padding: 0; font-size: 16px; line-height: 1; color: #8a8680; background: #141416; border-color: #2a2a2e; }
 .juke-btn.ico.on { color: #09090b; background: #c8960a; border-color: #f0d060; box-shadow: 0 0 0 2px rgba(240,208,96,0.35); }
 .juke-btn.ico.juke-play { color: #8a8680; background: #141416; min-width: 48px; }

@@ -185,7 +185,13 @@
     aibudOn: false, aibudLit: {}, iaLog: [], iaProfit: 0, aibudSpeechUntil: 0, aiAcc: 0,
   };
 
-  function net() { return S.cash + S.btc * S.price + S.vt * S.vtPrice; }
+  function netUsd() { return S.cash + S.btc * S.price + S.vt * S.vtPrice; }
+  function netBtc() {
+    const px = Math.max(0.01, S.price || 0);
+    return S.btc + S.cash / px + (S.vt * (S.vtPrice || 0)) / px;
+  }
+  function net() { return netBtc(); }
+  function scoreSats() { return Math.max(0, Math.round(netBtc() * 1e4)); }
 
   function ffMax() {
     const speeds = [0, 1.5, 2, 3, 0.5];
@@ -375,7 +381,7 @@
       S.btc = 0; S.vt = 0; S.vtPrice = 0; S.level = 1; S.hitCap = false;
       S.price = gauss(20000, 0, 40000);
       S.startCash = S.cash; S.startPrice = S.price;
-      S.peakNet = S.cash; S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
+      S.peakNet = netBtc(); S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
@@ -580,7 +586,7 @@
     if (S.dead || S.phase !== "play") return;
     S.dead = true; applyLaser(false); S.power = "NONE"; S.powerT = 0;
     A.sfx.die(); A.cancelSpeech(); A.speak(t("liquidated"), true);
-    S.best = saveBest(Math.round(net()));
+    S.best = saveBest(scoreSats());
     setPhase("over");
   }
 
@@ -834,9 +840,13 @@
   }
 
   function startGame() {
-    A.unlock(); A.sfx.start();
+    if (A && A.unlock) A.unlock();
+    if (A && A.sfx && A.sfx.start) A.sfx.start();
     S.humanInput = true;
-    if (!S.welcomed) { A.speak(t("welcome")); S.welcomed = true; }
+    if (!S.welcomed) {
+      if (A && A.speak) A.speak(t("welcome"));
+      S.welcomed = true;
+    }
     if (!S.introCounted) { S.introCounted = true; startCount(); }
     else setPhase("play");
   }
@@ -891,7 +901,7 @@
       if (S.level >= 2) S.tapeVt.push(S.vtPrice);
       S.sampleAcc -= 0.12;
     }
-    if (!S.hitCap && (S.btc >= 21e6 || net() >= 21e6 * Math.max(0.01, S.price))) {
+    if (!S.hitCap && netBtc() >= 21e6) {
       S.hitCap = true; A.sfx.cap();
       A.speak(t("floatYours"), true);
       S.stats = collectRunStats();
@@ -1295,16 +1305,72 @@
       iabud: S.have.iabud || 0
     };
   }
-  function runAwards(st) {
+  const AWARD_CATALOG = [
+    { id: "maxi", name: "Maxi Soul", why: "Never sold BTC — not by hand, not by A.I. bud." },
+    { id: "halver", name: "Halving Catcher", why: "Every halving that spawned was eaten." },
+    { id: "nocoiner", name: "Nocoiner", why: "Never bought BTC in that run." },
+    { id: "greedy", name: "Greedy Miner", why: "Ate 0 halvings." },
+    { id: "opsec", name: "Opsec Warrior", why: "Lost 0 cold storage." },
+    { id: "paper", name: "Paper Hands", why: "Sold BTC in a bear market." }
+  ];
+  function awardStore() {
+    try { return JSON.parse(localStorage.getItem("choppy-awards") || "{}"); } catch (e) { return {}; }
+  }
+  function awardOwner() {
+    return (window.choppyUserId || "guest");
+  }
+  function loadAwards() {
+    const bag = awardStore();
+    return bag[awardOwner()] || {};
+  }
+  function saveAwards(map) {
+    const bag = awardStore();
+    bag[awardOwner()] = map;
+    localStorage.setItem("choppy-awards", JSON.stringify(bag));
+    if (typeof window.persistAwards === "function") window.persistAwards(Object.keys(map).filter((k) => map[k]));
+  }
+  function mergeAwards(ids) {
+    const map = loadAwards();
+    (ids || []).forEach((id) => { map[id] = true; });
+    saveAwards(map);
+    return map;
+  }
+  function runAwardIds(st) {
     const out = [];
-    if ((st.sells || 0) === 0) out.push({ name: "Maxi Soul", why: "Never sold BTC — not by hand, not by IAbud." });
-    if ((st.halveMiss || 0) === 0 && (st.halvings || 0) > 0) out.push({ name: "Halving Catcher", why: "Every halving that spawned was eaten." });
-    if (!st.boughtBtc) out.push({ name: "Nocoiner", why: "Never bought BTC." });
-    if ((st.halvings || 0) === 0) out.push({ name: "Greedy Miner", why: "Ate 0 halvings." });
-    if ((st.coldLost || 0) === 0) out.push({ name: "Opsec Warrior", why: "Lost 0 cold storage." });
-    if ((st.sellsBear || 0) >= 1) out.push({ name: "Paper Hands", why: "Sold BTC " + st.sellsBear + " time" + (st.sellsBear === 1 ? "" : "s") + " in a bear market." });
+    if ((st.sells || 0) === 0) out.push("maxi");
+    if ((st.halveMiss || 0) === 0 && (st.halvings || 0) > 0) out.push("halver");
+    if (!st.boughtBtc) out.push("nocoiner");
+    if ((st.halvings || 0) === 0) out.push("greedy");
+    if ((st.coldLost || 0) === 0) out.push("opsec");
+    if ((st.sellsBear || 0) >= 1) out.push("paper");
     return out;
   }
+  function runAwards(st) {
+    return runAwardIds(st).map((id) => AWARD_CATALOG.find((a) => a.id === id)).filter(Boolean);
+  }
+  function awardListHtml(owned) {
+    owned = owned || loadAwards();
+    return AWARD_CATALOG.map((a) => {
+      const on = !!owned[a.id];
+      return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + a.name + "</b> — " + a.why + "</p>";
+    }).join("");
+  }
+  function shareRun(kind) {
+    const btc = fmtBtc(netBtc());
+    const names = runAwards(S.stats || collectRunStats()).map((a) => a.name).join(", ");
+    const text = kind === "win"
+      ? "I stacked 21M on Choppy Bitcoin. Bag " + btc + (names ? " Awards: " + names : "")
+      : "Rekt on Choppy Bitcoin. Bag " + btc + ". Play free on Bitcoinizate.";
+    const url = "https://bitcoinizate.com/choppy-bitcoin/";
+    if (navigator.share) {
+      navigator.share({ title: "Choppy Bitcoin", text: text, url: url }).catch(() => {});
+      return;
+    }
+    window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
+  }
+  window.CHOPPY_AWARDS = AWARD_CATALOG;
+  window.choppyAwardHtml = () => awardListHtml(loadAwards());
+  window.mergeChoppyAwards = mergeAwards;
   function jukeLyricsOn() { return localStorage.getItem("choppy-juke-lyrics") === "1"; }
   function setJukeLyrics(on) { localStorage.setItem("choppy-juke-lyrics", on ? "1" : "0"); }
   function jukeEnabledList() {
@@ -1312,7 +1378,7 @@
     return (S.jukeList || []).filter((id) => !S.jukeOff[id]);
   }
   function fillJukebox() {
-    const all = (A.JUKE_CORE && A.JUKE_CORE.slice()) || Object.keys(A.SONGS || {});
+    const all = (A && A.JUKE_CORE && A.JUKE_CORE.slice()) || Object.keys((A && A.SONGS) || {});
     if (!S.jukeUnlock) S.jukeUnlock = [];
     const seen = {};
     S.jukeUnlock.forEach((id) => { seen[id] = true; });
@@ -1514,9 +1580,13 @@
         overlay.innerHTML = pauseMarkup();
         bindPauseUi();
       } else {
-        overlay.innerHTML = "<h1>Choppy Bitcoin</h1>" + tutorialBody()
-          + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>";
+        overlay.innerHTML = "<h1>Choppy Bitcoin</h1>"
+          + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>"
+          + tutorialBody()
+          + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
         $("go").onclick = startGame;
+        $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(); };
+        if (window.refreshLeaderboard) window.refreshLeaderboard("ready-board");
       }
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
@@ -1536,10 +1606,15 @@
       overlay.innerHTML = pauseMarkup();
       bindPauseUi();
     } else if (p === "over") {
-      overlay.innerHTML = "<p class=\"k\">Rekt · net worth</p><h1>" + money(net()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " x " + money(S.price) + (S.level >= 2 ? " + " + fmtVt(S.vt) + " x " + money(S.vtPrice) : "") + "</p><p class=\"k\">Best " + money(S.best) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">Try again</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
+      const ids = runAwardIds(collectRunStats());
+      mergeAwards(ids);
+      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"awards\">" + awardListHtml() + "</div><div id=\"over-board\" class=\"board\"></div><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">Share</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
       $("go").onclick = replay;
+      if ($("share-run")) $("share-run").onclick = () => shareRun("over");
+      if (window.refreshLeaderboard) window.refreshLeaderboard("over-board");
     } else if (p === "win" && S.stats) {
       const st = S.stats;
+      mergeAwards(runAwardIds(st));
       const awards = runAwards(st);
       overlay.innerHTML = "<p class=\"k\">TWENTY ONE MILLION</p><h1>The float is yours</h1>"
         + "<p>You stacked the cap. Here is the tape of the run.</p><ul>"
@@ -1547,8 +1622,8 @@
         + "<li><span class=\"k\">Start cash</span><span>" + money(st.startCash) + "</span></li>"
         + "<li><span class=\"k\">Start BTC px</span><span>" + money(st.startPrice) + "</span></li>"
         + "<li><span class=\"k\">End BTC px</span><span>" + money(st.endPrice) + "</span></li>"
-        + "<li><span class=\"k\">Peak net</span><span>" + money(st.peakNet) + "</span></li>"
-        + "<li><span class=\"k\">Net worth</span><span>" + money(st.net) + "</span></li>"
+        + "<li><span class=\"k\">Peak net</span><span>" + fmtBtc(st.peakNet) + "</span></li>"
+        + "<li><span class=\"k\">Net worth</span><span>" + fmtBtc(st.net) + "</span></li>"
         + "<li><span class=\"k\">BTC held</span><span>" + fmtBtc(st.endBtc) + "</span></li>"
         + "<li><span class=\"k\">Candles</span><span>" + st.candles + "</span></li>"
         + "<li><span class=\"k\">Buys / sells</span><span>" + st.buys + " / " + st.sells + "</span></li>"
@@ -1557,8 +1632,9 @@
         + "<div class=\"awards\"><p class=\"k\">Awards</p>"
         + (awards.length ? awards.map((a) => "<p><span class=\"ia-act\">" + a.name + "</span> — " + a.why + "</p>").join("") : "<p>No extra medals. The cap is the medal.</p>")
         + "</div>"
-        + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">Play again</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
+        + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">Play again</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">Share</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
       $("go").onclick = replay;
+      if ($("share-run")) $("share-run").onclick = () => shareRun("win");
     }
   }
 
