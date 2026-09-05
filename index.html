@@ -84,6 +84,7 @@
     h2 span { color: var(--gold); }
     .lead { color: #d4d0c8; line-height: 1.6; font-size: 16px; margin: 0 0 24px; max-width: 38em; }
     .play {
+      position: relative; z-index: 2;
       display: block; text-align: center; text-decoration: none; font-weight: 700;
       background: var(--gold); color: #120c02; padding: 18px 18px; letter-spacing: 0.06em;
     }
@@ -225,5 +226,19 @@
   <script src="/i18n.js"></script>
   <script src="/choppy-bitcoin/supabase-lib.js"></script>
   <script src="/choppy-bitcoin/auth.js"></script>
+  <script>
+    (function () {
+      var auth = document.getElementById("auth-modal");
+      var prof = document.getElementById("profile-modal");
+      function openM(el) { if (el) { el.classList.add("open"); el.classList.remove("hide"); } }
+      function closeM(el) { if (el) { el.classList.remove("open"); el.classList.add("hide"); } }
+      var sign = document.getElementById("btn-show-auth");
+      if (sign) sign.addEventListener("click", function (e) { e.preventDefault(); openM(auth); });
+      var closeA = document.getElementById("btn-close-auth");
+      if (closeA) closeA.addEventListener("click", function () { closeM(auth); });
+      var closeP = document.getElementById("btn-close-profile");
+      if (closeP) closeP.addEventListener("click", function () { closeM(prof); });
+    })();
+  </script>
 </body>
 </html>

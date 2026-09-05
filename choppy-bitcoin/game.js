@@ -813,23 +813,32 @@
 
   let countTimer = 0;
   function startCount() {
-    S.countN = 3; setPhase("count"); A.sfx.count();
+    S.countN = 3; setPhase("count");
+    if (A && A.sfx && A.sfx.count) A.sfx.count();
     clearInterval(countTimer);
     countTimer = setInterval(() => {
       S.countN -= 1;
-      if (S.countN <= 0) { clearInterval(countTimer); A.sfx.go(); setPhase("play"); }
-      else { A.sfx.count(); renderOverlay(); }
+      if (S.countN <= 0) {
+        clearInterval(countTimer);
+        if (A && A.sfx && A.sfx.go) A.sfx.go();
+        setPhase("play");
+      } else {
+        if (A && A.sfx && A.sfx.count) A.sfx.count();
+        renderOverlay();
+      }
     }, 1000);
   }
 
   function setPhase(p) {
     S.phase = p;
-    const jukeLive = S.jukeOn && A.jukePlaying && A.jukePlaying();
-    if (p === "play") {
-      if (S.jukeOn && A.jukePaused && A.jukePaused()) A.jukeResume();
-      else if (!jukeLive) A.startMusic(() => S.power, () => S.phase === "play");
-    } else {
-      A.stopMusic();
+    const jukeLive = S.jukeOn && A && A.jukePlaying && A.jukePlaying();
+    if (A) {
+      if (p === "play") {
+        if (S.jukeOn && A.jukePaused && A.jukePaused()) A.jukeResume();
+        else if (!jukeLive && A.startMusic) A.startMusic(() => S.power, () => S.phase === "play");
+      } else if (A.stopMusic) {
+        A.stopMusic();
+      }
     }
     field.classList.toggle("bull", S.power === "BULL");
     field.classList.toggle("bear", S.power === "BEAR");
@@ -1672,8 +1681,22 @@
   }
 
   canvas.addEventListener("pointerdown", (e) => {
-    e.preventDefault(); A.unlock(); S.humanInput = true;
+    e.preventDefault();
+    if (A && A.unlock) A.unlock();
+    S.humanInput = true;
     if (S.phase === "play") flap();
+  });
+  overlay.addEventListener("click", (e) => {
+    const go = e.target.closest("#go");
+    if (!go) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (S.phase === "ready") startGame();
+    else if (S.phase === "over" || S.phase === "win") replay();
+    else if (S.phase === "paused" || S.optPanel) {
+      S.optPanel = null;
+      setPhase(S.optBack === "play" || S.phase === "paused" ? (S.optBack || "play") : "ready");
+    }
   });
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
