@@ -27,6 +27,9 @@
       return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + a.name + "</b> — " + a.why + "</p>";
     }).join("");
   }
+  const $ = (id) => document.getElementById(id);
+  const authModal = $("auth-modal");
+  const profileModal = $("profile-modal");
   function openModal(el) {
     if (!el) return;
     el.classList.add("open");
