@@ -27,8 +27,22 @@
       return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + a.name + "</b> — " + a.why + "</p>";
     }).join("");
   }
-  function openModal(el) { if (el) { el.classList.add("open"); el.classList.remove("hide"); } }
-  function closeModal(el) { if (el) { el.classList.remove("open"); el.classList.add("hide"); } }
+  function openModal(el) {
+    if (!el) return;
+    el.classList.add("open");
+    el.classList.remove("hide");
+    el.hidden = false;
+    el.style.display = "flex";
+    el.style.pointerEvents = "auto";
+  }
+  function closeModal(el) {
+    if (!el) return;
+    el.classList.remove("open");
+    el.classList.add("hide");
+    el.hidden = true;
+    el.style.display = "none";
+    el.style.pointerEvents = "none";
+  }
   const authMsg = $("auth-msg");
 
   function setMsg(text, bad) {

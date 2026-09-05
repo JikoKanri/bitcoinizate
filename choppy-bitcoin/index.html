@@ -77,7 +77,10 @@
         </div>
       </div>
       <button id="pause-btn" class="pause hide" aria-label="Pause">||</button>
-      <div id="overlay" class="overlay"></div>
+      <div id="overlay" class="overlay">
+        <h1>Choppy Bitcoin</h1>
+        <button type="button" class="cta" id="go" onclick="if(window.startChoppy)window.startChoppy();">Play</button>
+      </div>
     </div>
   </div>
   <div id="auth-modal" class="auth-modal hide" role="dialog" aria-labelledby="modal-auth-title">

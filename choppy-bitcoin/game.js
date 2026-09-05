@@ -1772,6 +1772,8 @@
     renderOverlay();
     renderHud();
   });
+  window.startChoppy = startGame;
+  window.replayChoppy = replay;
   resetWorld(false);
   fillJukebox();
   renderOverlay();
