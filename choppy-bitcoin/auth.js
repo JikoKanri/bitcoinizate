@@ -27,8 +27,8 @@
       return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + a.name + "</b> — " + a.why + "</p>";
     }).join("");
   }
-  const authModal = $("auth-modal");
-  const profileModal = $("profile-modal");
+  function openModal(el) { if (el) { el.classList.add("open"); el.classList.remove("hide"); } }
+  function closeModal(el) { if (el) { el.classList.remove("open"); el.classList.add("hide"); } }
   const authMsg = $("auth-msg");
 
   function setMsg(text, bad) {
@@ -131,7 +131,7 @@
     }
     if ($("btn-forgot")) $("btn-forgot").classList.add("hide");
     if ($("btn-toggle-auth")) $("btn-toggle-auth").classList.add("hide");
-    if (authModal) authModal.classList.remove("hide");
+    if (authModal) openModal(authModal);
     setMsg("Choose a new password.");
   }
 
@@ -182,7 +182,7 @@
 
   async function handleAuthSubmit() {
     if ($("arcade-honeypot") && $("arcade-honeypot").value) {
-      if (authModal) authModal.classList.add("hide");
+      if (authModal) closeModal(authModal);
       return;
     }
     const email = ($("auth-email") && $("auth-email").value || "").trim();
@@ -205,7 +205,7 @@
             await supabase.from("profiles").insert([{ id: data.user.id, username, highscore: 0 }]);
           } catch (e) {}
           await loadUserProfile();
-          if (authModal) authModal.classList.add("hide");
+          if (authModal) closeModal(authModal);
           setMsg("");
         } else {
           setMsg("Check your email to confirm the account.");
@@ -215,7 +215,7 @@
         if (error) throw error;
         currentUser = data.user;
         await loadUserProfile();
-        if (authModal) authModal.classList.add("hide");
+        if (authModal) closeModal(authModal);
         setMsg("");
       }
     } catch (e) {
@@ -242,7 +242,7 @@
     try {
       await supabase.from("profiles").update(patch).eq("id", currentUser.id);
       await loadUserProfile();
-      if (profileModal) profileModal.classList.add("hide");
+      if (profileModal) closeModal(profileModal);
     } catch (e) {
       setMsg("Update failed: " + (e.message || "error"), true);
     }
@@ -306,11 +306,11 @@
     if ($("btn-submit-auth")) $("btn-submit-auth").textContent = "Sign in";
     if ($("btn-toggle-auth")) $("btn-toggle-auth").textContent = "Need an account?";
     setMsg("");
-    if (authModal) authModal.classList.remove("hide");
+    if (authModal) openModal(authModal);
   }
 
   if ($("btn-show-auth")) $("btn-show-auth").onclick = openAuth;
-  if ($("btn-close-auth")) $("btn-close-auth").onclick = () => authModal && authModal.classList.add("hide");
+  if ($("btn-close-auth")) $("btn-close-auth").onclick = () => authModal && closeModal(authModal);
   if ($("btn-toggle-auth")) $("btn-toggle-auth").onclick = toggleAuthMode;
   if ($("btn-submit-auth")) $("btn-submit-auth").onclick = () => {
     if ($("btn-submit-auth").dataset.reset === "1") saveNewPassword();
@@ -343,15 +343,15 @@
       if ($("profile-ln-addr")) $("profile-ln-addr").value = currentProfile.ln_address || "";
       const box = $("profile-awards");
       if (box) box.innerHTML = awardHtmlLocal();
-      if (profileModal) profileModal.classList.remove("hide");
+      if (profileModal) openModal(profileModal);
     };
   }
-  if ($("btn-close-profile")) $("btn-close-profile").onclick = () => profileModal && profileModal.classList.add("hide");
+  if ($("btn-close-profile")) $("btn-close-profile").onclick = () => profileModal && closeModal(profileModal);
   if (profileModal) profileModal.addEventListener("click", (e) => {
-    if (e.target === profileModal) profileModal.classList.add("hide");
+    if (e.target === profileModal) closeModal(profileModal);
   });
   if (authModal) authModal.addEventListener("click", (e) => {
-    if (e.target === authModal) authModal.classList.add("hide");
+    if (e.target === authModal) closeModal(authModal);
   });
   if ($("btn-save-profile")) $("btn-save-profile").onclick = updateProfileAddresses;
   if ($("btn-logout")) {
@@ -360,7 +360,7 @@
       currentUser = null; currentProfile = null;
       window.choppyUserId = "";
       updateAuthUI(null);
-      if (profileModal) profileModal.classList.add("hide");
+      if (profileModal) closeModal(profileModal);
     };
   }
 
@@ -369,6 +369,23 @@
     try {
       await supabase.from("profiles").update({ awards: ids }).eq("id", currentUser.id);
     } catch (e) {}
+  };
+  window.submitNewHighScore = submitNewHighScore;
+  window.sendFeedback = async function (text) {
+    const msg = String(text || "").trim();
+    if (!msg) return false;
+    try {
+      if (supabase) {
+        await supabase.from("feedback").insert([{
+          message: msg.slice(0, 4000),
+          user_id: currentUser && currentUser.id ? currentUser.id : null
+        }]);
+      }
+      return true;
+    } catch (e) {
+      window.location.href = "mailto:jiko@bitcoinizate.com?subject=" + encodeURIComponent("Choppy feedback") + "&body=" + encodeURIComponent(msg);
+      return false;
+    }
   };
   window.refreshLeaderboard = fetchGlobalLeaderboard;
   window.openSignUp = function () {

@@ -1447,6 +1447,13 @@
     if (panel === "help") {
       return "<h1>How to play</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">Back</button>";
     }
+    if (panel === "feed") {
+      return "<h1>" + t("feedback") + "</h1>"
+        + "<textarea id=\"feed-text\" rows=\"5\" style=\"width:100%;max-width:360px;background:#0a0a0c;color:#f3efe6;border:1px solid #3a3a40;padding:8px;font:inherit\"></textarea>"
+        + "<p class=\"k\" id=\"feed-msg\"></p>"
+        + "<button class=\"cta\" id=\"feed-send\">" + t("send") + "</button>"
+        + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+    }
     if (panel === "aibud") {
       if ((S.have.aibud || 0) <= 0) {
         return "<h1>A.I. bud</h1><p>Unlock the A.I. bud perk first.</p><button class=\"cta\" id=\"help-back\">Back</button>";
@@ -1512,6 +1519,7 @@
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-feed\">" + t("feedback") + "</button>"
       + "</div>"
       + "<button class=\"cta\" id=\"go\">" + (fromPlay ? t("resume") : t("back")) + "</button>";
   }
@@ -1559,6 +1567,17 @@
     if (ly) ly.onclick = (e) => { e.stopPropagation(); setJukeLyrics(!jukeLyricsOn()); renderOverlay(); };
     const optHelp = $("opt-help");
     if (optHelp) optHelp.onclick = (e) => { e.stopPropagation(); S.optPanel = "help"; renderOverlay(); };
+    const optFeed = $("opt-feed");
+    if (optFeed) optFeed.onclick = (e) => { e.stopPropagation(); S.optPanel = "feed"; renderOverlay(); };
+    const feedSend = $("feed-send");
+    if (feedSend) feedSend.onclick = async (e) => {
+      e.stopPropagation();
+      const text = (($("feed-text") && $("feed-text").value) || "").trim();
+      if (!text) return;
+      if (window.sendFeedback) await window.sendFeedback(text);
+      else window.location.href = "mailto:jiko@bitcoinizate.com?subject=" + encodeURIComponent("Choppy feedback") + "&body=" + encodeURIComponent(text);
+      if ($("feed-msg")) $("feed-msg").textContent = t("thanks");
+    };
     const optSound = $("opt-sound");
     if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };
     const optAi = $("opt-aibud");
