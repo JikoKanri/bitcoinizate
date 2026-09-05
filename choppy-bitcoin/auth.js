@@ -90,9 +90,10 @@
     }
     currentUser = data.session.user || { id: "" };
     window.choppyUserId = currentUser.id || "";
-    const rec = !!(data.session.type === "recovery" || loadType());
+    const rec = /[?&#]type=recovery\b/.test(location.hash + location.search);
     await loadUserProfile();
     if (rec) openReset();
+    else closeModal(authModal);
   }
 
   function loadType() {
@@ -396,5 +397,7 @@
   const cta = $("cta-signup");
   if (cta) cta.onclick = () => window.openSignUp();
   window.addEventListener("DOMContentLoaded", checkActiveSession);
+  closeModal(authModal);
+  closeModal(profileModal);
   checkActiveSession();
 })();
