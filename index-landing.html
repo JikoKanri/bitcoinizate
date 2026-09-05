@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choppy Bitcoin — trading arcade | Bitcoinizate</title>
+  <meta name="description" content="Choppy Bitcoin is Bitcoinizate's arcade. Fly through candlesticks, buy dips, sell rips, and survive black swans. Score is your net worth in USD. Free in the browser.">
+  <meta name="keywords" content="Choppy Bitcoin, Bitcoinizate, bitcoin game, crypto arcade, trading game, Japanese candlesticks, halving, black swan, buy bitcoin, net worth">
+  <meta name="author" content="Bitcoinizate">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://bitcoinizate.com/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bitcoinizate">
+  <meta property="og:title" content="Choppy Bitcoin — trading arcade | Bitcoinizate">
+  <meta property="og:description" content="Fly through Japanese candles. Buy dips, sell rips, eat halvings. Score is net worth in USD.">
+  <meta property="og:url" content="https://bitcoinizate.com/">
+  <meta property="og:image" content="https://bitcoinizate.com/og-icon.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Choppy Bitcoin | Bitcoinizate">
+  <meta name="twitter:description" content="Bitcoin arcade: fly the candles, trade the tape, survive the crash.">
+  <meta name="twitter:image" content="https://bitcoinizate.com/og-icon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Bitcoinizate",
+        "url": "https://bitcoinizate.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://bitcoinizate.com/favicon-192.png",
+          "width": 192,
+          "height": 192
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "Bitcoinizate",
+        "url": "https://bitcoinizate.com/",
+        "inLanguage": "en",
+        "publisher": { "@type": "Organization", "name": "Bitcoinizate" }
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Choppy Bitcoin",
+        "url": "https://bitcoinizate.com/choppy-bitcoin/",
+        "image": "https://bitcoinizate.com/og-icon.png",
+        "description": "Trading arcade: fly through Japanese candlesticks, buy bitcoin on dips and sell on rips. Score is net worth in USD.",
+        "genre": ["Arcade", "Simulation"],
+        "gamePlatform": "Web browser",
+        "playMode": "SinglePlayer",
+        "inLanguage": "en",
+        "author": { "@type": "Organization", "name": "Bitcoinizate" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+      }
+    ]
+  }
+  </script>
+  <style>
+    :root { --gold:#F2A900; --ink:#0d0d0d; --paper:#f3efe6; --mute:#9a968e; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      background: radial-gradient(900px 480px at 50% -8%, #3a2808 0%, #0d0d0d 52%);
+      color: var(--paper); font-family: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+    }
+    .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+    .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .brand img { width: 48px; height: 48px; border-radius: 50%; }
+    .brand h1 { margin: 0; color: var(--gold); letter-spacing: 0.16em; font-size: 15px; }
+    .brand p { margin: 2px 0 0; color: var(--mute); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+    h2 { margin: 0 0 8px; font-size: clamp(32px, 7vw, 48px); letter-spacing: -0.04em; line-height: 0.95; }
+    h2 span { color: var(--gold); }
+    .lead { color: #d4d0c8; line-height: 1.6; font-size: 16px; margin: 0 0 24px; max-width: 38em; }
+    .play {
+      display: block; text-align: center; text-decoration: none; font-weight: 700;
+      background: var(--gold); color: #120c02; padding: 18px 18px; letter-spacing: 0.06em;
+    }
+    .play small { display: block; margin-top: 5px; font-weight: 400; font-size: 11px; letter-spacing: 0.1em; opacity: 0.72; }
+    .play:hover { filter: brightness(1.08); }
+    .chips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 22px 0 0; }
+    .chip { border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); padding: 12px; }
+    .chip b { display: block; color: var(--gold); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .chip span { color: #c4c0b8; font-size: 13px; line-height: 1.4; }
+    .how, .faq { margin: 28px 0 0; padding: 18px; border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); }
+    .how h3, .faq h3 { margin: 0 0 12px; color: var(--gold); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .how ul { margin: 0; padding: 0 0 0 18px; color: #c4c0b8; font-size: 13px; line-height: 1.6; }
+    .how li { margin: 0 0 8px; }
+    .faq details { border-top: 1px solid #2a2a2e; padding: 10px 0; }
+    .faq details:first-of-type { border-top: 0; padding-top: 0; }
+    .faq summary { cursor: pointer; color: var(--paper); font-size: 13px; }
+    .faq p { margin: 8px 0 0; color: #b4b0a8; font-size: 13px; line-height: 1.5; }
+    footer { margin-top: 36px; color: #6a6660; font-size: 11px; letter-spacing: 0.06em; }
+    footer a { color: var(--gold); text-decoration: none; }
+    @media (min-width: 640px) { .chips { grid-template-columns: repeat(4, 1fr); } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="brand">
+      <img src="/favicon-192.png" width="48" height="48" alt="Bitcoinizate logo">
+      <div>
+        <h1>BITCOINIZATE</h1>
+        <p>Bitcoin arcade</p>
+      </div>
+    </header>
+    <h2>Choppy <span>Bitcoin</span></h2>
+    <p class="lead">Fly through Japanese candles. The price moves while you fly. Score is net worth in USD.</p>
+    <a class="play" href="/choppy-bitcoin/">Play now<small>Free in the browser · no download · one game</small></a>
+    <div class="chips">
+      <div class="chip"><b>Candles</b><span>Flap the gap. Wicks and the floor liquidate.</span></div>
+      <div class="chip"><b>Trade</b><span>Candles pay cash. Buy dips, sell rips.</span></div>
+      <div class="chip"><b>Cycles</b><span>Bull, bear, swan, and halving move price.</span></div>
+      <div class="chip"><b>Lives</b><span>Cold storage and multisig. Lasers unlock perks.</span></div>
+    </div>
+    <section class="how">
+      <h3>How to play</h3>
+      <ul>
+        <li>Tap or press space to flap between the wicks.</li>
+        <li>Each candle pays cash. BUY BTC converts all cash; SELL BTC returns dollars.</li>
+        <li>Eating a bull pumps price. A bear or swan dumps it. Halving is the fat pump — grab it high or low when called.</li>
+        <li>Cold storage saves a hit. Ten colds become one multisig life. Laser eyes vaporize a bear and unlock perks (DCA, IAbud, jukebox…).</li>
+        <li>Options is live from the title screen: sound, tutorial, and more.</li>
+      </ul>
+    </section>
+    <section class="faq">
+      <h3>FAQ</h3>
+      <details>
+        <summary>What is Bitcoinizate?</summary>
+        <p>A Bitcoin arcade. There is one game: Choppy Bitcoin. No token, no download, in the browser.</p>
+      </details>
+      <details>
+        <summary>How do you score?</summary>
+        <p>Score is net worth in USD: cash plus BTC at the live price. Survive the candles and trade the cycles.</p>
+      </details>
+      <details>
+        <summary>Do I need an account?</summary>
+        <p>No. Hit Play. High score stays on this device.</p>
+      </details>
+    </section>
+    <footer>© Bitcoinizate · <a href="https://bitcoinizate.com/">bitcoinizate.com</a> · <a href="https://bitcoinizate.com/choppy-bitcoin/">play Choppy Bitcoin</a></footer>
+  </main>
+</body>
+</html>
