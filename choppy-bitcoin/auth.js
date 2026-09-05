@@ -347,6 +347,12 @@
     };
   }
   if ($("btn-close-profile")) $("btn-close-profile").onclick = () => profileModal && profileModal.classList.add("hide");
+  if (profileModal) profileModal.addEventListener("click", (e) => {
+    if (e.target === profileModal) profileModal.classList.add("hide");
+  });
+  if (authModal) authModal.addEventListener("click", (e) => {
+    if (e.target === authModal) authModal.classList.add("hide");
+  });
   if ($("btn-save-profile")) $("btn-save-profile").onclick = updateProfileAddresses;
   if ($("btn-logout")) {
     $("btn-logout").onclick = async () => {
