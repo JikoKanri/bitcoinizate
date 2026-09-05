@@ -388,7 +388,7 @@
       S.offerSeq = [7, 13, 24]; S.nextOffer = 7; S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0;
-      if (A.jukeStop) A.jukeStop();
+      if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
     S.swanBear = false; S.halveSpeechUntil = 0;
@@ -849,15 +849,24 @@
   }
 
   function startGame() {
-    if (A && A.unlock) A.unlock();
-    if (A && A.sfx && A.sfx.start) A.sfx.start();
+    if (A && A.unlock) try { A.unlock(); } catch (e) {}
+    if (A && A.sfx && A.sfx.start) try { A.sfx.start(); } catch (e) {}
     S.humanInput = true;
+    S.introCounted = true;
     if (!S.welcomed) {
-      if (A && A.speak) A.speak(t("welcome"));
+      if (A && A.speak) try { A.speak(t("welcome")); } catch (e) {}
       S.welcomed = true;
     }
-    if (!S.introCounted) { S.introCounted = true; startCount(); }
-    else setPhase("play");
+    S.phase = "play";
+    if (overlay) {
+      overlay.classList.add("hide");
+      overlay.style.display = "none";
+      overlay.innerHTML = "";
+    }
+    if (A && A.startMusic) {
+      try { A.startMusic(() => S.power, () => S.phase === "play"); } catch (e) {}
+    }
+    renderHud();
   }
 
   function replay() {
@@ -1409,7 +1418,7 @@
     S.jukeTrack = ((i % n) + n) % n;
     if (S.jukeOn || (A.jukePaused && A.jukePaused())) {
       S.jukeOn = false;
-      if (A.jukeStop) A.jukeStop();
+      if (A && A.jukeStop) A.jukeStop();
     }
     renderOverlay();
   }
