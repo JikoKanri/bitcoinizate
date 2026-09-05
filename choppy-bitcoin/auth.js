@@ -32,16 +32,17 @@
     el.classList.add("open");
     el.classList.remove("hide");
     el.hidden = false;
-    el.style.display = "flex";
-    el.style.pointerEvents = "auto";
+    el.style.setProperty("display", "flex", "important");
+    el.style.setProperty("pointer-events", "auto", "important");
+    el.style.zIndex = "9999";
   }
   function closeModal(el) {
     if (!el) return;
     el.classList.remove("open");
     el.classList.add("hide");
     el.hidden = true;
-    el.style.display = "none";
-    el.style.pointerEvents = "none";
+    el.style.setProperty("display", "none", "important");
+    el.style.setProperty("pointer-events", "none", "important");
   }
   const authMsg = $("auth-msg");
 
@@ -324,7 +325,15 @@
     if (authModal) openModal(authModal);
   }
 
-  if ($("btn-show-auth")) $("btn-show-auth").onclick = openAuth;
+  window.openAuth = openAuth;
+  window.closeAuth = () => closeModal(authModal);
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest && e.target.closest("#btn-show-auth, #overlay-auth");
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openAuth();
+  }, true);
   if ($("btn-close-auth")) $("btn-close-auth").onclick = () => authModal && closeModal(authModal);
   if ($("btn-toggle-auth")) $("btn-toggle-auth").onclick = toggleAuthMode;
   if ($("btn-submit-auth")) $("btn-submit-auth").onclick = () => {

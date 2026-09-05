@@ -1622,10 +1622,13 @@
       } else {
         overlay.innerHTML = "<h1>Choppy Bitcoin</h1>"
           + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>"
+          + "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>"
           + tutorialBody()
           + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
         $("go").onclick = startGame;
         $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(); };
+        const oa = $("overlay-auth");
+        if (oa) oa.onclick = (e) => { e.stopPropagation(); if (window.openAuth) window.openAuth(); };
         if (window.refreshLeaderboard) window.refreshLeaderboard("ready-board");
       }
     } else if (p === "count") {
