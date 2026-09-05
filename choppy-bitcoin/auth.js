@@ -77,15 +77,39 @@
   function openReset() {
     if ($("modal-auth-title")) $("modal-auth-title").textContent = "New password";
     if ($("group-alias")) $("group-alias").classList.add("hide");
-    if ($("btn-submit-auth")) $("btn-submit-auth").textContent = "Save password";
-    $("btn-submit-auth").dataset.reset = "1";
+    const emailLab = $("auth-email") && $("auth-email").closest("label");
+    if (emailLab) emailLab.classList.add("hide");
+    if ($("group-pass2")) $("group-pass2").classList.remove("hide");
+    if ($("auth-password")) {
+      $("auth-password").value = "";
+      $("auth-password").autocomplete = "new-password";
+    }
+    if ($("auth-password2")) $("auth-password2").value = "";
+    if ($("btn-submit-auth")) {
+      $("btn-submit-auth").textContent = "Save password";
+      $("btn-submit-auth").dataset.reset = "1";
+    }
+    if ($("btn-forgot")) $("btn-forgot").classList.add("hide");
+    if ($("btn-toggle-auth")) $("btn-toggle-auth").classList.add("hide");
     if (authModal) authModal.classList.remove("hide");
     setMsg("Choose a new password.");
   }
 
+  function showSignFields() {
+    const emailLab = $("auth-email") && $("auth-email").closest("label");
+    if (emailLab) emailLab.classList.remove("hide");
+    if ($("group-pass2")) $("group-pass2").classList.add("hide");
+    if ($("auth-password")) $("auth-password").autocomplete = "current-password";
+    if ($("btn-forgot")) $("btn-forgot").classList.remove("hide");
+    if ($("btn-toggle-auth")) $("btn-toggle-auth").classList.remove("hide");
+    if ($("btn-submit-auth")) delete $("btn-submit-auth").dataset.reset;
+  }
+
   async function saveNewPassword() {
     const password = ($("auth-password") && $("auth-password").value || "").trim();
+    const again = ($("auth-password2") && $("auth-password2").value || "").trim();
     if (password.length < 8) { setMsg("Password must be at least 8 characters.", true); return; }
+    if (password !== again) { setMsg("Passwords do not match.", true); return; }
     const { error } = await supabase.auth.updateUser({ password });
     if (error) { setMsg(error.message || "Could not update password.", true); return; }
     try {
@@ -93,6 +117,7 @@
       if (s) { delete s.type; localStorage.setItem("bitcoinizate-sb", JSON.stringify(s)); }
     } catch (e) {}
     if ($("btn-submit-auth")) delete $("btn-submit-auth").dataset.reset;
+    showSignFields();
     setMsg("Password saved. You are signed in.");
     await checkActiveSession();
   }
@@ -198,6 +223,7 @@
 
   function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
+    showSignFields();
     const title = $("modal-auth-title");
     const group = $("group-alias");
     if (title) title.textContent = isSignUpMode ? "Sign up" : "Sign in";
@@ -209,6 +235,7 @@
 
   function openAuth() {
     isSignUpMode = false;
+    showSignFields();
     if ($("modal-auth-title")) $("modal-auth-title").textContent = "Sign in";
     if ($("group-alias")) $("group-alias").classList.add("hide");
     if ($("btn-submit-auth")) $("btn-submit-auth").textContent = "Sign in";
@@ -225,9 +252,13 @@
     else handleAuthSubmit();
   };
   if ($("btn-forgot")) $("btn-forgot").onclick = (e) => { e.preventDefault(); sendReset(); };
-  ["auth-email", "auth-password", "auth-username"].forEach((id) => {
+  ["auth-email", "auth-password", "auth-username", "auth-password2"].forEach((id) => {
     const el = $(id);
-    if (el) el.addEventListener("keydown", (e) => { if (e.key === "Enter") handleAuthSubmit(); });
+    if (el) el.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      if ($("btn-submit-auth") && $("btn-submit-auth").dataset.reset === "1") saveNewPassword();
+      else handleAuthSubmit();
+    });
   });
 
   if ($("user-profile-tag")) {
@@ -251,6 +282,12 @@
   }
 
   window.submitNewHighScore = submitNewHighScore;
+  window.openSignUp = function () {
+    openAuth();
+    if (!isSignUpMode) toggleAuthMode();
+  };
+  const cta = $("cta-signup");
+  if (cta) cta.onclick = () => window.openSignUp();
   window.addEventListener("DOMContentLoaded", checkActiveSession);
   checkActiveSession();
 })();

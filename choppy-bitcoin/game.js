@@ -75,7 +75,30 @@
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox" };
+  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud" };
+  function perkTitle(id, t) {
+    const n = PERK_NAME[id] || id;
+    return t <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, t)];
+  }
+  function perkBlurb(id, t) {
+    t = Math.max(1, Math.min(10, t));
+    if (id === "candy") return (2 ** t) + "x candle income";
+    if (id === "dca") return "income in btc";
+    if (id === "ff") {
+      const speeds = [0, 1.5, 2, 3, 0.5];
+      return (speeds[t] || 1.5) + "x speed";
+    }
+    if (id === "adopt") return "bulls +" + (10 + t * 2) + "/" + (15 + t * 2) + "%, bears +" + Math.max(0, t - 1) + "/" + (4 + t) + "%";
+    if (id === "manip") return "trend ×" + t;
+    if (id === "juke") return t <= 1 ? "jukebox · 2 random tunes" : "+4 random tunes";
+    if (id === "aibud") {
+      if (t <= 1) return "Look up/down + perk hints";
+      if (t === 2) return "auto-picks perks";
+      if (t === 3) return "auto DCA and trend";
+      return "auto buy and sell";
+    }
+    return "";
+  }
   function perkTitle(id, t) {
     const n = PERK_NAME[id] || id;
     return t <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, t)];
@@ -148,13 +171,14 @@
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0,
-    perkPick: "", dcaOn: false, trend: "equal", perkOffers: [],
-    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0 },
-    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1 },
+    perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
+    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
+    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
     offerSeq: [7, 13, 24], nextOffer: 7, offersDone: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
+    aibudOn: false, aibudLit: {}, iaLog: [], iaProfit: 0, aibudSpeechUntil: 0, aiAcc: 0,
   };
 
   function net() { return S.cash + S.btc * S.price + S.vt * S.vtPrice; }
@@ -232,11 +256,14 @@
   function say(line, urgent, kind) {
     if (!line) return;
     const halve = kind === "halve";
-    if (!halve && S.lifeT < S.halveSpeechUntil) return;
+    const bud = kind === "aibud";
+    if (!halve && !bud && S.lifeT < S.halveSpeechUntil) return;
+    if (!halve && !bud && S.lifeT < (S.aibudSpeechUntil || 0)) return;
     S.ticker = line; S.tickerT = Math.max(1.5, lineDur(line));
     S.speechUntil = S.lifeT + lineDur(spoken(line));
     if (halve) S.halveSpeechUntil = S.speechUntil + 0.2;
-    A.speak(spoken(line), urgent || halve);
+    if (bud) S.aibudSpeechUntil = S.speechUntil + 0.15;
+    A.speak(spoken(line), urgent || halve || bud);
   }
 
   function pickLine(pool) {
@@ -252,6 +279,12 @@
     }
     const bag = (!busy && !soon ? pool : short).concat([""]);
     return bag[(Math.random() * bag.length) | 0];
+  }
+
+  function drawLine(pool, silentP) {
+    if (Math.random() < (silentP || 0)) return "";
+    if (!pool || !pool.length) return "";
+    return pickLine(pool);
   }
 
   function applyLaser(on) {
@@ -316,7 +349,9 @@
     }
     if (S.halveLeft === 2) {
       S.halveSide = Math.random() < 0.5 ? "up" : "down";
-      say(S.halveSide === "up" ? "look up!" : "look down!", true, "halve");
+      if (S.aibudOn && (S.have.aibud || 0) >= 1) {
+        say(S.halveSide === "up" ? "Look up!" : "Look down!", true, "halve");
+      }
     }
     if (S.halveLeft === 0) {
       spawnHalve();
@@ -337,11 +372,12 @@
       S.price = gauss(20000, 0, 40000);
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = S.cash; S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
-      S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.dcaOn = false; S.trend = "equal"; S.perkOffers = []; S.speedMul = 1;
-      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0 };
-      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1 };
+      S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
+      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 };
+      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
       S.offerSeq = [7, 13, 24]; S.nextOffer = 7; S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
+      S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0;
       if (A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -429,7 +465,7 @@
 
   function missHalve() {
     S.halveMiss = (S.halveMiss || 0) + 1;
-    const pool = A.HALVE_MISS || ["Halving aborted", "The grinch stole the halving", "Bitcoin C.E.O to cancel halving", "Gary Gensler stole the halving", "Peter Schiff stole the halving", "Faketoshi stole the halving"];
+    const pool = A.HALVE_MISS || ["Halving aborted", "The grinch stole the halving", "Bitcoin C.E.O to cancel halving", "Gary Gensler stole the halving", "Oh no, Peter Schiff stole the halving", "Faketoshi stole the halving", "No halving soup for you!", "Halving missed"];
     const line = pool[(Math.random() * pool.length) | 0];
     if (line) say(line, true, "halve");
     S.halveSide = "up";
@@ -443,7 +479,7 @@
       const pool = S.cold >= 1
         ? A.SWAN
         : A.SWAN.filter((l) => l !== "Cold storage lost!");
-      const line = pool[(Math.random() * pool.length) | 0];
+      const line = Math.random() < 0.15 ? "" : pool[(Math.random() * pool.length) | 0];
       S.ticker = line; S.tickerT = 2.4;
       if (S.lifeT >= S.halveSpeechUntil) A.speak(spoken(line), true);
       A.sfx.boom();
@@ -456,10 +492,26 @@
     if (it.type === "LASER") {
       S.lasers += 1;
       if (S.laserOn) S.laserT += POWER_S; else applyLaser(true);
-      const line = pickLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"]);
+      const line = drawLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"], 0.15);
       say(line || "Laser eyes!", true);
       A.sfx.power();
-      if (S.lasers === S.nextOffer) { rollPerks(); S.perkPick = ""; setPhase("perk"); }
+      if (S.lasers === S.nextOffer) {
+        rollPerks();
+        if (S.aibudOn && (S.have.aibud || 0) >= 2) {
+          const pick = bestAiPerk(S.perkOffers);
+          grantPerk(pick.id);
+          bumpOffer();
+          aiAct("Perk " + perkTitle(pick.id, S.have[pick.id]), pick.why);
+        } else {
+          S.perkPick = "";
+          if (S.aibudOn && (S.have.aibud || 0) >= 1) {
+            const pick = bestAiPerk(S.perkOffers);
+            S.perkHint = pick.id;
+            say("A.I. bud says take " + perkTitle(pick.id, S.poolTier[pick.id] || 1) + ". " + pick.why, true, "aibud");
+          } else S.perkHint = "";
+          setPhase("perk");
+        }
+      }
       return;
     }
     if (it.type === "COLD") {
@@ -484,12 +536,12 @@
       S.halveFloor = Math.max(S.halveFloor, S.cycleStart + halveMinRise());
       S.cycleDur = POWER_S * 1.2;
       S.powerT = S.cycleDur;
-      say("halving number " + S.halvings, true, "halve");
+      say("Halving number " + S.halvings, true, "halve");
       A.sfx.cap();
       return;
     }
     beginCycle(it.type);
-    const line = pickLine(it.type === "BULL" ? A.BULL : A.BEAR);
+    const line = drawLine(it.type === "BULL" ? A.BULL : A.BEAR, 0.15);
     if (line) say(line, true);
     if (it.type === "BULL") A.sfx.wave();
     else A.sfx.hit();
@@ -523,7 +575,7 @@
   function die() {
     if (S.dead || S.phase !== "play") return;
     S.dead = true; applyLaser(false); S.power = "NONE"; S.powerT = 0;
-    A.sfx.die(); A.cancelSpeech(); A.speak("Rekt! You got liquidated.", true);
+    A.sfx.die(); A.cancelSpeech(); A.speak("Rekt! You got liquidated", true);
     S.best = saveBest(Math.round(net()));
     setPhase("over");
   }
@@ -536,6 +588,10 @@
     if (S.phase !== "play" || S.cash <= 0 || S.price <= 0) return;
     const usd = S.cash, got = usd / S.price;
     S.btc += got; S.cash = 0; S.buys++; S.boughtBtc = true; A.sfx.buy();
+    if (!S.aiSilent) {
+      const buyLine = drawLine(A.BUY, 0.3);
+      if (buyLine) say(buyLine, true);
+    }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "usd"), RED, "trade");
   }
@@ -544,8 +600,10 @@
     const btc = S.btc, usd = btc * S.price;
     S.cash += usd; S.btc = 0; S.sells++;
     if (S.power === "BEAR" || S.swanBear) S.sellsBear = (S.sellsBear || 0) + 1; A.sfx.sell();
-    const sellLine = pickLine(A.SELL);
-    if (sellLine) say(sellLine, true);
+    if (!S.aiSilent) {
+      const sellLine = drawLine(A.SELL, 0.3);
+      if (sellLine) say(sellLine, true);
+    }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(btc, "btc"), RED, "trade");
   }
@@ -560,7 +618,7 @@
     if (S.phase !== "play" || S.level < 2 || S.vt <= 0) return;
     const vt = S.vt, usd = vt * S.vtPrice;
     S.cash += usd; S.vt = 0; S.sells++; A.sfx.sell();
-    const sellLine = pickLine(A.SELL);
+    const sellLine = drawLine(A.SELL, 0.3);
     if (sellLine) say(sellLine, true);
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(vt, "vt"), RED, "trade");
@@ -584,13 +642,13 @@
   }
 
   function grantPerk(kind) {
-    const cap = kind === "ff" ? 4 : kind === "juke" ? 5 : 10;
+    const cap = kind === "ff" ? 4 : kind === "juke" ? 5 : kind === "aibud" ? 4 : 10;
     const t = kind === "dca" ? 1 : Math.min(cap, S.poolTier[kind] || 1);
     S.have[kind] = t;
     if (kind !== "dca") S.poolTier[kind] = Math.min(cap, t + 1);
     if (kind === "dca") S.dcaOn = true;
     if (kind === "ff") S.speedMul = ffMax();
-    if (kind === "manip" && !S.trend) S.trend = "equal";
+    if (kind === "manip" && !S.trend) S.trend = "off";
     if (kind === "juke") fillJukebox();
   }
 
@@ -606,18 +664,135 @@
   }
 
   function rollPerks() {
-    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke"].filter((id) => {
+    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud"].filter((id) => {
       if (id === "dca") return S.have.dca <= 0;
       if (id === "ff") return S.have.ff < 4;
       if (id === "juke") return (S.have.juke || 0) < 5;
+      if (id === "aibud") {
+        const h = S.have.aibud || 0;
+        if (h >= 4) return false;
+        if (h === 2 && S.have.dca <= 0 && S.have.manip <= 0) return false;
+        return true;
+      }
       return (S.poolTier[id] || 1) <= 10;
     });
-    const bag = ids.length >= 2 ? ids : ["dca", "ff", "adopt", "manip", "candy", "juke"];
+    const bag = ids.length >= 2 ? ids : ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud"];
     const copy = bag.slice();
     const a = copy.splice((Math.random() * copy.length) | 0, 1)[0];
     const b = copy.splice((Math.random() * copy.length) | 0, 1)[0];
     S.perkOffers = [a, b];
   }
+
+  function perkWhy(id) {
+    if (id === "candy") return "More candle cash to stack sats";
+    if (id === "dca") return "Income becomes bitcoin";
+    if (id === "adopt") return "Fatter bulls, milder bears";
+    if (id === "manip") return "Steer price while we hold";
+    if (id === "aibud") return "A.I. bud levels up";
+    if (id === "ff") return "More board, more coins";
+    if (id === "juke") return "Tunes while we stack";
+    return "Best for stacking bitcoin";
+  }
+
+  function bestAiPerk(ids) {
+    const score = (id) => {
+      if (id === "aibud" && (S.have.aibud || 0) >= 1) return 90;
+      if (id === "dca" && S.have.dca <= 0) return 88;
+      if (id === "candy") return 80;
+      if (id === "adopt") return 74;
+      if (id === "manip" && S.btc > 0) return 70;
+      if (id === "manip") return 55;
+      if (id === "ff") return 40;
+      if (id === "juke") return 28;
+      if (id === "aibud") return 86;
+      return 10;
+    };
+    let best = ids[0], bestS = -1;
+    ids.forEach((id) => {
+      const n = score(id);
+      if (n > bestS) { bestS = n; best = id; }
+    });
+    return { id: best, why: perkWhy(best) };
+  }
+
+  function aiLocks() {
+    const t = S.have.aibud || 0;
+    return {
+      dca: !!(S.aibudOn && t >= 3 && S.have.dca > 0),
+      trend: !!(S.aibudOn && t >= 3 && S.have.manip > 0),
+      trade: !!(S.aibudOn && t >= 4)
+    };
+  }
+
+  function aiAct(act, why) {
+    if (!S.iaLog) S.iaLog = [];
+    S.iaLog.unshift({ t: S.lifeT, act: act, why: why || "", net: net() });
+    if (S.iaLog.length > 48) S.iaLog.pop();
+    if (A.sfx && A.sfx.iabud) A.sfx.iabud();
+    say("A.I. bud: " + act + (why ? ". " + why : ""), true, "aibud");
+  }
+
+  function incomingKind(kinds, horizon) {
+    const m = metrics();
+    let speed = m.speed * scrollMul();
+    if (S.power === "BULL" || S.power === "BEAR" || S.laserOn) speed *= 1.28;
+    for (const it of S.items) {
+      if (kinds.indexOf(it.type) < 0) continue;
+      const eta = (it.x - S.bird.x) / Math.max(40, speed);
+      if (eta > 0.12 && eta < horizon) return it;
+    }
+    return null;
+  }
+
+  function cycleU() {
+    return Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
+  }
+
+  function tickAi(dt) {
+    if (!S.aibudOn || S.phase !== "play" || (S.have.aibud || 0) < 3) return;
+    S.aiAcc = (S.aiAcc || 0) + dt;
+    if (S.aiAcc < 0.28) return;
+    S.aiAcc = 0;
+    const t = S.have.aibud;
+    const incomingBad = incomingKind(["BEAR", "SWAN"], 2.2);
+    const incomingGood = incomingKind(["BULL", "HALVE"], 2.2);
+    const u = cycleU();
+    const peak = S.power === "BULL" && u > 0.72;
+    const bottom = S.power === "BEAR" && u > 0.72;
+
+    if (t >= 3 && S.have.dca > 0) {
+      const want = !!(S.power === "BEAR" || S.swanBear || incomingBad || (!incomingGood && S.btc <= 0 && S.power !== "BULL"));
+      if (want !== S.dcaOn) {
+        S.dcaOn = want;
+        S.aibudLit = Object.assign({}, S.aibudLit, { dca: true });
+        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Stack the dip" : "Do not buy the top");
+      }
+    }
+    if (t >= 3 && S.have.manip > 0) {
+      const want = S.btc > 0 ? "up" : "down";
+      if (want !== S.trend) {
+        S.trend = want;
+        S.aibudLit = Object.assign({}, S.aibudLit, { trend: true });
+        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", want === "up" ? "Holding bitcoin" : "Reload cheaper");
+      }
+    }
+    if (t >= 4) {
+      if (S.btc > 0 && (incomingBad || peak)) {
+        const before = net();
+        S.aiSilent = true; sellBtc(); S.aiSilent = false;
+        S.iaProfit += net() - before;
+        S.aibudLit = Object.assign({}, S.aibudLit, { sell: true, buy: false });
+        aiAct("Sold BTC", incomingBad ? "Bear incoming" : "Selling the peak");
+      } else if (S.cash > 0 && (incomingGood || bottom || (S.btc <= 0 && S.power === "BEAR"))) {
+        const before = net();
+        S.aiSilent = true; buyBtc(); S.aiSilent = false;
+        S.iaProfit += net() - before;
+        S.aibudLit = Object.assign({}, S.aibudLit, { buy: true, sell: false });
+        aiAct("Bought BTC", incomingGood ? "Bull incoming" : "Buying the dip");
+      }
+    }
+  }
+
   function continueBonus() {
     S.level = 2;
     S.vtPrice = 100 + Math.random() * 200;
@@ -656,7 +831,7 @@
 
   function startGame() {
     A.unlock(); A.sfx.start();
-    if (!S.welcomed) { A.speak("Welcome to choppy bitcoin: survive the market!"); S.welcomed = true; }
+    if (!S.welcomed) { A.speak("Welcome to Choppy Bitcoin: Survive the market!"); S.welcomed = true; }
     if (!S.introCounted) { S.introCounted = true; startCount(); }
     else setPhase("play");
   }
@@ -705,6 +880,7 @@
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtPrice + (Math.random() - 0.45) * S.vtPrice * 0.01 * dt + S.vtPrice * 0.0012 * dt);
     }
     S.lifeT += dt; S.sampleAcc += dt;
+    tickAi(dt);
     while (S.sampleAcc >= 0.12) {
       S.tape.push(S.price);
       if (S.level >= 2) S.tapeVt.push(S.vtPrice);
@@ -712,7 +888,7 @@
     }
     if (!S.hitCap && (S.btc >= 21e6 || net() >= 21e6 * Math.max(0.01, S.price))) {
       S.hitCap = true; A.sfx.cap();
-      A.speak("Twenty one million. The float is yours.", true);
+      A.speak("Twenty one million The float is yours", true);
       S.stats = collectRunStats();
       setPhase("win");
       return;
@@ -1000,19 +1176,44 @@
     }
     $("spd-1") && $("spd-1").classList.toggle("on", S.speedMul === 1);
     on("dca-btn", S.have.dca > 0);
-    on("trend-lab", S.have.manip > 0);
-    on("trend-up", S.have.manip > 0);
-    on("trend-eq", S.have.manip > 0);
-    on("trend-dn", S.have.manip > 0);
-    ["trend-up", "trend-eq", "trend-dn"].forEach((id) => {
-      const el = $(id);
-      if (el) el.classList.toggle("on", S.trend === el.dataset.trend);
-    });
+    on("iabud-btn", (S.have.aibud || 0) > 0);
+    on("trend-btn", S.have.manip > 0);
+    const locks = aiLocks();
     const dca = $("dca-btn");
     if (dca) {
       dca.classList.toggle("on", S.dcaOn);
+      dca.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.dca && S.dcaOn));
+      dca.classList.toggle("ai-lock", locks.dca);
+      dca.disabled = locks.dca;
       dca.textContent = S.dcaOn ? "DCA ON" : "DCA OFF";
       dca.setAttribute("aria-pressed", S.dcaOn ? "true" : "false");
+    }
+    const bud = $("iabud-btn");
+    if (bud) {
+      bud.classList.toggle("on", S.aibudOn);
+      bud.classList.toggle("hide", (S.have.aibud || 0) <= 0);
+      bud.textContent = S.aibudOn ? "A.I. BUD ON" : "A.I. BUD OFF";
+      bud.setAttribute("aria-pressed", S.aibudOn ? "true" : "false");
+    }
+    const tr = $("trend-btn");
+    if (tr) {
+      const lab = S.trend === "up" ? "TREND UP" : S.trend === "down" ? "TREND DOWN" : "TREND OFF";
+      tr.textContent = lab;
+      tr.classList.toggle("on", S.trend !== "off");
+      tr.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.trend && S.trend !== "off"));
+      tr.classList.toggle("ai-lock", locks.trend);
+      tr.disabled = locks.trend;
+    }
+    const buy = $("buy-btc"), sell = $("sell-btc");
+    if (buy) {
+      buy.disabled = locks.trade;
+      buy.classList.toggle("ai-lock", locks.trade);
+      buy.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.buy));
+    }
+    if (sell) {
+      sell.disabled = locks.trade;
+      sell.classList.toggle("ai-lock", locks.trade);
+      sell.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.sell));
     }
     const pauseBtn = $("pause-btn");
     if (pauseBtn) {
@@ -1175,6 +1376,16 @@
     if (panel === "help") {
       return "<h1>How to play</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">Back</button>";
     }
+    if (panel === "aibud") {
+      if ((S.have.aibud || 0) <= 0) {
+        return "<h1>A.I. bud</h1><p>Unlock the A.I. bud perk first.</p><button class=\"cta\" id=\"help-back\">Back</button>";
+      }
+      const rows = (S.iaLog || []).map((e) => {
+        const sec = Math.floor(e.t);
+        return "<p><span class=\"ia-act\">" + e.act + "</span> — " + e.why + " <span class=\"k\">" + sec + "s · " + money(e.net) + "</span></p>";
+      }).join("") || "<p>No calls yet. Toggle A.I. bud ON in the HUD.</p>";
+      return "<h1>A.I. bud log</h1><p class=\"k\">Marked P/L " + money(S.iaProfit || 0) + " · tier " + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
+    }
     if (panel === "juke") {
       if ((S.have.juke || 0) <= 0) {
         return "<h1>Jukebox</h1><p>Unlock the Jukebox perk first.</p><button class=\"cta\" id=\"help-back\">Back</button>";
@@ -1227,6 +1438,7 @@
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">Sound</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">Jukebox</button>"
+      + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">A.I. bud log</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">Tutorial</button>"
       + "</div>"
       + "<button class=\"cta\" id=\"go\">" + (fromPlay ? "Resume" : "Back") + "</button>";
@@ -1277,6 +1489,8 @@
     if (optHelp) optHelp.onclick = (e) => { e.stopPropagation(); S.optPanel = "help"; renderOverlay(); };
     const optSound = $("opt-sound");
     if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };
+    const optAi = $("opt-aibud");
+    if (optAi) optAi.onclick = (e) => { e.stopPropagation(); S.optPanel = "aibud"; renderOverlay(); };
     const mt = $("mute-theme");
     if (mt) mt.onclick = (e) => { e.stopPropagation(); A.setMuteTheme(!A.muteTheme()); renderOverlay(); };
     const ms = $("mute-sfx");
@@ -1308,7 +1522,7 @@
         const sel = chosen === id;
         return "<button class=\"cta" + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + perkTitle(id, t) + " · " + perkBlurb(id, t) + "</button>";
       }).join("");
-      overlay.innerHTML = "<h1>Laser eyes bonus</h1><p>" + (chosen ? "Selected. Tap ▶ to keep playing." : "Pick one. Then tap ▶.") + "</p><div class=\"perk-list\">" + btns + "</div>";
+      overlay.innerHTML = "<h1>Perks</h1><p>" + (chosen ? "Selected. Tap ▶ to keep playing." : "Pick one. Then tap ▶.") + (S.perkHint ? "</p><p class=\"k\">A.I. bud hint: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
         btn.onpointerdown = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
       });
@@ -1360,14 +1574,12 @@
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
     if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
-    else if (k === "b") { e.preventDefault(); buyBtc(); }
-    else if (k === "s") { e.preventDefault(); sellBtc(); }
+    else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) buyBtc(); }
+    else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) sellBtc(); }
     else if (k === "v") { e.preventDefault(); buyVt(); }
     else if (k === "n") { e.preventDefault(); sellVt(); }
     else if (k === "p") { e.preventDefault(); togglePause(); }
   });
-  $("buy-btc").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); buyBtc(); };
-  $("sell-btc").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); sellBtc(); };
   $("buy-vt").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); buyVt(); };
   $("sell-vt").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); sellVt(); };
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); togglePause(); };
@@ -1384,18 +1596,39 @@
   };
   $("dca-btn").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
-    if (S.have.dca <= 0) return;
+    if (S.have.dca <= 0 || aiLocks().dca) return;
     S.dcaOn = !S.dcaOn;
+    if (S.aibudLit) S.aibudLit.dca = false;
     renderHud();
   };
-  document.querySelectorAll(".trend").forEach((btn) => {
-    btn.onpointerdown = (e) => {
-      e.stopPropagation(); e.preventDefault();
-      if (S.have.manip <= 0) return;
-      S.trend = btn.dataset.trend;
-      renderHud();
-    };
-  });
+  const iaBtn = $("iabud-btn");
+  if (iaBtn) iaBtn.onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if ((S.have.aibud || 0) <= 0) return;
+    S.aibudOn = !S.aibudOn;
+    if (!S.aibudOn) S.aibudLit = {};
+    renderHud();
+  };
+  const trendBtn = $("trend-btn");
+  if (trendBtn) trendBtn.onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if (S.have.manip <= 0 || aiLocks().trend) return;
+    S.trend = S.trend === "off" ? "up" : S.trend === "up" ? "down" : "off";
+    if (S.aibudLit) S.aibudLit.trend = false;
+    renderHud();
+  };
+  $("buy-btc").onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if (aiLocks().trade) return;
+    if (S.aibudLit) S.aibudLit.buy = false;
+    buyBtc();
+  };
+  $("sell-btc").onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if (aiLocks().trade) return;
+    if (S.aibudLit) S.aibudLit.sell = false;
+    sellBtc();
+  };
   document.querySelectorAll(".spd").forEach((btn) => {
     btn.onpointerdown = (e) => {
       e.stopPropagation(); e.preventDefault();

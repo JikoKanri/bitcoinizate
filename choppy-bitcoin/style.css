@@ -167,7 +167,10 @@ body { display: flex; flex-direction: column; }
 .help-ico svg { display: block; }
 .opt-menu { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 280px; }
 .opt-item { min-height: 44px; }
-.cta.dim { opacity: 0.4; }
+.dca-tog.ai-lit, .buy.ai-lit, .sell.ai-lit, #trend-btn.ai-lit {
+  color: #fff; background: #c8c4bc; box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,255,255,0.55);
+}
+.ai-lock { opacity: 0.45; pointer-events: none; }
 .juke-btn.ico { min-width: 44px; min-height: 40px; padding: 0; font-size: 16px; line-height: 1; color: #8a8680; background: #141416; border-color: #2a2a2e; }
 .juke-btn.ico.on { color: #09090b; background: #c8960a; border-color: #f0d060; box-shadow: 0 0 0 2px rgba(240,208,96,0.35); }
 .juke-btn.ico.juke-play { color: #8a8680; background: #141416; min-width: 48px; }

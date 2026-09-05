@@ -806,13 +806,14 @@ w: And ev-er since then my head's been red.`),
     if (abcSynth && abcSynth.resume) try { abcSynth.resume(); } catch (e) { A.jukePlay(abcId || "bonny"); }
   };
 
-  A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
-  A.BULL = ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
-  A.LASER = ["Laser eyes!","nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Going up forever Laura!","Unconfiscable power!","Do it for Scottie Pippen"];
-  A.HALVE_SOON = ["Halving in sight!","tick tock, next block"];
-  A.BEAR = ["Bear market! Crash!","quantum conundrum!","Bukele all in ethereum","Bitcoin Depravement Proposals"];
-  A.SELL = ["shame on you, nocoiner!","short it!"];
-  A.HALVE_MISS = ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Peter Schiff stole the halving","Faketoshi stole the halving"];
+  A.SWAN = ["Black swan!","Cold storage lost!","Oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","In before oceans evaporation!","You got F. T. X.'d!"];
+  A.BULL = ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices","Going up forever Laura!"];
+  A.LASER = ["Laser eyes!","Nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Unconfiscable power!","Do it for Scottie Pippen"];
+  A.HALVE_SOON = ["Halving in sight!","Tick tock, next block"];
+  A.BEAR = ["Bear market! Crash!","Quantum conundrum!","Bukele all-in ethereum","Bitcoin Depravement Proposals"];
+  A.SELL = ["You are now a nocoiner","Bitcoin sold","Short it!","Exit all crypto markets"];
+  A.BUY = ["Long it!","Bitcoin bought","All-in corn!"];
+  A.HALVE_MISS = ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Oh no, Peter Schiff stole the halving","Faketoshi stole the halving","No halving soup for you!","Halving missed"];
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
