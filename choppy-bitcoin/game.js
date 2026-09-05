@@ -1573,10 +1573,13 @@
     if (feedSend) feedSend.onclick = async (e) => {
       e.stopPropagation();
       const text = (($("feed-text") && $("feed-text").value) || "").trim();
-      if (!text) return;
-      if (window.sendFeedback) await window.sendFeedback(text);
-      else window.location.href = "mailto:jiko@bitcoinizate.com?subject=" + encodeURIComponent("Choppy feedback") + "&body=" + encodeURIComponent(text);
-      if ($("feed-msg")) $("feed-msg").textContent = t("thanks");
+      if (text.length < 8) {
+        if ($("feed-msg")) $("feed-msg").textContent = "8+";
+        return;
+      }
+      const ok = window.sendFeedback ? await window.sendFeedback(text) : false;
+      if ($("feed-msg")) $("feed-msg").textContent = ok ? t("thanks") : "…";
+      if (ok && $("feed-text")) $("feed-text").value = "";
     };
     const optSound = $("opt-sound");
     if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };

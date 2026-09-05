@@ -373,17 +373,18 @@
   window.submitNewHighScore = submitNewHighScore;
   window.sendFeedback = async function (text) {
     const msg = String(text || "").trim();
-    if (!msg) return false;
+    if (msg.length < 8 || msg.length > 2000) return false;
     try {
-      if (supabase) {
-        await supabase.from("feedback").insert([{
-          message: msg.slice(0, 4000),
-          user_id: currentUser && currentUser.id ? currentUser.id : null
-        }]);
-      }
+      const last = Number(localStorage.getItem("choppy-feed-at") || 0);
+      if (Date.now() - last < 60000) return false;
+    } catch (e) {}
+    try {
+      if (!supabase || !supabase.rpc) return false;
+      const { error } = await supabase.rpc("submit_feedback", { p_message: msg.slice(0, 2000) });
+      if (error) return false;
+      try { localStorage.setItem("choppy-feed-at", String(Date.now())); } catch (e) {}
       return true;
     } catch (e) {
-      window.location.href = "mailto:jiko@bitcoinizate.com?subject=" + encodeURIComponent("Choppy feedback") + "&body=" + encodeURIComponent(msg);
       return false;
     }
   };
