@@ -210,13 +210,24 @@
     }
   }
 
-  async function submitNewHighScore(n) {
+  async function submitNewHighScore(n, meta) {
     if (!currentUser || !currentProfile || !supabase) return;
     const next = Number(n) || 0;
+    if (next <= 0 || !isFinite(next)) return;
+    if (next > 21e6 * 250000) return;
+    const life = meta && Number(meta.lifeT) || 0;
+    const candles = meta && Number(meta.candles) || 0;
+    if (life < 12 || candles < 3) return;
+    if (meta && meta.human === false) return;
     const old = Number(currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score) || 0;
     if (next <= old) return;
     try {
-      await supabase.from("profiles").update({ highscore: next }).eq("id", currentUser.id);
+      const { error } = await supabase.rpc("submit_choppy_score", {
+        p_score: next,
+        p_life: life,
+        p_candles: candles
+      });
+      if (error) return;
       await loadUserProfile();
     } catch (e) {}
   }
@@ -226,7 +237,7 @@
     showSignFields();
     const title = $("modal-auth-title");
     const group = $("group-alias");
-    if (title) title.textContent = isSignUpMode ? "Sign up" : "Sign in";
+    if (title) title.textContent = isSignUpMode ? ((window.BZ && BZ.t("signUp")) || "Sign up") : ((window.BZ && BZ.t("signIn")) || "Sign in");
     if (group) group.classList.toggle("hide", !isSignUpMode);
     if ($("btn-submit-auth")) $("btn-submit-auth").textContent = isSignUpMode ? "Create account" : "Sign in";
     if ($("btn-toggle-auth")) $("btn-toggle-auth").textContent = isSignUpMode ? "Have an account?" : "Need an account?";

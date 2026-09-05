@@ -806,22 +806,54 @@ w: And ev-er since then my head's been red.`),
     if (abcSynth && abcSynth.resume) try { abcSynth.resume(); } catch (e) { A.jukePlay(abcId || "bonny"); }
   };
 
-  A.SWAN = ["Black swan!","Cold storage lost!","Oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","In before oceans evaporation!","You got F. T. X.'d!"];
-  A.BULL = ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices","Going up forever Laura!"];
-  A.LASER = ["Laser eyes!","Nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Unconfiscable power!","Do it for Scottie Pippen"];
-  A.HALVE_SOON = ["Halving in sight!","Tick tock, next block"];
-  A.BEAR = ["Bear market! Crash!","Quantum conundrum!","Bukele all-in ethereum","Bitcoin Depravement Proposals"];
-  A.SELL = ["You are now a nocoiner","Bitcoin sold","Short it!","Exit all crypto markets"];
-  A.BUY = ["Long it!","Bitcoin bought","All-in corn!"];
-  A.HALVE_MISS = ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Oh no, Peter Schiff stole the halving","Faketoshi stole the halving","No halving soup for you!","Halving missed"];
+  function voicePacks() {
+    return {
+      en: {
+        SWAN: ["Black swan!","Cold storage lost!","Oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","In before oceans evaporation!","You got F. T. X.'d!"],
+        BULL: ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices","Going up forever Laura!"],
+        LASER: ["Laser eyes!","Nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Unconfiscable power!","Do it for Scottie Pippen"],
+        HALVE_SOON: ["Halving in sight!","Tick tock, next block"],
+        BEAR: ["Bear market! Crash!","Quantum conundrum!","Bukele all-in ethereum","Bitcoin Depravement Proposals"],
+        SELL: ["You are now a nocoiner","Bitcoin sold","Short it!","Exit all crypto markets"],
+        BUY: ["Long it!","Bitcoin bought","All-in corn!"],
+        HALVE_MISS: ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Oh no, Peter Schiff stole the halving","Faketoshi stole the halving","No halving soup for you!","Halving missed"]
+      },
+      es: {
+        SWAN: ["Cisne negro!","Se perdió el cold storage!","Oh oh, fondos no SAFU!","Aleatoriedad de Coldcard!","China ban!","Antes de que se evaporen los océanos!","Te F. T. X.earon!"],
+        BULL: ["Mercado alcista!","A la luna!","Estamos TAN de vuelta!","Luke, yo soy tu spammer","El C.E.O. de Bitcoin va a subir los precios","Subiendo para siempre Laura!"],
+        LASER: ["Laser eyes!","Nada detiene este tren","Adicción a la convicción","No hay segundo mejor","Stay humble stack Sats","Que te diviertas siendo pobre!","Arregla el dinero, arregla el mundo!","Poder inconfiscable!","Hazlo por Scottie Pippen"],
+        HALVE_SOON: ["Halving a la vista!","Tick tock, next block"],
+        BEAR: ["Mercado bajista! Crash!","Enigma cuántico!","Bukele all-in ethereum","Propuestas de Depravement de Bitcoin"],
+        SELL: ["Ahora eres nocoiner","Bitcoin vendido","Short it!","Salida de todos los mercados cripto"],
+        BUY: ["Long it!","Bitcoin comprado","All-in corn!"],
+        HALVE_MISS: ["Halving abortado","El grinch se robó el halving","El C.E.O. de Bitcoin cancela el halving","Gary Gensler se robó el halving","Oh no, Peter Schiff se robó el halving","Faketoshi se robó el halving","No hay sopa de halving para ti!","Halving fallido"]
+      }
+    };
+  }
+  function applyVoiceLang(code) {
+    const packs = voicePacks();
+    const p = packs[code] || packs.en;
+    A.SWAN = p.SWAN; A.BULL = p.BULL; A.LASER = p.LASER; A.HALVE_SOON = p.HALVE_SOON;
+    A.BEAR = p.BEAR; A.SELL = p.SELL; A.BUY = p.BUY; A.HALVE_MISS = p.HALVE_MISS;
+    cachedVoice = null;
+  }
+  A.setLang = applyVoiceLang;
+  applyVoiceLang((window.BZ && BZ.lang && BZ.lang()) || "en");
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
     const lang = (v.lang || "").toLowerCase();
-    if (lang.startsWith("es")) return -1000;
-    if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("argentina")) return -1000;
     let s = 0;
-    if (lang.startsWith("en")) s += 40;
+    const wantEs = window.BZ && BZ.lang && BZ.lang() === "es";
+    if (wantEs) {
+      if (lang.startsWith("es")) s += 80;
+      if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("latin")) s += 30;
+      if (lang.startsWith("en")) s -= 20;
+    } else {
+      if (lang.startsWith("es")) return -1000;
+      if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("argentina")) return -1000;
+      if (lang.startsWith("en")) s += 40;
+    }
     if (lang === "en-us" || lang === "en_us") s += 20;
     if (n.includes("fred")) s += 120;
     if (n.includes("ralph")) s += 90;

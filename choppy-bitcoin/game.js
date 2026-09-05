@@ -64,14 +64,16 @@
     if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
     return wrap("", "#141416", "#3a3a40");
   }
+  function t(k) { return (window.BZ && BZ.t) ? BZ.t(k) : k; }
+
   function tutorialBody() {
     return "<div class=\"help\">"
-      + "<p>" + badgeIco("hero") + " You are the ₿. Tap or press space to flap through the candle gaps. A wick or the floor liquidates you.</p>"
-      + "<p>" + badgeIco("cash") + " Candles pay cash. Buy BTC on the dip, sell on the rip. Score is cash plus BTC at the live price, in USD.</p>"
-      + "<p>" + badgeIco("bull") + " Bull pumps price. " + badgeIco("bear") + " Bear dumps it.</p>"
-      + "<p>" + badgeIco("swan") + " Black swan is a hard crash. " + badgeIco("halve") + " Halving is a fat bull — grab it up or down when told.</p>"
-      + "<p>" + badgeIco("cold") + " Cold storage saves a hit. Ten colds become one multisig life.</p>"
-      + "<p>" + badgeIco("laser") + " Laser eyes eat a bear and unlock a perk.</p>"
+      + "<p>" + badgeIco("hero") + " " + t("tut1") + "</p>"
+      + "<p>" + badgeIco("cash") + " " + t("tut2") + "</p>"
+      + "<p>" + badgeIco("bull") + " " + t("tut3a") + " " + badgeIco("bear") + " " + t("tut3b") + "</p>"
+      + "<p>" + badgeIco("swan") + " " + t("tut4a") + " " + badgeIco("halve") + " " + t("tut4b") + "</p>"
+      + "<p>" + badgeIco("cold") + " " + t("tut5") + "</p>"
+      + "<p>" + badgeIco("laser") + " " + t("tut6") + "</p>"
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
@@ -129,7 +131,9 @@
     s.scores = s.scores || {};
     s.scores.choppy = Math.max(s.scores.choppy || 0, n);
     localStorage.setItem(KEY, JSON.stringify(s));
-    if (typeof window.submitNewHighScore === "function") window.submitNewHighScore(n);
+    if (typeof window.submitNewHighScore === "function") {
+      window.submitNewHighScore(n, { lifeT: S.lifeT, candles: S.candles, human: !!S.humanInput });
+    }
     return s.scores.choppy;
   }
 
@@ -170,7 +174,7 @@
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
-    stats: null, welcomed: false, introCounted: false, speechUntil: 0,
+    stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false,
     perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
@@ -350,7 +354,7 @@
     if (S.halveLeft === 2) {
       S.halveSide = Math.random() < 0.5 ? "up" : "down";
       if (S.aibudOn && (S.have.aibud || 0) >= 1) {
-        say(S.halveSide === "up" ? "Look up!" : "Look down!", true, "halve");
+        say(S.halveSide === "up" ? (t("lookUp") || "Look up!") : (t("lookDown") || "Look down!"), true, "halve");
       }
     }
     if (S.halveLeft === 0) {
@@ -575,7 +579,7 @@
   function die() {
     if (S.dead || S.phase !== "play") return;
     S.dead = true; applyLaser(false); S.power = "NONE"; S.powerT = 0;
-    A.sfx.die(); A.cancelSpeech(); A.speak("Rekt! You got liquidated", true);
+    A.sfx.die(); A.cancelSpeech(); A.speak(t("liquidated"), true);
     S.best = saveBest(Math.round(net()));
     setPhase("over");
   }
@@ -831,7 +835,8 @@
 
   function startGame() {
     A.unlock(); A.sfx.start();
-    if (!S.welcomed) { A.speak("Welcome to Choppy Bitcoin: Survive the market!"); S.welcomed = true; }
+    S.humanInput = true;
+    if (!S.welcomed) { A.speak(t("welcome")); S.welcomed = true; }
     if (!S.introCounted) { S.introCounted = true; startCount(); }
     else setPhase("play");
   }
@@ -888,7 +893,7 @@
     }
     if (!S.hitCap && (S.btc >= 21e6 || net() >= 21e6 * Math.max(0.01, S.price))) {
       S.hitCap = true; A.sfx.cap();
-      A.speak("Twenty one million The float is yours", true);
+      A.speak(t("floatYours"), true);
       S.stats = collectRunStats();
       setPhase("win");
       return;
@@ -1434,14 +1439,15 @@
         + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
     }
     const fromPlay = S.optBack === "play" || S.phase === "paused";
-    return "<h1>" + (fromPlay ? "Paused" : "Options") + "</h1>"
+    return "<h1>" + (fromPlay ? t("paused") : t("options")) + "</h1>"
       + "<div class=\"opt-menu\">"
-      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">Sound</button>"
-      + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">Jukebox</button>"
-      + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">A.I. bud log</button>"
-      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">Tutorial</button>"
+      + "<div class=\"lang-sw\"><button type=\"button\" data-lang=\"en\">EN</button><button type=\"button\" data-lang=\"es\">ES</button></div>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
       + "</div>"
-      + "<button class=\"cta\" id=\"go\">" + (fromPlay ? "Resume" : "Back") + "</button>";
+      + "<button class=\"cta\" id=\"go\">" + (fromPlay ? t("resume") : t("back")) + "</button>";
   }
   function bindPauseUi() {
     const go = $("go");
@@ -1509,7 +1515,7 @@
         bindPauseUi();
       } else {
         overlay.innerHTML = "<h1>Choppy Bitcoin</h1>" + tutorialBody()
-          + "<button class=\"cta\" id=\"go\">Play</button>";
+          + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>";
         $("go").onclick = startGame;
       }
     } else if (p === "count") {
@@ -1522,7 +1528,7 @@
         const sel = chosen === id;
         return "<button class=\"cta" + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + perkTitle(id, t) + " · " + perkBlurb(id, t) + "</button>";
       }).join("");
-      overlay.innerHTML = "<h1>Perks</h1><p>" + (chosen ? "Selected. Tap ▶ to keep playing." : "Pick one. Then tap ▶.") + (S.perkHint ? "</p><p class=\"k\">A.I. bud hint: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
+      overlay.innerHTML = "<h1>" + t("perks") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
         btn.onpointerdown = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
       });
@@ -1568,7 +1574,7 @@
   }
 
   canvas.addEventListener("pointerdown", (e) => {
-    e.preventDefault(); A.unlock();
+    e.preventDefault(); A.unlock(); S.humanInput = true;
     if (S.phase === "play") flap();
   });
   window.addEventListener("keydown", (e) => {
@@ -1640,6 +1646,11 @@
     };
   });
 
+  window.addEventListener("bz-lang", () => {
+    if (window.BZ) BZ.apply(document);
+    renderOverlay();
+    renderHud();
+  });
   resetWorld(false);
   fillJukebox();
   renderOverlay();

@@ -318,7 +318,22 @@
       };
     }
 
-    return { auth, from };
+    async function rpc(name, args) {
+      try {
+        const r = await fetch(DB_URL + "/rest/v1/rpc/" + encodeURIComponent(name), {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify(args || {})
+        });
+        const d = await readJson(r);
+        if (!r.ok) return { data: null, error: apiError(d, "RPC failed") };
+        return { data: d, error: null };
+      } catch (e) {
+        return { data: null, error: e };
+      }
+    }
+
+    return { auth, from, rpc };
   }
 
   const g = typeof globalThis !== "undefined" ? globalThis : window;
