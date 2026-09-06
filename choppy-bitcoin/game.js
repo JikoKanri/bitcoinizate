@@ -938,13 +938,11 @@
       S.bird.y += Math.sin(S.lifeT * 36) * 26 * dt * k;
       S.bird.v += Math.sin(S.lifeT * 21) * 55 * dt * k;
     }
-    if (S.bird.y + S.bird.r > S.H - 4) {
-      S.bird.y = S.H - 4 - S.bird.r;
-      S.bird.v = 0;
+    if (S.bird.y - S.bird.r > S.H) {
       die();
       return;
     }
-    if (S.bird.y - S.bird.r < 0) { S.bird.y = S.bird.r; S.bird.v = 0; }
+    if (S.bird.y + S.bird.r < 0) { S.bird.y = -S.bird.r + 1; S.bird.v = 0; }
 
     const pw = m.pipeW * S.widthMul;
     let guard = 0;
@@ -1118,9 +1116,9 @@
     for (let x = ox; x < S.W + stepG; x += stepG) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, S.H); ctx.stroke(); }
     for (let y = 0; y < S.H; y += stepG) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(S.W, y); ctx.stroke(); }
     if (S.level >= 2) {
-      drawTape(ctx, S.tape, S.H * 0.14, S.H * 0.38, "rgba(79,157,110,0.2)", "rgba(196,92,74,0.2)");
-      drawTape(ctx, S.tapeVt, S.H * 0.52, S.H * 0.76, "rgba(90,140,190,0.22)", "rgba(196,92,74,0.2)");
-    } else drawTape(ctx, S.tape, S.H * 0.3, S.H * 0.7, "rgba(79,157,110,0.18)", "rgba(196,92,74,0.18)");
+      drawTape(ctx, S.tape, S.H * 0.12, S.H * 0.40, "rgba(79,157,110,0.2)", "rgba(196,92,74,0.2)");
+      drawTape(ctx, S.tapeVt, S.H * 0.50, S.H * 0.78, "rgba(90,140,190,0.22)", "rgba(196,92,74,0.2)");
+    } else drawTape(ctx, S.tape, S.H * 0.25, S.H * 0.75, "rgba(79,157,110,0.18)", "rgba(196,92,74,0.18)");
 
     const m = metrics();
     const pw = m.pipeW * S.widthMul;

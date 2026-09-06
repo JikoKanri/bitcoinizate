@@ -153,27 +153,34 @@ body {
 .cta { background: #c8960a; color: #120c02; min-height: 44px; padding: 0 16px; font-weight: 700; }
 .play-alt { background: transparent; color: #f3efe6; border: 1px solid #c8960a; }
 .speed-bar button:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.7); }
-.buy, .sell { flex: 1; min-height: 40px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.buy, .sell { flex: 1; min-height: 40px; font-size: 12px; font-weight: 700; white-space: nowrap; background: transparent; }
 .buy:disabled, .sell:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.65); }
-.buy { background: #1f8a4c; color: #04150c; }
-.sell { background: #a33a32; color: #1a0605; }
-.pause { position: absolute; right: 12px; bottom: 12px; z-index: 8; min-width: 44px; min-height: 44px; background: rgba(10,10,12,0.8); color: #f3efe6; border: 1px solid #2a2a2e; }
+.buy { color: rgba(31, 138, 76, 0.75); border: 1px solid rgba(31, 138, 76, 0.75); background: rgba(31, 138, 76, 0.12); }
+.sell { color: rgba(163, 58, 50, 0.75); border: 1px solid rgba(163, 58, 50, 0.75); background: rgba(163, 58, 50, 0.12); }
+.pause {
+  position: absolute; right: 12px; bottom: 12px; z-index: 8;
+  min-width: 40px; min-height: 40px; width: 40px; height: 40px; padding: 0;
+  background: rgba(10, 10, 12, 0.12); color: rgba(243, 239, 230, 0.75);
+  border: 1px solid rgba(243, 239, 230, 0.35);
+}
 .field.perk-ui .pause { z-index: 20; color: #fff6d8; background: #c8960a; border-color: #f0d060; box-shadow: 0 0 0 3px rgba(200,150,10,0.45); }
 .overlay { position: absolute; inset: 0; background: rgba(10,10,12,0.94); display: none; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 24px 16px 32px; z-index: 12; overflow-y: auto; -webkit-overflow-scrolling: touch; pointer-events: auto; }
 .overlay.open { display: flex !important; pointer-events: auto !important; }
 .overlay.dock {
   inset: auto 8px auto 8px;
   top: 8px;
-  max-height: 42%;
-  background: rgba(10,10,12,0.9);
-  border: 1px solid #3a3a40;
-  padding: 10px 10px 12px;
-  gap: 8px;
+  max-height: 48%;
+  background: rgba(10,10,12,0.675);
+  border: 1px solid rgba(58,58,64,0.7);
+  padding: 8px 8px 10px;
+  gap: 5px;
 }
-.overlay.dock h1 { font-size: 16px; margin: 0; }
-.overlay.dock p { font-size: 12px; margin: 0; }
-.overlay.dock .perk-list .cta { min-height: 40px; font-size: 11px; }
-.overlay.dock .opt-item { min-height: 36px; }
+.overlay.dock h1 { font-size: 14px; margin: 0; }
+.overlay.dock p { font-size: 11px; margin: 0; }
+.overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
+.overlay.dock .opt-item { min-height: 30px; font-size: 11px; }
+.overlay.dock .opt-menu { gap: 4px; }
+.overlay.dock .cta { min-height: 30px; min-width: 0; padding: 0 10px; font-size: 11px; }
 .overlay .cta { position: relative; z-index: 13; touch-action: manipulation; min-height: 48px; min-width: 160px; }
 .overlay h1 { font-size: 28px; letter-spacing: -0.03em; }
 .overlay p { font-size: 14px; color: #b4b0a8; max-width: 420px; line-height: 1.45; }
@@ -232,8 +239,8 @@ body {
   display: inline-flex; align-items: center; justify-content: center; margin-top: 0;
 }
 .help-ico svg { display: block; }
-.opt-menu { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 280px; }
-.opt-item { min-height: 44px; }
+.opt-menu { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 280px; }
+.opt-item { min-height: 30px; }
 .dca-tog.ai-lit, .buy.ai-lit, .sell.ai-lit, #trend-btn.ai-lit {
   color: #fff; background: #c8c4bc; box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,255,255,0.55);
 }
