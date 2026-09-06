@@ -5,7 +5,7 @@
   const A = window.ArcadeAudio;
   const POWER_S = 5;
   const HALVE_N = 21;
-  const HALVE_GAP = 210;
+  const HALVE_GAP = 21;
   const GREEN = "#4f9d6e";
   const RED = "#c45c4a";
   const BTC = "#c8960a";
@@ -178,7 +178,7 @@
     perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
-    offerSeq: [7, 13, 24], nextOffer: 7, offersDone: 0,
+    offerSeq: [10, 20, 30], nextOffer: 10, offersDone: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
@@ -385,7 +385,7 @@
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
-      S.offerSeq = [7, 13, 24]; S.nextOffer = 7; S.offersDone = 0;
+      S.offerSeq = [10, 20, 30]; S.nextOffer = 10; S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0;
       if (A && A.jukeStop) A.jukeStop();
@@ -505,23 +505,6 @@
       const line = drawLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"], 0.15);
       say(line || "Laser eyes!", true);
       A.sfx.power();
-      if (S.lasers === S.nextOffer) {
-        rollPerks();
-        if (S.aibudOn && (S.have.aibud || 0) >= 2) {
-          const pick = bestAiPerk(S.perkOffers);
-          grantPerk(pick.id);
-          bumpOffer();
-          aiAct("Perk " + perkTitle(pick.id, S.have[pick.id]), pick.why);
-        } else {
-          S.perkPick = "";
-          if (S.aibudOn && (S.have.aibud || 0) >= 1) {
-            const pick = bestAiPerk(S.perkOffers);
-            S.perkHint = pick.id;
-            say("A.I. bud says take " + perkTitle(pick.id, S.poolTier[pick.id] || 1) + ". " + pick.why, true, "aibud");
-          } else S.perkHint = "";
-          setPhase("perk");
-        }
-      }
       return;
     }
     if (it.type === "COLD") {
@@ -670,12 +653,30 @@
     if (kind === "juke") fillJukebox();
   }
 
+  function openPerkOffer() {
+    rollPerks();
+    if (S.aibudOn && (S.have.aibud || 0) >= 2) {
+      const pick = bestAiPerk(S.perkOffers);
+      grantPerk(pick.id);
+      bumpOffer();
+      aiAct("Perk " + perkTitle(pick.id, S.have[pick.id]), pick.why);
+    } else {
+      S.perkPick = "";
+      if (S.aibudOn && (S.have.aibud || 0) >= 1) {
+        const pick = bestAiPerk(S.perkOffers);
+        S.perkHint = pick.id;
+        say("A.I. bud says take " + perkTitle(pick.id, S.poolTier[pick.id] || 1) + ". " + pick.why, true, "aibud");
+      } else S.perkHint = "";
+      setPhase("perk");
+    }
+  }
+
   function bumpOffer() {
     S.offersDone += 1;
     const s = S.offerSeq;
     if (S.offersDone < s.length) S.nextOffer = s[S.offersDone];
     else {
-      const n = s[s.length - 1] + s[s.length - 2] + s[s.length - 3];
+      const n = 10 * (S.offersDone + 1);
       s.push(n);
       S.nextOffer = n;
     }
@@ -972,6 +973,7 @@
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.candles++; A.sfx.coin();
         grantUsd(100, p.x + pw * 0.5, p.gapY, "gain");
+        if (S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
       if (inX) {
@@ -1667,7 +1669,7 @@
       } else {
         overlay.innerHTML = "<h1>Choppy Bitcoin</h1>"
           + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>"
-          + "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>"
+          + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
           + tutorialBody()
           + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
         $("go").onclick = startGame;

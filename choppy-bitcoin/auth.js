@@ -83,18 +83,22 @@
     const btn = $("btn-show-auth");
     const tag = $("user-profile-tag");
     if (profile && profile.username) {
+      window.choppySignedIn = true;
       if (btn) btn.classList.add("hide");
       if (tag) {
         tag.classList.remove("hide");
         tag.textContent = "@" + profile.username;
       }
     } else {
+      window.choppySignedIn = false;
       if (btn) btn.classList.remove("hide");
       if (tag) {
         tag.classList.add("hide");
         tag.textContent = "";
       }
     }
+    const cta = $("cta-signup");
+    if (cta) cta.classList.toggle("hide", !!(profile && profile.username));
     fetchGlobalLeaderboard();
   }
 
@@ -195,6 +199,10 @@
     }
     currentProfile = data;
     window.choppyUserId = currentUser.id || "";
+    if (currentUser.email && data.email !== currentUser.email) {
+      try { await supabase.from("profiles").update({ email: currentUser.email }).eq("id", currentUser.id); } catch (e) {}
+      currentProfile.email = currentUser.email;
+    }
     if (Array.isArray(data.awards) && window.mergeChoppyAwards) window.mergeChoppyAwards(data.awards);
     updateAuthUI(currentProfile);
   }
@@ -207,7 +215,7 @@
     const email = ($("auth-email") && $("auth-email").value || "").trim();
     const password = ($("auth-password") && $("auth-password").value || "").trim();
     const username = ($("auth-username") && $("auth-username").value || "").trim();
-    if (!email || !password) { setMsg("Enter email and password.", true); return; }
+    if (!email || !password) { setMsg("Enter email or alias, and password.", true); return; }
     if (password.length < 8) { setMsg("Password must be at least 8 characters.", true); return; }
     if (!supabase) { setMsg("Auth is offline.", true); return; }
     setMsg("Working…");
@@ -221,7 +229,7 @@
         if (data.session && data.user) {
           currentUser = data.user;
           try {
-            await supabase.from("profiles").insert([{ id: data.user.id, username, highscore: 0 }]);
+            await supabase.from("profiles").insert([{ id: data.user.id, username, email, highscore: 0 }]);
           } catch (e) {}
           await loadUserProfile();
           if (authModal) closeModal(authModal);
@@ -230,7 +238,13 @@
           setMsg("Check your email to confirm the account.");
         }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        let loginId = email;
+        if (loginId.indexOf("@") < 0) {
+          const look = await supabase.rpc("email_for_alias", { p_alias: loginId });
+          if (look.error || !look.data) throw new Error("No account for that alias.");
+          loginId = typeof look.data === "string" ? look.data : (look.data.email || look.data);
+        }
+        const { data, error } = await supabase.auth.signInWithPassword({ email: loginId, password });
         if (error) throw error;
         currentUser = data.user;
         await loadUserProfile();
@@ -253,16 +267,25 @@
     if (nextAlias && currentProfile && nextAlias !== currentProfile.username) {
       if (!validAlias(nextAlias)) {
         if (hint) hint.textContent = "Alias: 3–16 letters, numbers or _.";
-        setMsg("Alias: 3–16 letters, numbers or _.", true);
         return;
       }
       if (!aliasReady(currentProfile)) {
         const wait = ((window.BZ && BZ.t("aliasWait")) || "Wait until ") + aliasNextDate(currentProfile);
         if (hint) hint.textContent = wait;
-        setMsg(wait, true);
         return;
       }
-      patch.username = nextAlias;
+      const changed = await supabase.rpc("change_alias", { p_alias: nextAlias });
+      if (changed && changed.error) {
+        if (hint) hint.textContent = changed.error.message || "Could not save alias.";
+        return;
+      }
+      currentProfile.username = nextAlias;
+      if (aliasEl) aliasEl.value = nextAlias;
+      const tag = $("user-profile-tag");
+      if (tag) { tag.classList.remove("hide"); tag.textContent = "@" + nextAlias; }
+      const btn = $("btn-show-auth");
+      if (btn) btn.classList.add("hide");
+      if (hint) hint.textContent = "Alias saved.";
     }
     try {
       let res = await supabase.from("profiles").update(patch).eq("id", currentUser.id);

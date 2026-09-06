@@ -115,11 +115,24 @@
       if (!isPlaying()) return;
       if (muteTheme) { musicStep++; return; }
       const p = getPower();
-      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.22, "sawtooth", 0.06, null, 0, "theme");
-      else if (p === "BULL") beep(BULL[musicStep % 8], 0.11, "square", 0.04, null, 0, "theme");
-      else beep(IDLE[musicStep % 8], 0.18, "sine", 0.05, null, 0, "theme");
+      const i = musicStep % 8;
+      if (p === "BEAR") {
+        const n = BEAR[i];
+        beep(n, 0.3, "sawtooth", 0.07, n * 0.72, 0, "theme");
+        beep(n * 0.5, 0.36, "square", 0.045, n * 0.4, 0, "theme");
+        if (i % 2 === 0) beep(n * 1.5, 0.12, "triangle", 0.03, null, 0.04, "theme");
+      } else if (p === "BULL") {
+        const n = BULL[i];
+        beep(n, 0.13, "square", 0.055, n * 1.12, 0, "theme");
+        beep(n * 2, 0.08, "triangle", 0.03, null, 0.03, "theme");
+        beep(n / 2, 0.18, "sawtooth", 0.035, null, 0, "theme");
+      } else {
+        const n = IDLE[i];
+        beep(n, 0.2, "sine", 0.04, null, 0, "theme");
+        beep(n * 1.5, 0.1, "triangle", 0.018, null, 0.05, "theme");
+      }
       musicStep++;
-    }, 200);
+    }, 180);
   };
 
 
@@ -884,15 +897,29 @@ w: And ev-er since then my head's been red.`),
   }
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
-    if (muteVoice || !window.speechSynthesis) return;
-    if (urgent) speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(line);
-    u.lang = "en-US";
-    u.rate = 0.78;
-    u.pitch = 0.18;
-    u.volume = 1;
-    const v = pickVoice();
-    if (v) { u.voice = v; u.lang = v.lang && v.lang.startsWith("en") ? v.lang : "en-US"; }
-    speechSynthesis.speak(u);
+    if (muteVoice || !line || !window.speechSynthesis) return;
+    const talk = () => {
+      if (muteVoice) return;
+      if (urgent) speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(line));
+      const es = !!(window.BZ && BZ.lang && BZ.lang() === "es");
+      u.lang = es ? "es-MX" : "en-US";
+      u.rate = 1;
+      u.pitch = 1;
+      u.volume = 1;
+      const v = pickVoice();
+      if (v) {
+        const vl = (v.lang || "").toLowerCase();
+        if (es ? vl.startsWith("es") : vl.startsWith("en")) u.voice = v;
+      }
+      speechSynthesis.speak(u);
+    };
+    if (!speechSynthesis.getVoices().length) {
+      speechSynthesis.addEventListener("voiceschanged", talk, { once: true });
+      pickVoice();
+      setTimeout(talk, 250);
+      return;
+    }
+    talk();
   };
 })();
