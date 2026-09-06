@@ -159,7 +159,7 @@
     phase: "ready",
     countN: 3,
     speedMul: 1,
-    W: 400, H: 640,
+    W: 480, H: 640,
     bird: { x: 72, y: 280, v: 0, r: 14 },
     pipes: [], items: [], particles: [], floats: [],
     cash: 0, btc: 0, vt: 0, cold: 0, msig: 0, invuln: 0,
@@ -1178,19 +1178,36 @@
     ctx.fillStyle = wash || BTC; ctx.fillRect(0, S.H - 3, S.W, 3);
   }
 
+  const GAME_W = 480;
+  const GAME_H = 640;
+
   let fitW = 0, fitH = 0, fitCtx = null;
   function fit() {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    const r = canvas.parentElement.getBoundingClientRect();
-    const W = Math.max(280, r.width), H = Math.max(320, r.height);
+    const W = GAME_W, H = GAME_H;
+    S.W = W; S.H = H;
     if (fitCtx && W === fitW && H === fitH) return fitCtx;
     fitW = W; fitH = H;
-    S.W = W; S.H = H;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + "px"; canvas.style.height = H + "px";
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
     fitCtx = canvas.getContext("2d");
     fitCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     return fitCtx;
+  }
+
+  function layoutStage() {
+    const app = $("app");
+    if (!app) return;
+    app.style.transform = "none";
+    const baseW = GAME_W;
+    const baseH = app.offsetHeight || (GAME_H + 160);
+    const pad = 8;
+    const sx = (window.innerWidth - pad) / baseW;
+    const sy = (window.innerHeight - pad) / baseH;
+    const s = Math.max(0.35, Math.min(sx, sy));
+    app.style.transform = "scale(" + s + ")";
   }
 
   function renderHud() {
@@ -1834,9 +1851,12 @@
   });
   window.startChoppy = startGame;
   window.replayChoppy = replay;
+  window.addEventListener("resize", layoutStage);
+  window.addEventListener("orientationchange", layoutStage);
   resetWorld(false);
   fillJukebox();
   renderOverlay();
   renderHud();
+  layoutStage();
   requestAnimationFrame(loop);
 })();
