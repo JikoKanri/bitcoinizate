@@ -792,7 +792,10 @@ w: And ev-er since then my head's been red.`),
           playFallbackTune(gen);
           return;
         }
-        const synth = await ensureSynth(id || "bonny");
+        const synth = await Promise.race([
+          ensureSynth(id || "bonny"),
+          new Promise((resolve) => setTimeout(() => resolve(null), 2200))
+        ]);
         if (!abcWant || gen !== jukeGen) return;
         if (!synth) {
           playFallbackTune(gen);
