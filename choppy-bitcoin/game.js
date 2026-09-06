@@ -205,11 +205,11 @@
     const gapBoost = 1 + extra * 0.12;
     const spaceBoost = 1 + extra * 0.08;
     const yMul = 1 + extra * 0.24;
-    const gapH = Math.min(S.H * 0.32, Math.max(140, birdR * 5.6)) * gapBoost;
+    const gapH = Math.min(S.H * 0.3, Math.max(132, birdR * 5.4)) * gapBoost;
     const pipeW = Math.min(56, Math.max(42, S.W * 0.12));
-    const spacing = Math.min(248, Math.max(200, S.W * 0.44)) * spaceBoost;
-    const speed = Math.min(205, Math.max(168, S.W * 0.42));
-    return { birdR, gapH, pipeW, spacing, speed, gravity: S.H * 1.42 * yMul, jump: -S.H * 0.48 * yMul, margin: Math.max(52, S.H * 0.085) };
+    const spacing = 188 * spaceBoost;
+    const speed = 173;
+    return { birdR, gapH, pipeW, spacing, speed, gravity: 907 * yMul, jump: -302 * yMul, margin: Math.max(52, S.H * 0.085) };
   }
 
   function scrollMul() {
@@ -308,7 +308,7 @@
     let top0 = p.gapY - p.gapH / 2;
     let bot0 = p.gapY + p.gapH / 2;
     if (S.power === "BEAR") {
-      const cut = S.swanBear ? 0.03 : 0.012;
+      const cut = S.swanBear ? 0.045 : 0.025;
       top0 += p.gapH * cut;
       bot0 -= p.gapH * cut;
     }
@@ -324,7 +324,7 @@
     if (!S.pipes.length) gapY = S.bird.y + (Math.random() > 0.5 ? 1 : -1) * gapH * 0.28;
     else {
       const sign = Math.random() > 0.5 ? 1 : -1;
-      gapY = S.lastGapY + sign * (0.28 + Math.random() * 0.26) * gapH;
+      gapY = S.lastGapY + sign * (0.42 + Math.random() * 0.42) * gapH;
     }
     gapY = Math.max(minY, Math.min(maxY, gapY));
     if (S.pipes.length && Math.abs(gapY - S.lastGapY) < gapH * 0.32) {
@@ -942,9 +942,9 @@
     if (S.laserOn) { S.laserT -= dt; if (S.laserT <= 0) applyLaser(false); }
     S.bird.v += m.gravity * dt; S.bird.y += S.bird.v * dt;
     if (S.power === "BEAR") {
-      const k = S.swanBear ? 0.72 : 0.32;
-      S.bird.y += Math.sin(S.lifeT * 22) * 14 * dt * k;
-      S.bird.v += Math.sin(S.lifeT * 14) * 28 * dt * k;
+      const k = S.swanBear ? 1 : 0.52;
+      S.bird.y += Math.sin(S.lifeT * 36) * 26 * dt * k;
+      S.bird.v += Math.sin(S.lifeT * 21) * 55 * dt * k;
     }
     if (S.bird.y + S.bird.r > S.H - 4) {
       S.bird.y = S.H - 4 - S.bird.r;
