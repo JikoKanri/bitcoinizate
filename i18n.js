@@ -97,6 +97,7 @@
       bullSongs: "Bull/bear songs",
       gameFx: "Game FX",
       voices: "Voices",
+      language: "Language",
     },
     es: {
       brandSub: "Juegos gratis de temática bitcoin",
@@ -194,6 +195,7 @@
       bullSongs: "Canciones bull/bear",
       gameFx: "FX del juego",
       voices: "Voces",
+      language: "Idioma"
     }
   };
 

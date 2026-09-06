@@ -1550,10 +1550,17 @@
         + "<button type=\"button\" class=\"mute-tog" + (voiceOn ? "" : " on") + "\" id=\"mute-voice\">Voices " + (voiceOn ? "ON" : "OFF") + "</button>"
         + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
     }
+    if (panel === "lang") {
+      const cur = (window.BZ && BZ.lang && BZ.lang()) || "en";
+      return "<h1>" + t("language") + "</h1><div class=\"opt-menu\">"
+        + "<button type=\"button\" class=\"cta opt-item" + (cur === "en" ? " on" : "") + "\" data-lang=\"en\">English</button>"
+        + "<button type=\"button\" class=\"cta opt-item" + (cur === "es" ? " on" : "") + "\" data-lang=\"es\">Español</button>"
+        + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+    }
     const fromPlay = S.optBack === "play" || S.phase === "paused";
     return "<h1>" + (fromPlay ? t("paused") : t("options")) + "</h1>"
       + "<div class=\"opt-menu\">"
-      + "<div class=\"lang-sw\"><button type=\"button\" data-lang=\"en\">EN</button><button type=\"button\" data-lang=\"es\">ES</button></div>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
@@ -1618,6 +1625,8 @@
       if ($("feed-msg")) $("feed-msg").textContent = ok ? t("thanks") : "…";
       if (ok && $("feed-text")) $("feed-text").value = "";
     };
+    const optLang = $("opt-lang");
+    if (optLang) optLang.onclick = (e) => { e.stopPropagation(); S.optPanel = "lang"; renderOverlay(); };
     const optSound = $("opt-sound");
     if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };
     const optAi = $("opt-aibud");
