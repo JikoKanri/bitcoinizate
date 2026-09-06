@@ -1216,14 +1216,14 @@
     $("h-halve").textContent = String(S.halveLeft);
     $("h-halves").textContent = String(S.halvings);
     const bonus = S.level >= 2;
-    $("hud").className = "hud-grid " + (bonus ? "hud-3" : "hud-4");
-    const on = (id, vis) => { const el = $(id); if (el) el.classList.toggle("hide", !vis); };
-    on("h-vt-wrap", bonus);
-    on("h-vtpx-wrap", bonus);
-    on("vt-row", bonus);
-    on("spd-lab", false);
-    on("spd-1", false);
-    on("spd-2", S.have.ff > 0);
+    $("hud").className = "hud-grid hud-4";
+    const lockBtn = (id, ready) => {
+      const el = $(id);
+      if (!el) return;
+      el.disabled = !ready;
+      el.classList.toggle("locked", !ready);
+    };
+    lockBtn("spd-2", S.have.ff > 0);
     const spd2 = $("spd-2");
     if (spd2) {
       const mx = ffMax();
@@ -1231,23 +1231,23 @@
       spd2.textContent = fast ? ((mx % 1 ? mx.toFixed(1) : String(mx)) + "x") : "1x";
       spd2.classList.toggle("on", fast);
     }
-    on("dca-btn", S.have.dca > 0);
-    on("iabud-btn", (S.have.aibud || 0) > 0);
-    on("trend-btn", S.have.manip > 0);
+    lockBtn("dca-btn", S.have.dca > 0);
+    lockBtn("iabud-btn", (S.have.aibud || 0) > 0);
+    lockBtn("trend-btn", S.have.manip > 0);
     const locks = aiLocks();
     const dca = $("dca-btn");
     if (dca) {
       dca.classList.toggle("on", S.dcaOn);
       dca.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.dca && S.dcaOn));
       dca.classList.toggle("ai-lock", locks.dca);
-      dca.disabled = locks.dca;
+      dca.disabled = S.have.dca <= 0 || locks.dca;
       dca.textContent = S.dcaOn ? "DCA ON" : "DCA OFF";
       dca.setAttribute("aria-pressed", S.dcaOn ? "true" : "false");
     }
     const bud = $("iabud-btn");
     if (bud) {
       bud.classList.toggle("on", S.aibudOn);
-      bud.classList.toggle("hide", (S.have.aibud || 0) <= 0);
+      bud.disabled = (S.have.aibud || 0) <= 0;
       bud.textContent = S.aibudOn ? "A.I. BUD ON" : "A.I. BUD OFF";
       bud.setAttribute("aria-pressed", S.aibudOn ? "true" : "false");
     }
@@ -1258,7 +1258,7 @@
       tr.classList.toggle("on", S.trend !== "off");
       tr.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.trend && S.trend !== "off"));
       tr.classList.toggle("ai-lock", locks.trend);
-      tr.disabled = locks.trend;
+      tr.disabled = S.have.manip <= 0 || locks.trend;
     }
     const buy = $("buy-btc"), sell = $("sell-btc");
     if (buy) {
@@ -1310,7 +1310,7 @@
     const song = id && A.SONGS && A.SONGS[id];
     const cues = (song && song.lyrics) || [];
     const onField = S.phase === "play" || S.phase === "paused";
-    const want = !!(jukeLyricsOn() && live && onField && song);
+    const want = false;
     if (np) {
       np.textContent = "";
       np.classList.add("hide");
@@ -1536,7 +1536,6 @@
         + "<div class=\"juke-row\">"
         + "<button type=\"button\" class=\"juke-btn ico" + (S.jukeShuffle ? " on" : "") + "\" id=\"juke-shuf\" aria-label=\"Shuffle\">🔀</button>"
         + "<button type=\"button\" class=\"juke-btn ico" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\" aria-label=\"Repeat\">" + (rpt === "one" ? "🔂" : "🔁") + "</button>"
-        + "<button type=\"button\" class=\"juke-btn ico" + (jukeLyricsOn() ? " on" : "") + "\" id=\"juke-lyr\" aria-label=\"Lyrics\">♪</button>"
         + "</div>"
         + "<div class=\"juke-list\">" + rows + "</div>"
         + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
@@ -1603,8 +1602,6 @@
       S.jukeRepeat = S.jukeRepeat === "off" ? "all" : S.jukeRepeat === "all" ? "one" : "off";
       renderOverlay();
     };
-    const ly = $("juke-lyr");
-    if (ly) ly.onclick = (e) => { e.stopPropagation(); setJukeLyrics(!jukeLyricsOn()); renderOverlay(); };
     const optHelp = $("opt-help");
     if (optHelp) optHelp.onclick = (e) => { e.stopPropagation(); S.optPanel = "help"; renderOverlay(); };
     const optFeed = $("opt-feed");

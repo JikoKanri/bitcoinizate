@@ -63,10 +63,10 @@ body {
 .opt-btn:disabled { opacity: 0.35; cursor: default; }
 .opt-btn:not(:disabled):hover { border-color: #c8960a; color: #fff6d0; }
 .hide { display: none !important; pointer-events: none !important; }
-.speed-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 3px 8px; border-bottom: 1px solid #2a2a2e; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #8a8680; max-width: 100%; }
-#spd-lab, #trend-lab { display: none !important; }
+.speed-bar { display: flex; flex-wrap: nowrap; align-items: stretch; gap: 4px; padding: 3px 8px; border-bottom: 1px solid #2a2a2e; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #8a8680; max-width: 100%; min-height: 34px; }
 .speed-bar button {
-  min-height: 28px; min-width: 40px; padding: 0 8px;
+  flex: 1; min-width: 0;
+  min-height: 28px; padding: 0 6px;
   border: 1px solid #3a3a40; background: #141416; color: #8a8680;
   font: inherit; cursor: pointer; letter-spacing: 0.06em;
 }
