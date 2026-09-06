@@ -300,3 +300,21 @@ body {
 .auth-msg.bad { color: #ff9b92; }
 .auth-card .hp { position: absolute; left: -9999px; height: 0; width: 0; opacity: 0; }
 .board { margin: 0; font-size: 11px; color: #b4b0a8; background: #0a0a0c; padding: 8px; border: 1px solid #2a2a2e; min-height: 64px; white-space: pre-wrap; }
+.aw-box { text-align: left; font-size: 12px; border: 1px solid #2a2a2e; padding: 6px 8px; }
+.aw-box summary { cursor: pointer; color: #c8960a; font-size: 12px; }
+#profile-modal .auth-card { max-height: 82vh; overflow-y: auto; }
+@media (max-width: 700px) {
+  #profile-modal { align-items: flex-start; padding: 6px; }
+  #profile-modal .auth-card {
+    width: min(320px, 96vw);
+    max-height: 68dvh;
+    padding: 8px 10px;
+    gap: 5px;
+  }
+  #profile-modal .auth-card h2 { font-size: 15px; margin: 0; }
+  #profile-modal .auth-card label { font-size: 12px; }
+  #profile-modal .auth-card input { min-height: 28px; }
+  #profile-modal .auth-card .cta { min-height: 32px; font-size: 13px; }
+  #profile-score-info { font-size: 13px; margin: 0; }
+  #profile-awards { max-height: 22vh; overflow-y: auto; }
+}
