@@ -187,7 +187,9 @@ body {
 .overlay p { font-size: 14px; color: #b4b0a8; max-width: 420px; line-height: 1.45; }
 .juke-now { font-size: 14px; color: #f3efe6; font-weight: 700; max-width: none; white-space: normal; overflow: visible; line-height: 1.3; }
 .juke-track { min-height: 36px; width: 100%; text-align: left; padding: 6px 10px; border: 1px solid #2a2a2e; background: #0e0e10; color: #b4b0a8; font: inherit; font-size: 11px; cursor: pointer; white-space: normal; line-height: 1.3; }
-.awards { width: 100%; max-width: 360px; text-align: left; border: 1px solid #2a2a2e; background: #0e0e10; padding: 10px 12px; }
+.aw-box { width: 100%; max-width: 360px; text-align: left; border: 1px solid #2a2a2e; background: #0e0e10; padding: 8px 10px; }
+.aw-box summary { cursor: pointer; color: #c8960a; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.aw-box p { margin: 6px 0 0; font-size: 12px; }
 .awards p { margin: 0 0 6px; font-size: 12px; max-width: none; }
 .overlay .count { font-size: 72px; color: #c8960a; }
 .overlay ul { width: 100%; max-width: 360px; text-align: left; font-size: 12px; border: 1px solid #2a2a2e; padding: 12px; list-style: none; }

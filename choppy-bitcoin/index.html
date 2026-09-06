@@ -40,12 +40,12 @@
         <span class="sub" data-i18n="msig">Multisig</span><b id="h-msig">0</b>
       </div>
       <div class="stat"><span data-i18n="lasers">Laser eyes</span><b id="h-laser">0</b></div>
-      <div class="stat"><span>Next halving</span><b id="h-halve">21</b></div>
-      <div class="stat"><span>Halvings</span><b id="h-halves">0/21</b></div>
+      <div class="stat"><span data-i18n="nextHalve">Next halving</span><b id="h-halve">21</b></div>
+      <div class="stat"><span data-i18n="halvings">Halvings</span><b id="h-halves">0/21</b></div>
       <div class="stat stat-opt">
-        <button type="button" id="btn-show-auth" class="opt-btn">Sign in</button>
+        <button type="button" id="btn-show-auth" class="opt-btn" data-i18n="signIn">Sign in</button>
         <button type="button" id="user-profile-tag" class="opt-btn hide"></button>
-        <button type="button" id="opt-btn" class="opt-btn">Options</button>
+        <button type="button" id="opt-btn" class="opt-btn" data-i18n="options">Options</button>
       </div>
     </div>
     <div class="speed-bar">
@@ -69,8 +69,8 @@
       </div>
       <div id="trades" class="trades hide">
         <div class="row">
-          <button id="buy-btc" class="buy">BUY BTC</button>
-          <button id="sell-btc" class="sell">SELL BTC</button>
+          <button id="buy-btc" class="buy" data-i18n="buyBtc">BUY BTC</button>
+          <button id="sell-btc" class="sell" data-i18n="sellBtc">SELL BTC</button>
         </div>
         <div class="row hide" id="vt-row">
           <button id="buy-vt" class="buy">Buy VT (V)</button>
@@ -105,6 +105,7 @@
       <p id="profile-score-info"></p>
       <label>Alias<input id="profile-alias" maxlength="16" autocomplete="username"></label>
       <p id="alias-hint" class="auth-msg"></p>
+      <button type="button" class="cta" id="btn-save-alias">Save alias</button>
       <div id="profile-awards" class="awards"></div>
       <label>BTC address<input id="profile-btc-addr" autocomplete="off"></label>
       <label>Lightning<input id="profile-ln-addr" autocomplete="off"></label>

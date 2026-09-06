@@ -98,6 +98,20 @@
       gameFx: "Game FX",
       voices: "Voices",
       language: "Language",
+      nextHalve: "Next halving",
+      halvings: "Halvings",
+      buyBtc: "BUY BTC",
+      sellBtc: "SELL BTC",
+      dcaOn: "DCA ON",
+      dcaOff: "DCA OFF",
+      aiOn: "A.I. BUD ON",
+      aiOff: "A.I. BUD OFF",
+      trendUp: "TREND UP",
+      trendDown: "TREND DOWN",
+      trendOff: "TREND OFF",
+      share: "Share",
+      saveAlias: "Save alias",
+      awards: "Awards",
     },
     es: {
       brandSub: "Juegos gratis de temática bitcoin",
@@ -195,7 +209,21 @@
       bullSongs: "Canciones bull/bear",
       gameFx: "FX del juego",
       voices: "Voces",
-      language: "Idioma"
+      language: "Idioma",
+      nextHalve: "Próx. halving",
+      halvings: "Halvings",
+      buyBtc: "COMPRAR BTC",
+      sellBtc: "VENDER BTC",
+      dcaOn: "DCA ON",
+      dcaOff: "DCA OFF",
+      aiOn: "A.I. BUD ON",
+      aiOff: "A.I. BUD OFF",
+      trendUp: "TENDENCIA ↑",
+      trendDown: "TENDENCIA ↓",
+      trendOff: "TENDENCIA OFF",
+      share: "Compartir",
+      saveAlias: "Guardar alias",
+      awards: "Premios"
     }
   };
 

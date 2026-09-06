@@ -78,44 +78,30 @@
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud" };
-  function perkTitle(id, t) {
-    const n = PERK_NAME[id] || id;
-    return t <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, t)];
+  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud" };
+  const FF_SPEEDS = [1.5, 2, 3, 4];
+  function perkTitle(id, tier) {
+    const pack = (window.BZ && BZ.lang && BZ.lang() === "es") ? PERK_NAME_ES : PERK_NAME;
+    const n = pack[id] || id;
+    return tier <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, tier)];
   }
-  function perkBlurb(id, t) {
-    t = Math.max(1, Math.min(10, t));
-    if (id === "candy") return (2 ** t) + "x candle income";
-    if (id === "dca") return "income in btc";
-    if (id === "ff") {
-      const speeds = [0, 1.5, 2, 3, 0.5];
-      return (speeds[t] || 1.5) + "x speed";
-    }
-    if (id === "adopt") return "bulls +" + (10 + t * 2) + "/" + (15 + t * 2) + "%, bears +" + Math.max(0, t - 1) + "/" + (4 + t) + "%";
-    if (id === "manip") return "trend ×" + t;
-    if (id === "juke") return t <= 1 ? "jukebox · 2 random tunes" : "+4 random tunes";
+  function perkBlurb(id, tier) {
+    tier = Math.max(1, Math.min(10, tier));
+    const es = window.BZ && BZ.lang && BZ.lang() === "es";
+    if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
+    if (id === "dca") return es ? "ingreso en btc" : "income in btc";
+    if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
+    if (id === "adopt") return es
+      ? "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%"
+      : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%";
+    if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
+    if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
     if (id === "aibud") {
-      if (t <= 1) return "Look up/down + perk hints";
-      if (t === 2) return "auto-picks perks";
-      if (t === 3) return "auto DCA and trend";
-      return "auto buy and sell";
+      if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
+      if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
+      if (tier === 3) return es ? "DCA y tendencia solos" : "auto DCA and trend";
+      return es ? "compra y vende solo" : "auto buy and sell";
     }
-    return "";
-  }
-  function perkTitle(id, t) {
-    const n = PERK_NAME[id] || id;
-    return t <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, t)];
-  }
-  function perkBlurb(id, t) {
-    t = Math.max(1, Math.min(10, t));
-    if (id === "candy") return (2 ** t) + "x candle income";
-    if (id === "dca") return "income in btc";
-    if (id === "ff") {
-      const speeds = [0, 1.5, 2, 3, 0.5];
-      return (speeds[t] || 1.5) + "x speed";
-    }
-    if (id === "adopt") return "bulls +" + (10 + t * 2) + "/" + (15 + t * 2) + "%, bears +" + Math.max(0, t - 1) + "/" + (4 + t) + "%";
-    if (id === "manip") return "trend ×" + t;
-    if (id === "juke") return t <= 1 ? "jukebox · 2 random tunes" : "+4 random tunes";
     return "";
   }
 
@@ -194,8 +180,8 @@
   function scoreSats() { return Math.max(0, Math.round(netBtc() * 1e4)); }
 
   function ffMax() {
-    const speeds = [0, 1.5, 2, 3, 0.5];
-    return S.have.ff > 0 ? (speeds[S.have.ff] || 1.5) : 1;
+    if ((S.have.ff || 0) <= 0) return 1;
+    return FF_SPEEDS[Math.min(FF_SPEEDS.length, S.have.ff) - 1] || 1.5;
   }
 
   function metrics() {
@@ -269,11 +255,17 @@
     const bud = kind === "aibud";
     if (!halve && !bud && S.lifeT < S.halveSpeechUntil) return;
     if (!halve && !bud && S.lifeT < (S.aibudSpeechUntil || 0)) return;
-    S.ticker = line; S.tickerT = Math.max(1.5, lineDur(line));
+    S.ticker = (window.BZ && BZ.lang && BZ.lang() === "es" && kind === "ui") ? line : line;
+    S.tickerT = Math.max(1.5, lineDur(line));
     S.speechUntil = S.lifeT + lineDur(spoken(line));
     if (halve) S.halveSpeechUntil = S.speechUntil + 0.2;
     if (bud) S.aibudSpeechUntil = S.speechUntil + 0.15;
     A.speak(spoken(line), urgent || halve || bud);
+  }
+
+  function sayEn(en, cap, urgent, kind) {
+    say(en, urgent, kind);
+    if (cap) S.ticker = cap;
   }
 
   function pickLine(pool) {
@@ -360,7 +352,12 @@
     if (S.halveLeft === 2) {
       S.halveSide = Math.random() < 0.5 ? "up" : "down";
       if (S.aibudOn && (S.have.aibud || 0) >= 1) {
-        say(S.halveSide === "up" ? (t("lookUp") || "Look up!") : (t("lookDown") || "Look down!"), true, "halve");
+        sayEn(
+          S.halveSide === "up" ? "Look up!" : "Look down!",
+          S.halveSide === "up" ? t("lookUp") : t("lookDown"),
+          true,
+          "halve"
+        );
       }
     }
     if (S.halveLeft === 0) {
@@ -566,7 +563,8 @@
     S.power = "NONE"; S.powerT = 0;
     try { if (A && A.sfx && A.sfx.die) A.sfx.die(); } catch (e) {}
     try { if (A && A.cancelSpeech) A.cancelSpeech(); } catch (e) {}
-    try { if (A && A.speak) A.speak(t("liquidated"), true); } catch (e) {}
+    try { if (A && A.speak) A.speak("Rekt! You got liquidated", true); } catch (e) {}
+    S.ticker = t("liquidated");
     try { S.best = saveBest(scoreSats()); } catch (e) {}
     if (field) field.classList.remove("is-play");
     try { setPhase("over"); } catch (e) { try { renderOverlay(); } catch (err) {} }
@@ -637,9 +635,9 @@
 
   function grantPerk(kind) {
     const cap = kind === "ff" ? 4 : kind === "juke" ? 5 : kind === "aibud" ? 4 : 10;
-    const t = kind === "dca" ? 1 : Math.min(cap, S.poolTier[kind] || 1);
-    S.have[kind] = t;
-    if (kind !== "dca") S.poolTier[kind] = Math.min(cap, t + 1);
+    if (kind === "dca") S.have.dca = 1;
+    else S.have[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
+    S.poolTier[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
     if (kind === "dca") S.dcaOn = true;
     if (kind === "manip" && !S.trend) S.trend = "off";
     if (kind === "juke") fillJukebox();
@@ -695,14 +693,15 @@
   }
 
   function perkWhy(id) {
-    if (id === "candy") return "More candle cash to stack sats";
-    if (id === "dca") return "Income becomes bitcoin";
-    if (id === "adopt") return "Fatter bulls, milder bears";
-    if (id === "manip") return "Steer price while we hold";
-    if (id === "aibud") return "A.I. bud levels up";
-    if (id === "ff") return "More board, more coins";
-    if (id === "juke") return "Tunes while we stack";
-    return "Best for stacking bitcoin";
+    const es = window.BZ && BZ.lang && BZ.lang() === "es";
+    if (id === "candy") return es ? "Más cash de velas para juntar sats" : "More candle cash to stack sats";
+    if (id === "dca") return es ? "El ingreso se vuelve bitcoin" : "Income becomes bitcoin";
+    if (id === "adopt") return es ? "Bulls más gordos, bears más suaves" : "Fatter bulls, milder bears";
+    if (id === "manip") return es ? "Mover el precio si holdeamos" : "Steer price while we hold";
+    if (id === "aibud") return es ? "A.I. bud sube de nivel" : "A.I. bud levels up";
+    if (id === "ff") return es ? "Más tablero, más monedas" : "More board, more coins";
+    if (id === "juke") return es ? "Música mientras stackeamos" : "Tunes while we stack";
+    return es ? "Lo mejor para juntar bitcoin" : "Best for stacking bitcoin";
   }
 
   function bestAiPerk(ids) {
@@ -859,7 +858,11 @@
     S.introCounted = true;
     if (!S.welcomed) {
       S.welcomed = true;
-      try { A.speak(t("welcome")); } catch (e) {}
+      try {
+        A.speak("Welcome to Choppy Bitcoin: Survive the market!");
+        S.ticker = t("welcome");
+        S.tickerT = 3;
+      } catch (e) {}
     }
     resetWorld(false);
     S.dead = false;
@@ -1234,7 +1237,7 @@
       const mx = ffMax();
       const fast = S.have.ff > 0 && S.speedMul !== 1;
       spd2.textContent = fast ? ((mx % 1 ? mx.toFixed(1) : String(mx)) + "x") : "1x";
-      spd2.classList.toggle("on", !fast);
+      spd2.classList.add("on");
     }
     lockBtn("dca-btn", S.have.dca > 0);
     lockBtn("iabud-btn", (S.have.aibud || 0) > 0);
@@ -1246,19 +1249,19 @@
       dca.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.dca && S.dcaOn));
       dca.classList.toggle("ai-lock", locks.dca);
       dca.disabled = S.have.dca <= 0 || locks.dca;
-      dca.textContent = S.dcaOn ? "DCA ON" : "DCA OFF";
+      dca.textContent = S.dcaOn ? t("dcaOn") : t("dcaOff");
       dca.setAttribute("aria-pressed", S.dcaOn ? "true" : "false");
     }
     const bud = $("iabud-btn");
     if (bud) {
       bud.classList.toggle("on", S.aibudOn);
       bud.disabled = (S.have.aibud || 0) <= 0;
-      bud.textContent = S.aibudOn ? "A.I. BUD ON" : "A.I. BUD OFF";
+      bud.textContent = S.aibudOn ? t("aiOn") : t("aiOff");
       bud.setAttribute("aria-pressed", S.aibudOn ? "true" : "false");
     }
     const tr = $("trend-btn");
     if (tr) {
-      const lab = S.trend === "up" ? "TREND UP" : S.trend === "down" ? "TREND DOWN" : "TREND OFF";
+      const lab = S.trend === "up" ? t("trendUp") : S.trend === "down" ? t("trendDown") : t("trendOff");
       tr.textContent = lab;
       tr.classList.toggle("on", S.trend !== "off");
       tr.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.trend && S.trend !== "off"));
@@ -1351,13 +1354,19 @@
     };
   }
   const AWARD_CATALOG = [
-    { id: "maxi", name: "Maxi Soul", why: "Never sold BTC — not by hand, not by A.I. bud." },
-    { id: "halver", name: "Halving Catcher", why: "Every halving that spawned was eaten." },
-    { id: "nocoiner", name: "Nocoiner", why: "Never bought BTC in that run." },
-    { id: "greedy", name: "Greedy Miner", why: "Ate 0 halvings." },
-    { id: "opsec", name: "Opsec Warrior", why: "Lost 0 cold storage." },
-    { id: "paper", name: "Paper Hands", why: "Sold BTC in a bear market." }
+    { id: "maxi", name: "Maxi Soul", nameEs: "Alma maxi", why: "Never sold BTC — not by hand, not by A.I. bud.", whyEs: "Nunca vendió BTC, ni a mano ni por A.I. bud." },
+    { id: "halver", name: "Halving Catcher", nameEs: "Atrapa halvings", why: "Every halving that spawned was eaten.", whyEs: "Comió todos los halvings que salieron." },
+    { id: "nocoiner", name: "Nocoiner", nameEs: "Nocoiner", why: "Never bought BTC in that run.", whyEs: "Nunca compró BTC en esa partida." },
+    { id: "greedy", name: "Greedy Miner", nameEs: "Minero greedy", why: "Ate 0 halvings.", whyEs: "Comió 0 halvings." },
+    { id: "opsec", name: "Opsec Warrior", nameEs: "Guerrero opsec", why: "Lost 0 cold storage.", whyEs: "No perdió cold storage." },
+    { id: "paper", name: "Paper Hands", nameEs: "Manos de papel", why: "Sold BTC in a bear market.", whyEs: "Vendió BTC en un bear market." }
   ];
+  function awardName(a) {
+    return (window.BZ && BZ.lang && BZ.lang() === "es") ? (a.nameEs || a.name) : a.name;
+  }
+  function awardWhy(a) {
+    return (window.BZ && BZ.lang && BZ.lang() === "es") ? (a.whyEs || a.why) : a.why;
+  }
   function awardStore() {
     try { return JSON.parse(localStorage.getItem("choppy-awards") || "{}"); } catch (e) { return {}; }
   }
@@ -1393,27 +1402,38 @@
   function runAwards(st) {
     return runAwardIds(st).map((id) => AWARD_CATALOG.find((a) => a.id === id)).filter(Boolean);
   }
-  function awardListHtml(owned) {
+  function awardListHtml(owned, mode) {
     owned = owned || loadAwards();
-    return AWARD_CATALOG.map((a) => {
+    const es = window.BZ && BZ.lang && BZ.lang() === "es";
+    const rows = AWARD_CATALOG.filter((a) => mode !== "owned" || owned[a.id]).map((a) => {
       const on = !!owned[a.id];
-      return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + a.name + "</b> — " + a.why + "</p>";
+      return "<p class=\"" + (on ? "aw-on" : "aw-off") + "\"><b>" + (on ? "✓ " : "○ ") + awardName(a) + "</b> — " + awardWhy(a) + "</p>";
     }).join("");
+    if (mode === "owned") {
+      const n = AWARD_CATALOG.filter((a) => owned[a.id]).length;
+      return "<details class=\"aw-box\"><summary>" + (es ? "Premios" : "Awards") + " (" + n + ")</summary>" + (rows || "<p>" + (es ? "Todavía no hay premios." : "No awards yet.") + "</p>") + "</details>";
+    }
+    return "<div class=\"awards\"><p class=\"k\">" + (es ? "Premios" : "Awards") + "</p>" + rows + "</div>";
   }
   function shareRun(kind) {
     const btc = fmtBtc(netBtc());
-    const names = runAwards(S.stats || collectRunStats()).map((a) => a.name).join(", ");
+    const names = runAwards(S.stats || collectRunStats()).map((a) => awardName(a)).join(", ");
     let who = (window.choppyUsername || "").trim();
     if (!who) {
       const tagEl = $("user-profile-tag");
       const raw = tagEl && !tagEl.classList.contains("hide") ? (tagEl.textContent || "") : "";
-      who = raw.replace(/^@/, "").trim();
+      who = raw.replace(/^@/, "").replace(/\s.*/, "").trim();
     }
     who = who.replace(/^@/, "");
     const tag = who ? "@" + who + " " : "";
+    const es = window.BZ && BZ.lang && BZ.lang() === "es";
     const text = kind === "win"
-      ? tag + "stacked 21M on Choppy Bitcoin. Bag " + btc + (names ? " Awards: " + names : "")
-      : tag + "got rekt on Choppy Bitcoin. Bag " + btc + ". Play free on Bitcoinizate.";
+      ? (es
+        ? tag + "juntó 21M en Choppy Bitcoin. Bag " + btc + (names ? " Premios: " + names : "")
+        : tag + "stacked 21M on Choppy Bitcoin. Bag " + btc + (names ? " Awards: " + names : ""))
+      : (es
+        ? tag + "quedó rekt en Choppy Bitcoin. Bag " + btc + ". Jugá gratis en Bitcoinizate."
+        : tag + "got rekt on Choppy Bitcoin. Bag " + btc + ". Play free on Bitcoinizate.");
     const url = "https://bitcoinizate.com/choppy-bitcoin/";
     const imgUrl = "https://bitcoinizate.com/choppy-bitcoin/share-icon.png";
     const goTweet = () => {
@@ -1436,7 +1456,7 @@
     send(payload);
   }
   window.CHOPPY_AWARDS = AWARD_CATALOG;
-  window.choppyAwardHtml = () => awardListHtml(loadAwards());
+  window.choppyAwardHtml = () => awardListHtml(loadAwards(), "owned");
   window.mergeChoppyAwards = mergeAwards;
   function jukeLyricsOn() { return localStorage.getItem("choppy-juke-lyrics") === "1"; }
   function setJukeLyrics(on) { localStorage.setItem("choppy-juke-lyrics", on ? "1" : "0"); }
@@ -1694,6 +1714,7 @@
           + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>"
           + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
           + tutorialBody()
+          + awardListHtml(loadAwards(), "full")
           + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
         $("go").onclick = startGame;
         $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(); };
@@ -1707,9 +1728,9 @@
       if (!S.perkOffers || S.perkOffers.length < 2) rollPerks();
       const chosen = S.perkPick;
       const btns = S.perkOffers.map((id) => {
-        const t = S.poolTier[id] || 1;
+        const tier = (S.have[id] || 0) + 1;
         const sel = chosen === id;
-        return "<button class=\"cta" + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + perkTitle(id, t) + " · " + perkBlurb(id, t) + "</button>";
+        return "<button class=\"cta" + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + perkTitle(id, tier) + " · " + perkBlurb(id, tier) + "</button>";
       }).join("");
       overlay.innerHTML = "<h1>" + t("perks") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
@@ -1723,7 +1744,7 @@
         const ids = runAwardIds(collectRunStats());
         mergeAwards(ids);
       } catch (e) {}
-      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">Share</button></div>";
+      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
       if ($("go")) {
         $("go").onclick = replay;
         $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };

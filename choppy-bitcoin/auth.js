@@ -82,14 +82,23 @@
   function updateAuthUI(profile) {
     const btn = $("btn-show-auth");
     const tag = $("user-profile-tag");
-    if (profile && profile.username) {
-      window.choppyUsername = profile.username;
+    const localAlias = (function () {
+      try { return localStorage.getItem("choppy-alias") || ""; } catch (e) { return ""; }
+    })();
+    const name = (localAlias || (profile && profile.username) || "").trim();
+    if (profile && name) {
+      window.choppyUsername = name;
       window.choppySignedIn = true;
       if (btn) btn.classList.add("hide");
       if (tag) {
         tag.classList.remove("hide");
-        const hs = profile.highscore != null ? profile.highscore : profile.high_score;
-        tag.innerHTML = "@" + profile.username + "<small>" + fmtScoreBtc(hs) + "</small>";
+        const onHud = !!$("opt-btn") && !!$("h-cash");
+        if (onHud) {
+          const hs = profile.highscore != null ? profile.highscore : profile.high_score;
+          tag.innerHTML = "@" + name + "<small>" + fmtScoreBtc(hs) + "</small>";
+        } else {
+          tag.textContent = "@" + name;
+        }
       }
     } else {
       window.choppySignedIn = false;
@@ -101,7 +110,7 @@
       }
     }
     const cta = $("cta-signup");
-    if (cta) cta.classList.toggle("hide", !!(profile && profile.username));
+    if (cta) cta.classList.toggle("hide", !!(profile && name));
     fetchGlobalLeaderboard();
     if (typeof window.refreshChoppyAuth === "function") window.refreshChoppyAuth();
   }
@@ -260,48 +269,38 @@
     }
   }
 
+  async function saveAliasOnly() {
+    if (!currentUser) return;
+    const hint = $("alias-hint");
+    const aliasEl = $("profile-alias");
+    const next = aliasEl ? aliasEl.value.trim() : "";
+    if (!validAlias(next)) {
+      if (hint) hint.textContent = "Alias: 3–16 letters, numbers or _.";
+      return;
+    }
+    try { localStorage.setItem("choppy-alias", next); } catch (e) {}
+    if (currentProfile) currentProfile.username = next;
+    window.choppyUsername = next;
+    updateAuthUI(currentProfile || { username: next, highscore: 0 });
+    if (hint) hint.textContent = "Alias updated.";
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from("profiles").update({ username: next }).eq("id", currentUser.id);
+      if (!error) return;
+      try { await supabase.rpc("change_alias", { p_alias: next }); } catch (e) {}
+      if (hint) hint.textContent = "Alias saved on this device.";
+    } catch (e) {
+      if (hint) hint.textContent = "Alias saved on this device.";
+    }
+  }
+
   async function updateProfileAddresses() {
     if (!currentUser || !supabase) return;
     const hint = $("alias-hint");
     const btcAddr = ($("profile-btc-addr") && $("profile-btc-addr").value || "").trim();
     const lnAddr = ($("profile-ln-addr") && $("profile-ln-addr").value || "").trim();
-    const aliasEl = $("profile-alias");
-    const nextAlias = aliasEl ? aliasEl.value.trim() : "";
-    if (nextAlias && currentProfile && nextAlias !== currentProfile.username) {
-      if (!validAlias(nextAlias)) {
-        if (hint) hint.textContent = "Alias: 3–16 letters, numbers or _.";
-        return;
-      }
-      if (!aliasReady(currentProfile)) {
-        const wait = ((window.BZ && BZ.t("aliasWait")) || "Wait until ") + aliasNextDate(currentProfile);
-        if (hint) hint.textContent = wait;
-        return;
-      }
-      let saved = false;
-      let errText = "";
-      try {
-        const changed = await supabase.rpc("change_alias", { p_alias: nextAlias });
-        if (changed && changed.error) errText = changed.error.message || "";
-        else saved = true;
-      } catch (e) {
-        errText = e.message || "";
-      }
-      if (!saved) {
-        const up = await supabase.from("profiles").update({ username: nextAlias }).eq("id", currentUser.id);
-        if (up && !up.error) saved = true;
-        else errText = (up && up.error && up.error.message) || errText || "Could not save alias.";
-      }
-      if (!saved) {
-        if (hint) hint.textContent = errText;
-        setMsg(errText, true);
-        return;
-      }
-      currentProfile.username = nextAlias;
-      if (aliasEl) aliasEl.value = nextAlias;
-    }
     try {
-      const patch = { btc_address: btcAddr, ln_address: lnAddr };
-      const res = await supabase.from("profiles").update(patch).eq("id", currentUser.id);
+      const res = await supabase.from("profiles").update({ btc_address: btcAddr, ln_address: lnAddr }).eq("id", currentUser.id);
       if (res && res.error) {
         const msg = res.error.message || "Could not save.";
         if (hint) hint.textContent = msg;
@@ -414,14 +413,11 @@
       if (!currentProfile) return;
       if ($("profile-score-info")) $("profile-score-info").textContent = ((window.BZ && BZ.t("highScore")) || "High score") + "  " + fmtScoreBtc(currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score);
       if ($("profile-alias")) {
-        $("profile-alias").value = currentProfile.username || "";
-        $("profile-alias").disabled = !aliasReady(currentProfile);
+        const localA = (function () { try { return localStorage.getItem("choppy-alias") || ""; } catch (e) { return ""; } })();
+        $("profile-alias").value = localA || currentProfile.username || "";
+        $("profile-alias").disabled = false;
       }
-      if ($("alias-hint")) {
-        $("alias-hint").textContent = aliasReady(currentProfile)
-          ? ((window.BZ && BZ.t("aliasMonth")) || "")
-          : ((window.BZ && BZ.t("aliasWait")) || "") + aliasNextDate(currentProfile);
-      }
+      if ($("alias-hint")) $("alias-hint").textContent = "";
       if ($("profile-btc-addr")) $("profile-btc-addr").value = currentProfile.btc_address || "";
       if ($("profile-ln-addr")) $("profile-ln-addr").value = currentProfile.ln_address || "";
       const box = $("profile-awards");
@@ -437,6 +433,7 @@
     if (e.target === authModal) closeModal(authModal);
   });
   if ($("btn-save-profile")) $("btn-save-profile").onclick = updateProfileAddresses;
+  if ($("btn-save-alias")) $("btn-save-alias").onclick = saveAliasOnly;
   if ($("btn-logout")) {
     $("btn-logout").onclick = async () => {
       if (supabase) await supabase.auth.signOut();
