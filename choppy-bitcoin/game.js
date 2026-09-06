@@ -86,31 +86,36 @@
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud" };
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud" };
   const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6 };
+  const FF_SPEEDS = [1.5, 2, 3];
   function perkTitle(id, tier) {
     const pack = (window.BZ && BZ.lang && BZ.lang() === "es") ? PERK_NAME_ES : PERK_NAME;
     const n = pack[id] || id;
     return tier <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(ROMAN.length - 1, tier)];
   }
   function perkBlurb(id, tier) {
-    tier = Math.max(1, Math.min(PERK_MAX[id] || 12, tier));
-    const es = window.BZ && BZ.lang && BZ.lang() === "es";
-    if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
-    if (id === "dca") return es ? "ingreso en btc" : "income in btc";
-    if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
-    if (id === "adopt") return es
-      ? "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%"
-      : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%";
-    if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
-    if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
-    if (id === "aibud") {
-      if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
-      if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
-      if (tier === 3) return es ? "DCA y tendencia solos" : "auto DCA and trend";
-      if (tier === 4) return es ? "trade cada 10 velas" : "trade every 10 candles";
-      if (tier === 5) return es ? "trade cada 5 velas" : "trade every 5 candles";
-      return es ? "trade cada 2 velas" : "trade every 2 candles";
+    try {
+      tier = Math.max(1, Math.min(PERK_MAX[id] || 12, tier));
+      const es = window.BZ && BZ.lang && BZ.lang() === "es";
+      if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
+      if (id === "dca") return es ? "ingreso en btc" : "income in btc";
+      if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
+      if (id === "adopt") return es
+        ? "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%"
+        : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%";
+      if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
+      if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
+      if (id === "aibud") {
+        if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
+        if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
+        if (tier === 3) return es ? "DCA y tendencia solos" : "auto DCA and trend";
+        if (tier === 4) return es ? "trade cada 10 velas" : "trade every 10 candles";
+        if (tier === 5) return es ? "trade cada 5 velas" : "trade every 5 candles";
+        return es ? "trade cada 2 velas" : "trade every 2 candles";
+      }
+      return "";
+    } catch (e) {
+      return "";
     }
-    return "";
   }
 
   function loadBest() {
