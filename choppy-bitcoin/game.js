@@ -324,13 +324,9 @@
     if (!S.pipes.length) gapY = S.bird.y + (Math.random() > 0.5 ? 1 : -1) * gapH * 0.28;
     else {
       const sign = Math.random() > 0.5 ? 1 : -1;
-      gapY = S.lastGapY + sign * (0.42 + Math.random() * 0.42) * gapH;
+      gapY = S.lastGapY + sign * (0.16 + Math.random() * 0.22) * gapH;
     }
     gapY = Math.max(minY, Math.min(maxY, gapY));
-    if (S.pipes.length && Math.abs(gapY - S.lastGapY) < gapH * 0.32) {
-      gapY = S.lastGapY + (gapY >= S.lastGapY ? 1 : -1) * gapH * 0.4;
-      gapY = Math.max(minY, Math.min(maxY, gapY));
-    }
     S.lastGapY = gapY;
     S.spawnedPipes += 1;
     S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false });
@@ -405,7 +401,7 @@
     S.bg = 0; S.ticker = ""; S.tickerT = 0;
     S.lastGapY = S.bird.y; S.dead = false;
     S.cycleStart = S.price; S.cycleDur = POWER_S; S.cycleElapsed = 0;
-    S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = [];
+    S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
@@ -667,10 +663,11 @@
   }
 
   function openPerkOffer() {
-    const left = perkOpen();
-    if (!left.length) return;
     rollPerks();
-    if (!S.perkOffers || !S.perkOffers.length) return;
+    if (!S.perkOffers || !S.perkOffers.length) {
+      S.perkOffers = perkOpen().slice(0, 2);
+    }
+    if (!S.perkOffers.length) return;
     if (S.aibudOn && (S.have.aibud || 0) >= 2) {
       const pick = bestAiPerk(S.perkOffers);
       grantPerk(pick.id);
@@ -958,12 +955,14 @@
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * envelope + wobble * 0.45));
       if (S.powerT <= 0) endCycle();
     } else {
-      let bias = 0.0024, mid = 0.42;
+      let bias = 0.0006, mid = 0.48;
       if (S.have.manip > 0) {
         const k = S.have.manip;
         if (S.trend === "up") { bias = 0.004 * k; mid = Math.max(0.22, 0.42 - 0.02 * k); }
         else if (S.trend === "down") { bias = -0.004 * k; mid = Math.min(0.78, 0.42 + 0.02 * k); }
         else { bias = 0; mid = 0.5; }
+      } else {
+        bias = 0.0006 * (1 + (Math.random() * 2 - 1) * 0.05);
       }
       S.price = Math.max(0.01, S.price + (Math.random() - mid) * S.price * 0.012 * dt + S.price * bias * dt);
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtPrice + (Math.random() - 0.45) * S.vtPrice * 0.01 * dt + S.vtPrice * 0.0012 * dt);
@@ -1139,26 +1138,31 @@
 
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
-    const bucket = 5, cw = 5, stepX = 7;
+    const bucket = 4, cw = 4.75, stepX = 5.1;
     const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
     const buckets = [];
     for (let i = 0; i < data.length; i += bucket) {
       const sl = data.slice(i, i + bucket);
       if (!sl.length) continue;
-      buckets.push({ o: sl[0], h: Math.max.apply(null, sl), l: Math.min.apply(null, sl), c: sl[sl.length - 1] });
+      const o = buckets.length ? buckets[buckets.length - 1].c : sl[0];
+      buckets.push({ o: o, h: Math.max.apply(null, sl), l: Math.min.apply(null, sl), c: sl[sl.length - 1] });
     }
     const vis = buckets.length > maxFit ? buckets.slice(buckets.length - maxFit) : buckets;
     if (!vis.length) return;
     let lo = vis[0].l, hi = vis[0].h;
     for (const b of vis) { if (b.l < lo) lo = b.l; if (b.h > hi) hi = b.h; }
-    if (hi - lo < 1) { lo -= 1; hi += 1; }
-    const py = (v) => y1 - ((v - lo) / (hi - lo)) * (y1 - y0);
+    const pad = (hi - lo) * 0.08 || 1;
+    lo -= pad; hi += pad;
+    if (S.tapeLo == null) { S.tapeLo = lo; S.tapeHi = hi; }
+    S.tapeLo = S.tapeLo * 0.88 + lo * 0.12;
+    S.tapeHi = S.tapeHi * 0.88 + hi * 0.12;
+    const py = (v) => y1 - ((v - S.tapeLo) / Math.max(0.01, S.tapeHi - S.tapeLo)) * (y1 - y0);
     vis.forEach((b, i) => {
       const x = 10 + i * stepX;
       ctx.strokeStyle = b.c >= b.o ? up : dn; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x + cw / 2, py(b.h)); ctx.lineTo(x + cw / 2, py(b.l)); ctx.stroke();
       ctx.fillStyle = b.c >= b.o ? up : dn;
-      ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1, Math.abs(py(b.c) - py(b.o))));
+      ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.2, Math.abs(py(b.c) - py(b.o))));
     });
   }
 
@@ -1171,7 +1175,7 @@
     const stepG = 36, ox = -((S.bg * 0.5) % stepG);
     for (let x = ox; x < S.W + stepG; x += stepG) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, S.H); ctx.stroke(); }
     for (let y = 0; y < S.H; y += stepG) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(S.W, y); ctx.stroke(); }
-    drawTape(ctx, S.tape, S.H * 0.18, S.H * 0.82, "rgba(79,157,110,0.52)", "rgba(196,92,74,0.52)");
+    drawTape(ctx, S.tape, S.H * 0.196, S.H * 0.804, "rgba(79,157,110,0.52)", "rgba(196,92,74,0.52)");
 
     const m = metrics();
     const pw = m.pipeW * S.widthMul;
@@ -1770,7 +1774,11 @@
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "perk") {
-      if (!S.perkOffers || !S.perkOffers.length) { setPhase("play"); return; }
+      if (!S.perkOffers || !S.perkOffers.length) rollPerks();
+      if (!S.perkOffers || !S.perkOffers.length) {
+        S.perkOffers = perkOpen().slice(0, 2);
+      }
+      if (!S.perkOffers.length) { setPhase("play"); return; }
       const chosen = S.perkPick;
       const btns = S.perkOffers.map((id) => {
         const tier = (S.have[id] || 0) + 1;
