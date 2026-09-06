@@ -1398,17 +1398,37 @@
   function shareRun(kind) {
     const btc = fmtBtc(netBtc());
     const names = runAwards(S.stats || collectRunStats()).map((a) => a.name).join(", ");
-    const who = (window.choppyUsername || "").trim();
-    const tag = who ? "@" + who.replace(/^@/, "") + " " : "";
+    let who = (window.choppyUsername || "").trim();
+    if (!who) {
+      const tagEl = $("user-profile-tag");
+      const raw = tagEl && !tagEl.classList.contains("hide") ? (tagEl.textContent || "") : "";
+      who = raw.replace(/^@/, "").trim();
+    }
+    who = who.replace(/^@/, "");
+    const tag = who ? "@" + who + " " : "";
     const text = kind === "win"
       ? tag + "stacked 21M on Choppy Bitcoin. Bag " + btc + (names ? " Awards: " + names : "")
       : tag + "got rekt on Choppy Bitcoin. Bag " + btc + ". Play free on Bitcoinizate.";
     const url = "https://bitcoinizate.com/choppy-bitcoin/";
-    if (navigator.share) {
-      navigator.share({ title: "Choppy Bitcoin", text: text, url: url }).catch(() => {});
+    const imgUrl = "https://bitcoinizate.com/choppy-bitcoin/share-icon.png";
+    const goTweet = () => {
+      window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
+    };
+    const payload = { title: "Choppy Bitcoin", text: text, url: url };
+    const send = (data) => {
+      if (!navigator.share) { goTweet(); return; }
+      navigator.share(data).catch(goTweet);
+    };
+    if (navigator.canShare) {
+      fetch("share-icon.png").then((r) => r.blob()).then((blob) => {
+        const file = new File([blob], "choppy-bitcoin.png", { type: blob.type || "image/png" });
+        const withFile = { title: payload.title, text: payload.text, url: payload.url, files: [file] };
+        if (navigator.canShare(withFile)) send(withFile);
+        else send(payload);
+      }).catch(() => send(payload));
       return;
     }
-    window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
+    send(payload);
   }
   window.CHOPPY_AWARDS = AWARD_CATALOG;
   window.choppyAwardHtml = () => awardListHtml(loadAwards());
