@@ -82,17 +82,17 @@
       + "<p>" + badgeIco("laser") + " " + t("tut6") + "</p>"
       + "</div>";
   }
-  const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+  const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud" };
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud" };
-  const FF_SPEEDS = [1.5, 2, 3];
+  const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6 };
   function perkTitle(id, tier) {
     const pack = (window.BZ && BZ.lang && BZ.lang() === "es") ? PERK_NAME_ES : PERK_NAME;
     const n = pack[id] || id;
-    return tier <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(10, tier)];
+    return tier <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(ROMAN.length - 1, tier)];
   }
   function perkBlurb(id, tier) {
-    tier = Math.max(1, Math.min(10, tier));
+    tier = Math.max(1, Math.min(PERK_MAX[id] || 12, tier));
     const es = window.BZ && BZ.lang && BZ.lang() === "es";
     if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
     if (id === "dca") return es ? "ingreso en btc" : "income in btc";
@@ -642,7 +642,7 @@
   }
 
   function grantPerk(kind) {
-    const cap = kind === "ff" ? 3 : kind === "juke" ? 5 : kind === "aibud" ? 6 : 10;
+    const cap = PERK_MAX[kind] || 10;
     if (kind === "dca") S.have.dca = 1;
     else S.have[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
     S.poolTier[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
@@ -651,8 +651,26 @@
     if (kind === "juke") fillJukebox();
   }
 
+  function perkOpen() {
+    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud"].filter((id) => {
+      const have = S.have[id] || 0;
+      const max = PERK_MAX[id] || 10;
+      if (id === "dca") return have <= 0;
+      if (id === "aibud") {
+        if (have >= max) return false;
+        if (have === 2 && S.have.dca <= 0 && S.have.manip <= 0) return false;
+        return true;
+      }
+      return have < max;
+    });
+    return ids;
+  }
+
   function openPerkOffer() {
+    const left = perkOpen();
+    if (!left.length) return;
     rollPerks();
+    if (!S.perkOffers || !S.perkOffers.length) return;
     if (S.aibudOn && (S.have.aibud || 0) >= 2) {
       const pick = bestAiPerk(S.perkOffers);
       grantPerk(pick.id);
@@ -680,20 +698,10 @@
   }
 
   function rollPerks() {
-    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud"].filter((id) => {
-      if (id === "dca") return S.have.dca <= 0;
-      if (id === "ff") return S.have.ff < 3;
-      if (id === "juke") return (S.have.juke || 0) < 5;
-      if (id === "aibud") {
-        const h = S.have.aibud || 0;
-        if (h >= 6) return false;
-        if (h === 2 && S.have.dca <= 0 && S.have.manip <= 0) return false;
-        return true;
-      }
-      return (S.poolTier[id] || 1) <= 10;
-    });
-    const bag = ids.length >= 2 ? ids : ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud"];
-    const copy = bag.slice();
+    const ids = perkOpen();
+    if (!ids.length) { S.perkOffers = []; return; }
+    if (ids.length === 1) { S.perkOffers = [ids[0]]; return; }
+    const copy = ids.slice();
     const a = copy.splice((Math.random() * copy.length) | 0, 1)[0];
     const b = copy.splice((Math.random() * copy.length) | 0, 1)[0];
     S.perkOffers = [a, b];
@@ -1762,7 +1770,7 @@
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "perk") {
-      if (!S.perkOffers || S.perkOffers.length < 2) rollPerks();
+      if (!S.perkOffers || !S.perkOffers.length) { setPhase("play"); return; }
       const chosen = S.perkPick;
       const btns = S.perkOffers.map((id) => {
         const tier = (S.have[id] || 0) + 1;
