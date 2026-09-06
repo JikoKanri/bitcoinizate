@@ -162,7 +162,7 @@
     W: 400, H: 640,
     bird: { x: 72, y: 280, v: 0, r: 14 },
     pipes: [], items: [], particles: [], floats: [],
-    cash: 0, btc: 0, vt: 0, cold: 0, msig: 100, invuln: 0,
+    cash: 0, btc: 0, vt: 0, cold: 0, msig: 0, invuln: 0,
     power: "NONE", powerT: 0, laserOn: false, laserT: 0,
     widthMul: 1, widthT: 1, heightMul: 1, heightT: 1,
     price: 20000, vtPrice: 0,
@@ -583,16 +583,24 @@
   }
 
   function die() {
-    if (S.dead || S.phase !== "play") return;
-    S.dead = true; applyLaser(false); S.power = "NONE"; S.powerT = 0;
-    A.sfx.die(); A.cancelSpeech(); A.speak(t("liquidated"), true);
-    S.best = saveBest(scoreSats());
-    setPhase("over");
+    if (S.dead) return;
+    S.dead = true;
+    S.phase = "over";
+    try { applyLaser(false); } catch (e) {}
+    S.power = "NONE"; S.powerT = 0;
+    try { if (A && A.sfx && A.sfx.die) A.sfx.die(); } catch (e) {}
+    try { if (A && A.cancelSpeech) A.cancelSpeech(); } catch (e) {}
+    try { if (A && A.speak) A.speak(t("liquidated"), true); } catch (e) {}
+    try { S.best = saveBest(scoreSats()); } catch (e) {}
+    if (field) field.classList.remove("is-play");
+    try { setPhase("over"); } catch (e) { try { renderOverlay(); } catch (err) {} }
   }
 
   function flap() {
-    if (S.phase !== "play") return;
-    S.bird.v = metrics().jump; A.sfx.jump();
+    if (S.phase !== "play" || S.dead) return;
+    const m = metrics();
+    S.bird.v = m.jump || -280;
+    try { if (A && A.sfx && A.sfx.jump) A.sfx.jump(); } catch (e) {}
   }
   function buyBtc() {
     if (S.phase !== "play" || S.cash <= 0 || S.price <= 0) return;
@@ -831,21 +839,24 @@
 
   function setPhase(p) {
     S.phase = p;
-    const jukeLive = S.jukeOn && A && A.jukePlaying && A.jukePlaying();
-    if (A) {
-      if (p === "play") {
-        if (S.jukeOn && A.jukePaused && A.jukePaused()) A.jukeResume();
-        else if (!jukeLive && A.startMusic) A.startMusic(() => S.power, () => S.phase === "play");
-      } else if (A.stopMusic) {
-        A.stopMusic();
+    try {
+      const jukeLive = S.jukeOn && A && A.jukePlaying && A.jukePlaying();
+      if (A) {
+        if (p === "play") {
+          if (S.jukeOn && A.jukePaused && A.jukePaused()) A.jukeResume();
+          else if (!jukeLive && A.startMusic) A.startMusic(() => S.power, () => S.phase === "play");
+        } else if (A.stopMusic) A.stopMusic();
       }
+    } catch (e) {}
+    if (field) {
+      field.classList.toggle("bull", S.power === "BULL");
+      field.classList.toggle("bear", S.power === "BEAR");
+      field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
+      field.classList.toggle("perk-ui", p === "perk");
+      field.classList.toggle("is-play", p === "play");
     }
-    field.classList.toggle("bull", S.power === "BULL");
-    field.classList.toggle("bear", S.power === "BEAR");
-    field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
-    field.classList.toggle("perk-ui", p === "perk");
-    renderOverlay();
-    renderHud();
+    try { renderOverlay(); } catch (e) { if (p !== "play") showOverlay(); }
+    try { renderHud(); } catch (e) {}
   }
 
   function startGame() {
@@ -857,12 +868,13 @@
       if (A && A.speak) try { A.speak(t("welcome")); } catch (e) {}
       S.welcomed = true;
     }
+    resetWorld(false);
+    S.dead = false;
     S.phase = "play";
-    if (overlay) {
-      overlay.classList.add("hide");
-      overlay.style.display = "none";
-      overlay.innerHTML = "";
-    }
+    if (field) field.classList.add("is-play");
+    if (overlay) hideOverlay();
+    if (field) field.style.pointerEvents = "auto";
+    if (canvas) canvas.style.pointerEvents = "auto";
     if (A && A.startMusic) {
       try { A.startMusic(() => S.power, () => S.phase === "play"); } catch (e) {}
     }
@@ -935,7 +947,9 @@
     }
     if (S.bird.y + S.bird.r > S.H - 4) {
       S.bird.y = S.H - 4 - S.bird.r;
-      if (S.invuln <= 0) hitFatal();
+      S.bird.v = 0;
+      die();
+      return;
     }
     if (S.bird.y - S.bird.r < 0) { S.bird.y = S.bird.r; S.bird.v = 0; }
 
@@ -1611,10 +1625,24 @@
     if (mv) mv.onclick = (e) => { e.stopPropagation(); A.setMuteVoice(!A.muteVoice()); renderOverlay(); };
   }
 
+  function showOverlay() {
+    overlay.classList.remove("hide");
+    overlay.classList.add("open");
+    overlay.style.setProperty("display", "flex", "important");
+    overlay.style.setProperty("pointer-events", "auto", "important");
+  }
+  function hideOverlay() {
+    overlay.classList.add("hide");
+    overlay.classList.remove("open");
+    overlay.style.setProperty("display", "none", "important");
+    overlay.style.pointerEvents = "none";
+    overlay.innerHTML = "";
+  }
+
   function renderOverlay() {
     const p = S.phase;
-    if (p === "play") { overlay.classList.add("hide"); overlay.innerHTML = ""; return; }
-    overlay.classList.remove("hide");
+    if (p === "play") { hideOverlay(); return; }
+    showOverlay();
     if (p === "ready") {
       if (S.optPanel) {
         overlay.innerHTML = pauseMarkup();
@@ -1649,12 +1677,15 @@
       overlay.innerHTML = pauseMarkup();
       bindPauseUi();
     } else if (p === "over") {
-      const ids = runAwardIds(collectRunStats());
-      mergeAwards(ids);
-      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"awards\">" + awardListHtml() + "</div><div id=\"over-board\" class=\"board\"></div><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">Share</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
-      $("go").onclick = replay;
-      if ($("share-run")) $("share-run").onclick = () => shareRun("over");
-      if (window.refreshLeaderboard) window.refreshLeaderboard("over-board");
+      try {
+        const ids = runAwardIds(collectRunStats());
+        mergeAwards(ids);
+      } catch (e) {}
+      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button></div>";
+      if ($("go")) {
+        $("go").onclick = replay;
+        $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };
+      }
     } else if (p === "win" && S.stats) {
       const st = S.stats;
       mergeAwards(runAwardIds(st));
@@ -1694,10 +1725,27 @@
 
   canvas.addEventListener("pointerdown", (e) => {
     e.preventDefault();
-    if (A && A.unlock) A.unlock();
+    if (A && A.unlock) try { A.unlock(); } catch (err) {}
     S.humanInput = true;
     if (S.phase === "play") flap();
   });
+  const flapLayer = $("flap-layer");
+  function bindFlap(el) {
+    if (!el) return;
+    const go = (e) => {
+      if (S.phase !== "play") return;
+      e.preventDefault();
+      e.stopPropagation();
+      S.humanInput = true;
+      if (A && A.unlock) try { A.unlock(); } catch (err) {}
+      flap();
+    };
+    el.addEventListener("pointerdown", go);
+    el.addEventListener("touchstart", go, { passive: false });
+    el.addEventListener("mousedown", go);
+  }
+  bindFlap(flapLayer);
+  bindFlap(canvas);
   overlay.addEventListener("click", (e) => {
     const go = e.target.closest("#go");
     if (!go) return;

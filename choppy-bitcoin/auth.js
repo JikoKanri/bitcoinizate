@@ -244,26 +244,45 @@
 
   async function updateProfileAddresses() {
     if (!currentUser || !supabase) return;
+    const hint = $("alias-hint");
     const btcAddr = ($("profile-btc-addr") && $("profile-btc-addr").value || "").trim();
     const lnAddr = ($("profile-ln-addr") && $("profile-ln-addr").value || "").trim();
     const aliasEl = $("profile-alias");
     const nextAlias = aliasEl ? aliasEl.value.trim() : "";
     const patch = { btc_address: btcAddr, ln_address: lnAddr };
     if (nextAlias && currentProfile && nextAlias !== currentProfile.username) {
-      if (!validAlias(nextAlias)) { setMsg("Alias: 3–16 letters, numbers or _.", true); return; }
+      if (!validAlias(nextAlias)) {
+        if (hint) hint.textContent = "Alias: 3–16 letters, numbers or _.";
+        setMsg("Alias: 3–16 letters, numbers or _.", true);
+        return;
+      }
       if (!aliasReady(currentProfile)) {
-        setMsg(((window.BZ && BZ.t("aliasWait")) || "Wait until ") + aliasNextDate(currentProfile), true);
+        const wait = ((window.BZ && BZ.t("aliasWait")) || "Wait until ") + aliasNextDate(currentProfile);
+        if (hint) hint.textContent = wait;
+        setMsg(wait, true);
         return;
       }
       patch.username = nextAlias;
-      patch.alias_changed_at = new Date().toISOString();
     }
     try {
-      await supabase.from("profiles").update(patch).eq("id", currentUser.id);
+      let res = await supabase.from("profiles").update(patch).eq("id", currentUser.id);
+      if (res && res.error && patch.username) {
+        const only = { username: patch.username, btc_address: btcAddr, ln_address: lnAddr };
+        res = await supabase.from("profiles").update(only).eq("id", currentUser.id);
+      }
+      if (res && res.error) {
+        const msg = res.error.message || "Could not save alias.";
+        if (hint) hint.textContent = msg;
+        setMsg(msg, true);
+        return;
+      }
       await loadUserProfile();
+      if (hint) hint.textContent = nextAlias && patch.username ? "Alias saved." : "";
       if (profileModal) closeModal(profileModal);
     } catch (e) {
-      setMsg("Update failed: " + (e.message || "error"), true);
+      const msg = "Update failed: " + (e.message || "error");
+      if (hint) hint.textContent = msg;
+      setMsg(msg, true);
     }
   }
 
