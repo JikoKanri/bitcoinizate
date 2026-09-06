@@ -324,9 +324,13 @@
     if (!S.pipes.length) gapY = S.bird.y + (Math.random() > 0.5 ? 1 : -1) * gapH * 0.28;
     else {
       const sign = Math.random() > 0.5 ? 1 : -1;
-      gapY = S.lastGapY + sign * (0.16 + Math.random() * 0.22) * gapH;
+      gapY = S.lastGapY + sign * (0.42 + Math.random() * 0.42) * gapH;
     }
     gapY = Math.max(minY, Math.min(maxY, gapY));
+    if (S.pipes.length && Math.abs(gapY - S.lastGapY) < gapH * 0.32) {
+      gapY = S.lastGapY + (gapY >= S.lastGapY ? 1 : -1) * gapH * 0.4;
+      gapY = Math.max(minY, Math.min(maxY, gapY));
+    }
     S.lastGapY = gapY;
     S.spawnedPipes += 1;
     S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false });
@@ -623,6 +627,8 @@
     if (S.phase === "perk") {
       if (!S.perkPick) return;
       grantPerk(S.perkPick);
+      S.perkPick = "";
+      S.perkOffers = [];
       bumpOffer();
       setPhase("play");
       return;
@@ -663,24 +669,23 @@
   }
 
   function openPerkOffer() {
+    const left = perkOpen();
+    if (!left.length) return;
     rollPerks();
-    if (!S.perkOffers || !S.perkOffers.length) {
-      S.perkOffers = perkOpen().slice(0, 2);
-    }
-    if (!S.perkOffers.length) return;
+    if (!S.perkOffers || !S.perkOffers.length) return;
+    S.perkPick = "";
     if (S.aibudOn && (S.have.aibud || 0) >= 2) {
       const pick = bestAiPerk(S.perkOffers);
       grantPerk(pick.id);
       bumpOffer();
       aiAct("Perk " + perkTitle(pick.id, S.have[pick.id]), pick.why);
-    } else {
-      S.perkPick = "";
-      if (S.aibudOn && (S.have.aibud || 0) >= 1) {
-        const pick = bestAiPerk(S.perkOffers);
-        S.perkHint = pick.id;
-      } else S.perkHint = "";
-      setPhase("perk");
+      return;
     }
+    if (S.aibudOn && (S.have.aibud || 0) >= 1) {
+      const pick = bestAiPerk(S.perkOffers);
+      S.perkHint = pick.id;
+    } else S.perkHint = "";
+    setPhase("perk");
   }
 
   function bumpOffer() {
@@ -1774,11 +1779,7 @@
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "perk") {
-      if (!S.perkOffers || !S.perkOffers.length) rollPerks();
-      if (!S.perkOffers || !S.perkOffers.length) {
-        S.perkOffers = perkOpen().slice(0, 2);
-      }
-      if (!S.perkOffers.length) { setPhase("play"); return; }
+      if (!S.perkOffers || !S.perkOffers.length) { setPhase("play"); return; }
       const chosen = S.perkPick;
       const btns = S.perkOffers.map((id) => {
         const tier = (S.have[id] || 0) + 1;
@@ -1787,7 +1788,9 @@
       }).join("");
       overlay.innerHTML = "<h1>" + t("perks") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
-        btn.onpointerdown = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
+        const go = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
+        btn.onpointerdown = go;
+        btn.onclick = go;
       });
     } else if (p === "paused") {
       overlay.innerHTML = pauseMarkup();
