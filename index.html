@@ -27,33 +27,31 @@
     h2 { margin: 0 0 8px; font-size: clamp(32px, 7vw, 48px); letter-spacing: -0.04em; line-height: 0.95; }
     h2 span { color: var(--gold); }
     .lead { color: #d4d0c8; line-height: 1.6; font-size: 16px; margin: 0 0 24px; max-width: 38em; }
-    .play { position: relative; z-index: 2; display: block; text-align: center; text-decoration: none; font-weight: 700; background: var(--gold); color: #120c02; padding: 18px 18px; letter-spacing: 0.06em; }
-    .play small { display: block; margin-top: 5px; font-weight: 400; font-size: 11px; letter-spacing: 0.1em; opacity: 0.72; }
+    .play { display: block; text-align: center; text-decoration: none; font-weight: 700; background: var(--gold); color: #120c02; padding: 18px; letter-spacing: 0.06em; }
+    .play small { display: block; margin-top: 5px; font-weight: 400; font-size: 11px; opacity: 0.72; }
     .play-alt { width: 100%; margin-top: 10px; background: transparent; color: var(--paper); border: 1px solid var(--gold); cursor: pointer; font: inherit; }
     .how, .faq { margin: 28px 0 0; padding: 18px; border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); }
     .how h3, .faq h3 { margin: 0 0 12px; color: var(--gold); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; }
-    .help { text-align: left; font-size: 13px; line-height: 1.45; color: #d4d0c8; }
-    .help p { margin: 0 0 10px; display: flex; gap: 10px; align-items: flex-start; }
-    .help-ico { flex: 0 0 28px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+    .help p { margin: 0 0 10px; display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #d4d0c8; }
+    .help-ico { flex: 0 0 28px; width: 28px; height: 28px; display: inline-flex; }
     .faq details { border-top: 1px solid #2a2a2e; padding: 10px 0; }
-    .faq summary { cursor: pointer; color: var(--paper); font-size: 13px; }
-    .faq p { margin: 8px 0 0; color: #b4b0a8; font-size: 13px; line-height: 1.5; }
+    .faq summary { cursor: pointer; font-size: 13px; }
+    .faq p { margin: 8px 0 0; color: #b4b0a8; font-size: 13px; }
     footer { margin-top: 36px; color: #6a6660; font-size: 11px; }
     footer a { color: var(--gold); text-decoration: none; }
     .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
-    .lang-sw { display: flex; gap: 4px; margin-right: 8px; }
+    .lang-sw { display: flex; gap: 4px; }
     .lang-sw button { min-width: 36px; min-height: 32px; border: 1px solid #3a3a40; background: transparent; color: var(--paper); font: inherit; font-size: 11px; cursor: pointer; }
     .auth-modal { position: fixed; inset: 0; z-index: 40; background: rgba(10,10,12,0.86); display: none; align-items: center; justify-content: center; padding: 16px; pointer-events: none; }
     .auth-modal.open { display: flex; pointer-events: auto; }
     .hide { display: none !important; }
     .auth-card { width: min(360px, 100%); background: #121214; border: 1px solid var(--gold); padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; }
-    .auth-card h2 { margin: 0 0 6px; font-size: 18px; }
     .auth-card label { display: block; text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
     .auth-card input { width: 100%; margin-top: 4px; min-height: 36px; padding: 0 10px; border: 1px solid #3a3a40; background: #0a0a0c; color: var(--paper); font: inherit; }
     .auth-card .cta { width: 100%; min-height: 44px; border: 0; background: var(--gold); color: #120c02; font: inherit; font-weight: 700; cursor: pointer; }
     .text-btn { background: none; border: 0; color: var(--gold); font: inherit; font-size: 12px; cursor: pointer; }
     .auth-msg { min-height: 16px; font-size: 12px; color: #b4b0a8; margin: 0; }
-    .auth-card .hp { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }
+    .auth-card .hp { position: absolute; left: -9999px; height: 0; width: 0; opacity: 0; }
     .board { margin: 0; font-size: 11px; color: #b4b0a8; background: #0a0a0c; padding: 8px; border: 1px solid #2a2a2e; min-height: 64px; white-space: pre-wrap; }
     .aw-box { text-align: left; font-size: 12px; border: 1px solid #2a2a2e; padding: 6px 8px; }
     .aw-box summary { cursor: pointer; color: var(--gold); }
@@ -61,59 +59,51 @@
     @media (max-width: 700px) {
       #profile-modal { align-items: flex-start; padding: 6px; }
       #profile-modal .auth-card { width: min(320px, 96vw); max-height: 68dvh; padding: 8px 10px; gap: 5px; }
-      #profile-modal .auth-card h2 { font-size: 15px; margin: 0; }
-      #profile-modal .auth-card label { font-size: 12px; }
       #profile-modal .auth-card input { min-height: 28px; }
       #profile-modal .auth-card .cta { min-height: 32px; font-size: 13px; }
-      #profile-score-info { font-size: 13px; margin: 0; }
       #profile-awards { max-height: 22vh; overflow-y: auto; }
     }
-    .aw-on { color: #f3efe6; }
-    .aw-off { color: #6a6660; }
   </style>
 </head>
 <body>
   <main class="wrap">
     <header class="brand-row">
-      <div class="brand">
-        <img src="/favicon-192.png" width="48" height="48" alt="Bitcoinizate logo">
-        <div>
-          <h1>BITCOINIZATE</h1>
-          <p data-i18n="brandSub">Free bitcoin-themed games</p>
-        </div>
-      </div>
+      <div class="brand"><img src="/favicon-192.png" width="48" height="48" alt="Bitcoinizate logo"><div><h1>BITCOINIZATE</h1><p data-i18n="brandSub">Free bitcoin-themed games</p></div></div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-        <div class="lang-sw" role="group" aria-label="Language">
-          <button type="button" data-lang="en">EN</button>
-          <button type="button" data-lang="es">ES</button>
-        </div>
+        <div class="lang-sw"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button></div>
         <button type="button" class="auth-chip" id="btn-show-auth" data-i18n="signIn">Sign in</button>
         <button type="button" class="auth-chip hide" id="user-profile-tag"></button>
       </div>
     </header>
     <h2>Choppy <span>Bitcoin</span></h2>
     <p class="lead" data-i18n="lead1">Bitcoinizate is a new games site. This is our first title.</p>
-    <p class="lead" data-i18n="enjoy">We hope you try and enjoy our first game.</p>
-    <p class="lead" data-i18n="lead2">Fly through Japanese candles. The price moves while you fly. Score is total net worth in BTC at the in-game price.</p>
-    <a class="play" href="/choppy-bitcoin/index.html"><span data-i18n="playNow">Play now</span><small data-i18n="playSub">Free in the browser · no download</small></a>
-    <button type="button" class="play play-alt" id="cta-signup"><span data-i18n="ctaAccount">Create a free account</span><small data-i18n="ctaSub">Save your score · be on the board for prizes</small></button>
-    <section class="how">
-      <h3 data-i18n="board">Leaderboard</h3>
-      <pre id="site-board" class="board">—</pre>
-    </section>
+    <p class="lead" data-i18n="lead2">Fly through Japanese candles. Score is total net worth in BTC at the in-game price.</p>
+    <a class="play" href="/choppy-bitcoin/index.html"><span data-i18n="playNow">Play now</span><small data-i18n="playSub">Free in the browser</small></a>
+    <button type="button" class="play play-alt" id="cta-signup"><span data-i18n="ctaAccount">Create a free account</span></button>
+    <section class="how"><h3 data-i18n="board">Leaderboard</h3><pre id="site-board" class="board">—</pre></section>
     <section class="how">
       <h3 data-i18n="how">How to play</h3>
-      <p class="lead" data-i18n="playMoney">In-game cash, price and score are play money. They are not real bitcoin.</p>
+      <p class="lead" data-i18n="playMoney">In-game cash, price and score are play money.</p>
+      <div class="help">
+        <p><span class="help-ico">₿</span><span data-i18n="tut1">You are the ₿. Tap or press space to flap through the candle gaps.</span></p>
+        <p><span data-i18n="tut2">Candles pay cash. Buy BTC on the dip, sell on the rip.</span></p>
+        <p><span data-i18n="tut6">Laser eyes eat a bear and unlock a perk.</span></p>
+      </div>
+    </section>
+    <section class="faq">
+      <h3 data-i18n="faq">FAQ</h3>
+      <details><summary data-i18n="faqWhat">What is Bitcoinizate?</summary><p data-i18n="faqWhatA">A site of free bitcoin-themed games.</p></details>
+      <details><summary data-i18n="faqAcc">Do I need an account?</summary><p data-i18n="faqAccA">No. Play is free. Sign in only if you want the cloud leaderboard.</p></details>
     </section>
     <footer>© Bitcoinizate · <a href="/privacy.html" data-i18n="privacy">Privacy</a></footer>
   </main>
   <div id="auth-modal" class="auth-modal hide" role="dialog">
     <div class="auth-card">
       <h2 id="modal-auth-title" data-i18n="signIn">Sign in</h2>
-      <label class="hide" id="group-alias"><span data-i18n="alias">Alias</span><input id="auth-username" autocomplete="username" maxlength="16"></label>
-      <label><span data-i18n="email">Email or alias</span><input id="auth-email" type="text" autocomplete="username"></label>
-      <label><span data-i18n="password">Password</span><input id="auth-password" type="password" autocomplete="current-password"></label>
-      <label class="hide" id="group-pass2"><span data-i18n="confirmPass">Confirm password</span><input id="auth-password2" type="password" autocomplete="new-password"></label>
+      <label class="hide" id="group-alias"><span data-i18n="alias">Alias</span><input id="auth-username" maxlength="16"></label>
+      <label><span data-i18n="email">Email or alias</span><input id="auth-email" type="text"></label>
+      <label><span data-i18n="password">Password</span><input id="auth-password" type="password"></label>
+      <label class="hide" id="group-pass2"><span data-i18n="confirmPass">Confirm password</span><input id="auth-password2" type="password"></label>
       <input id="arcade-honeypot" class="hp" tabindex="-1" autocomplete="off">
       <p id="auth-msg" class="auth-msg"></p>
       <button type="button" class="cta" id="btn-submit-auth" data-i18n="signIn">Sign in</button>
@@ -126,7 +116,7 @@
     <div class="auth-card">
       <h2 data-i18n="profile">Profile</h2>
       <p id="profile-score-info"></p>
-      <label><span data-i18n="alias">Alias</span><input id="profile-alias" maxlength="16" autocomplete="username"></label>
+      <label><span data-i18n="alias">Alias</span><input id="profile-alias" maxlength="16"></label>
       <p id="alias-hint" class="auth-msg"></p>
       <button type="button" class="cta" id="btn-save-alias" data-i18n="saveAlias">Save alias</button>
       <div id="profile-awards" class="awards"></div>
