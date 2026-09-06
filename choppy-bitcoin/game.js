@@ -15,19 +15,25 @@
   const fmtUsd = (n) => {
     const x = Number(n) || 0;
     const a = Math.abs(x);
-    if (a >= 1e6) return (x < 0 ? "-" : "") + "$" + (a / 1e6).toFixed(2) + "M";
-    if (a >= 10000) return (x < 0 ? "-" : "") + "$" + (a / 1000).toFixed(1) + "k";
+    const sign = x < 0 ? "-" : "";
+    if (a >= 1e12) return sign + "$" + (a / 1e12).toFixed(2) + "T";
+    if (a >= 1e9) return sign + "$" + (a / 1e9).toFixed(2) + "B";
+    if (a >= 1e6) return sign + "$" + (a / 1e6).toFixed(2) + "M";
+    if (a >= 10000) return sign + "$" + (a / 1000).toFixed(1) + "k";
     return (x < 0 ? "-$" : "$") + Math.round(a).toLocaleString("en-US");
   };
   const money = fmtUsd;
   const fmtBtcAmt = (n) => {
     const x = Number(n) || 0;
     const a = Math.abs(x);
-    if (a >= 1e6) return (x < 0 ? "-" : "") + (a / 1e6).toFixed(2) + "M";
-    if (a >= 1000) return (x < 0 ? "-" : "") + (a / 1000).toFixed(2) + "k";
-    if (a >= 100) return (x < 0 ? "-" : "") + a.toFixed(2);
-    if (a >= 1) return (x < 0 ? "-" : "") + a.toFixed(4);
-    return (x < 0 ? "-" : "") + a.toFixed(6);
+    const sign = x < 0 ? "-" : "";
+    if (a >= 1e12) return sign + (a / 1e12).toFixed(2) + "T";
+    if (a >= 1e9) return sign + (a / 1e9).toFixed(2) + "B";
+    if (a >= 1e6) return sign + (a / 1e6).toFixed(2) + "M";
+    if (a >= 1000) return sign + (a / 1000).toFixed(2) + "k";
+    if (a >= 100) return sign + a.toFixed(2);
+    if (a >= 1) return sign + a.toFixed(4);
+    return sign + a.toFixed(6);
   };
   const fmtBtc = (n) => fmtBtcAmt(n) + " BTC";
   const fmtVtAmt = (n) => fmtBtcAmt(n);
@@ -233,8 +239,8 @@
 
   function fmtAmt(n, ticker) {
     const tag = ticker.toLowerCase();
-    if (tag === "usd") return Math.round(n).toLocaleString("en-US") + " usd";
-    if (tag === "btc") return (n >= 1 ? n.toFixed(4) : n.toFixed(6)) + " btc";
+    if (tag === "usd") return fmtUsd(n).replace(/^\$/, "") + " usd";
+    if (tag === "btc") return fmtBtcAmt(n) + " btc";
     return (n >= 1 ? n.toFixed(3) : n.toFixed(4)) + " " + tag;
   }
 
@@ -638,7 +644,7 @@
     if (kind === "dca") S.have.dca = 1;
     else S.have[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
     S.poolTier[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
-    if (kind === "dca") S.dcaOn = true;
+    if (kind === "dca") S.dcaOn = false;
     if (kind === "manip" && !S.trend) S.trend = "off";
     if (kind === "juke") fillJukebox();
   }
@@ -787,22 +793,6 @@
     const dumpSoon = !!(incomingBad || bullPeak || (S.power === "BULL" && S.powerT < 1.15));
     const dipSoon = !!(incomingGood || bearLow || S.swanBear || (S.power === "BEAR" && S.powerT < 1.2));
 
-    if (t >= 3 && S.have.dca > 0) {
-      const want = !!(S.btc <= 0 || S.power === "BEAR" || S.swanBear || incomingBad || dipSoon);
-      if (want !== S.dcaOn) {
-        S.dcaOn = want;
-        S.aibudLit = Object.assign({}, S.aibudLit, { dca: true });
-        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Stack sats on the dip" : "Do not buy the top");
-      }
-    }
-    if (t >= 3 && S.have.manip > 0) {
-      const want = S.btc > 0 ? "up" : "down";
-      if (want !== S.trend) {
-        S.trend = want;
-        S.aibudLit = Object.assign({}, S.aibudLit, { trend: true });
-        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", want === "up" ? "Pump the bag" : "Paint a cheaper entry");
-      }
-    }
     if (t >= 4) {
       if (S.btc > 0 && dumpSoon) {
         const before = net();
@@ -818,6 +808,22 @@
         S.aibudLit = Object.assign({}, S.aibudLit, { buy: true, sell: false });
         markAiTrade();
         aiAct("Bought BTC", incomingGood ? "Pump incoming" : "Bought the dip");
+      }
+    }
+    if (t >= 3 && S.have.dca > 0) {
+      const want = !!(S.btc <= 0 || S.power === "BEAR" || S.swanBear || incomingBad || dipSoon);
+      if (want !== S.dcaOn) {
+        S.dcaOn = want;
+        S.aibudLit = Object.assign({}, S.aibudLit, { dca: true });
+        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Stack sats on the dip" : "Do not buy the top");
+      }
+    }
+    if (t >= 3 && S.have.manip > 0) {
+      const want = S.btc > 0 ? "up" : "down";
+      if (want !== S.trend) {
+        S.trend = want;
+        S.aibudLit = Object.assign({}, S.aibudLit, { trend: true });
+        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", want === "up" ? "Pump the bag" : "Paint a cheaper entry");
       }
     }
   }
@@ -1812,6 +1818,12 @@
     if (!el) return;
     const go = (e) => {
       if (S.phase !== "play") return;
+      const trades = $("trades");
+      if (trades && !trades.classList.contains("hide")) {
+        const box = trades.getBoundingClientRect();
+        const y = e.clientY != null ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY);
+        if (y != null && y >= box.top - 4) return;
+      }
       e.preventDefault();
       e.stopPropagation();
       S.humanInput = true;
