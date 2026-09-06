@@ -58,8 +58,9 @@ body {
 }
 .stat span.sub { margin-top: 0; }
 #h-cold-wrap { display: grid; grid-template-columns: auto 1fr; column-gap: 6px; row-gap: 0; align-items: baseline; }
-.stat-opt { display: flex; align-items: stretch; padding: 2px; gap: 2px; }
-.opt-btn { width: 100%; min-height: 28px; border: 1px solid #3a3a40; background: #141416; color: #f3efe6; font: inherit; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.stat-opt { display: flex; flex-direction: column; align-items: stretch; justify-content: stretch; padding: 2px; gap: 2px; min-height: 0; }
+.opt-btn { width: 100%; flex: 1 1 auto; min-height: 0; border: 1px solid #3a3a40; background: #141416; color: #f3efe6; font: inherit; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; line-height: 1.15; padding: 2px 4px; }
+.opt-btn small { display: block; font-size: 8px; letter-spacing: 0; text-transform: none; font-weight: 700; color: #fff6d0; }
 .opt-btn:disabled { opacity: 0.35; cursor: default; }
 .opt-btn:not(:disabled):hover { border-color: #c8960a; color: #fff6d0; }
 .hide { display: none !important; pointer-events: none !important; }
@@ -286,4 +287,3 @@ body {
 .auth-msg.bad { color: #ff9b92; }
 .auth-card .hp { position: absolute; left: -9999px; height: 0; width: 0; opacity: 0; }
 .board { margin: 0; font-size: 11px; color: #b4b0a8; background: #0a0a0c; padding: 8px; border: 1px solid #2a2a2e; min-height: 64px; white-space: pre-wrap; }
-.stat-opt { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; }

@@ -88,7 +88,8 @@
       if (btn) btn.classList.add("hide");
       if (tag) {
         tag.classList.remove("hide");
-        tag.textContent = "@" + profile.username;
+        const hs = profile.highscore != null ? profile.highscore : profile.high_score;
+        tag.innerHTML = "@" + profile.username + "<small>" + fmtScoreBtc(hs) + "</small>";
       }
     } else {
       window.choppySignedIn = false;
@@ -102,6 +103,7 @@
     const cta = $("cta-signup");
     if (cta) cta.classList.toggle("hide", !!(profile && profile.username));
     fetchGlobalLeaderboard();
+    if (typeof window.refreshChoppyAuth === "function") window.refreshChoppyAuth();
   }
 
   async function checkActiveSession() {
@@ -265,7 +267,6 @@
     const lnAddr = ($("profile-ln-addr") && $("profile-ln-addr").value || "").trim();
     const aliasEl = $("profile-alias");
     const nextAlias = aliasEl ? aliasEl.value.trim() : "";
-    const patch = { btc_address: btcAddr, ln_address: lnAddr };
     if (nextAlias && currentProfile && nextAlias !== currentProfile.username) {
       if (!validAlias(nextAlias)) {
         if (hint) hint.textContent = "Alias: 3–16 letters, numbers or _.";
@@ -276,33 +277,39 @@
         if (hint) hint.textContent = wait;
         return;
       }
-      const changed = await supabase.rpc("change_alias", { p_alias: nextAlias });
-      if (changed && changed.error) {
-        if (hint) hint.textContent = changed.error.message || "Could not save alias.";
+      let saved = false;
+      let errText = "";
+      try {
+        const changed = await supabase.rpc("change_alias", { p_alias: nextAlias });
+        if (changed && changed.error) errText = changed.error.message || "";
+        else saved = true;
+      } catch (e) {
+        errText = e.message || "";
+      }
+      if (!saved) {
+        const up = await supabase.from("profiles").update({ username: nextAlias }).eq("id", currentUser.id);
+        if (up && !up.error) saved = true;
+        else errText = (up && up.error && up.error.message) || errText || "Could not save alias.";
+      }
+      if (!saved) {
+        if (hint) hint.textContent = errText;
+        setMsg(errText, true);
         return;
       }
       currentProfile.username = nextAlias;
       if (aliasEl) aliasEl.value = nextAlias;
-      const tag = $("user-profile-tag");
-      if (tag) { tag.classList.remove("hide"); tag.textContent = "@" + nextAlias; }
-      const btn = $("btn-show-auth");
-      if (btn) btn.classList.add("hide");
-      if (hint) hint.textContent = "Alias saved.";
     }
     try {
-      let res = await supabase.from("profiles").update(patch).eq("id", currentUser.id);
-      if (res && res.error && patch.username) {
-        const only = { username: patch.username, btc_address: btcAddr, ln_address: lnAddr };
-        res = await supabase.from("profiles").update(only).eq("id", currentUser.id);
-      }
+      const patch = { btc_address: btcAddr, ln_address: lnAddr };
+      const res = await supabase.from("profiles").update(patch).eq("id", currentUser.id);
       if (res && res.error) {
-        const msg = res.error.message || "Could not save alias.";
+        const msg = res.error.message || "Could not save.";
         if (hint) hint.textContent = msg;
         setMsg(msg, true);
         return;
       }
       await loadUserProfile();
-      if (hint) hint.textContent = nextAlias && patch.username ? "Alias saved." : "";
+      if (hint) hint.textContent = "Saved.";
       if (profileModal) closeModal(profileModal);
     } catch (e) {
       const msg = "Update failed: " + (e.message || "error");
@@ -362,6 +369,11 @@
   }
 
   function openAuth() {
+    if (currentUser && currentProfile) {
+      const tag = $("user-profile-tag");
+      if (tag) tag.click();
+      return;
+    }
     isSignUpMode = false;
     showSignFields();
     if ($("modal-auth-title")) $("modal-auth-title").textContent = "Sign in";

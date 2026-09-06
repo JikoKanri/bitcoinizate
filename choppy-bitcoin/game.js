@@ -60,7 +60,7 @@
     if (kind === "halve") return wrap("<text x=\"0\" y=\"1\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"13\" font-weight=\"700\" fill=\"#1a1204\" font-family=\"IBM Plex Mono,monospace\">½</text>", "#c8960a", "#ffe7a0");
     if (kind === "cold") return wrap("<g stroke=\"#041318\" stroke-width=\"1.5\" fill=\"none\"><path d=\"M0-7V7M-6.1-3.5 6.1 3.5M-6.1 3.5 6.1-3.5\"/><path d=\"M-2.2-5.4 0-3.6 2.2-5.4M-2.2 5.4 0 3.6 2.2 5.4\"/></g>", "#1788a6", "#9befff");
     if (kind === "laser") return wrap("<g stroke-linecap=\"butt\"><path d=\"M-11-2.4H11M-11 2.4H11\" stroke=\"#fff4e8\" stroke-width=\"3.2\"/><path d=\"M-11-2.4H11M-11 2.4H11\" stroke=\"#ff2a22\" stroke-width=\"1.8\"/></g>", "#120806", "#ffe7c2");
-    if (kind === "swan") return wrap("<g fill=\"#f3efe6\"><ellipse cx=\"1\" cy=\"3\" rx=\"5.2\" ry=\"3.4\" transform=\"rotate(-16)\"/><path d=\"M-1 1 Q-6-4 -1-7 Q2-7 3-5\" fill=\"none\" stroke=\"#f3efe6\" stroke-width=\"1.8\"/><polygon points=\"2.4,-5.8 6.2,-5 2.4,-4.2\" fill=\"#c45c4a\"/></g>", "#161218", "#f0e6f0");
+    if (kind === "swan") return wrap("<g fill=\"#0a0a0c\"><ellipse cx=\"1\" cy=\"3\" rx=\"5.2\" ry=\"3.4\" transform=\"rotate(-16)\"/><path d=\"M-1 1 Q-6-4 -1-7 Q2-7 3-5\" fill=\"none\" stroke=\"#0a0a0c\" stroke-width=\"1.8\"/><polygon points=\"2.4,-5.8 6.2,-5 2.4,-4.2\" fill=\"#c45c4a\"/></g>", "#f3efe6", "#1a1a1c");
     if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
     return wrap("", "#141416", "#3a3a40");
   }
@@ -1012,7 +1012,7 @@
       BEAR: { fill: "#a33a32", ring: "#ff9b92", ink: "#1a0605" },
       LASER: { fill: "#120806", ring: "#ffe7c2", ink: "#ff2d24" },
       COLD: { fill: "#1788a6", ring: "#9befff", ink: "#041318" },
-      SWAN: { fill: "#161218", ring: "#f0e6f0", ink: "#f3efe6" },
+      SWAN: { fill: "#f3efe6", ring: "#1a1a1c", ink: "#0a0a0c" },
       HALVE: { fill: "#c8960a", ring: "#ffe7a0", ink: "#1a1204" },
     }[it.type];
     if (!pal) return;
@@ -1083,8 +1083,8 @@
 
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
-    const bucket = 6, cw = 3, stepX = 4;
-    const maxFit = Math.max(8, Math.floor((S.W * 0.62) / stepX));
+    const bucket = 5, cw = 5, stepX = 7;
+    const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
     const buckets = [];
     for (let i = 0; i < data.length; i += bucket) {
       const sl = data.slice(i, i + bucket);
@@ -1116,9 +1116,9 @@
     for (let x = ox; x < S.W + stepG; x += stepG) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, S.H); ctx.stroke(); }
     for (let y = 0; y < S.H; y += stepG) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(S.W, y); ctx.stroke(); }
     if (S.level >= 2) {
-      drawTape(ctx, S.tape, S.H * 0.12, S.H * 0.40, "rgba(79,157,110,0.2)", "rgba(196,92,74,0.2)");
-      drawTape(ctx, S.tapeVt, S.H * 0.50, S.H * 0.78, "rgba(90,140,190,0.22)", "rgba(196,92,74,0.2)");
-    } else drawTape(ctx, S.tape, S.H * 0.25, S.H * 0.75, "rgba(79,157,110,0.18)", "rgba(196,92,74,0.18)");
+      drawTape(ctx, S.tape, S.H * 0.10, S.H * 0.42, "rgba(79,157,110,0.55)", "rgba(196,92,74,0.55)");
+      drawTape(ctx, S.tapeVt, S.H * 0.48, S.H * 0.80, "rgba(90,140,190,0.50)", "rgba(196,92,74,0.50)");
+    } else drawTape(ctx, S.tape, S.H * 0.18, S.H * 0.82, "rgba(79,157,110,0.52)", "rgba(196,92,74,0.52)");
 
     const m = metrics();
     const pw = m.pipeW * S.widthMul;
@@ -1229,7 +1229,7 @@
       const mx = ffMax();
       const fast = S.have.ff > 0 && S.speedMul !== 1;
       spd2.textContent = fast ? ((mx % 1 ? mx.toFixed(1) : String(mx)) + "x") : "1x";
-      spd2.classList.toggle("on", fast);
+      spd2.classList.toggle("on", !fast);
     }
     lockBtn("dca-btn", S.have.dca > 0);
     lockBtn("iabud-btn", (S.have.aibud || 0) > 0);
@@ -1871,6 +1871,9 @@
   });
   window.startChoppy = startGame;
   window.replayChoppy = replay;
+  window.refreshChoppyAuth = () => {
+    if (S.phase === "ready" && !S.optPanel) renderOverlay();
+  };
   window.addEventListener("resize", layoutStage);
   window.addEventListener("orientationchange", layoutStage);
   resetWorld(false);
