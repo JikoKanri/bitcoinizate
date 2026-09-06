@@ -939,8 +939,13 @@
       S.bird.v += Math.sin(S.lifeT * 21) * 55 * dt * k;
     }
     if (S.bird.y - S.bird.r > S.H) {
-      die();
-      return;
+      if (S.invuln > 0) {
+        S.bird.y = Math.min(S.H - 70, S.H - S.bird.r - 8);
+        S.bird.v = metrics().jump * 0.7;
+      } else {
+        hitFatal();
+        if (S.dead) return;
+      }
     }
     if (S.bird.y + S.bird.r < 0) { S.bird.y = -S.bird.r + 1; S.bird.v = 0; }
 
