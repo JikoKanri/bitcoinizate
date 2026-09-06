@@ -10,21 +10,35 @@
   let muteVoice = localStorage.getItem("choppy-mute-voice") === "1";
 
   let speechUnlocked = false;
+  let silentKeep = null;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || "")
     || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-  function unlockSpeech() {
-    if (!isIOS || speechUnlocked || !window.speechSynthesis) return;
+  function keepSilentStream() {
+    if (!isIOS || !ctx || silentKeep) return;
     try {
-      speechSynthesis.getVoices();
-      speechSynthesis.resume();
-      const warm = new SpeechSynthesisUtterance(" ");
-      warm.volume = 0;
-      warm.rate = 1;
-      warm.pitch = 1;
-      warm.lang = "en-US";
-      speechSynthesis.speak(warm);
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.frequency.value = 20;
+      g.gain.value = 0.00008;
+      osc.connect(g);
+      g.connect(ctx.destination);
+      osc.start();
+      silentKeep = osc;
+    } catch (e) {}
+  }
+
+  function unlockSpeech() {
+    if (!isIOS || !window.speechSynthesis) return;
+    try {
+      if (ctx && ctx.state === "suspended") ctx.resume();
+      speechSynthesis.cancel();
+      const silentUtterance = new SpeechSynthesisUtterance("");
+      silentUtterance.volume = 0;
+      silentUtterance.lang = "en-US";
+      speechSynthesis.speak(silentUtterance);
       speechUnlocked = true;
+      keepSilentStream();
     } catch (e) {}
   }
 
@@ -869,29 +883,28 @@ w: And ev-er since then my head's been red.`),
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
     if (muteVoice || !window.speechSynthesis || !line) return;
-    const talk = () => {
-      try { speechSynthesis.resume(); } catch (e) {}
-      const u = new SpeechSynthesisUtterance(String(line));
-      u.lang = "en-US";
-      u.volume = 1;
-      if (isIOS) {
-        u.rate = 0.92;
-        u.pitch = 1;
-      } else {
-        u.rate = 0.78;
-        u.pitch = 0.18;
-        const v = pickVoice();
-        if (v) { u.voice = v; u.lang = v.lang && v.lang.startsWith("en") ? v.lang : "en-US"; }
-      }
-      speechSynthesis.speak(u);
-    };
-    if (urgent || (speechSynthesis.speaking && !isIOS)) speechSynthesis.cancel();
     if (isIOS) {
-      unlockSpeech();
-      setTimeout(talk, urgent ? 40 : 0);
-    } else {
-      talk();
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(String(line));
+      utterance.lang = "en-US";
+      utterance.volume = 1;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      setTimeout(() => {
+        try { if (ctx && ctx.state === "suspended") ctx.resume(); } catch (e) {}
+        speechSynthesis.speak(utterance);
+      }, 100);
+      return;
     }
+    if (urgent) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(line);
+    u.lang = "en-US";
+    u.rate = 0.78;
+    u.pitch = 0.18;
+    u.volume = 1;
+    const v = pickVoice();
+    if (v) { u.voice = v; u.lang = v.lang && v.lang.startsWith("en") ? v.lang : "en-US"; }
+    speechSynthesis.speak(u);
   };
   if (isIOS) {
     const warm = () => { try { A.unlock(); } catch (e) {} };
