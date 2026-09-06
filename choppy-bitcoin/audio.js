@@ -745,9 +745,10 @@ w: And ev-er since then my head's been red.`),
   };
 
   async function ensureSynth(id) {
-    const lib = abcLib();
-    if (!lib || !lib.synth || !lib.synth.supportsAudio()) return null;
     A.unlock();
+    const lib = abcLib();
+    if (!lib || !lib.synth) return null;
+    if (lib.synth.supportsAudio && !lib.synth.supportsAudio()) return null;
     id = id || abcId || "bonny";
     if (!abcVisual || abcId !== id) renderTune(id);
     if (!abcVisual) return null;
@@ -767,6 +768,17 @@ w: And ev-er since then my head's been red.`),
     return synth;
   }
 
+  function playFallbackTune(gen) {
+    if (!ctx) A.unlock();
+    jukeOn = true;
+    abcElapsed = 0;
+    abcDur = 12;
+    abcStart = ctx ? ctx.currentTime : 0;
+    armJukeEnd(12, gen);
+    const notes = [330, 392, 494, 392, 330, 294, 247, 294, 330, 392, 494, 587, 494, 392, 330, 294];
+    notes.forEach((n, i) => beep(n, 0.28, "triangle", 0.07, null, i * 0.28, "juke"));
+  }
+
   A.jukePlay = (id) => {
     A.unlock();
     abcWant = true;
@@ -775,22 +787,22 @@ w: And ev-er since then my head's been red.`),
     const run = async () => {
       try {
         if (abcSynth && abcSynth.stop) try { abcSynth.stop(); } catch (e) {}
+        if (ctx && ctx.state === "suspended") await ctx.resume();
         if (!abcLib()) {
-          jukeOn = true;
-          abcElapsed = 0;
-          abcDur = 8;
-          abcStart = ctx ? ctx.currentTime : 0;
-          armJukeEnd(8, gen);
-          const notes = [392, 440, 494, 523, 494, 440, 392, 330];
-          notes.forEach((n, i) => beep(n, 0.22, "triangle", 0.06, null, i * 0.22, "juke"));
+          playFallbackTune(gen);
           return;
         }
         const synth = await ensureSynth(id || "bonny");
-        if (!synth || !abcWant || gen !== jukeGen) return;
+        if (!abcWant || gen !== jukeGen) return;
+        if (!synth) {
+          playFallbackTune(gen);
+          return;
+        }
         jukeOn = true;
         abcElapsed = 0;
         abcStart = ctx ? ctx.currentTime : 0;
         armJukeEnd(abcDur, gen);
+        if (ctx && ctx.state === "suspended") await ctx.resume();
         const done = synth.start();
         if (done && typeof done.then === "function") {
           done.then(() => {
@@ -799,10 +811,12 @@ w: And ev-er since then my head's been red.`),
             jukeOn = false;
             abcElapsed = abcDur;
             if (typeof A.onJukeEnd === "function") A.onJukeEnd();
+          }).catch(() => {
+            if (gen === jukeGen) playFallbackTune(gen);
           });
         }
       } catch (err) {
-        jukeOn = false;
+        playFallbackTune(gen);
       }
     };
     run();
@@ -907,31 +921,15 @@ w: And ev-er since then my head's been red.`),
   }
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
-    if (muteVoice || !line) return;
-    A.unlock();
-    if (!window.speechSynthesis) return;
-    const fire = () => {
-      try {
-        if (urgent) speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(String(line));
-        const es = !!(window.BZ && BZ.lang && BZ.lang() === "es");
-        u.lang = es ? "es-419" : "en-US";
-        u.rate = 1;
-        u.pitch = 1;
-        u.volume = 1;
-        const list = speechSynthesis.getVoices() || [];
-        let v = null;
-        if (es) {
-          v = list.find((x) => /es-|spanish|español|mexico|latam|argentina|colombia/i.test((x.lang || "") + " " + (x.name || "")));
-        } else {
-          v = list.find((x) => /^en/i.test(x.lang || ""));
-        }
-        if (!v) v = list[0];
-        if (v) u.voice = v;
-        speechSynthesis.speak(u);
-      } catch (e) {}
-    };
-    fire();
-    if (!(speechSynthesis.getVoices() || []).length) setTimeout(fire, 280);
+    if (muteVoice || !line || !window.speechSynthesis) return;
+    try {
+      if (urgent) speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(line));
+      u.lang = (window.BZ && BZ.lang && BZ.lang() === "es") ? "es-MX" : "en-US";
+      u.rate = 1;
+      u.pitch = 1;
+      u.volume = 1;
+      speechSynthesis.speak(u);
+    } catch (e) {}
   };
 })();

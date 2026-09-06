@@ -859,7 +859,7 @@
     S.introCounted = true;
     if (!S.welcomed) {
       S.welcomed = true;
-      setTimeout(() => { try { A.speak(t("welcome")); } catch (e) {} }, 80);
+      try { A.speak(t("welcome")); } catch (e) {}
     }
     resetWorld(false);
     S.dead = false;
@@ -1687,11 +1687,12 @@
         const ids = runAwardIds(collectRunStats());
         mergeAwards(ids);
       } catch (e) {}
-      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button></div>";
+      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">Share</button></div>";
       if ($("go")) {
         $("go").onclick = replay;
         $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };
       }
+      if ($("share-run")) $("share-run").onclick = () => shareRun("over");
     } else if (p === "win" && S.stats) {
       const st = S.stats;
       mergeAwards(runAwardIds(st));
