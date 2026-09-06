@@ -162,7 +162,7 @@
     W: 480, H: 640,
     bird: { x: 72, y: 280, v: 0, r: 14 },
     pipes: [], items: [], particles: [], floats: [],
-    cash: 0, btc: 0, vt: 0, cold: 0, msig: 0, invuln: 0,
+    cash: 0, btc: 0, vt: 0, cold: 0, msig: 50, invuln: 0,
     power: "NONE", powerT: 0, laserOn: false, laserT: 0,
     widthMul: 1, widthT: 1, heightMul: 1, heightT: 1,
     price: 20000, vtPrice: 0,
@@ -393,7 +393,7 @@
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
     S.swanBear = false; S.halveSpeechUntil = 0;
     S.cold = 0; S.invuln = 0;
-    if (!keepWallet) S.msig = 0;
+    if (!keepWallet) S.msig = 50;
     S.power = "NONE"; S.powerT = 0;
     applyLaser(false);
     S.widthMul = S.heightMul = 1;
@@ -456,14 +456,7 @@
     if (x < S.W + 36) x = S.W + 56;
     const up = S.halveSide !== "down";
     const r = 17;
-    let y;
-    if (up) y = Math.max(22, m.margin * 0.42);
-    else {
-      const box = $("trades") && $("trades").getBoundingClientRect();
-      const fieldR = field.getBoundingClientRect();
-      const btnTop = box && fieldR.height ? box.top - fieldR.top : S.H - 52;
-      y = Math.max(r + 8, btnTop - r - 10);
-    }
+    const y = up ? (r + 16) : (S.H - 78);
     S.items.push({
       x,
       y,
@@ -866,8 +859,8 @@
     S.humanInput = true;
     S.introCounted = true;
     if (!S.welcomed) {
-      if (A && A.speak) try { A.speak(t("welcome")); } catch (e) {}
       S.welcomed = true;
+      setTimeout(() => { try { A.speak(t("welcome")); } catch (e) {} }, 80);
     }
     resetWorld(false);
     S.dead = false;

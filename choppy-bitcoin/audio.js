@@ -775,6 +775,16 @@ w: And ev-er since then my head's been red.`),
     const run = async () => {
       try {
         if (abcSynth && abcSynth.stop) try { abcSynth.stop(); } catch (e) {}
+        if (!abcLib()) {
+          jukeOn = true;
+          abcElapsed = 0;
+          abcDur = 8;
+          abcStart = ctx ? ctx.currentTime : 0;
+          armJukeEnd(8, gen);
+          const notes = [392, 440, 494, 523, 494, 440, 392, 330];
+          notes.forEach((n, i) => beep(n, 0.22, "triangle", 0.06, null, i * 0.22, "juke"));
+          return;
+        }
         const synth = await ensureSynth(id || "bonny");
         if (!synth || !abcWant || gen !== jukeGen) return;
         jukeOn = true;
@@ -897,29 +907,26 @@ w: And ev-er since then my head's been red.`),
   }
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
-    if (muteVoice || !line || !window.speechSynthesis) return;
-    const talk = () => {
-      if (muteVoice) return;
-      if (urgent) speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(String(line));
-      const es = !!(window.BZ && BZ.lang && BZ.lang() === "es");
-      u.lang = es ? "es-MX" : "en-US";
-      u.rate = 1;
-      u.pitch = 1;
-      u.volume = 1;
-      const v = pickVoice();
-      if (v) {
-        const vl = (v.lang || "").toLowerCase();
-        if (es ? vl.startsWith("es") : vl.startsWith("en")) u.voice = v;
-      }
-      speechSynthesis.speak(u);
+    if (muteVoice || !line) return;
+    A.unlock();
+    if (!window.speechSynthesis) return;
+    const fire = () => {
+      try {
+        if (urgent) speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(String(line));
+        const es = !!(window.BZ && BZ.lang && BZ.lang() === "es");
+        u.lang = es ? "es-MX" : "en-US";
+        u.rate = 1;
+        u.pitch = 1;
+        u.volume = 1;
+        const list = speechSynthesis.getVoices() || [];
+        const pref = es ? "es" : "en";
+        const v = list.find((x) => (x.lang || "").toLowerCase().indexOf(pref) === 0) || list[0];
+        if (v) u.voice = v;
+        speechSynthesis.speak(u);
+      } catch (e) {}
     };
-    if (!speechSynthesis.getVoices().length) {
-      speechSynthesis.addEventListener("voiceschanged", talk, { once: true });
-      pickVoice();
-      setTimeout(talk, 250);
-      return;
-    }
-    talk();
+    fire();
+    if (!(speechSynthesis.getVoices() || []).length) setTimeout(fire, 280);
   };
 })();
