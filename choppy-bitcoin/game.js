@@ -1890,6 +1890,10 @@
     }
   });
   window.addEventListener("keydown", (e) => {
+    const tag = (e.target && e.target.tagName ? e.target.tagName : "").toLowerCase();
+    const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
+    if (typing) return;
+    if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     const k = e.key.toLowerCase();
     if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
     else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) buyBtc(); }
