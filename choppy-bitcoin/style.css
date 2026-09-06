@@ -151,10 +151,15 @@ body {
 .lyric-now .w.hot { color: rgba(200,150,10,0.85); text-shadow: none; }
 .row { display: flex; gap: 8px; align-items: stretch; }
 .buy, .sell, .pause, .cta { font: inherit; cursor: pointer; border: 0; }
-.dock-spd {
+.dock-spd,
+#spd-2.dock-spd,
+#spd-2.dock-spd.on,
+#spd-2.dock-spd:disabled {
   flex: 0 0 40px; width: 40px; min-width: 40px; max-width: 40px;
   min-height: 40px; padding: 0;
   font-size: 11px; font-weight: 700; letter-spacing: 0;
+  border-color: #c8960a; background: #c8960a; color: #09090b;
+  opacity: 1; filter: none;
 }
 .buy, .sell, .pause, .cta { font: inherit; cursor: pointer; border: 0; }
 .cta { background: #c8960a; color: #120c02; min-height: 44px; padding: 0 16px; font-weight: 700; }

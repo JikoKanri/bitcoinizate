@@ -1293,11 +1293,13 @@
       buy.disabled = locks.trade;
       buy.classList.toggle("ai-lock", locks.trade);
       buy.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.buy));
+      buy.textContent = t("buyBtc");
     }
     if (sell) {
       sell.disabled = locks.trade;
       sell.classList.toggle("ai-lock", locks.trade);
       sell.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.sell));
+      sell.textContent = t("sellBtc");
     }
     const pauseBtn = $("pause-btn");
     if (pauseBtn) {
@@ -1310,10 +1312,10 @@
     $("trades").classList.toggle("hide", !playing);
     $("pause-btn").classList.toggle("hide", !playing);
     let status = "";
-    if (S.halveBull) status = "HALVING  " + Math.ceil(S.powerT) + "s";
-    else if (S.power === "BULL") status = "BULL RUN  " + Math.ceil(S.powerT) + "s";
-    else if (S.power === "BEAR") status = "BEAR CRASH  " + Math.ceil(S.powerT) + "s";
-    if (S.laserOn) status = status ? status + "  ·  LASER " + Math.ceil(S.laserT) + "s" : "LASER  " + Math.ceil(S.laserT) + "s";
+    if (S.halveBull) status = t("halvingNow") + "  " + Math.ceil(S.powerT) + "s";
+    else if (S.power === "BULL") status = t("bullRun") + "  " + Math.ceil(S.powerT) + "s";
+    else if (S.power === "BEAR") status = t("bearCrash") + "  " + Math.ceil(S.powerT) + "s";
+    if (S.laserOn) status = status ? status + "  ·  " + t("laserNow") + " " + Math.ceil(S.laserT) + "s" : t("laserNow") + "  " + Math.ceil(S.laserT) + "s";
     $("status").textContent = status;
     $("status").classList.toggle("hide", !(status && S.phase === "play"));
     const cap = $("caption");
@@ -1552,7 +1554,7 @@
   function pauseMarkup() {
     const panel = S.optPanel || "";
     if (panel === "help") {
-      return "<h1>How to play</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">Back</button>";
+      return "<h1>" + t("howPlay") + "</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "feed") {
       return "<h1>" + t("feedback") + "</h1>"
@@ -1563,17 +1565,17 @@
     }
     if (panel === "aibud") {
       if ((S.have.aibud || 0) <= 0) {
-        return "<h1>A.I. bud</h1><p>Unlock the A.I. bud perk first.</p><button class=\"cta\" id=\"help-back\">Back</button>";
+        return "<h1>" + t("aiLog") + "</h1><p>" + t("aiNeed") + "</p><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
       }
       const rows = (S.iaLog || []).map((e) => {
         const sec = Math.floor(e.t);
         return "<p><span class=\"ia-act\">" + e.act + "</span> — " + e.why + " <span class=\"k\">" + sec + "s · " + money(e.net) + "</span></p>";
-      }).join("") || "<p>No calls yet. Toggle A.I. bud ON in the HUD.</p>";
-      return "<h1>A.I. bud log</h1><p class=\"k\">Marked P/L " + money(S.iaProfit || 0) + " · tier " + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
+      }).join("") || "<p>" + t("noAiCalls") + "</p>";
+      return "<h1>" + t("aiLog") + "</h1><p class=\"k\">" + t("markedPl") + " " + money(S.iaProfit || 0) + " · " + t("speed") + " " + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "juke") {
       if ((S.have.juke || 0) <= 0) {
-        return "<h1>Jukebox</h1><p>Unlock the Jukebox perk first.</p><button class=\"cta\" id=\"help-back\">Back</button>";
+        return "<h1>" + t("jukebox") + "</h1><p>" + t("jukeNeed") + "</p><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
       }
       fillJukebox();
       const id = S.jukeList[S.jukeTrack] || "";
@@ -1589,7 +1591,7 @@
           + "</div>";
       }).join("");
       const rpt = S.jukeRepeat || "off";
-      return "<h1>Jukebox</h1><div class=\"juke retro\">"
+      return "<h1>" + t("jukebox") + "</h1><div class=\"juke retro\">"
         + "<p class=\"juke-lab\">Retro Jukebox</p>"
         + "<p class=\"juke-now\">" + (song ? song.title : id) + "</p>"
         + "<p class=\"juke-gen\">" + (song && song.genre ? song.genre : "") + "</p>"
@@ -1605,17 +1607,17 @@
         + "<button type=\"button\" class=\"juke-btn ico" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\" aria-label=\"Repeat\">" + (rpt === "one" ? "🔂" : "🔁") + "</button>"
         + "</div>"
         + "<div class=\"juke-list\">" + rows + "</div>"
-        + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
+        + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "sound") {
       const themeOn = !A.muteTheme();
       const sfxOn = !A.muteSfx();
       const voiceOn = !A.muteVoice();
-      return "<h1>Sound</h1><div class=\"mute-row\">"
-        + "<button type=\"button\" class=\"mute-tog" + (themeOn ? "" : " on") + "\" id=\"mute-theme\">Bull/bear songs " + (themeOn ? "ON" : "OFF") + "</button>"
-        + "<button type=\"button\" class=\"mute-tog" + (sfxOn ? "" : " on") + "\" id=\"mute-sfx\">Game FX " + (sfxOn ? "ON" : "OFF") + "</button>"
-        + "<button type=\"button\" class=\"mute-tog" + (voiceOn ? "" : " on") + "\" id=\"mute-voice\">Voices " + (voiceOn ? "ON" : "OFF") + "</button>"
-        + "</div><button class=\"cta\" id=\"help-back\">Back</button>";
+      return "<h1>" + t("sound") + "</h1><div class=\"mute-row\">"
+        + "<button type=\"button\" class=\"mute-tog" + (themeOn ? "" : " on") + "\" id=\"mute-theme\">" + t("bullSongs") + " " + (themeOn ? t("soundOn") : t("soundOff")) + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (sfxOn ? "" : " on") + "\" id=\"mute-sfx\">" + t("gameFx") + " " + (sfxOn ? t("soundOn") : t("soundOff")) + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (voiceOn ? "" : " on") + "\" id=\"mute-voice\">" + t("voices") + " " + (voiceOn ? t("soundOn") : t("soundOff")) + "</button>"
+        + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "lang") {
       const cur = (window.BZ && BZ.lang && BZ.lang()) || "en";

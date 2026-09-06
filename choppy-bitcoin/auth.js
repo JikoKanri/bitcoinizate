@@ -362,8 +362,8 @@
     const group = $("group-alias");
     if (title) title.textContent = isSignUpMode ? ((window.BZ && BZ.t("signUp")) || "Sign up") : ((window.BZ && BZ.t("signIn")) || "Sign in");
     if (group) group.classList.toggle("hide", !isSignUpMode);
-    if ($("btn-submit-auth")) $("btn-submit-auth").textContent = isSignUpMode ? "Create account" : "Sign in";
-    if ($("btn-toggle-auth")) $("btn-toggle-auth").textContent = isSignUpMode ? "Have an account?" : "Need an account?";
+    if ($("btn-submit-auth")) $("btn-submit-auth").textContent = isSignUpMode ? ((window.BZ && BZ.t("createAccount")) || "Create account") : ((window.BZ && BZ.t("signIn")) || "Sign in");
+    if ($("btn-toggle-auth")) $("btn-toggle-auth").textContent = isSignUpMode ? ((window.BZ && BZ.t("haveAccount")) || "Have an account?") : ((window.BZ && BZ.t("needAccount")) || "Need an account?");
     setMsg("");
   }
 
@@ -375,10 +375,10 @@
     }
     isSignUpMode = false;
     showSignFields();
-    if ($("modal-auth-title")) $("modal-auth-title").textContent = "Sign in";
+    if ($("modal-auth-title")) $("modal-auth-title").textContent = (window.BZ && BZ.t("signIn")) || "Sign in";
     if ($("group-alias")) $("group-alias").classList.add("hide");
-    if ($("btn-submit-auth")) $("btn-submit-auth").textContent = "Sign in";
-    if ($("btn-toggle-auth")) $("btn-toggle-auth").textContent = "Need an account?";
+    if ($("btn-submit-auth")) $("btn-submit-auth").textContent = (window.BZ && BZ.t("signIn")) || "Sign in";
+    if ($("btn-toggle-auth")) $("btn-toggle-auth").textContent = (window.BZ && BZ.t("needAccount")) || "Need an account?";
     setMsg("");
     if (authModal) openModal(authModal);
   }
