@@ -5,12 +5,9 @@
   let jukeTimer = null;
   let jukeOn = false;
   let jukeGen = 0;
-  let muteTheme = false;
-  let muteSfx = false;
-  let muteVoice = false;
-  localStorage.setItem("choppy-mute-theme", "0");
-  localStorage.setItem("choppy-mute-sfx", "0");
-  localStorage.setItem("choppy-mute-voice", "0");
+  let muteTheme = localStorage.getItem("choppy-mute-theme") === "1";
+  let muteSfx = localStorage.getItem("choppy-mute-sfx") === "1";
+  let muteVoice = localStorage.getItem("choppy-mute-voice") === "1";
 
   window.ArcadeAudio = {
     unlock() {
@@ -115,24 +112,11 @@
       if (!isPlaying()) return;
       if (muteTheme) { musicStep++; return; }
       const p = getPower();
-      const i = musicStep % 8;
-      if (p === "BEAR") {
-        const n = BEAR[i];
-        beep(n, 0.3, "sawtooth", 0.07, n * 0.72, 0, "theme");
-        beep(n * 0.5, 0.36, "square", 0.045, n * 0.4, 0, "theme");
-        if (i % 2 === 0) beep(n * 1.5, 0.12, "triangle", 0.03, null, 0.04, "theme");
-      } else if (p === "BULL") {
-        const n = BULL[i];
-        beep(n, 0.13, "square", 0.055, n * 1.12, 0, "theme");
-        beep(n * 2, 0.08, "triangle", 0.03, null, 0.03, "theme");
-        beep(n / 2, 0.18, "sawtooth", 0.035, null, 0, "theme");
-      } else {
-        const n = IDLE[i];
-        beep(n, 0.2, "sine", 0.04, null, 0, "theme");
-        beep(n * 1.5, 0.1, "triangle", 0.018, null, 0.05, "theme");
-      }
+      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.22, "sawtooth", 0.06, null, 0, "theme");
+      else if (p === "BULL") beep(BULL[musicStep % 8], 0.11, "square", 0.04, null, 0, "theme");
+      else beep(IDLE[musicStep % 8], 0.18, "sine", 0.05, null, 0, "theme");
       musicStep++;
-    }, 180);
+    }, 200);
   };
 
 
@@ -745,10 +729,9 @@ w: And ev-er since then my head's been red.`),
   };
 
   async function ensureSynth(id) {
-    A.unlock();
     const lib = abcLib();
-    if (!lib || !lib.synth) return null;
-    if (lib.synth.supportsAudio && !lib.synth.supportsAudio()) return null;
+    if (!lib || !lib.synth || !lib.synth.supportsAudio()) return null;
+    A.unlock();
     id = id || abcId || "bonny";
     if (!abcVisual || abcId !== id) renderTune(id);
     if (!abcVisual) return null;
@@ -768,17 +751,6 @@ w: And ev-er since then my head's been red.`),
     return synth;
   }
 
-  function playFallbackTune(gen) {
-    if (!ctx) A.unlock();
-    jukeOn = true;
-    abcElapsed = 0;
-    abcDur = 12;
-    abcStart = ctx ? ctx.currentTime : 0;
-    armJukeEnd(12, gen);
-    const notes = [330, 392, 494, 392, 330, 294, 247, 294, 330, 392, 494, 587, 494, 392, 330, 294];
-    notes.forEach((n, i) => beep(n, 0.28, "triangle", 0.07, null, i * 0.28, "juke"));
-  }
-
   A.jukePlay = (id) => {
     A.unlock();
     abcWant = true;
@@ -787,25 +759,12 @@ w: And ev-er since then my head's been red.`),
     const run = async () => {
       try {
         if (abcSynth && abcSynth.stop) try { abcSynth.stop(); } catch (e) {}
-        if (ctx && ctx.state === "suspended") await ctx.resume();
-        if (!abcLib()) {
-          playFallbackTune(gen);
-          return;
-        }
-        const synth = await Promise.race([
-          ensureSynth(id || "bonny"),
-          new Promise((resolve) => setTimeout(() => resolve(null), 2200))
-        ]);
-        if (!abcWant || gen !== jukeGen) return;
-        if (!synth) {
-          playFallbackTune(gen);
-          return;
-        }
+        const synth = await ensureSynth(id || "bonny");
+        if (!synth || !abcWant || gen !== jukeGen) return;
         jukeOn = true;
         abcElapsed = 0;
         abcStart = ctx ? ctx.currentTime : 0;
         armJukeEnd(abcDur, gen);
-        if (ctx && ctx.state === "suspended") await ctx.resume();
         const done = synth.start();
         if (done && typeof done.then === "function") {
           done.then(() => {
@@ -814,12 +773,10 @@ w: And ev-er since then my head's been red.`),
             jukeOn = false;
             abcElapsed = abcDur;
             if (typeof A.onJukeEnd === "function") A.onJukeEnd();
-          }).catch(() => {
-            if (gen === jukeGen) playFallbackTune(gen);
           });
         }
       } catch (err) {
-        playFallbackTune(gen);
+        jukeOn = false;
       }
     };
     run();
@@ -846,54 +803,21 @@ w: And ev-er since then my head's been red.`),
     if (abcSynth && abcSynth.resume) try { abcSynth.resume(); } catch (e) { A.jukePlay(abcId || "bonny"); }
   };
 
-  function voicePacks() {
-    return {
-      en: {
-        SWAN: ["Black swan!","Cold storage lost!","Oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","In before oceans evaporation!","You got F. T. X.'d!"],
-        BULL: ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices","Going up forever Laura!"],
-        LASER: ["Laser eyes!","Nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Unconfiscable power!","Do it for Scottie Pippen"],
-        HALVE_SOON: ["Halving in sight!","Tick tock, next block"],
-        BEAR: ["Bear market! Crash!","Quantum conundrum!","Bukele all-in ethereum","Bitcoin Depravement Proposals"],
-        SELL: ["You are now a nocoiner","Bitcoin sold","Short it!","Exit all crypto markets"],
-        BUY: ["Long it!","Bitcoin bought","All-in corn!"],
-        HALVE_MISS: ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Oh no, Peter Schiff stole the halving","Faketoshi stole the halving","No halving soup for you!","Halving missed"]
-      },
-      es: {
-        SWAN: ["Cisne negro!","Se perdió el cold storage!","Oh oh, fondos no SAFU!","Aleatoriedad de Coldcard!","China ban!","Antes de que se evaporen los océanos!","Te F. T. X.earon!"],
-        BULL: ["Mercado alcista!","A la luna!","Estamos TAN de vuelta!","Luke, yo soy tu spammer","El C.E.O. de Bitcoin va a subir los precios","Subiendo para siempre Laura!"],
-        LASER: ["Laser eyes!","Nada detiene este tren","Adicción a la convicción","No hay segundo mejor","Stay humble stack Sats","Que te diviertas siendo pobre!","Arregla el dinero, arregla el mundo!","Poder inconfiscable!","Hazlo por Scottie Pippen"],
-        HALVE_SOON: ["Halving a la vista!","Tick tock, next block"],
-        BEAR: ["Mercado bajista! Crash!","Enigma cuántico!","Bukele all-in ethereum","Propuestas de Depravement de Bitcoin"],
-        SELL: ["Ahora eres nocoiner","Bitcoin vendido","Short it!","Salida de todos los mercados cripto"],
-        BUY: ["Long it!","Bitcoin comprado","All-in corn!"],
-        HALVE_MISS: ["Halving abortado","El grinch se robó el halving","El C.E.O. de Bitcoin cancela el halving","Gary Gensler se robó el halving","Oh no, Peter Schiff se robó el halving","Faketoshi se robó el halving","No hay sopa de halving para ti!","Halving fallido"]
-      }
-    };
-  }
-  function applyVoiceLang(code) {
-    const packs = voicePacks();
-    const p = packs[code] || packs.en;
-    A.SWAN = p.SWAN; A.BULL = p.BULL; A.LASER = p.LASER; A.HALVE_SOON = p.HALVE_SOON;
-    A.BEAR = p.BEAR; A.SELL = p.SELL; A.BUY = p.BUY; A.HALVE_MISS = p.HALVE_MISS;
-    cachedVoice = null;
-  }
-  A.setLang = applyVoiceLang;
-  applyVoiceLang((window.BZ && BZ.lang && BZ.lang()) || "en");
+  A.SWAN = ["Black swan!","Cold storage lost!","oh oh, Funds not SAFU!","Coldcard randomness!","China ban!","in before oceans evaporation!","You got F. T. X.'d!"];
+  A.BULL = ["Bull market!","To the moon!","We are SO back!","Luke, I am your spammer","Bitcoin C.E.O. to increase prices."];
+  A.LASER = ["Laser eyes!","nothing stops this train","Conviction addiction","There is no second best","Stay humble stack Sats","Have fun staying poor!","Fix the money fix the world!","Going up forever Laura!","Unconfiscable power!","Do it for Scottie Pippen"];
+  A.HALVE_SOON = ["Halving in sight!","tick tock, next block"];
+  A.BEAR = ["Bear market! Crash!","quantum conundrum!","Bukele all in ethereum","Bitcoin Depravement Proposals"];
+  A.SELL = ["shame on you, nocoiner!","short it!"];
+  A.HALVE_MISS = ["Halving aborted","The grinch stole the halving","Bitcoin C.E.O to cancel halving","Gary Gensler stole the halving","Peter Schiff stole the halving","Faketoshi stole the halving"];
   let cachedVoice = null;
   function scoreVoice(v) {
     const n = (v.name || "").toLowerCase();
     const lang = (v.lang || "").toLowerCase();
+    if (lang.startsWith("es")) return -1000;
+    if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("argentina")) return -1000;
     let s = 0;
-    const wantEs = window.BZ && BZ.lang && BZ.lang() === "es";
-    if (wantEs) {
-      if (lang.startsWith("es")) s += 80;
-      if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("latin")) s += 30;
-      if (lang.startsWith("en")) s -= 20;
-    } else {
-      if (lang.startsWith("es")) return -1000;
-      if (n.includes("spanish") || n.includes("español") || n.includes("mexico") || n.includes("argentina")) return -1000;
-      if (lang.startsWith("en")) s += 40;
-    }
+    if (lang.startsWith("en")) s += 40;
     if (lang === "en-us" || lang === "en_us") s += 20;
     if (n.includes("fred")) s += 120;
     if (n.includes("ralph")) s += 90;
@@ -924,15 +848,15 @@ w: And ev-er since then my head's been red.`),
   }
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
-    if (muteVoice || !line || !window.speechSynthesis) return;
-    try {
-      if (urgent) speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(String(line));
-      u.lang = (window.BZ && BZ.lang && BZ.lang() === "es") ? "es-MX" : "en-US";
-      u.rate = 1;
-      u.pitch = 1;
-      u.volume = 1;
-      speechSynthesis.speak(u);
-    } catch (e) {}
+    if (muteVoice || !window.speechSynthesis) return;
+    if (urgent) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(line);
+    u.lang = "en-US";
+    u.rate = 0.78;
+    u.pitch = 0.18;
+    u.volume = 1;
+    const v = pickVoice();
+    if (v) { u.voice = v; u.lang = v.lang && v.lang.startsWith("en") ? v.lang : "en-US"; }
+    speechSynthesis.speak(u);
   };
 })();
