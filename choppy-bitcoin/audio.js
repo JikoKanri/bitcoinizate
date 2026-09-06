@@ -9,6 +9,25 @@
   let muteSfx = localStorage.getItem("choppy-mute-sfx") === "1";
   let muteVoice = localStorage.getItem("choppy-mute-voice") === "1";
 
+  let speechUnlocked = false;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || "")
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  function unlockSpeech() {
+    if (!isIOS || speechUnlocked || !window.speechSynthesis) return;
+    try {
+      speechSynthesis.getVoices();
+      speechSynthesis.resume();
+      const warm = new SpeechSynthesisUtterance(" ");
+      warm.volume = 0;
+      warm.rate = 1;
+      warm.pitch = 1;
+      warm.lang = "en-US";
+      speechSynthesis.speak(warm);
+      speechUnlocked = true;
+    } catch (e) {}
+  }
+
   window.ArcadeAudio = {
     unlock() {
       const AC = window.AudioContext || window.webkitAudioContext;
@@ -17,6 +36,7 @@
       if (window.speechSynthesis) {
         window.speechSynthesis.getVoices();
         pickVoice();
+        unlockSpeech();
       }
     },
     sfx: {}, speak() {}, cancelSpeech() {}, startMusic() {}, stopMusic() {},
@@ -848,15 +868,34 @@ w: And ev-er since then my head's been red.`),
   }
   A.cancelSpeech = () => { if (window.speechSynthesis) speechSynthesis.cancel(); };
   A.speak = (line, urgent) => {
-    if (muteVoice || !window.speechSynthesis) return;
-    if (urgent) speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(line);
-    u.lang = "en-US";
-    u.rate = 0.78;
-    u.pitch = 0.18;
-    u.volume = 1;
-    const v = pickVoice();
-    if (v) { u.voice = v; u.lang = v.lang && v.lang.startsWith("en") ? v.lang : "en-US"; }
-    speechSynthesis.speak(u);
+    if (muteVoice || !window.speechSynthesis || !line) return;
+    const talk = () => {
+      try { speechSynthesis.resume(); } catch (e) {}
+      const u = new SpeechSynthesisUtterance(String(line));
+      u.lang = "en-US";
+      u.volume = 1;
+      if (isIOS) {
+        u.rate = 0.92;
+        u.pitch = 1;
+      } else {
+        u.rate = 0.78;
+        u.pitch = 0.18;
+        const v = pickVoice();
+        if (v) { u.voice = v; u.lang = v.lang && v.lang.startsWith("en") ? v.lang : "en-US"; }
+      }
+      speechSynthesis.speak(u);
+    };
+    if (urgent || (speechSynthesis.speaking && !isIOS)) speechSynthesis.cancel();
+    if (isIOS) {
+      unlockSpeech();
+      setTimeout(talk, urgent ? 40 : 0);
+    } else {
+      talk();
+    }
   };
+  if (isIOS) {
+    const warm = () => { try { A.unlock(); } catch (e) {} };
+    document.addEventListener("touchstart", warm, { passive: true });
+    document.addEventListener("pointerdown", warm, { passive: true });
+  }
 })();
