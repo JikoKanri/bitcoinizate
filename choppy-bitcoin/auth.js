@@ -83,6 +83,7 @@
     const btn = $("btn-show-auth");
     const tag = $("user-profile-tag");
     if (profile && profile.username) {
+      window.choppyUsername = profile.username;
       window.choppySignedIn = true;
       if (btn) btn.classList.add("hide");
       if (tag) {
@@ -91,6 +92,7 @@
       }
     } else {
       window.choppySignedIn = false;
+      window.choppyUsername = "";
       if (btn) btn.classList.remove("hide");
       if (tag) {
         tag.classList.add("hide");
@@ -428,6 +430,7 @@
       if (supabase) await supabase.auth.signOut();
       currentUser = null; currentProfile = null;
       window.choppyUserId = "";
+      window.choppyUsername = "";
       updateAuthUI(null);
       if (profileModal) closeModal(profileModal);
     };

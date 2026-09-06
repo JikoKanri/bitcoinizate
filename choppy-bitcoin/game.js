@@ -1398,9 +1398,11 @@
   function shareRun(kind) {
     const btc = fmtBtc(netBtc());
     const names = runAwards(S.stats || collectRunStats()).map((a) => a.name).join(", ");
+    const who = (window.choppyUsername || "").trim();
+    const tag = who ? "@" + who.replace(/^@/, "") + " " : "";
     const text = kind === "win"
-      ? "I stacked 21M on Choppy Bitcoin. Bag " + btc + (names ? " Awards: " + names : "")
-      : "Rekt on Choppy Bitcoin. Bag " + btc + ". Play free on Bitcoinizate.";
+      ? tag + "stacked 21M on Choppy Bitcoin. Bag " + btc + (names ? " Awards: " + names : "")
+      : tag + "got rekt on Choppy Bitcoin. Bag " + btc + ". Play free on Bitcoinizate.";
     const url = "https://bitcoinizate.com/choppy-bitcoin/";
     if (navigator.share) {
       navigator.share({ title: "Choppy Bitcoin", text: text, url: url }).catch(() => {});
