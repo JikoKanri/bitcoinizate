@@ -106,7 +106,9 @@
       if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
       if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
       if (tier === 3) return es ? "DCA y tendencia solos" : "auto DCA and trend";
-      return es ? "compra y vende solo" : "auto buy and sell";
+      if (tier === 4) return es ? "trade cada 10 velas" : "trade every 10 candles";
+      if (tier === 5) return es ? "trade cada 5 velas" : "trade every 5 candles";
+      return es ? "trade cada 2 velas" : "trade every 2 candles";
     }
     return "";
   }
@@ -390,7 +392,7 @@
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
       S.offerSeq = [10, 20, 30]; S.nextOffer = 10; S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
-      S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0;
+      S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -640,7 +642,7 @@
   }
 
   function grantPerk(kind) {
-    const cap = kind === "ff" ? 3 : kind === "juke" ? 5 : kind === "aibud" ? 4 : 10;
+    const cap = kind === "ff" ? 3 : kind === "juke" ? 5 : kind === "aibud" ? 6 : 10;
     if (kind === "dca") S.have.dca = 1;
     else S.have[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
     S.poolTier[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
@@ -684,7 +686,7 @@
       if (id === "juke") return (S.have.juke || 0) < 5;
       if (id === "aibud") {
         const h = S.have.aibud || 0;
-        if (h >= 4) return false;
+        if (h >= 6) return false;
         if (h === 2 && S.have.dca <= 0 && S.have.manip <= 0) return false;
         return true;
       }
@@ -741,9 +743,21 @@
 
   function aiAct(act, why) {
     if (!S.iaLog) S.iaLog = [];
-    S.iaLog.unshift({ t: S.lifeT, act: act, why: why || "", net: net() });
+    S.iaLog.unshift({ t: S.lifeT, act: act, why: why || "", btc: netBtc(), candles: S.candles || 0 });
     if (S.iaLog.length > 48) S.iaLog.pop();
     if (A.sfx && A.sfx.iabud) A.sfx.iabud();
+  }
+
+  function aiTradeGap() {
+    const t = S.have.aibud || 0;
+    if (t >= 6) return 2;
+    if (t >= 5) return 5;
+    if (t >= 4) return 10;
+    return 9999;
+  }
+
+  function canAiTrade() {
+    return (S.candles || 0) - (S.aiTradeAt == null ? -9999 : S.aiTradeAt) >= aiTradeGap();
   }
 
   function markAiTrade() {
@@ -793,21 +807,22 @@
     const dumpSoon = !!(incomingBad || bullPeak || (S.power === "BULL" && S.powerT < 1.15));
     const dipSoon = !!(incomingGood || bearLow || S.swanBear || (S.power === "BEAR" && S.powerT < 1.2));
 
-    if (t >= 4) {
+    if (t >= 4 && canAiTrade()) {
+      const bag = netBtc();
       if (S.btc > 0 && dumpSoon) {
-        const before = net();
         S.aiSilent = true; sellBtc(); S.aiSilent = false;
-        S.iaProfit += net() - before;
+        S.iaProfit += netBtc() - bag;
         S.aibudLit = Object.assign({}, S.aibudLit, { sell: true, buy: false });
+        S.aiTradeAt = S.candles || 0;
         markAiTrade();
-        aiAct("Sold BTC", incomingBad ? "Dump incoming" : "Sold the peak");
+        aiAct("Sold BTC", incomingBad ? "Dump incoming · stack more later" : "Sold the peak · stack more later");
       } else if (S.cash > 0 && S.btc <= 0 && (dipSoon || S.power !== "BULL")) {
-        const before = net();
         S.aiSilent = true; buyBtc(); S.aiSilent = false;
-        S.iaProfit += net() - before;
+        S.iaProfit += netBtc() - bag;
         S.aibudLit = Object.assign({}, S.aibudLit, { buy: true, sell: false });
+        S.aiTradeAt = S.candles || 0;
         markAiTrade();
-        aiAct("Bought BTC", incomingGood ? "Pump incoming" : "Bought the dip");
+        aiAct("Bought BTC", incomingGood ? "Pump incoming · accumulate" : "Bought the dip · accumulate");
       }
     }
     if (t >= 3 && S.have.dca > 0) {
@@ -815,7 +830,7 @@
       if (want !== S.dcaOn) {
         S.dcaOn = want;
         S.aibudLit = Object.assign({}, S.aibudLit, { dca: true });
-        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Stack sats on the dip" : "Do not buy the top");
+        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Income to bitcoin" : "Do not buy the top");
       }
     }
     if (t >= 3 && S.have.manip > 0) {
@@ -823,7 +838,7 @@
       if (want !== S.trend) {
         S.trend = want;
         S.aibudLit = Object.assign({}, S.aibudLit, { trend: true });
-        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", want === "up" ? "Pump the bag" : "Paint a cheaper entry");
+        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", want === "up" ? "Pump the bag" : "Cheaper next buy");
       }
     }
   }
@@ -1569,9 +1584,9 @@
       }
       const rows = (S.iaLog || []).map((e) => {
         const sec = Math.floor(e.t);
-        return "<p><span class=\"ia-act\">" + e.act + "</span> — " + e.why + " <span class=\"k\">" + sec + "s · " + money(e.net) + "</span></p>";
+        return "<p><span class=\"ia-act\">" + e.act + "</span> — " + e.why + " <span class=\"k\">" + sec + "s · " + fmtBtc(e.btc != null ? e.btc : 0) + "</span></p>";
       }).join("") || "<p>" + t("noAiCalls") + "</p>";
-      return "<h1>" + t("aiLog") + "</h1><p class=\"k\">" + t("markedPl") + " " + money(S.iaProfit || 0) + " · " + t("speed") + " " + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+      return "<h1>" + t("aiLog") + "</h1><p class=\"k\">" + t("markedPl") + " " + fmtBtc(S.iaProfit || 0) + " · T" + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "juke") {
       if ((S.have.juke || 0) <= 0) {
