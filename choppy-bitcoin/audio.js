@@ -915,13 +915,18 @@ w: And ev-er since then my head's been red.`),
         if (urgent) speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(String(line));
         const es = !!(window.BZ && BZ.lang && BZ.lang() === "es");
-        u.lang = es ? "es-MX" : "en-US";
+        u.lang = es ? "es-419" : "en-US";
         u.rate = 1;
         u.pitch = 1;
         u.volume = 1;
         const list = speechSynthesis.getVoices() || [];
-        const pref = es ? "es" : "en";
-        const v = list.find((x) => (x.lang || "").toLowerCase().indexOf(pref) === 0) || list[0];
+        let v = null;
+        if (es) {
+          v = list.find((x) => /es-|spanish|español|mexico|latam|argentina|colombia/i.test((x.lang || "") + " " + (x.name || "")));
+        } else {
+          v = list.find((x) => /^en/i.test(x.lang || ""));
+        }
+        if (!v) v = list[0];
         if (v) u.voice = v;
         speechSynthesis.speak(u);
       } catch (e) {}

@@ -641,7 +641,6 @@
     S.have[kind] = t;
     if (kind !== "dca") S.poolTier[kind] = Math.min(cap, t + 1);
     if (kind === "dca") S.dcaOn = true;
-    if (kind === "ff") S.speedMul = ffMax();
     if (kind === "manip" && !S.trend) S.trend = "off";
     if (kind === "juke") fillJukebox();
   }
@@ -1224,16 +1223,16 @@
     on("h-vt-wrap", bonus);
     on("h-vtpx-wrap", bonus);
     on("vt-row", bonus);
-    on("spd-lab", S.have.ff > 0);
-    on("spd-1", S.have.ff > 0);
+    on("spd-lab", false);
+    on("spd-1", false);
     on("spd-2", S.have.ff > 0);
     const spd2 = $("spd-2");
     if (spd2) {
       const mx = ffMax();
-      spd2.textContent = (mx % 1 ? mx.toFixed(1) : String(mx)) + "x";
-      spd2.classList.toggle("on", S.speedMul !== 1);
+      const fast = S.have.ff > 0 && S.speedMul !== 1;
+      spd2.textContent = fast ? ((mx % 1 ? mx.toFixed(1) : String(mx)) + "x") : "1x";
+      spd2.classList.toggle("on", fast);
     }
-    $("spd-1") && $("spd-1").classList.toggle("on", S.speedMul === 1);
     on("dca-btn", S.have.dca > 0);
     on("iabud-btn", (S.have.aibud || 0) > 0);
     on("trend-btn", S.have.manip > 0);
@@ -1281,7 +1280,6 @@
       pauseBtn.setAttribute("aria-label", paused ? "Play" : "Pause");
     }
     if (S.have.ff <= 0) S.speedMul = 1;
-    else if (S.speedMul !== 1) S.speedMul = ffMax();
     const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk";
     $("trades").classList.toggle("hide", !playing);
     $("pause-btn").classList.toggle("hide", !playing);
@@ -1655,6 +1653,7 @@
     const p = S.phase;
     if (p === "play") { hideOverlay(); return; }
     showOverlay();
+    overlay.classList.toggle("dock", p === "perk" || p === "paused");
     if (p === "ready") {
       if (S.optPanel) {
         overlay.innerHTML = pauseMarkup();
@@ -1831,16 +1830,15 @@
   document.querySelectorAll(".spd").forEach((btn) => {
     btn.onpointerdown = (e) => {
       e.stopPropagation(); e.preventDefault();
-      if (btn.dataset.speed === "2") {
-        if (S.have.ff <= 0) return;
-        S.speedMul = ffMax();
-      } else S.speedMul = 1;
-      document.querySelectorAll(".spd").forEach((b) => b.classList.toggle("on", b === btn));
+      if (S.have.ff <= 0) return;
+      S.speedMul = S.speedMul === 1 ? ffMax() : 1;
+      renderHud();
     };
   });
 
   window.addEventListener("bz-lang", () => {
     if (window.BZ) BZ.apply(document);
+    if (A && A.setLang && window.BZ && BZ.lang) A.setLang(BZ.lang());
     renderOverlay();
     renderHud();
   });
