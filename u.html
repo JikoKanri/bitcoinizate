@@ -23,8 +23,9 @@
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
     .brand img { width: 40px; height: 40px; border-radius: 50%; }
     .brand p { margin: 0; letter-spacing: 0.16em; font-size: 13px; color: var(--gold); }
-    h1 { margin: 0 0 8px; font-size: clamp(28px, 6vw, 40px); color: var(--gold); }
-    .lead { color: #d4d0c8; line-height: 1.5; }
+    .head { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+    .ava { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); background: #141416; }
+    h1 { margin: 0; font-size: clamp(28px, 6vw, 40px); color: var(--gold); }
     .card { border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); padding: 16px; margin: 18px 0; }
     .card p { margin: 0 0 8px; font-size: 14px; }
     .k { color: var(--mute); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -32,6 +33,10 @@
     .aw-on b { color: var(--gold); }
     .miss { color: #ff9b92; }
     .hide { display: none !important; }
+    .edit {
+      display: inline-block; margin: 8px 0 0; padding: 10px 14px; border: 1px solid var(--gold);
+      color: var(--gold); font: inherit; font-size: 13px; letter-spacing: 0.06em;
+    }
     .play {
       display: block; text-align: center; font-weight: 700; background: var(--gold); color: #120c02;
       padding: 14px; letter-spacing: 0.06em; margin-top: 16px;
@@ -45,7 +50,11 @@
       <p><a href="/">BITCOINIZATE</a></p>
     </div>
     <p class="k" id="k-profile">Profile</p>
-    <h1 id="who">…</h1>
+    <div class="head">
+      <img class="ava hide" id="ava" alt="">
+      <h1 id="who">…</h1>
+    </div>
+    <a class="edit hide" id="edit-btn" href="/dashboard/profile/">Editar perfil</a>
     <div class="card">
       <p class="k" id="k-score">High score</p>
       <p id="score">—</p>
@@ -58,15 +67,18 @@
   <script src="/choppy-bitcoin/supabase-lib.js"></script>
   <script>
     (function () {
-      var RESERVED = { "":1, "index.html":1, "privacy":1, "privacy.html":1, "choppy-bitcoin":1, "u.html":1, "robots.txt":1, "sitemap.xml":1, "favicon.ico":1 };
+      var RESERVED = { "":1, "index.html":1, "privacy":1, "privacy.html":1, "choppy-bitcoin":1, "u.html":1, "u":1, "dashboard":1, "robots.txt":1, "sitemap.xml":1, "favicon.ico":1 };
       var parts = (location.pathname || "/").replace(/\/+/g, "/").split("/").filter(Boolean);
       var q = new URLSearchParams(location.search).get("u");
-      var raw = q || parts[0] || "";
+      var raw = q || "";
+      if (!raw && parts[0] === "u" && parts[1] && parts[1] !== "index.html") raw = parts[1];
+      else if (!raw && parts[0] && parts[0] !== "u") raw = parts[0];
       try { raw = decodeURIComponent(raw); } catch (e) {}
       raw = String(raw).replace(/^@/, "").trim();
       var es = window.BZ && BZ.lang && BZ.lang() === "es";
       document.getElementById("k-profile").textContent = es ? "Perfil" : "Profile";
       document.getElementById("k-score").textContent = es ? "Mejor puntaje" : "High score";
+      document.getElementById("edit-btn").textContent = es ? "Editar perfil" : "Edit profile";
       if (!raw || RESERVED[raw.toLowerCase()] || !/^[a-zA-Z0-9_]{3,16}$/.test(raw)) {
         document.getElementById("who").textContent = es ? "Jugador no encontrado" : "Player not found";
         document.getElementById("miss").textContent = es ? "Ese alias no existe." : "That alias does not exist.";
@@ -95,18 +107,13 @@
         document.getElementById("miss").classList.remove("hide");
         return;
       }
-      sb.from("profiles").select("username, highscore, awards").ilike("username", raw).limit(1).then(function (res) {
-        var row = res && res.data && res.data[0];
-        if (res.error || !row) {
-          document.getElementById("who").textContent = es ? "Jugador no encontrado" : "Player not found";
-          document.getElementById("miss").textContent = es ? "Ese alias no existe." : "That alias does not exist.";
-          document.getElementById("miss").classList.remove("hide");
-          return;
-        }
+      function paint(row) {
         var name = row.username || raw;
         document.getElementById("who").textContent = "@" + name;
         document.title = "@" + name + " | Bitcoinizate";
         document.getElementById("score").textContent = fmtScoreBtc(row.highscore);
+        var av = document.getElementById("ava");
+        if (row.avatar) { av.src = row.avatar; av.classList.remove("hide"); }
         var owned = {};
         (row.awards || []).forEach(function (id) { owned[id] = true; });
         var html = CATALOG.filter(function (a) { return owned[a.id]; }).map(function (a) {
@@ -115,6 +122,28 @@
           return "<p class=\"aw-on\"><b>✓ " + n + "</b> — " + w + "</p>";
         }).join("");
         document.getElementById("awards").innerHTML = html || ("<p>" + (es ? "Todavía no hay premios." : "No awards yet.") + "</p>");
+        sb.auth.getSession().then(function (sess) {
+          var uid = sess && sess.data && sess.data.session && sess.data.session.user && sess.data.session.user.id;
+          if (uid && row.id && uid === row.id) document.getElementById("edit-btn").classList.remove("hide");
+        });
+      }
+      function fail() {
+        document.getElementById("who").textContent = es ? "Jugador no encontrado" : "Player not found";
+        document.getElementById("miss").textContent = es ? "Ese alias no existe." : "That alias does not exist.";
+        document.getElementById("miss").classList.remove("hide");
+      }
+      function load(cols) {
+        return sb.from("profiles").select(cols).ilike("username", raw).limit(1);
+      }
+      load("id, username, highscore, awards, avatar").then(function (res) {
+        if (res && res.error) {
+          return load("id, username, highscore, awards").then(function (res2) {
+            if (res2.error || !res2.data || !res2.data[0]) fail();
+            else paint(res2.data[0]);
+          });
+        }
+        if (!res.data || !res.data[0]) fail();
+        else paint(res.data[0]);
       }).catch(function () {
         document.getElementById("miss").textContent = es ? "No se pudo cargar el perfil." : "Could not load profile.";
         document.getElementById("miss").classList.remove("hide");

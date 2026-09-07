@@ -62,7 +62,7 @@
 
   function profileHref(name) {
     const n = String(name || "").replace(/^@/, "").trim();
-    return "/" + encodeURIComponent(n);
+    return "/u/" + encodeURIComponent(n);
   }
 
   function fmtScoreBtc(sats) {
