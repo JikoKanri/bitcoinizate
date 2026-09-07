@@ -237,7 +237,12 @@
       try { await supabase.from("profiles").update({ email: currentUser.email }).eq("id", currentUser.id); } catch (e) {}
       currentProfile.email = currentUser.email;
     }
-    if (Array.isArray(data.awards) && window.mergeChoppyAwards) window.mergeChoppyAwards(data.awards);
+    if (localStorage.getItem("choppy-reset-420") === "1") {
+      try { localStorage.removeItem("choppy-awards"); } catch (e) {}
+      try { await supabase.from("profiles").update({ awards: [], highscore: 0 }).eq("id", currentUser.id); } catch (e) {}
+      currentProfile.awards = [];
+      currentProfile.highscore = 0;
+    } else if (Array.isArray(data.awards) && window.mergeChoppyAwards) window.mergeChoppyAwards(data.awards);
     updateAuthUI(currentProfile);
   }
 

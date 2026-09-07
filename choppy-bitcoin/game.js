@@ -10,6 +10,15 @@
   const RED = "#c45c4a";
   const BTC = "#c8960a";
   const KEY = "bitcoinizate-v1";
+  try {
+    if (localStorage.getItem("choppy-reset-420") !== "1") {
+      localStorage.removeItem("choppy-awards");
+      const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
+      if (raw.scores) { raw.scores.choppy = 0; raw.scores.choppy2 = 0; raw.scores.choppy3 = 0; }
+      localStorage.setItem(KEY, JSON.stringify(raw));
+      localStorage.setItem("choppy-reset-420", "1");
+    }
+  } catch (e) {}
 
   const $ = (id) => document.getElementById(id);
   const fmtUsd = (n) => {
@@ -154,7 +163,7 @@
   function loadBest() {
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || "{}");
-      return (s.scores && s.scores.choppy2) || 0;
+      return (s.scores && s.scores.choppy3) || 0;
     } catch (e) { return 0; }
   }
   function saveBest(n) {
@@ -162,12 +171,12 @@
     let s = { scores: { choppy: 0 } };
     try { s = Object.assign({ scores: { choppy: 0 } }, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
     s.scores = s.scores || {};
-    s.scores.choppy2 = Math.max(s.scores.choppy2 || 0, n);
+    s.scores.choppy3 = Math.max(s.scores.choppy3 || 0, n);
     localStorage.setItem(KEY, JSON.stringify(s));
     if (typeof window.submitNewHighScore === "function") {
       window.submitNewHighScore(n, { lifeT: S.lifeT, candles: S.candles, human: !!S.humanInput });
     }
-    return s.scores.choppy2;
+    return s.scores.choppy3;
   }
 
   function gauss(mean, lo, hi) {
@@ -1664,6 +1673,7 @@
     return map;
   }
   function runAwardIds(st) {
+    if (!st || (st.candles || 0) < 420) return [];
     const out = [];
     if ((st.sells || 0) === 0) out.push("maxi");
     if ((st.halveMiss || 0) === 0 && (st.halvings || 0) > 0) out.push("halver");
