@@ -880,6 +880,167 @@
   }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
+      title: "Marek and the dump", titleEs: "Marek y el basural",
+      body: "Marek texts at 1:14 a.m. He got a permit to keep digging Docksway Landfill in Wales, where an 8,000 BTC pendrive vanished in 2009. He wants a partner, not a spectator. Lena already said the couch is not a mine.",
+      bodyEs: "Marek escribe a la 1:14. Consiguió permiso para seguir cavando el basural de Docksway, Gales, donde en 2009 se perdió un pendrive de 8.000 BTC. Quiere un socio, no un espectador. Lena ya dijo que el sillón no es una mina.",
+      opts: [
+        { k: "a", label: "Chip in 25% of net worth", labelEs: "Poner el 25% del patrimonio" },
+        { k: "b", label: "Chip in 75% of net worth", labelEs: "Poner el 75% del patrimonio" },
+        { k: "c", label: "Tell Marek you pass", labelEs: "Decirle a Marek que paso" }
+      ] },
+    { id: "taxbill", kind: "report",
+      title: "Letter for Lena", titleEs: "Carta para Lena",
+      body: "The envelope is addressed to both of you. Quarterly filing. Lena puts it on the fridge next to Paco's vet reminder and waits.",
+      bodyEs: "El sobre viene a nombre de los dos. Presentación trimestral. Lena lo deja en la heladera, al lado del recordatorio del vet de Paco, y espera." },
+    { id: "wedding", kind: "choice",
+      title: "Nico gets married", titleEs: "Se casa Nico",
+      body: "Cousin Nico booked a hall that seats four hundred and a DJ who still says 'put your hands up'. Lena asks what envelope you are taking. Paco is not invited and he knows.",
+      bodyEs: "El primo Nico alquiló un salón para cuatrocientos y un DJ que sigue gritando 'las manos arriba'. Lena pregunta qué sobre llevás. Paco no está invitado y lo sabe.",
+      opts: [
+        { k: "a", label: "Send 4% of net worth", labelEs: "Mandar 4% del patrimonio" },
+        { k: "b", label: "Send 0.6% and a meme", labelEs: "Mandar 0.6% y un meme" },
+        { k: "c", label: "Skip the hall", labelEs: "Saltearme el salón" }
+      ] },
+    { id: "patagonia", kind: "choice",
+      title: "Lena booked the lake", titleEs: "Lena reservó el lago",
+      body: "Last two seats on a Bariloche bus. Lena already packed the red thermos. Paco can stay with Marek for a week if you go.",
+      bodyEs: "Últimos dos asientos al bus de Bariloche. Lena ya guardó el termo rojo. Paco puede quedarse con Marek una semana si se van.",
+      opts: [
+        { k: "a", label: "Book it · 8% of net worth", labelEs: "Reservar · 8% del patrimonio" },
+        { k: "b", label: "Stay home with Paco", labelEs: "Quedarme con Paco" }
+      ] },
+    { id: "flu", kind: "report",
+      title: "Paco's week, then yours", titleEs: "La semana de Paco, después la tuya",
+      body: "Paco started it. Then Lena. Then you. The pharmacy knows your name. Soup is the only strategy that still works.",
+      bodyEs: "Empezó Paco. Después Lena. Después vos. En la farmacia ya saben tu nombre. La sopa es la única estrategia que sigue andando." },
+    { id: "phish", kind: "choice",
+      title: "Mail from 'support'", titleEs: "Mail de «soporte»",
+      body: "It says your seed is leaking. The domain is three letters off. Lena reads it over your shoulder and does not blink.",
+      bodyEs: "Dice que se filtra tu seed. El dominio falla por tres letras. Lena lo lee detrás tuyo y no pestañea.",
+      opts: [
+        { k: "a", label: "Open the form", labelEs: "Abrir el formulario" },
+        { k: "b", label: "Delete it", labelEs: "Borrarlo" }
+      ] },
+    { id: "crash", kind: "report",
+      title: "Scooter at the light", titleEs: "Scooter en el semáforo",
+      body: "A delivery kid kisses the bumper while you wait for Lena's call. Nobody is hurt. The bumper files a complaint anyway.",
+      bodyEs: "Un pibe de delivery besa el paragolpes mientras esperás el llamado de Lena. Nadie se lastima. El paragolpes igual denuncia." },
+    { id: "casino", kind: "choice",
+      title: "Rami found a table", titleEs: "Rami encontró una mesa",
+      body: "Rami swears the felt is lucky tonight. Lena is at home with Paco and a movie. You can still walk out.",
+      bodyEs: "Rami jura que el paño hoy tiene suerte. Lena está en casa con Paco y una peli. Todavía podés salir.",
+      opts: [
+        { k: "a", label: "Bet 10% of net worth", labelEs: "Apostar 10% del patrimonio" },
+        { k: "b", label: "Bet 30% of net worth", labelEs: "Apostar 30% del patrimonio" },
+        { k: "c", label: "Walk out", labelEs: "Salir" }
+      ] },
+    { id: "poker", kind: "choice",
+      title: "Rami's poker cruise", titleEs: "El crucero de póker de Rami",
+      body: "Rami already has the cabin. Mid-sea tournament, buy-in that scales with the table. Lena says if you go, you text when the ship has signal.",
+      bodyEs: "Rami ya tiene el camarote. Torneo en alta mar, buy-in que escala con la mesa. Lena dice que si vas, avisás cuando el barco tenga señal.",
+      opts: [
+        { k: "a", label: "Buy-in 8% of net worth", labelEs: "Buy-in 8% del patrimonio" },
+        { k: "b", label: "Buy-in 25% of net worth", labelEs: "Buy-in 25% del patrimonio" },
+        { k: "c", label: "Stay on the dock", labelEs: "Quedarme en el muelle" }
+      ] },
+    { id: "uncle", kind: "report",
+      title: "Uncle Hector wires", titleEs: "Gira el tío Héctor",
+      body: "A note in the transfer: don't tell your aunt. Buy the dip or a sandwich for Lena. Paco is not a tax category.",
+      bodyEs: "Una nota en la transferencia: no le digas a tu tía. Comprá el dip o un sándwich para Lena. Paco no es una categoría fiscal." },
+    { id: "school", kind: "choice",
+      title: "Sofi's mint museum", titleEs: "El museo de Sofi",
+      body: "Sofi — Nico's kid — needs a co-signer for the class trip to the mint museum. She already drew you on the permission slip with sunglasses.",
+      bodyEs: "Sofi, la hija de Nico, necesita un firmante para el viaje al museo de la casa de moneda. Ya te dibujó en el permiso, con anteojos.",
+      opts: [
+        { k: "a", label: "Cover 3% of net worth", labelEs: "Cubrir 3% del patrimonio" },
+        { k: "b", label: "Pass", labelEs: "Paso" }
+      ] },
+    { id: "roof", kind: "report",
+      title: "The hallway drip", titleEs: "La gotera del pasillo",
+      body: "Tuesday rain finds the crack above the hallway. Lena puts a pot under it. Paco drinks from the pot like it was the plan.",
+      bodyEs: "La lluvia del martes encuentra la grieta del pasillo. Lena pone una olla. Paco toma de la olla como si fuera el plan." },
+    { id: "lotto", kind: "report",
+      title: "Ticket on the lid", titleEs: "El ticket de la tapa",
+      body: "Stuck to Marek's coffee lid after the night shift. Lena says scratch it before Paco does.",
+      bodyEs: "Pegado a la tapa del café de Marek después del turno noche. Lena dice que lo raspes antes que Paco." },
+    { id: "hospital", kind: "report",
+      title: "Four stitches", titleEs: "Cuatro puntos",
+      body: "You looked one way. The curb looked the other. Lena meets you in the waiting room with Paco in a backpack that is not allowed.",
+      bodyEs: "Vos miraste para un lado. El cordón para el otro. Lena te espera en la sala con Paco en una mochila que no se puede." },
+    { id: "startup", kind: "choice",
+      title: "Val's last round", titleEs: "La última ronda de Val",
+      body: "Val is pre-revenue, post-vibe, and asking friends. The whiteboard still says 'synergy'. Lena asks if this is the same Val from the food-truck year.",
+      bodyEs: "Val está pre-revenue, post-vibe, y pide a los amigos. El pizarrón sigue diciendo «sinergia». Lena pregunta si es el mismo Val del año del food truck.",
+      opts: [
+        { k: "a", label: "Invest 20% of net worth", labelEs: "Invertir 20% del patrimonio" },
+        { k: "b", label: "Pass", labelEs: "Paso" }
+      ] },
+    { id: "tow", kind: "report",
+      title: "Nine-minute curb", titleEs: "Nueve minutos de cordón",
+      body: "The sign said ten. They waited nine. Lena is already walking toward the lot with the spare key.",
+      bodyEs: "El cartel decía diez. Esperaron nueve. Lena ya camina al playón con la llave de más." },
+    { id: "romance", kind: "choice",
+      title: "General on the phone", titleEs: "El general en el teléfono",
+      body: "A decorated officer needs gas money to fly over with a vault key. Lena reads the chat and laughs once, which is worse than yelling.",
+      bodyEs: "Un oficial con medallas necesita nafta para volar con la llave de una bóveda. Lena lee el chat y se ríe una vez, que es peor que gritar.",
+      opts: [
+        { k: "a", label: "Wire 10% of net worth", labelEs: "Girar 10% del patrimonio" },
+        { k: "b", label: "Block and tell Lena", labelEs: "Bloquear y contarle a Lena" }
+      ] },
+    { id: "refund", kind: "report",
+      title: "Quiet deposit", titleEs: "Depósito quieto",
+      body: "They over-collected last quarter. Lena screenshots the amount for the shared note titled 'proof we are adults'.",
+      bodyEs: "Cobrarón de más el trimestre pasado. Lena captura el monto para la nota compartida que se llama «prueba de que somos adultos»." },
+    { id: "baby", kind: "choice",
+      title: "Nico again", titleEs: "Nico otra vez",
+      body: "Same cousin. New human. Smaller envelope, louder group chat. Sofi wants you to pick the onesie color.",
+      bodyEs: "El mismo primo. Humano nuevo. Sobre más chico, grupo más ruidoso. Sofi quiere que elijas el color del body.",
+      opts: [
+        { k: "a", label: "Send 2% of net worth", labelEs: "Mandar 2% del patrimonio" },
+        { k: "b", label: "Send a PDF of wishes", labelEs: "Mandar un PDF de deseos" }
+      ] },
+    { id: "flood", kind: "report",
+      title: "Washer revolt", titleEs: "El lavarropas se revela",
+      body: "The hose retires without notice. Basement lake. Paco supervises from the third step and does not help.",
+      bodyEs: "La manguera se jubila sin aviso. Lago en el sótano. Paco supervisa desde el tercer escalón y no ayuda." },
+    { id: "cousin", kind: "choice",
+      title: "Nico's ticker", titleEs: "El ticker de Nico",
+      body: "Nico cannot pronounce it and still says it 10xs by Friday. Lena leaves the room so she does not have to hear the pitch twice.",
+      bodyEs: "Nico no lo puede pronunciar y igual dice que x10 para el viernes. Lena se va de la pieza para no escuchar el pitch dos veces.",
+      opts: [
+        { k: "a", label: "Put 40% of net worth in", labelEs: "Meter 40% del patrimonio" },
+        { k: "b", label: "Keep the stack", labelEs: "Dejar el stack" }
+      ] },
+    { id: "speeding", kind: "report",
+      title: "Same intersection", titleEs: "La misma esquina",
+      body: "Flash. Letter. The camera has a better memory than you. Lena puts it on the fridge under the tax one.",
+      bodyEs: "Flash. Carta. La cámara tiene mejor memoria que vos. Lena la pone en la heladera, debajo de la de rentas." },
+    { id: "wallet", kind: "report",
+      title: "Bus seat 14", titleEs: "Asiento 14 del bondi",
+      body: "It was there. Then the next stop. Lena cancels the cards while Paco sniffs the empty pocket like evidence.",
+      bodyEs: "Estaba. Después la parada. Lena cancela las tarjetas mientras Paco olfatea el bolsillo vacío como prueba." },
+    { id: "potluck", kind: "choice",
+      title: "Block stew", titleEs: "El guiso de la cuadra",
+      body: "They are short on chairs and long on speeches. Lena already chopped onions. Paco will steal a napkin either way.",
+      bodyEs: "Faltan sillas y sobran discursos. Lena ya picó cebolla. Paco se va a robar una servilleta igual.",
+      opts: [
+        { k: "a", label: "Donate 5% of net worth", labelEs: "Donar 5% del patrimonio" },
+        { k: "b", label: "Bring nothing", labelEs: "No llevar nada" }
+      ] },
+    { id: "usedcar", kind: "choice",
+      title: "Marker on the belt", titleEs: "Marcador en la correa",
+      body: "A 2009 hatch. 'New timing belt' in marker. Marek knows the lot guy. Lena wants a second look at the tires.",
+      bodyEs: "Un hatch 2009. «Correa nueva» a marcador. Marek conoce al de la agencia. Lena quiere mirar las gomas otra vez.",
+      opts: [
+        { k: "a", label: "Buy it · 12% of net worth", labelEs: "Comprarlo · 12% del patrimonio" },
+        { k: "b", label: "Keep walking", labelEs: "Seguir de largo" }
+      ] },
+    { id: "dentist", kind: "report",
+      title: "That molar", titleEs: "Esa muela",
+      body: "It filed a formal complaint. Lena books the chair before you can invent an excuse. Paco waits in the car like a getaway driver.",
+      bodyEs: "Presentó una queja formal. Lena reserva el sillón antes de que inventes una excusa. Paco espera en el auto como chofer de fuga." }
+  ];
+    { id: "landfill", kind: "choice",
       title: "Docksway landfill", titleEs: "Basural de Docksway",
       body: "A friend of yours got a permit to keep searching for an 8,000 BTC pendrive lost in 2009 in Docksway Landfill, Wales. Would you like to chip in?",
       bodyEs: "Un amigo consiguió permiso para seguir buscando un pendrive de 8.000 BTC perdido en 2009 en el basural de Docksway, Gales. ¿Ponés plata?",
@@ -2470,16 +2631,18 @@
       const es = chanceLang();
       const title = es ? (card.titleEs || card.title) : card.title;
       const body = es ? (card.bodyEs || card.body) : card.body;
+      const art = "chance/" + card.id + ".jpg";
+      const pic = "<img class=\"chance-art\" src=\"" + art + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1><p class=\"k\">" + title + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1><p class=\"k\">" + title + "</p><p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
