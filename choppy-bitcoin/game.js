@@ -172,8 +172,8 @@
       }
       if (id === "market") return es ? "abre el mercado en el HUD" : "opens the market in the HUD";
       if (id === "chance") {
-        if (tier <= 1) return es ? "1 carta cada 210 velas" : "1 card every 210 candles";
-        if (tier === 2) return es ? "2 cartas cada 210 velas" : "2 cards every 210 candles";
+        if (tier <= 1) return es ? "1 carta cada 21 velas" : "1 card every 21 candles";
+        if (tier === 2) return es ? "2 cartas cada 21 velas" : "2 cards every 21 candles";
         return es ? "2 cartas + chance de 3ra" : "2 cards + odds of a 3rd";
       }
       if (id === "aibud") {
@@ -501,7 +501,7 @@
       S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = "";
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceMet = {}; S.chanceLead = "";
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -832,11 +832,11 @@
     const t = S.have.chance || 0;
     if (t <= 0) { S.chanceAt = []; S.chanceUntil = 0; return; }
     const start = from + 1;
-    const end = from + 210;
+    const end = from + 21;
     const used = {};
     const pick = () => {
       let c, n = 0;
-      do { c = start + ((Math.random() * 210) | 0); n++; } while (used[c] && n < 30);
+      do { c = start + ((Math.random() * 21) | 0); n++; } while (used[c] && n < 30);
       used[c] = true;
       return c;
     };
@@ -879,6 +879,38 @@
   function chanceLang() {
     return window.BZ && BZ.lang && BZ.lang() === "es";
   }
+  const CHANCE_CAST = {
+    lena: { en: "Lena, the owner of your heart", es: "Lena, la dueña de tu corazón" },
+    paco: { en: "Paco, the street dog who decided you were his person", es: "Paco, el perro de la calle que decidió que eras su persona" },
+    marek: { en: "Marek, your basketball friend from school", es: "Marek, tu amigo del básquet del colegio" },
+    nico: { en: "Nico, your cousin with a plan and a group chat", es: "Nico, tu primo con un plan y un grupo de WhatsApp" },
+    sofi: { en: "Sofi, Nico's kid who already draws you in sunglasses", es: "Sofi, la hija de Nico que ya te dibuja con anteojos" },
+    val: { en: "Val, your ex-boss from the food-truck year", es: "Val, tu ex-jefe del año del food truck" },
+    rami: { en: "Rami, who still keeps arcade tokens in the glove box", es: "Rami, el que todavía guarda fichas de arcade en la guantera" },
+    hector: { en: "Uncle Hector, who wires money with a note attached", es: "El tío Héctor, que gira plata con una nota pegada" }
+  };
+  const CHANCE_WHO = {
+    landfill: ["marek", "lena"], taxbill: ["lena", "paco"], wedding: ["nico", "lena", "paco"],
+    patagonia: ["lena", "paco", "marek"], flu: ["paco", "lena"], phish: ["lena"], crash: ["lena"],
+    casino: ["rami", "lena", "paco"], poker: ["rami", "lena"], uncle: ["hector", "lena", "paco"],
+    school: ["sofi", "nico"], roof: ["lena", "paco"], lotto: ["marek", "lena", "paco"],
+    hospital: ["lena", "paco"], startup: ["val", "lena"], tow: ["lena"], romance: ["lena"],
+    refund: ["lena"], baby: ["nico", "sofi"], flood: ["paco"], cousin: ["nico", "lena"],
+    speeding: ["lena"], wallet: ["lena", "paco"], potluck: ["lena", "paco"], usedcar: ["marek", "lena"],
+    dentist: ["lena", "paco"], friends: ["lena"], tetris: ["rami"], outrun: ["rami", "lena"], wake: ["lena", "nico"]
+  };
+  function presentCast(ids) {
+    if (!S.chanceMet) S.chanceMet = {};
+    const es = chanceLang();
+    const bits = [];
+    (ids || []).forEach((id) => {
+      const n = S.chanceMet[id] || 0;
+      S.chanceMet[id] = n + 1;
+      const row = CHANCE_CAST[id];
+      if (n < 2 && row) bits.push(es ? row.es : row.en);
+    });
+    return bits.join(". ");
+  }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
       title: "Marek and the dump", titleEs: "Marek y el basural",
@@ -911,9 +943,9 @@
         { k: "b", label: "Stay home with Paco", labelEs: "Quedarme con Paco" }
       ] },
     { id: "flu", kind: "report",
-      title: "Paco's week, then yours", titleEs: "La semana de Paco, después la tuya",
-      body: "Paco started it. Then Lena. Then you. The pharmacy knows your name. Soup is the only strategy that still works.",
-      bodyEs: "Empezó Paco. Después Lena. Después vos. En la farmacia ya saben tu nombre. La sopa es la única estrategia que sigue andando." },
+      title: "Friends, then the floor", titleEs: "Friends, después el piso",
+      body: "You were on the couch with the syndication of Friends. The laugh track hit. Then your chest did. Pharmacy bag, old CRT glow, soup.",
+      bodyEs: "Estaban en el sillón con Friends en sindicación. Sonó la risa enlatada. Después el pecho. Bolsa de farmacia, brillo del tubo, sopa." },
     { id: "phish", kind: "choice",
       title: "Mail from 'support'", titleEs: "Mail de «soporte»",
       body: "It says your seed is leaking. The domain is three letters off. Lena reads it over your shoulder and does not blink.",
@@ -1039,7 +1071,31 @@
     { id: "dentist", kind: "report",
       title: "That molar", titleEs: "Esa muela",
       body: "It filed a formal complaint. Lena books the chair before you can invent an excuse. Paco waits in the car like a getaway driver.",
-      bodyEs: "Presentó una queja formal. Lena reserva el sillón antes de que inventes una excusa. Paco espera en el auto como chofer de fuga." }
+      bodyEs: "Presentó una queja formal. Lena reserva el sillón antes de que inventes una excusa. Paco espera en el auto como chofer de fuga." },
+    { id: "friends", kind: "report",
+      title: "The one with the invoice", titleEs: "El de la factura",
+      body: "Season four, the episode everyone quotes. Mid-credit your pulse files paperwork. The VHS is still humming.",
+      bodyEs: "Temporada cuatro, el capítulo que todos citan. A mitad de los créditos el pulso presenta papeles. El VHS sigue zumbando." },
+    { id: "tetris", kind: "choice",
+      title: "Tetris night", titleEs: "Noche de Tetris",
+      body: "The rec center still has the cabinet with the Soviet theme. Entry fee scales with the room. Rami already put a coin on the glass.",
+      bodyEs: "El club de barrio todavía tiene el cabinet con el tema soviético. La entrada escala con la sala. Rami ya dejó una ficha sobre el vidrio.",
+      opts: [
+        { k: "a", label: "Enter · 8% of net worth", labelEs: "Anotar me · 8% del patrimonio" },
+        { k: "b", label: "Watch from the snack bar", labelEs: "Mirar desde el kiosco" }
+      ] },
+    { id: "outrun", kind: "choice",
+      title: "Out Run cabinet", titleEs: "El cabinet de Out Run",
+      body: "Ferrari on a sit-down cabinet, palm trees looping. Rami says one more stage. Lena is holding the jacket you swore you would not take off.",
+      bodyEs: "Ferrari en un cabinet de asiento, palmeras en loop. Rami dice una etapa más. Lena sostiene la campera que juraste no sacarte.",
+      opts: [
+        { k: "a", label: "Feed it 6% of net worth", labelEs: "Alimentarlo con 6% del patrimonio" },
+        { k: "b", label: "Keep the tokens", labelEs: "Guardar las fichas" }
+      ] },
+    { id: "wake", kind: "report",
+      title: "Black tie, black room", titleEs: "Traje negro, sala negra",
+      body: "Aunt Rosa's wake. Nico reads a paper he wrote on the bus. The flowers have a price and so does showing up.",
+      bodyEs: "El velorio de la tía Rosa. Nico lee un papel que escribió en el bondi. Las flores tienen precio y también aparecer." }
   ];
 
   function resolveChance(card, opt) {
@@ -1222,6 +1278,32 @@
       const paid = cutPct(0.03);
       return say("The molar stands down. −" + money(paid) + ".", "La muela se rinde. −" + money(paid) + ".");
     }
+    if (card.id === "friends") {
+      const paid = cutPct(0.07);
+      return say("The laugh track keeps going. Invoice too. −" + money(paid) + ".", "La risa enlatada sigue. La factura también. −" + money(paid) + ".");
+    }
+    if (card.id === "tetris") {
+      if (opt === "b") return say("You watch a twelve-year-old four-line the room.", "Miras a un pibe de doce hacer un four-line al salón.");
+      const stake = cutPct(0.08);
+      if (Math.random() < 0.42) {
+        S.cash += stake * 3;
+        return say("The well stays clean. 3x on " + money(stake) + ".", "El pozo queda limpio. 3x sobre " + money(stake) + ".");
+      }
+      return say("A long bar would have saved you. Stake " + money(stake) + " is gone.", "Una barra larga te salvaba. La apuesta de " + money(stake) + " se fue.");
+    }
+    if (card.id === "outrun") {
+      if (opt === "b") return say("The Ferrari loops without you.", "El Ferrari da la vuelta sin vos.");
+      const stake = cutPct(0.06);
+      if (Math.random() < 0.4) {
+        S.cash += stake * 2.4;
+        return say("Checkpoint. 2.4x on " + money(stake) + ".", "Checkpoint. 2.4x sobre " + money(stake) + ".");
+      }
+      return say("The timer hits zero in the palm trees. −" + money(stake) + ".", "El timer llega a cero entre palmeras. −" + money(stake) + ".");
+    }
+    if (card.id === "wake") {
+      const paid = cutPct(0.035);
+      return say("You signed the book. −" + money(paid) + " in flowers.", "Firmaste el libro. −" + money(paid) + " en flores.");
+    }
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
@@ -1234,6 +1316,7 @@
     S.chanceUsed[card.id] = true;
     S.chanceCard = card;
     S.chanceNote = "";
+    S.chanceLead = presentCast(CHANCE_WHO[card.id] || []);
     if (card.kind === "report") S.chanceNote = resolveChance(card, "ok");
     try { A.speak("Chance"); } catch (e) {}
     setPhase("chance");
@@ -1355,7 +1438,7 @@
     if (id === "juke") return es ? "Música mientras stackeamos" : "Tunes while we stack";
     if (id === "job") return es ? "Sueldo fijo cada 21 velas" : "Steady paycheck every 21 candles";
     if (id === "market") return es ? "Comprar vidas y láseres" : "Buy lives and lasers";
-    if (id === "chance") return es ? "Cartas cada 210 velas" : "Cards every 210 candles";
+    if (id === "chance") return es ? "Cartas cada 21 velas" : "Cards every 21 candles";
     return es ? "Lo mejor para juntar bitcoin" : "Best for stacking bitcoin";
   }
 
@@ -2475,17 +2558,18 @@
       const title = es ? (card.titleEs || card.title) : card.title;
       const body = es ? (card.bodyEs || card.body) : card.body;
       const art = "chance/" + card.id + ".jpg";
+      const lead = S.chanceLead ? "<p class=\"k\">" + S.chanceLead + ".</p>" : "";
       const pic = "<img class=\"chance-art\" src=\"" + art + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>" + lead + "<p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>" + lead + "<p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };

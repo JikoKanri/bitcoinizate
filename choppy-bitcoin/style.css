@@ -195,11 +195,11 @@ body {
 .overlay.dock p { font-size: 11px; margin: 0; }
 .overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
 .chance-art {
-  width: 92px; height: 92px; border-radius: 50%;
+  width: 184px; height: 184px; border-radius: 50%;
   object-fit: cover; border: 2px solid #c8960a;
   background: #0a0a0c; flex: 0 0 auto;
 }
-.overlay.dock .chance-art { width: 72px; height: 72px; }
+.overlay.dock .chance-art { width: 144px; height: 144px; }
 .overlay.dock .opt-item { min-height: 30px; font-size: 11px; }
 .overlay.dock .opt-menu { gap: 4px; }
 .overlay.dock .cta { min-height: 30px; min-width: 0; padding: 0 10px; font-size: 11px; }
