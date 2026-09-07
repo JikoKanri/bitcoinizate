@@ -96,18 +96,47 @@
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Chance" };
   const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
   const JOBS = [
-    { name: "Actor", nameEs: "Actor", titles: ["Background extra", "Community-theater lead", "Soap regular", "Festival film lead", "Prestige-TV regular", "Blockbuster support", "A-list lead"], titlesEs: ["Extra de fondo", "Protagonista de teatro barrial", "Fijo en una telenovela", "Protagonista de festival", "Fijo en serie de prestigio", "Soporte de blockbuster", "Estrella A-list"] },
-    { name: "Diver", nameEs: "Buzo", titles: ["Pool attendant", "Open-water intern", "Harbor salvage hand", "Commercial welder-diver", "Saturation diver", "Deep-wreck chief", "Expedition dive master"], titlesEs: ["Playero de pileta", "Pasante de aguas abiertas", "Salvamento de puerto", "Soldador submarino", "Buzo de saturación", "Jefe de pecios profundos", "Maestro de expedición"] },
-    { name: "Scientist", nameEs: "Científico", titles: ["Lab dishwasher", "Grad-school grunt", "Postdoc", "Staff researcher", "Principal investigator", "National-lab fellow", "Prize shortlist"], titlesEs: ["Lava tubos", "Becario agotado", "Postdoc", "Investigador de planta", "Investigador principal", "Fellow de laboratorio nacional", "Lista al premio"] },
-    { name: "Lawyer", nameEs: "Abogado", titles: ["Mailroom clerk", "Paralegal", "Public-defender grind", "Junior associate", "Trial counsel", "Name-on-the-door partner", "Chief counsel"], titlesEs: ["Mailroom", "Paralegal", "Defensoría pública", "Asociado junior", "Litigante", "Socio con el nombre en la puerta", "Consejero jefe"] },
-    { name: "Chef", nameEs: "Cocinero", titles: ["Dish pit", "Line cook", "Sous-chef", "Head chef", "Michelin kitchen", "Private-yacht chef", "World's-best kitchen"], titlesEs: ["Fregadero", "Cocinero de línea", "Sous-chef", "Chef ejecutivo", "Cocina Michelin", "Chef de yate", "Cocina top mundial"] },
-    { name: "Pilot", nameEs: "Piloto", titles: ["Banner-tow grunt", "Bush hopper", "Regional first officer", "Major-airline first officer", "Captain", "Long-haul captain", "Test pilot"], titlesEs: ["Arrastra carteles", "Piloto de monte", "Primer oficial regional", "Primer oficial de major", "Capitán", "Capitán de largo haul", "Piloto de pruebas"] },
-    { name: "Musician", nameEs: "Músico", titles: ["Subway busker", "Wedding-band hire", "Studio session", "Touring sideman", "Festival headliner", "Symphony soloist", "World-tour closer"], titlesEs: ["Callejero del subte", "Banda de casamientos", "Sesionista", "Músico de gira", "Headliner de festival", "Solista de sinfónica", "Cierre de gira mundial"] },
-    { name: "Athlete", nameEs: "Atleta", titles: ["Rec-league bench", "Semi-pro", "Minors call-up", "Starting roster", "All-star", "Champion", "Hall of fame"], titlesEs: ["Banca del rec", "Semi-pro", "Ascenso a menores", "Titular", "All-star", "Campeón", "Salón de la fama"] },
-    { name: "Doctor", nameEs: "Médico", titles: ["Orderly", "Nursing assistant", "Resident", "Attending", "Surgeon", "Department chief", "Hospital director"], titlesEs: ["Camillero", "Ayudante de enfermería", "Residente", "Médico de planta", "Cirujano", "Jefe de servicio", "Director de hospital"] },
-    { name: "Sailor", nameEs: "Marino", titles: ["Deck swab", "Able seaman", "Bosun", "First mate", "Ship captain", "Fleet commander", "Harbor master"], titlesEs: ["Limpia cubierta", "Marinero", "Contramaestre", "Primer oficial", "Capitán", "Comandante de flota", "Capitán de puerto"] }
+    { name: "Acting career", nameEs: "Carrera de actuación", curve: "hit",
+      pay: [240, 260, 310, 420, 780, 2100, 5600],
+      titles: ["Background extra", "Community-theater lead", "Soap regular", "Festival film lead", "Prestige-TV regular", "Blockbuster support", "A-list lead"],
+      titlesEs: ["Extra de fondo", "Protagonista de teatro barrial", "Fijo en una telenovela", "Protagonista de festival", "Fijo en serie de prestigio", "Soporte de blockbuster", "Estrella A-list"] },
+    { name: "Diving career", nameEs: "Carrera de buceo", curve: "steady",
+      pay: [360, 480, 620, 780, 980, 1220, 1520],
+      titles: ["Pool attendant", "Open-water intern", "Harbor salvage hand", "Commercial welder-diver", "Saturation diver", "Deep-wreck chief", "Expedition dive master"],
+      titlesEs: ["Playero de pileta", "Pasante de aguas abiertas", "Salvamento de puerto", "Soldador submarino", "Buzo de saturación", "Jefe de pecios profundos", "Maestro de expedición"] },
+    { name: "Science career", nameEs: "Carrera científica", curve: "steady",
+      pay: [400, 520, 660, 840, 1060, 1320, 1640],
+      titles: ["Lab dishwasher", "Grad-school grunt", "Postdoc", "Staff researcher", "Principal investigator", "National-lab fellow", "Prize shortlist"],
+      titlesEs: ["Lava tubos", "Becario agotado", "Postdoc", "Investigador de planta", "Investigador principal", "Fellow de laboratorio nacional", "Lista al premio"] },
+    { name: "Law career", nameEs: "Carrera de derecho", curve: "steady",
+      pay: [440, 580, 740, 940, 1180, 1460, 1800],
+      titles: ["Mailroom clerk", "Paralegal", "Public-defender grind", "Junior associate", "Trial counsel", "Name-on-the-door partner", "Chief counsel"],
+      titlesEs: ["Mailroom", "Paralegal", "Defensoría pública", "Asociado junior", "Litigante", "Socio con el nombre en la puerta", "Consejero jefe"] },
+    { name: "Culinary career", nameEs: "Carrera culinaria", curve: "steady",
+      pay: [320, 440, 580, 740, 940, 1180, 1480],
+      titles: ["Dish pit", "Line cook", "Sous-chef", "Head chef", "Michelin kitchen", "Private-yacht chef", "World's-best kitchen"],
+      titlesEs: ["Fregadero", "Cocinero de línea", "Sous-chef", "Chef ejecutivo", "Cocina Michelin", "Chef de yate", "Cocina top mundial"] },
+    { name: "Aviation career", nameEs: "Carrera de aviación", curve: "hit",
+      pay: [240, 290, 380, 560, 980, 1900, 4200],
+      titles: ["Banner-tow grunt", "Bush hopper", "Regional first officer", "Major-airline first officer", "Captain", "Long-haul captain", "Test pilot"],
+      titlesEs: ["Arrastra carteles", "Piloto de monte", "Primer oficial regional", "Primer oficial de major", "Capitán", "Capitán de largo haul", "Piloto de pruebas"] },
+    { name: "Music career", nameEs: "Carrera musical", curve: "hit",
+      pay: [240, 270, 330, 460, 820, 1750, 4800],
+      titles: ["Subway busker", "Wedding-band hire", "Studio session", "Touring sideman", "Festival headliner", "Symphony soloist", "World-tour closer"],
+      titlesEs: ["Callejero del subte", "Banda de casamientos", "Sesionista", "Músico de gira", "Headliner de festival", "Solista de sinfónica", "Cierre de gira mundial"] },
+    { name: "Athletic career", nameEs: "Carrera atlética", curve: "hit",
+      pay: [240, 255, 300, 410, 760, 2200, 6200],
+      titles: ["Rec-league bench", "Semi-pro", "Minors call-up", "Starting roster", "All-star", "Champion", "Hall of fame"],
+      titlesEs: ["Banca del rec", "Semi-pro", "Ascenso a menores", "Titular", "All-star", "Campeón", "Salón de la fama"] },
+    { name: "Medical career", nameEs: "Carrera médica", curve: "steady",
+      pay: [480, 620, 780, 980, 1220, 1500, 1850],
+      titles: ["Orderly", "Nursing assistant", "Resident", "Attending", "Surgeon", "Department chief", "Hospital director"],
+      titlesEs: ["Camillero", "Ayudante de enfermería", "Residente", "Médico de planta", "Cirujano", "Jefe de servicio", "Director de hospital"] },
+    { name: "Maritime career", nameEs: "Carrera marítima", curve: "steady",
+      pay: [340, 460, 600, 770, 970, 1220, 1520],
+      titles: ["Deck swab", "Able seaman", "Bosun", "First mate", "Ship captain", "Fleet commander", "Harbor master"],
+      titlesEs: ["Limpia cubierta", "Marinero", "Contramaestre", "Primer oficial", "Capitán", "Comandante de flota", "Capitán de puerto"] }
   ];
-  const JOB_PAY = [80, 160, 280, 480, 780, 1200, 3200];
   const FF_SPEEDS = [1.5, 2, 3];
   function perkTitle(id, tier) {
     if (id === "skip") return (window.BZ && BZ.t("declinePerk")) || "Gently decline";
@@ -137,7 +166,7 @@
       if (id === "job") {
         const job = currentJob();
         const title = jobTitleAt(job, tier);
-        const pay = JOB_PAY[tier - 1] || 80;
+        const pay = jobPayAt(job, tier);
         return title + " · $" + pay + (es ? " / 21 velas" : " / 21 candles");
       }
       if (id === "market") return es ? "abre el mercado en el HUD" : "opens the market in the HUD";
@@ -777,10 +806,14 @@
     S.jobName = jobTitleAt(currentJob(), t);
   }
 
+  function jobPayAt(job, tier) {
+    const t = Math.max(1, Math.min(7, tier || 1));
+    if (job && job.pay && job.pay[t - 1]) return job.pay[t - 1];
+    return 240;
+  }
+
   function jobPay() {
-    const t = S.have.job || 0;
-    if (t <= 0) return 0;
-    return JOB_PAY[Math.min(JOB_PAY.length - 1, t - 1)] || 80;
+    return jobPayAt(currentJob(), S.have.job || 0);
   }
 
   function payJob() {
