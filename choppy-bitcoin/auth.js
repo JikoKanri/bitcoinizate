@@ -6,6 +6,13 @@
   let currentUser = null;
   let currentProfile = null;
   let isSignUpMode = false;
+  const BOARD_SEASON = "2026-09-07T18:00:00.000Z";
+  function seasonScore(row) {
+    if (!row) return 0;
+    const at = row.last_score_at ? Date.parse(row.last_score_at) : 0;
+    if (!at || at < Date.parse(BOARD_SEASON)) return 0;
+    return Number(row.highscore != null ? row.highscore : row.high_score) || 0;
+  }
 
   const AWARD_FALLBACK = [
     { id: "maxi", name: "Maxi Soul", why: "Never sold BTC — not by hand, not by A.I. bud." },
@@ -98,7 +105,7 @@
       if (btn) btn.classList.add("hide");
       if (tag) {
         tag.classList.remove("hide");
-        const hs = profile.highscore != null ? profile.highscore : profile.high_score;
+        const hs = seasonScore(profile);
         tag.innerHTML = "<a class=\"user-link\" href=\"" + profileHref(name) + "\" target=\"_blank\" rel=\"noopener\">@" + name + "</a><small>" + fmtScoreBtc(hs) + "</small>";
       }
     } else {
@@ -383,15 +390,15 @@
     if (!box || !supabase) return;
     try {
       let rows = [];
-      await supabase.from("profiles").select("username, highscore").order("highscore", { ascending: false }).limit(10).then((res) => {
+      await supabase.from("profiles").select("username, highscore, last_score_at").order("highscore", { ascending: false }).limit(20).then((res) => {
         if (res.error) throw res.error;
-        rows = res.data || [];
+        rows = (res.data || []).filter((row) => seasonScore(row) > 0);
       });
       if (!rows.length) { box.textContent = "—"; return; }
       box.innerHTML = rows.map((row, i) => {
         const n = row.username || "?";
         const href = validAlias(n) ? profileHref(n) : "#";
-        return (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a>   " + fmtScoreBtc(row.highscore);
+        return (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a>   " + fmtScoreBtc(seasonScore(row));
       }).join("<br>");
     } catch (e) {
       box.textContent = "—";
@@ -407,7 +414,7 @@
     const candles = meta && Number(meta.candles) || 0;
     if (life < 12 || candles < 3) return;
     if (meta && meta.human === false) return;
-    const old = Number(currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score) || 0;
+    const old = seasonScore(currentProfile);
     if (next <= old) return;
     try {
       const { error } = await supabase.rpc("submit_choppy_score", {
@@ -478,7 +485,7 @@
       if (e.target && e.target.closest && e.target.closest("a")) return;
       if (!currentProfile) return;
       if ($("profile-score-info")) {
-        const hs = currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score;
+        const hs = seasonScore(currentProfile);
         $("profile-score-info").textContent = ((window.BZ && BZ.t("highScore")) || "High score") + "  " + fmtScoreBtc(hs);
       }
       if ($("profile-alias")) {

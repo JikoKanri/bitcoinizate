@@ -111,7 +111,11 @@
         var name = row.username || raw;
         document.getElementById("who").textContent = "@" + name;
         document.title = "@" + name + " | Bitcoinizate";
-        document.getElementById("score").textContent = fmtScoreBtc(row.highscore);
+        document.getElementById("score").textContent = fmtScoreBtc((function () {
+          var at = row.last_score_at ? Date.parse(row.last_score_at) : 0;
+          if (!at || at < Date.parse("2026-09-07T18:00:00.000Z")) return 0;
+          return row.highscore || 0;
+        })());
         var av = document.getElementById("ava");
         var pic = row.avatar;
         if (!pic) {
@@ -139,7 +143,7 @@
       function load(cols) {
         return sb.from("profiles").select(cols).ilike("username", raw).limit(1);
       }
-      load("id, username, highscore, awards").then(function (res) {
+      load("id, username, highscore, last_score_at, awards").then(function (res) {
         if (res && res.error) {
           document.getElementById("miss").textContent = es ? "No se pudo cargar el perfil." : "Could not load profile.";
           document.getElementById("miss").classList.remove("hide");
