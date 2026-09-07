@@ -248,16 +248,18 @@
               return {
                 limit(n) {
                   return {
-                    then: async (cb) => {
-                      try {
-                        const q = "?select=" + encodeURIComponent(cols)
-                          + "&order=" + col + "." + ((opts && opts.ascending) ? "asc" : "desc")
-                          + "&limit=" + n;
-                        const r = await rest(q, { headers: authHeaders() });
-                        const d = await readJson(r);
-                        if (!r.ok) cb({ data: null, error: apiError(d, "Select failed") });
-                        else cb({ data: Array.isArray(d) ? d : [], error: null });
-                      } catch (e) { cb({ data: null, error: e }); }
+                    then(ok, err) {
+                      return (async () => {
+                        try {
+                          const q = "?select=" + encodeURIComponent(cols)
+                            + "&order=" + col + "." + ((opts && opts.ascending) ? "asc" : "desc")
+                            + "&limit=" + n;
+                          const r = await rest(q, { headers: authHeaders() });
+                          const d = await readJson(r);
+                          if (!r.ok) return { data: null, error: apiError(d, "Select failed") };
+                          return { data: Array.isArray(d) ? d : [], error: null };
+                        } catch (e) { return { data: null, error: e }; }
+                      })().then(ok, err);
                     }
                   };
                 }
@@ -281,16 +283,18 @@
               return {
                 limit(n) {
                   return {
-                    then: async (cb) => {
-                      try {
-                        const q = "?select=" + encodeURIComponent(cols)
-                          + "&" + field + "=ilike." + encodeURIComponent(val)
-                          + "&limit=" + (n || 1);
-                        const r = await rest(q, { headers: authHeaders() });
-                        const d = await readJson(r);
-                        if (!r.ok) cb({ data: null, error: apiError(d, "Select failed") });
-                        else cb({ data: Array.isArray(d) ? d : [], error: null });
-                      } catch (e) { cb({ data: null, error: e }); }
+                    then(ok, err) {
+                      return (async () => {
+                        try {
+                          const q = "?select=" + encodeURIComponent(cols)
+                            + "&" + field + "=ilike." + encodeURIComponent(val)
+                            + "&limit=" + (n || 1);
+                          const r = await rest(q, { headers: authHeaders() });
+                          const d = await readJson(r);
+                          if (!r.ok) return { data: null, error: apiError(d, "Select failed") };
+                          return { data: Array.isArray(d) ? d : [], error: null };
+                        } catch (e) { return { data: null, error: e }; }
+                      })().then(ok, err);
                     }
                   };
                 }
@@ -302,17 +306,19 @@
           return {
             eq(field, val) {
               return {
-                then: async (cb) => {
-                  try {
-                    const r = await rest("?" + field + "=eq." + encodeURIComponent(val), {
-                      method: "PATCH",
-                      headers: Object.assign({ Prefer: "return=representation" }, authHeaders()),
-                      body: JSON.stringify(fields)
-                    });
-                    const d = await readJson(r);
-                    if (!r.ok) cb({ data: null, error: apiError(d, "Update failed") });
-                    else cb({ data: d, error: null });
-                  } catch (e) { cb({ data: null, error: e }); }
+                then(ok, err) {
+                  return (async () => {
+                    try {
+                      const r = await rest("?" + field + "=eq." + encodeURIComponent(val), {
+                        method: "PATCH",
+                        headers: Object.assign({ Prefer: "return=representation" }, authHeaders()),
+                        body: JSON.stringify(fields)
+                      });
+                      const d = await readJson(r);
+                      if (!r.ok) return { data: null, error: apiError(d, "Update failed") };
+                      return { data: d, error: null };
+                    } catch (e) { return { data: null, error: e }; }
+                  })().then(ok, err);
                 }
               };
             }
@@ -320,17 +326,19 @@
         },
         insert(arr) {
           return {
-            then: async (cb) => {
-              try {
-                const r = await rest("", {
-                  method: "POST",
-                  headers: Object.assign({ Prefer: "return=representation" }, authHeaders()),
-                  body: JSON.stringify(arr)
-                });
-                const d = await readJson(r);
-                if (!r.ok) cb({ data: null, error: apiError(d, "Insert failed") });
-                else cb({ data: d, error: null });
-              } catch (e) { cb({ data: null, error: e }); }
+            then(ok, err) {
+              return (async () => {
+                try {
+                  const r = await rest("", {
+                    method: "POST",
+                    headers: Object.assign({ Prefer: "return=representation" }, authHeaders()),
+                    body: JSON.stringify(arr)
+                  });
+                  const d = await readJson(r);
+                  if (!r.ok) return { data: null, error: apiError(d, "Insert failed") };
+                  return { data: d, error: null };
+                } catch (e) { return { data: null, error: e }; }
+              })().then(ok, err);
             }
           };
         }

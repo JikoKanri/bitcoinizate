@@ -99,9 +99,21 @@
       }).then(function (res) {
         if (!uid) return;
         if (!res || res.error || !res.data) {
-          need.textContent = es ? "No se encontró el perfil." : "Profile not found.";
-          need.classList.remove("hide");
-          return;
+          var guess = "";
+          try { guess = localStorage.getItem("choppy-alias") || ""; } catch (err) {}
+          return sb.from("profiles").insert([{ id: uid, username: guess || "trader", highscore: 0 }]).then(function () {
+            return sb.from("profiles").select("id, username, avatar, highscore").eq("id", uid).single();
+          }).then(function (res2) {
+            if (!res2 || res2.error || !res2.data) {
+              need.textContent = es ? "No se encontró el perfil." : "Profile not found.";
+              need.classList.remove("hide");
+              return;
+            }
+            profile = res2.data;
+            aliasEl.value = profile.username || guess || "";
+            document.getElementById("public-link").href = "/u/" + encodeURIComponent(profile.username || guess || "");
+            form.classList.remove("hide");
+          });
         }
         profile = res.data;
         aliasEl.value = profile.username || "";

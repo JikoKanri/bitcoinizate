@@ -135,12 +135,11 @@
       function load(cols) {
         return sb.from("profiles").select(cols).ilike("username", raw).limit(1);
       }
-      load("id, username, highscore, awards, avatar").then(function (res) {
+      load("id, username, highscore, awards").then(function (res) {
         if (res && res.error) {
-          return load("id, username, highscore, awards").then(function (res2) {
-            if (res2.error || !res2.data || !res2.data[0]) fail();
-            else paint(res2.data[0]);
-          });
+          document.getElementById("miss").textContent = es ? "No se pudo cargar el perfil." : "Could not load profile.";
+          document.getElementById("miss").classList.remove("hide");
+          return;
         }
         if (!res.data || !res.data[0]) fail();
         else paint(res.data[0]);

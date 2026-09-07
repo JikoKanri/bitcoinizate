@@ -201,15 +201,35 @@
 
   async function loadUserProfile() {
     if (!currentUser || !supabase) return;
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", currentUser.id).single();
+    const localAlias = (function () {
+      try { return localStorage.getItem("choppy-alias") || ""; } catch (e) { return ""; }
+    })();
+    const fallbackName = localAlias
+      || (currentUser.user_metadata && currentUser.user_metadata.username)
+      || "trader";
+    let { data, error } = await supabase.from("profiles").select("*").eq("id", currentUser.id).single();
     if (error || !data) {
-      currentProfile = {
+      await supabase.from("profiles").insert([{
         id: currentUser.id,
-        username: (currentUser.user_metadata && currentUser.user_metadata.username) || "trader",
+        username: fallbackName,
+        email: currentUser.email || null,
         highscore: 0
-      };
+      }]);
+      const again = await supabase.from("profiles").select("*").eq("id", currentUser.id).single();
+      data = again.data;
+      error = again.error;
+    }
+    if (error || !data) {
+      currentProfile = { id: currentUser.id, username: fallbackName, highscore: 0 };
       updateAuthUI(currentProfile);
       return;
+    }
+    if (localAlias && validAlias(localAlias) && data.username !== localAlias) {
+      const up = await supabase.from("profiles").update({ username: localAlias }).eq("id", currentUser.id);
+      if (!up || up.error) {
+        try { await supabase.rpc("change_alias", { p_alias: localAlias }); } catch (e) {}
+      }
+      data.username = localAlias;
     }
     currentProfile = data;
     window.choppyUserId = currentUser.id || "";
@@ -283,15 +303,20 @@
     if (currentProfile) currentProfile.username = next;
     window.choppyUsername = next;
     updateAuthUI(currentProfile || { username: next, highscore: 0 });
-    if (hint) hint.textContent = "Alias updated.";
+    if (hint) hint.textContent = "Saving alias…";
     if (!supabase) return;
     try {
-      const { error } = await supabase.from("profiles").update({ username: next }).eq("id", currentUser.id);
-      if (!error) return;
-      try { await supabase.rpc("change_alias", { p_alias: next }); } catch (e) {}
-      if (hint) hint.textContent = "Alias saved on this device.";
+      let { error } = await supabase.from("profiles").update({ username: next }).eq("id", currentUser.id);
+      if (error) {
+        const rpc = await supabase.rpc("change_alias", { p_alias: next });
+        error = rpc && rpc.error;
+      }
+      if (error) {
+        await supabase.from("profiles").insert([{ id: currentUser.id, username: next, email: currentUser.email || null, highscore: 0 }]);
+      }
+      if (hint) hint.textContent = "Alias updated.";
     } catch (e) {
-      if (hint) hint.textContent = "Alias saved on this device.";
+      if (hint) hint.textContent = "Could not save alias online.";
     }
   }
 
