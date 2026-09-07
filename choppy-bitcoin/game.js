@@ -88,6 +88,7 @@
   const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6 };
   const FF_SPEEDS = [1.5, 2, 3];
   function perkTitle(id, tier) {
+    if (id === "skip") return (window.BZ && BZ.t("declinePerk")) || "Gently decline";
     const pack = (window.BZ && BZ.lang && BZ.lang() === "es") ? PERK_NAME_ES : PERK_NAME;
     const n = pack[id] || id;
     return tier <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(ROMAN.length - 1, tier)];
@@ -96,6 +97,7 @@
     try {
       tier = Math.max(1, Math.min(PERK_MAX[id] || 12, tier));
       const es = window.BZ && BZ.lang && BZ.lang() === "es";
+      if (id === "skip") return es ? "seguir sin perk" : "keep flying, no perk";
       if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
       if (id === "dca") return es ? "ingreso en btc" : "income in btc";
       if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
@@ -206,7 +208,7 @@
     perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
-    offerSeq: [7, 13, 24], nextOffer: 7, offersDone: 0,
+    offerSeq: [1, 2, 4], nextOffer: 1, offersDone: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
@@ -425,7 +427,7 @@
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
       S.offerSeq = S.ranked ? tribSeq(16) : [10, 20, 30];
-      S.nextOffer = S.ranked ? 7 : 10;
+      S.nextOffer = S.ranked ? 1 : 10;
       S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
@@ -685,6 +687,7 @@
   }
 
   function grantPerk(kind) {
+    if (!kind || kind === "skip") return;
     const cap = PERK_MAX[kind] || 10;
     if (kind === "dca") S.have.dca = 1;
     else S.have[kind] = Math.min(cap, (S.have[kind] || 0) + 1);
@@ -714,28 +717,29 @@
     if (!left.length) return;
     rollPerks();
     if (!S.perkOffers || !S.perkOffers.length) return;
+    if (S.perkOffers[S.perkOffers.length - 1] !== "skip") S.perkOffers.push("skip");
     S.perkPick = "";
     if (S.aibudOn && (S.have.aibud || 0) >= 2) {
-      const pick = bestAiPerk(S.perkOffers);
+      const real = S.perkOffers.filter((id) => id !== "skip");
+      if (!real.length) { bumpOffer(); return; }
+      const pick = bestAiPerk(real);
       grantPerk(pick.id);
       bumpOffer();
       aiAct("Perk " + perkTitle(pick.id, S.have[pick.id]), pick.why);
       return;
     }
     if (S.aibudOn && (S.have.aibud || 0) >= 1) {
-      const pick = bestAiPerk(S.perkOffers);
-      S.perkHint = pick.id;
+      const pick = bestAiPerk(S.perkOffers.filter((id) => id !== "skip"));
+      S.perkHint = pick && pick.id;
     } else S.perkHint = "";
     setPhase("perk");
   }
 
   function tribSeq(n) {
-    const s = [7];
-    let a = 2, b = 4, c = 7;
+    const s = [1, 2, 4];
     while (s.length < n) {
-      const t = a + b + c;
-      s.push(t);
-      a = b; b = c; c = t;
+      const i = s.length;
+      s.push(s[i - 1] + s[i - 2] + s[i - 3]);
     }
     return s;
   }
@@ -1855,7 +1859,10 @@
       const btns = S.perkOffers.map((id) => {
         const tier = (S.have[id] || 0) + 1;
         const sel = chosen === id;
-        return "<button class=\"cta" + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + perkTitle(id, tier) + " · " + perkBlurb(id, tier) + "</button>";
+        const label = id === "skip"
+          ? t("declinePerk") + " · " + t("declinePerkSub")
+          : perkTitle(id, tier) + " · " + perkBlurb(id, tier);
+        return "<button class=\"cta" + (id === "skip" ? " play-alt" : "") + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + label + "</button>";
       }).join("");
       overlay.innerHTML = "<h1>" + t("perks") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
