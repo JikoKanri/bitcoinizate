@@ -1806,6 +1806,7 @@
       } else {
         overlay.innerHTML = "<h1>Choppy Bitcoin</h1>"
           + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>"
+          + "<p class=\"k\">" + t("playSub") + "</p>"
           + "<button type=\"button\" class=\"cta play-alt\" id=\"go-train\">" + t("trainCamp") + "</button>"
           + "<p class=\"k\">" + t("trainNote") + "</p>"
           + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
