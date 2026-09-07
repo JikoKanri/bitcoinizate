@@ -113,7 +113,11 @@
         document.title = "@" + name + " | Bitcoinizate";
         document.getElementById("score").textContent = fmtScoreBtc(row.highscore);
         var av = document.getElementById("ava");
-        if (row.avatar) { av.src = row.avatar; av.classList.remove("hide"); }
+        var pic = row.avatar;
+        if (!pic) {
+          try { pic = localStorage.getItem("choppy-avatar-" + row.id) || ""; } catch (e) {}
+        }
+        if (pic) { av.src = pic; av.classList.remove("hide"); }
         var owned = {};
         (row.awards || []).forEach(function (id) { owned[id] = true; });
         var html = CATALOG.filter(function (a) { return owned[a.id]; }).map(function (a) {
@@ -141,8 +145,17 @@
           document.getElementById("miss").classList.remove("hide");
           return;
         }
-        if (!res.data || !res.data[0]) fail();
-        else paint(res.data[0]);
+        if (!res.data || !res.data[0]) { fail(); return; }
+        var row = res.data[0];
+        paint(row);
+        sb.from("profiles").select("avatar").eq("id", row.id).single().then(function (av) {
+          if (av && av.data && av.data.avatar) {
+            row.avatar = av.data.avatar;
+            var img = document.getElementById("ava");
+            img.src = av.data.avatar;
+            img.classList.remove("hide");
+          }
+        });
       }).catch(function () {
         document.getElementById("miss").textContent = es ? "No se pudo cargar el perfil." : "Could not load profile.";
         document.getElementById("miss").classList.remove("hide");

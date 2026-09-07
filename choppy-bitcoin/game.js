@@ -100,8 +100,8 @@
       if (id === "dca") return es ? "ingreso en btc" : "income in btc";
       if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
       if (id === "adopt") return es
-        ? "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%"
-        : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears +" + Math.max(0, tier - 1) + "/" + (4 + tier) + "%";
+        ? "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears end " + adoptBearLabel(tier)
+        : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears end " + adoptBearLabel(tier);
       if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
       if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
       if (id === "aibud") {
@@ -125,6 +125,7 @@
     } catch (e) { return 0; }
   }
   function saveBest(n) {
+    if (!S.ranked) return S.best || 0;
     let s = { scores: { choppy: 0 } };
     try { s = Object.assign({ scores: { choppy: 0 } }, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
     s.scores = s.scores || {};
@@ -144,6 +145,34 @@
     return Math.max(lo, Math.min(hi, mean + z * ((hi - lo) / 5)));
   }
 
+  function adoptSoft(tier) {
+    return Math.min(1, Math.max(0, Number(tier) || 0) / 10);
+  }
+  function adoptBearRange(tier) {
+    const soft = adoptSoft(tier);
+    const lo = -0.10 * (1 - soft * 0.75);
+    let hi = -0.05 * (1 - soft * 0.80);
+    if (hi >= -0.008) hi = -0.008;
+    if (lo >= hi) return { lo: hi - 0.012, hi };
+    return { lo, hi };
+  }
+  function adoptSwanRange(tier) {
+    const soft = adoptSoft(tier);
+    return { lo: -0.50 * (1 - soft * 0.50), hi: -0.25 * (1 - soft * 0.50) };
+  }
+  function adoptBearLabel(tier) {
+    const r = adoptBearRange(tier);
+    return Math.round(r.lo * 100) + "/" + Math.round(r.hi * 100) + "%";
+  }
+  function pickCycleAmp(type) {
+    const t = S.have.adopt || 0;
+    const soft = adoptSoft(t);
+    if (type === "BULL" && S.halveBull) return 1 + (Math.random() * 0.2 - 0.1);
+    if (type === "BULL") return 0.22 + t * 0.018;
+    if (S.swanBear) return (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
+    return (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
+  }
+
   function pickItem() {
     const bag = ["BULL","BULL","BULL","BULL","BULL","BULL","BULL","BULL","BEAR","BEAR","BEAR","BEAR","BEAR","LASER","LASER","COLD","COLD","COLD","SWAN","SWAN","SWAN","SWAN"];
     let type = bag[(Math.random() * bag.length) | 0];
@@ -161,7 +190,7 @@
     W: 480, H: 640,
     bird: { x: 72, y: 280, v: 0, r: 14 },
     pipes: [], items: [], particles: [], floats: [],
-    cash: 0, btc: 0, vt: 0, cold: 0, msig: 50, invuln: 0,
+    cash: 0, btc: 0, vt: 0, cold: 0, msig: 0, invuln: 0,
     power: "NONE", powerT: 0, laserOn: false, laserT: 0,
     widthMul: 1, widthT: 1, heightMul: 1, heightT: 1,
     price: 20000, vtPrice: 0,
@@ -173,7 +202,7 @@
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
-    stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false,
+    stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false, ranked: true,
     perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
@@ -402,14 +431,16 @@
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
     S.swanBear = false; S.halveSpeechUntil = 0;
-    S.cold = 0; S.invuln = 0;
-    if (!keepWallet) S.msig = 50;
+    S.cold = S.ranked ? 0 : 9;
+    S.invuln = 0;
+    if (!keepWallet) S.msig = S.ranked ? 0 : 999;
     S.power = "NONE"; S.powerT = 0;
     applyLaser(false);
     S.widthMul = S.heightMul = 1;
     S.bg = 0; S.ticker = ""; S.tickerT = 0;
     S.lastGapY = S.bird.y; S.dead = false;
     S.cycleStart = S.price; S.cycleDur = POWER_S; S.cycleElapsed = 0;
+    S.cycleAmp = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
     S.speechUntil = 0;
     const first = S.bird.x + 210;
@@ -425,6 +456,7 @@
     S.cycleStart = S.price; S.vtCycle = S.vtPrice;
     S.cycleDur = POWER_S; S.cycleElapsed = 0;
     S.power = type; S.powerT = POWER_S;
+    S.cycleAmp = pickCycleAmp(type);
   }
 
   function halveMinRise() {
@@ -443,11 +475,12 @@
       const lo = t ? 0.10 + t * 0.02 : 0.05;
       const span = t ? 0.05 : 0.05;
       next = S.cycleStart * (1 + lo + Math.random() * span);
+    } else if (S.swanBear) {
+      const r = adoptSwanRange(S.have.adopt || 0);
+      next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
     } else {
-      const t = S.have.adopt || 0;
-      const lo = t ? (t - 1) * 0.01 : -0.05;
-      const span = t ? 0.04 + t * 0.01 : 0.10;
-      next = S.cycleStart * (1 + lo + Math.random() * span);
+      const r = adoptBearRange(S.have.adopt || 0);
+      next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
     }
     if (S.halveFloor > 0) next = Math.max(next, S.halveFloor);
     S.price = Math.max(0.01, next);
@@ -906,7 +939,8 @@
     try { renderHud(); } catch (e) {}
   }
 
-  function startGame() {
+  function startGame(ranked) {
+    S.ranked = ranked !== false;
     if (A && A.unlock) try { A.unlock(); } catch (e) {}
     if (A && A.sfx && A.sfx.start) try { A.sfx.start(); } catch (e) {}
     S.humanInput = true;
@@ -959,7 +993,7 @@
       const u = Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
       const envelope = Math.sin(Math.PI * u);
       const dir = S.power === "BULL" ? 1 : -1;
-      const amp = S.halveBull ? 0.62 : 0.275;
+      const amp = S.cycleAmp || (S.halveBull ? 0.62 : 0.275);
       const wobble = Math.sin(S.cycleElapsed * 3.2) * (S.halveBull ? 0.05 : 0.03);
       S.price = Math.max(0.01, S.cycleStart * (1 + dir * amp * envelope + wobble));
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * envelope + wobble * 0.45));
@@ -1443,6 +1477,7 @@
     if (typeof window.persistAwards === "function") window.persistAwards(Object.keys(map).filter((k) => map[k]));
   }
   function mergeAwards(ids) {
+    if (!S.ranked) return loadAwards();
     const map = loadAwards();
     (ids || []).forEach((id) => { map[id] = true; });
     saveAwards(map);
@@ -1771,12 +1806,18 @@
       } else {
         overlay.innerHTML = "<h1>Choppy Bitcoin</h1>"
           + "<button class=\"cta\" id=\"go\">" + t("play") + "</button>"
+          + "<button type=\"button\" class=\"cta play-alt\" id=\"go-train\">" + t("trainCamp") + "</button>"
+          + "<p class=\"k\">" + t("trainNote") + "</p>"
           + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
           + tutorialBody()
           + awardListHtml(loadAwards(), "full")
           + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
-        $("go").onclick = startGame;
-        $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(); };
+        $("go").onclick = () => startGame(true);
+        $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(true); };
+        if ($("go-train")) {
+          $("go-train").onclick = () => startGame(false);
+          $("go-train").onpointerdown = (e) => { e.stopPropagation(); startGame(false); };
+        }
         const oa = $("overlay-auth");
         if (oa) oa.onclick = (e) => { e.stopPropagation(); if (window.openAuth) window.openAuth(); };
         if (window.refreshLeaderboard) window.refreshLeaderboard("ready-board");
@@ -1805,7 +1846,7 @@
         const ids = runAwardIds(collectRunStats());
         mergeAwards(ids);
       } catch (e) {}
-      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + t("best") + " " + fmtBtc((S.best || 0) / 1e4) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
+      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + (S.ranked ? "" : " · " + t("trainCamp")) + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + (S.ranked ? t("best") + " " + fmtBtc((S.best || 0) / 1e4) : t("trainNote")) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
       if ($("go")) {
         $("go").onclick = replay;
         $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };
