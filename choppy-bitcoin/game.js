@@ -867,6 +867,14 @@
     S.cash -= got;
     return got;
   }
+  function grantWealthPct(p) {
+    const n = wealthUsd() * Math.max(0, p);
+    S.cash += n;
+    return n;
+  }
+  function cutPct(p) {
+    return takeWealthPct(p);
+  }
   function chanceLang() {
     return window.BZ && BZ.lang && BZ.lang() === "es";
   }
@@ -889,8 +897,8 @@
       body: "They booked a hall that seats 400. Envelope time.",
       bodyEs: "Alquilaron un salón para 400. Hora del sobre.",
       opts: [
-        { k: "a", label: "Send $500", labelEs: "Mandar $500" },
-        { k: "b", label: "Send $80 and a meme", labelEs: "Mandar $80 y un meme" },
+        { k: "a", label: "Send 4% of net worth", labelEs: "Mandar 4% del patrimonio" },
+        { k: "b", label: "Send 0.6% and a meme", labelEs: "Mandar 0.6% y un meme" },
         { k: "c", label: "Pass", labelEs: "Paso" }
       ] },
     { id: "patagonia", kind: "choice",
@@ -898,7 +906,7 @@
       body: "Last seats on a Bariloche bus. Cash now, lungs later.",
       bodyEs: "Últimos asientos al bus de Bariloche. Cash ahora, pulmones después.",
       opts: [
-        { k: "a", label: "Book it · 12% of cash", labelEs: "Reservar · 12% del cash" },
+        { k: "a", label: "Book it · 8% of net worth", labelEs: "Reservar · 8% del patrimonio" },
         { k: "b", label: "Stay home", labelEs: "Quedarme" }
       ] },
     { id: "flu", kind: "report",
@@ -926,6 +934,15 @@
         { k: "b", label: "Bet 30% of net worth", labelEs: "Apostar 30% del patrimonio" },
         { k: "c", label: "Walk out", labelEs: "Salir" }
       ] },
+    { id: "poker", kind: "choice",
+      title: "Poker cruise", titleEs: "Crucero de póker",
+      body: "A mid-sea tournament. Buy-in scales with the table. The ship does not wait.",
+      bodyEs: "Torneo en alta mar. El buy-in escala con la mesa. El barco no espera.",
+      opts: [
+        { k: "a", label: "Buy-in 8% of net worth", labelEs: "Buy-in 8% del patrimonio" },
+        { k: "b", label: "Buy-in 25% of net worth", labelEs: "Buy-in 25% del patrimonio" },
+        { k: "c", label: "Stay on the dock", labelEs: "Quedarme en el muelle" }
+      ] },
     { id: "uncle", kind: "report",
       title: "Uncle wire", titleEs: "Giro del tío",
       body: "A note: 'Don't tell your aunt. Buy the dip or a sandwich.'",
@@ -935,7 +952,7 @@
       body: "The class is going to the mint museum. They need a co-signer.",
       bodyEs: "El curso va al museo de la casa de moneda. Piden un firmante.",
       opts: [
-        { k: "a", label: "Cover $400", labelEs: "Cubrir $400" },
+        { k: "a", label: "Cover 3% of net worth", labelEs: "Cubrir 3% del patrimonio" },
         { k: "b", label: "Pass", labelEs: "Paso" }
       ] },
     { id: "roof", kind: "report",
@@ -955,7 +972,7 @@
       body: "They are 'pre-revenue, post-vibe'. One last friends-and-family round.",
       bodyEs: "Están 'pre-revenue, post-vibe'. Última ronda friends and family.",
       opts: [
-        { k: "a", label: "Invest 20% of cash", labelEs: "Invertir 20% del cash" },
+        { k: "a", label: "Invest 20% of net worth", labelEs: "Invertir 20% del patrimonio" },
         { k: "b", label: "Pass", labelEs: "Paso" }
       ] },
     { id: "tow", kind: "report",
@@ -967,7 +984,7 @@
       body: "A decorated officer needs gas money to fly over with a vault key.",
       bodyEs: "Un oficial con medallas necesita nafta para volar con la llave de una bóveda.",
       opts: [
-        { k: "a", label: "Wire 10% of cash", labelEs: "Girar 10% del cash" },
+        { k: "a", label: "Wire 10% of net worth", labelEs: "Girar 10% del patrimonio" },
         { k: "b", label: "Block and report", labelEs: "Bloquear y reportar" }
       ] },
     { id: "refund", kind: "report",
@@ -979,7 +996,7 @@
       body: "Same cousin. New envelope. Smaller human.",
       bodyEs: "El mismo primo. Otro sobre. Humano más chico.",
       opts: [
-        { k: "a", label: "Send $300", labelEs: "Mandar $300" },
+        { k: "a", label: "Send 2% of net worth", labelEs: "Mandar 2% del patrimonio" },
         { k: "b", label: "Pass", labelEs: "Paso" }
       ] },
     { id: "flood", kind: "report",
@@ -991,7 +1008,7 @@
       body: "A ticker nobody can pronounce. He says it 10xs by Friday.",
       bodyEs: "Un ticker que nadie pronuncia. Dice que x10 para el viernes.",
       opts: [
-        { k: "a", label: "Put 40% of cash in", labelEs: "Meter 40% del cash" },
+        { k: "a", label: "Put 40% of net worth in", labelEs: "Meter 40% del patrimonio" },
         { k: "b", label: "Keep the cash", labelEs: "Dejar el cash" }
       ] },
     { id: "speeding", kind: "report",
@@ -1007,7 +1024,7 @@
       body: "They are short on chairs and long on speeches.",
       bodyEs: "Faltan sillas y sobran discursos.",
       opts: [
-        { k: "a", label: "Donate 5% of cash", labelEs: "Donar 5% del cash" },
+        { k: "a", label: "Donate 5% of net worth", labelEs: "Donar 5% del patrimonio" },
         { k: "b", label: "Bring nothing", labelEs: "No llevar nada" }
       ] },
     { id: "usedcar", kind: "choice",
@@ -1015,7 +1032,7 @@
       body: "A 2009 hatch with 'new timing belt' written in marker.",
       bodyEs: "Un hatch 2009 con 'correa nueva' escrito a marcador.",
       opts: [
-        { k: "a", label: "Buy it · $2000 or 25% cash", labelEs: "Comprarlo · $2000 o 25% del cash" },
+        { k: "a", label: "Buy it · 12% of net worth", labelEs: "Comprarlo · 12% del patrimonio" },
         { k: "b", label: "Keep walking", labelEs: "Seguir de largo" }
       ] },
     { id: "dentist", kind: "report",
@@ -1033,54 +1050,51 @@
       const paid = takeWealthPct(pct);
       const r = Math.random();
       if (r < 0.08) {
-        const got = 0.8 + Math.random() * 2.4;
+        const got = Math.max(0.001, (wealthUsd() * (0.1 + Math.random() * 0.25)) / Math.max(S.price, 0.01));
         S.btc += got;
-        return say("Mud, then plastic. A fragment of the 2009 dump. +" + got.toFixed(3) + " BTC. You spent " + money(paid) + ".",
-          "Barro, después plástico. Un fragmento del basural de 2009. +" + got.toFixed(3) + " BTC. Gastaste " + money(paid) + ".");
+        return say("Mud, then plastic. A fragment of the 2009 dump. +" + got.toFixed(4) + " BTC. You spent " + money(paid) + ".",
+          "Barro, después plástico. Un fragmento del basural de 2009. +" + got.toFixed(4) + " BTC. Gastaste " + money(paid) + ".");
       }
       if (r < 0.3) {
-        S.cash += 420;
-        return say("A Nokia and a loyalty card. +$420. You spent " + money(paid) + ".",
-          "Un Nokia y una tarjeta de puntos. +$420. Gastaste " + money(paid) + ".");
+        const junk = grantWealthPct(0.015);
+        return say("A Nokia and a loyalty card. +" + money(junk) + ". You spent " + money(paid) + ".",
+          "Un Nokia y una tarjeta de puntos. +" + money(junk) + ". Gastaste " + money(paid) + ".");
       }
       return say("Three weeks of clay. Nothing. You spent " + money(paid) + ".",
         "Tres semanas de arcilla. Nada. Gastaste " + money(paid) + ".");
     }
     if (card.id === "taxbill") {
-      const bill = Math.max(180, Math.round(S.cash * 0.12));
-      const paid = takeCash(bill);
+      const paid = cutPct(0.1);
       return say("Filed. −" + money(paid) + ".", "Presentado. −" + money(paid) + ".");
     }
     if (card.id === "wedding") {
       if (opt === "c") return say("You skip the hall. They skip your birthday.", "Te salteás el salón. Ellos tu cumple.");
-      const n = opt === "a" ? 500 : 80;
-      const paid = takeCash(n);
+      const paid = cutPct(opt === "a" ? 0.04 : 0.006);
       if (opt === "a") { S.cold += 1; return say("They toast you. −" + money(paid) + " and +1 cold storage.", "Brindan por vos. −" + money(paid) + " y +1 cold storage."); }
       return say("The meme lands. The envelope does not. −" + money(paid) + ".", "El meme llega. El sobre no. −" + money(paid) + ".");
     }
     if (card.id === "patagonia") {
       if (opt === "b") return say("You stay. The Andes do not mind.", "Te quedás. Los Andes no se ofenden.");
-      const paid = takeCash(Math.max(80, S.cash * 0.12));
+      const paid = cutPct(0.08);
       S.invuln = Math.max(S.invuln || 0, 4);
       return say("Lake air. −" + money(paid) + ". You feel hard to kill for a bit.", "Aire de lago. −" + money(paid) + ". Te sentís difícil de matar un rato.");
     }
     if (card.id === "flu") {
-      const paid = takeCash(Math.max(90, Math.round(S.cash * 0.06)));
+      const paid = cutPct(0.04);
       return say("Soup, tissues, two lost days. −" + money(paid) + ".", "Sopa, pañuelos, dos días perdidos. −" + money(paid) + ".");
     }
     if (card.id === "phish") {
       if (opt === "b") return say("Deleted. The domain was three letters off.", "Borrado. El dominio fallaba por tres letras.");
-      const paid = takeWealthPct(0.18);
+      const paid = cutPct(0.18);
       return say("The form was the drain. −" + money(paid) + ".", "El formulario era el desagüe. −" + money(paid) + ".");
     }
     if (card.id === "crash") {
-      const paid = takeCash(Math.max(220, Math.round(S.cash * 0.08)));
+      const paid = cutPct(0.06);
       return say("Insurance gap. −" + money(paid) + ".", "Hueco del seguro. −" + money(paid) + ".");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You keep your stack and your evening.", "Te quedás con el stack y con la noche.");
-      const pct = opt === "b" ? 0.3 : 0.1;
-      const stake = takeWealthPct(pct);
+      const stake = cutPct(opt === "b" ? 0.3 : 0.1);
       if (Math.random() < 0.46) {
         S.cash += stake * 2;
         return say("The number hits. +" + money(stake * 2) + " back on a " + money(stake) + " stake.",
@@ -1089,36 +1103,59 @@
       return say("The wheel does not know you. Stake " + money(stake) + " is gone.",
         "La rueda no te conoce. La apuesta de " + money(stake) + " se fue.");
     }
+    if (card.id === "poker") {
+      if (opt === "c") return say("The ship leaves. Your stack stays.", "El barco zarpa. Tu stack se queda.");
+      const stake = cutPct(opt === "b" ? 0.25 : 0.08);
+      const r = Math.random();
+      if (r < 0.06) {
+        S.cash += stake * 8;
+        return say("Heads-up. You scoop the cruise. +" + money(stake * 8) + " on a " + money(stake) + " buy-in.",
+          "Heads-up. Te llevás el crucero. +" + money(stake * 8) + " sobre un buy-in de " + money(stake) + ".");
+      }
+      if (r < 0.28) {
+        S.cash += stake * 3;
+        return say("Final table. +" + money(stake * 3) + " on a " + money(stake) + " buy-in.",
+          "Mesa final. +" + money(stake * 3) + " sobre un buy-in de " + money(stake) + ".");
+      }
+      if (r < 0.52) {
+        S.cash += stake * 1.4;
+        return say("Min-cash. +" + money(stake * 1.4) + " on a " + money(stake) + " buy-in.",
+          "Min-cash. +" + money(stake * 1.4) + " sobre un buy-in de " + money(stake) + ".");
+      }
+      return say("Busted on the river. Buy-in " + money(stake) + " feeds the rail.",
+        "Eliminado en el river. El buy-in de " + money(stake) + " se queda en la baranda.");
+    }
     if (card.id === "uncle") {
       if (Math.random() < 0.55) {
-        S.cash += 1200;
-        return say("+$1,200 in the checking account.", "+$1.200 en la cuenta.");
+        const n = grantWealthPct(0.07);
+        return say("Wire lands. +" + money(n) + ".", "Llega el giro. +" + money(n) + ".");
       }
-      S.btc += 0.012;
-      return say("He sent sats. +0.012 BTC.", "Mandó sats. +0.012 BTC.");
+      const b = Math.max(0.0001, (wealthUsd() * 0.07) / Math.max(S.price, 0.01));
+      S.btc += b;
+      return say("He sent sats. +" + b.toFixed(4) + " BTC.", "Mandó sats. +" + b.toFixed(4) + " BTC.");
     }
     if (card.id === "school") {
       if (opt === "b") return say("They go without your name on the form.", "Van sin tu nombre en la planilla.");
-      const paid = takeCash(400);
+      const paid = cutPct(0.03);
       return say("You are on the chaperone list. −" + money(paid) + ".", "Estás en la lista de padres. −" + money(paid) + ".");
     }
     if (card.id === "roof") {
-      const paid = takeCash(Math.max(280, Math.round(S.cash * 0.09)));
+      const paid = cutPct(0.05);
       return say("Tarp, then tiles. −" + money(paid) + ".", "Lona, después tejas. −" + money(paid) + ".");
     }
     if (card.id === "lotto") {
       const r = Math.random();
-      if (r < 0.04) { S.cash += 5000; return say("The lid was lucky. +$5,000.", "La tapa tenía suerte. +$5.000."); }
-      if (r < 0.45) { S.cash += 80; return say("Free coffee money. +$80.", "Café pago. +$80."); }
+      if (r < 0.04) { const n = grantWealthPct(0.35); return say("The lid was lucky. +" + money(n) + ".", "La tapa tenía suerte. +" + money(n) + "."); }
+      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Coffee-lid money. +" + money(n) + ".", "Plata de la tapa. +" + money(n) + "."); }
       return say("It was a loser under the foam.", "Era un perdedor bajo la espuma.");
     }
     if (card.id === "hospital") {
-      const paid = takeCash(Math.max(350, Math.round(S.cash * 0.1)));
+      const paid = cutPct(0.07);
       return say("Stitches hold. Invoice too. −" + money(paid) + ".", "Los puntos aguantan. La factura también. −" + money(paid) + ".");
     }
     if (card.id === "startup") {
-      if (opt === "b") return say("You keep the cash. They keep the pitch deck.", "Te quedás el cash. Ellos el pitch.");
-      const paid = takeCash(S.cash * 0.2);
+      if (opt === "b") return say("You keep the stack. They keep the pitch deck.", "Te quedás el stack. Ellos el pitch.");
+      const paid = cutPct(0.2);
       if (Math.random() < 0.28) {
         S.cash += paid * 4;
         return say("They actually ship. 4x back on " + money(paid) + ".", "De verdad publican. 4x sobre " + money(paid) + ".");
@@ -1126,31 +1163,30 @@
       return say("The domain expired. " + money(paid) + " is a case study.", "Venció el dominio. " + money(paid) + " es un caso de estudio.");
     }
     if (card.id === "tow") {
-      const paid = takeCash(220);
+      const paid = cutPct(0.02);
       return say("Lot fee plus pride. −" + money(paid) + ".", "Playón más orgullo. −" + money(paid) + ".");
     }
     if (card.id === "romance") {
       if (opt === "b") return say("Blocked. The general retreats.", "Bloqueado. El general se retira.");
-      const paid = takeCash(S.cash * 0.1);
+      const paid = cutPct(0.1);
       return say("The vault key never boards. −" + money(paid) + ".", "La llave de la bóveda no aborda. −" + money(paid) + ".");
     }
     if (card.id === "refund") {
-      const n = 280 + ((Math.random() * 220) | 0);
-      S.cash += n;
+      const n = grantWealthPct(0.035);
       return say("Quiet deposit. +" + money(n) + ".", "Depósito quieto. +" + money(n) + ".");
     }
     if (card.id === "baby") {
       if (opt === "b") return say("You send a PDF of well wishes.", "Mandás un PDF de buenos deseos.");
-      const paid = takeCash(300);
+      const paid = cutPct(0.02);
       return say("Onesie acquired. −" + money(paid) + ".", "Body comprado. −" + money(paid) + ".");
     }
     if (card.id === "flood") {
-      const paid = takeCash(Math.max(400, Math.round(S.cash * 0.11)));
+      const paid = cutPct(0.08);
       return say("Shop-vac and drywall. −" + money(paid) + ".", "Aspiradora de agua y yeso. −" + money(paid) + ".");
     }
     if (card.id === "cousin") {
       if (opt === "b") return say("The ticker is already −40% in after-hours.", "El ticker ya va −40% after hours.");
-      const paid = takeCash(S.cash * 0.4);
+      const paid = cutPct(0.4);
       if (Math.random() < 0.5) {
         S.cash += paid * 2.2;
         return say("Friday arrives early. 2.2x on " + money(paid) + ".", "El viernes llega temprano. 2.2x sobre " + money(paid) + ".");
@@ -1158,36 +1194,31 @@
       return say("Halted. " + money(paid) + " is a screenshot now.", "Suspendido. " + money(paid) + " ahora es un screenshot.");
     }
     if (card.id === "speeding") {
-      const paid = takeCash(180);
+      const paid = cutPct(0.015);
       return say("Camera does not take excuses. −" + money(paid) + ".", "La cámara no acepta excusas. −" + money(paid) + ".");
     }
     if (card.id === "wallet") {
-      if (S.btc > 0.002 && Math.random() < 0.4) {
-        S.btc -= 0.002;
-        return say("A card and 0.002 BTC walk away.", "Se van una tarjeta y 0.002 BTC.");
-      }
-      const paid = takeCash(250);
-      return say("Cash and the photo of the dog. −" + money(paid) + ".", "Cash y la foto del perro. −" + money(paid) + ".");
+      const paid = cutPct(0.025);
+      return say("Wallet walks. −" + money(paid) + ".", "Camina la billetera. −" + money(paid) + ".");
     }
     if (card.id === "potluck") {
       if (opt === "b") return say("You eat at home. Fine stew, thinner social graph.", "Comés en casa. Buen guiso, grafo social más fino.");
-      const paid = takeCash(S.cash * 0.05);
+      const paid = cutPct(0.05);
       if (Math.random() < 0.35) { S.cold += 1; return say("Someone hands you a spare key. −" + money(paid) + " and +1 cold.", "Alguien te pasa una llave de más. −" + money(paid) + " y +1 cold."); }
       return say("You are on the good list. −" + money(paid) + ".", "Quedás en la lista buena. −" + money(paid) + ".");
     }
     if (card.id === "usedcar") {
       if (opt === "b") return say("The marker ink was still wet. Good call.", "La tinta del marcador todavía secaba. Buena.");
-      const ask = Math.min(Math.max(2000, S.cash * 0.25), Math.max(200, S.cash));
-      const paid = takeCash(ask);
+      const paid = cutPct(0.12);
       if (Math.random() < 0.3) {
-        S.cash += 600;
-        return say("It runs. You sell a spare tire. −" + money(paid) + " then +$600.", "Anda. Vendés una rueda de auxilio. −" + money(paid) + " y después +$600.");
+        const back = grantWealthPct(0.03);
+        return say("It runs. Spare tire sale. −" + money(paid) + " then +" + money(back) + ".", "Anda. Vendés el auxilio. −" + money(paid) + " y después +" + money(back) + ".");
       }
-      const extra = takeCash(350);
+      const extra = cutPct(0.04);
       return say("Lemon. Timing belt was a rumor. −" + money(paid + extra) + ".", "Limón. La correa era un rumor. −" + money(paid + extra) + ".");
     }
     if (card.id === "dentist") {
-      const paid = takeCash(Math.max(160, Math.round(S.cash * 0.07)));
+      const paid = cutPct(0.03);
       return say("The molar stands down. −" + money(paid) + ".", "La muela se rinde. −" + money(paid) + ".");
     }
     return say("Nothing else happens.", "No pasa nada más.");
