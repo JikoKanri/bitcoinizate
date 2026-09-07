@@ -5,7 +5,7 @@
   const A = window.ArcadeAudio;
   const POWER_S = 5;
   const HALVE_N = 21;
-  const HALVE_GAP = 21;
+  const HALVE_GAP = 210;
   const GREEN = "#4f9d6e";
   const RED = "#c45c4a";
   const BTC = "#c8960a";
@@ -121,7 +121,7 @@
   function loadBest() {
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || "{}");
-      return (s.scores && s.scores.choppy) || 0;
+      return (s.scores && s.scores.choppy2) || 0;
     } catch (e) { return 0; }
   }
   function saveBest(n) {
@@ -129,12 +129,12 @@
     let s = { scores: { choppy: 0 } };
     try { s = Object.assign({ scores: { choppy: 0 } }, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
     s.scores = s.scores || {};
-    s.scores.choppy = Math.max(s.scores.choppy || 0, n);
+    s.scores.choppy2 = Math.max(s.scores.choppy2 || 0, n);
     localStorage.setItem(KEY, JSON.stringify(s));
     if (typeof window.submitNewHighScore === "function") {
       window.submitNewHighScore(n, { lifeT: S.lifeT, candles: S.candles, human: !!S.humanInput });
     }
-    return s.scores.choppy;
+    return s.scores.choppy2;
   }
 
   function gauss(mean, lo, hi) {
@@ -206,7 +206,7 @@
     perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
-    offerSeq: [10, 20, 30], nextOffer: 10, offersDone: 0,
+    offerSeq: [7, 13, 24], nextOffer: 7, offersDone: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
@@ -424,7 +424,9 @@
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
-      S.offerSeq = [10, 20, 30]; S.nextOffer = 10; S.offersDone = 0;
+      S.offerSeq = S.ranked ? tribSeq(16) : [10, 20, 30];
+      S.nextOffer = S.ranked ? 7 : 10;
+      S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
       if (A && A.jukeStop) A.jukeStop();
@@ -541,6 +543,7 @@
       const line = drawLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"], 0.15);
       say(line || "Laser eyes!", true);
       A.sfx.power();
+      if (S.ranked && S.lasers === S.nextOffer) openPerkOffer();
       return;
     }
     if (it.type === "COLD") {
@@ -726,8 +729,29 @@
     setPhase("perk");
   }
 
+  function tribSeq(n) {
+    const s = [7];
+    let a = 2, b = 4, c = 7;
+    while (s.length < n) {
+      const t = a + b + c;
+      s.push(t);
+      a = b; b = c; c = t;
+    }
+    return s;
+  }
+
   function bumpOffer() {
     S.offersDone += 1;
+    if (S.ranked) {
+      const s = S.offerSeq && S.offerSeq.length ? S.offerSeq : tribSeq(16);
+      S.offerSeq = s;
+      while (s.length <= S.offersDone) {
+        const i = s.length;
+        s.push(s[i - 1] + s[i - 2] + s[i - 3]);
+      }
+      S.nextOffer = s[S.offersDone];
+      return;
+    }
     const s = S.offerSeq;
     if (S.offersDone < s.length) S.nextOffer = s[S.offersDone];
     else {
@@ -1062,7 +1086,7 @@
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.candles++; A.sfx.coin();
         grantUsd(100, p.x + pw * 0.5, p.gapY, "gain");
-        if (S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
+        if (!S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
       if (inX) {
