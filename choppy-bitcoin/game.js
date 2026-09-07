@@ -880,14 +880,46 @@
     return window.BZ && BZ.lang && BZ.lang() === "es";
   }
   const CHANCE_CAST = {
-    lena: { en: "Lena, the owner of your heart", es: "Lena, la dueña de tu corazón", names: ["Lena"] },
-    paco: { en: "Paco, the street dog who chose you", es: "Paco, el perro de la calle que te eligió", names: ["Paco"] },
-    marek: { en: "Marek, your basketball friend from school", es: "Marek, tu amigo del básquet del colegio", names: ["Marek"] },
-    nico: { en: "Nico, your cousin with a plan", es: "Nico, tu primo el de los planes", names: ["Nico"] },
-    sofi: { en: "Sofi, Nico's kid", es: "Sofi, la hija de Nico", names: ["Sofi"] },
-    val: { en: "Val, your ex-boss from the food-truck year", es: "Val, tu ex-jefe del año del food truck", names: ["Val"] },
-    rami: { en: "Rami, who still keeps arcade tokens in the glove box", es: "Rami, el que todavía guarda fichas de arcade en la guantera", names: ["Rami"] },
-    hector: { en: "Uncle Hector, the one who wires money with a note", es: "El tío Héctor, el que gira plata con una nota", names: ["Uncle Hector", "tío Héctor", "Tío Héctor", "Hector", "Héctor"] }
+    lena: {
+      names: ["Lena"],
+      en: ["Lena, the love of your life", "Lena, who owns the other half of the fridge", "Lena, your person since the cheap-rent years"],
+      es: ["Lena, el amor de tu vida", "Lena, la dueña de tu corazón", "Lena, tu compañera desde el depto de reja"]
+    },
+    paco: {
+      names: ["Paco"],
+      en: ["Paco, your dog", "Paco, the street mutt who claimed you", "Paco, who sleeps on your side of the bed"],
+      es: ["Paco, tu perro", "Paco, el pichicho de la calle que te adoptó", "Paco, el que duerme de tu lado de la cama"]
+    },
+    marek: {
+      names: ["Marek"],
+      en: ["Marek, your basketball friend from school", "Marek, who still fouls you in pickup games", "Marek, the one who kept your jersey"],
+      es: ["Marek, tu amigo del básquet del colegio", "Marek, el que todavía te hace falta en el pick-up", "Marek, el que se quedó con tu camiseta"]
+    },
+    nico: {
+      names: ["Nico"],
+      en: ["Nico, your cousin", "Nico, the cousin who always has a hall to book", "Nico, family by blood and by group chat"],
+      es: ["Nico, tu primo", "Nico, el primo que siempre alquila un salón", "Nico, familia de sangre y de grupo"]
+    },
+    sofi: {
+      names: ["Sofi"],
+      en: ["Sofi, Nico's daughter", "Sofi, your cousin's kid who already draws you", "Sofi, the niece who treats you like an uncle"],
+      es: ["Sofi, la hija de Nico", "Sofi, la nena de tu primo que ya te dibuja", "Sofi, la sobrina que te trata de tío"]
+    },
+    val: {
+      names: ["Val"],
+      en: ["Val, your ex-boss from the food-truck year", "Val, who used to sign your shifts", "Val, the old boss you still answer on the second ring"],
+      es: ["Val, tu ex-jefe del año del food truck", "Val, el que te firmaba los turnos", "Val, el ex-jefe al que todavía le atendés al segundo tono"]
+    },
+    rami: {
+      names: ["Rami"],
+      en: ["Rami, your friend from college", "Rami, who you still call Indie Jones", "Rami, the roommate who taught you the arcade"],
+      es: ["Rami, tu amigo de la facultad", "Rami, a quien cariñosamente apodas Indie Jones", "Rami, el compañero de depto que te enseñó el arcade"]
+    },
+    hector: {
+      names: ["Uncle Hector", "tío Héctor", "Tío Héctor", "El tío Héctor", "el tío Héctor"],
+      en: ["Uncle Hector, your mother's brother", "Uncle Hector, the uncle who never arrives empty-handed", "Uncle Hector, family from your mother's side"],
+      es: ["El tío Héctor, el hermano de tu vieja", "El tío Héctor, el tío que no llega con las manos vacías", "El tío Héctor, familia del lado de tu mamá"]
+    }
   };
   const CHANCE_WHO = {
     landfill: ["marek"], taxbill: ["lena"], wedding: ["nico"], patagonia: ["lena"],
@@ -909,10 +941,11 @@
       if (!row) return;
       const n = S.chanceMet[id] || 0;
       S.chanceMet[id] = n + 1;
-      if (n >= 2) return;
-      const label = es ? row.es : row.en;
-      for (let i = 0; i < row.names.length; i++) {
-        const nm = row.names[i];
+      const pack = es ? row.es : row.en;
+      const label = pack[n % pack.length];
+      const names = row.names.slice().sort((a, b) => b.length - a.length);
+      for (let i = 0; i < names.length; i++) {
+        const nm = names[i];
         const at = text.indexOf(nm);
         if (at >= 0) {
           text = text.slice(0, at) + label + text.slice(at + nm.length);
