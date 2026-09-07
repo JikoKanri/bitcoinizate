@@ -89,37 +89,51 @@
       }
       sb.auth.getSession().then(function (res) {
         var sess = res && res.data && res.data.session;
-        if (!sess || !sess.user) {
+        var user = sess && sess.user;
+        uid = user && user.id;
+        if (!uid && sess && sess.access_token) {
+          try {
+            var payload = JSON.parse(atob(sess.access_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+            uid = payload.sub || payload.user_id || "";
+          } catch (err) {}
+        }
+        if (!uid) {
           need.textContent = es ? "Tenés que iniciar sesión." : "You need to sign in.";
           need.classList.remove("hide");
           return;
         }
-        uid = sess.user.id;
-        return sb.from("profiles").select("id, username, avatar, highscore").eq("id", uid).single();
+        return sb.from("profiles").select("id, username, highscore").eq("id", uid).single();
       }).then(function (res) {
         if (!uid) return;
-        if (!res || res.error || !res.data) {
-          var guess = "";
-          try { guess = localStorage.getItem("choppy-alias") || ""; } catch (err) {}
-          return sb.from("profiles").insert([{ id: uid, username: guess || "trader", highscore: 0 }]).then(function () {
-            return sb.from("profiles").select("id, username, avatar, highscore").eq("id", uid).single();
-          }).then(function (res2) {
-            if (!res2 || res2.error || !res2.data) {
-              need.textContent = es ? "No se encontró el perfil." : "Profile not found.";
-              need.classList.remove("hide");
-              return;
-            }
-            profile = res2.data;
-            aliasEl.value = profile.username || guess || "";
-            document.getElementById("public-link").href = "/u/" + encodeURIComponent(profile.username || guess || "");
-            form.classList.remove("hide");
-          });
+        var guess = "";
+        try { guess = localStorage.getItem("choppy-alias") || ""; } catch (err) {}
+        function show(row) {
+          profile = row || { id: uid, username: guess || "trader", highscore: 0 };
+          aliasEl.value = profile.username || guess || "";
+          try {
+            var localAv = localStorage.getItem("choppy-avatar-" + uid);
+            if (localAv) preview.src = localAv;
+          } catch (err) {}
+          document.getElementById("public-link").href = "/u/" + encodeURIComponent(aliasEl.value || "");
+          form.classList.remove("hide");
         }
-        profile = res.data;
-        aliasEl.value = profile.username || "";
-        if (profile.avatar) preview.src = profile.avatar;
-        document.getElementById("public-link").href = "/u/" + encodeURIComponent(profile.username || "");
-        form.classList.remove("hide");
+        if (res && res.data && res.data.id) {
+          show(res.data);
+          return;
+        }
+        return sb.from("profiles").insert([{
+          id: uid,
+          username: guess || "player",
+          highscore: 0
+        }]).then(function (ins) {
+          return sb.from("profiles").select("id, username, highscore").eq("id", uid).single().then(function (res2) {
+            if (res2 && res2.data && res2.data.id) show(res2.data);
+            else {
+              show({ id: uid, username: guess || "player", highscore: 0 });
+              if (ins && ins.error) setMsg((es ? "Perfil local. " : "Local profile. ") + (ins.error.message || ""), true);
+            }
+          });
+        });
       });
       form.onsubmit = function (e) {
         e.preventDefault();
