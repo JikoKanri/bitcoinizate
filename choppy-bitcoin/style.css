@@ -61,6 +61,8 @@ body {
 .stat-opt { display: flex; flex-direction: column; align-items: stretch; justify-content: stretch; padding: 2px; gap: 2px; min-height: 0; }
 .opt-btn { width: 100%; flex: 1 1 auto; min-height: 0; border: 1px solid #3a3a40; background: #141416; color: #f3efe6; font: inherit; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; line-height: 1.15; padding: 2px 4px; }
 .opt-btn small { display: block; font-size: 8px; letter-spacing: 0; text-transform: none; font-weight: 700; color: #fff6d0; }
+.user-link { color: #F2A900; text-decoration: none; }
+.user-link:hover { text-decoration: underline; }
 .opt-btn:disabled { opacity: 0.35; cursor: default; }
 .opt-btn:not(:disabled):hover { border-color: #c8960a; color: #fff6d0; }
 .hide { display: none !important; pointer-events: none !important; }

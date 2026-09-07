@@ -276,6 +276,25 @@
                   } catch (e) { return { data: null, error: e }; }
                 }
               };
+            },
+            ilike(field, val) {
+              return {
+                limit(n) {
+                  return {
+                    then: async (cb) => {
+                      try {
+                        const q = "?select=" + encodeURIComponent(cols)
+                          + "&" + field + "=ilike." + encodeURIComponent(val)
+                          + "&limit=" + (n || 1);
+                        const r = await rest(q, { headers: authHeaders() });
+                        const d = await readJson(r);
+                        if (!r.ok) cb({ data: null, error: apiError(d, "Select failed") });
+                        else cb({ data: Array.isArray(d) ? d : [], error: null });
+                      } catch (e) { cb({ data: null, error: e }); }
+                    }
+                  };
+                }
+              };
             }
           };
         },

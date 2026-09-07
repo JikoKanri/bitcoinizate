@@ -60,6 +60,11 @@
     return /^[a-zA-Z0-9_]{3,16}$/.test(s);
   }
 
+  function profileHref(name) {
+    const n = String(name || "").replace(/^@/, "").trim();
+    return "/" + encodeURIComponent(n);
+  }
+
   function fmtScoreBtc(sats) {
     const btc = (Number(sats) || 0) / 1e4;
     if (btc >= 1) return btc.toFixed(4) + " BTC";
@@ -94,7 +99,7 @@
       if (tag) {
         tag.classList.remove("hide");
         const hs = profile.highscore != null ? profile.highscore : profile.high_score;
-        tag.innerHTML = "@" + name + "<small>" + fmtScoreBtc(hs) + "</small>";
+        tag.innerHTML = "<a class=\"user-link\" href=\"" + profileHref(name) + "\" target=\"_blank\" rel=\"noopener\">@" + name + "</a><small>" + fmtScoreBtc(hs) + "</small>";
       }
     } else {
       window.choppySignedIn = false;
@@ -353,7 +358,11 @@
         rows = res.data || [];
       });
       if (!rows.length) { box.textContent = "—"; return; }
-      box.textContent = rows.map((row, i) => (i + 1) + ". @" + (row.username || "?") + "   " + fmtScoreBtc(row.highscore)).join("\n");
+      box.innerHTML = rows.map((row, i) => {
+        const n = row.username || "?";
+        const href = validAlias(n) ? profileHref(n) : "#";
+        return (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a>   " + fmtScoreBtc(row.highscore);
+      }).join("<br>");
     } catch (e) {
       box.textContent = "—";
     }
@@ -435,7 +444,8 @@
   });
 
   if ($("user-profile-tag")) {
-    $("user-profile-tag").onclick = () => {
+    $("user-profile-tag").onclick = (e) => {
+      if (e.target && e.target.closest && e.target.closest("a")) return;
       if (!currentProfile) return;
       if ($("profile-score-info")) {
         const hs = currentProfile.highscore != null ? currentProfile.highscore : currentProfile.high_score;
@@ -505,6 +515,7 @@
     }
   };
   window.refreshLeaderboard = fetchGlobalLeaderboard;
+  window.profileHref = profileHref;
   window.openSignUp = function () {
     openAuth();
     if (!isSignUpMode) toggleAuthMode();
