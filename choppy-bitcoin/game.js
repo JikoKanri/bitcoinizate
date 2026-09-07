@@ -86,23 +86,28 @@
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Chance" };
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Chance" };
   const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
-  const JOB_LADDER = ["Burger flipper", "Shift lead", "Night manager", "Regional grease officer", "Franchise fixer", "Supply-chain whisperer"];
-  const JOB_T7 = [
-    "Quant at a basement hedge fund",
-    "Lightning routing operator",
-    "Cold-storage architect",
-    "Sovereign stack allocator",
-    "Professional sat whisperer",
-    "Underwater bitcoin miner",
-    "Timechain sommelier",
-    "Family-office coin mule",
-    "Mining-pool diplomat",
-    "Protocol bounty hunter"
+  const JOBS = [
+    { name: "Actor", nameEs: "Actor", titles: ["Background extra", "Community-theater lead", "Soap regular", "Festival film lead", "Prestige-TV regular", "Blockbuster support", "A-list lead"], titlesEs: ["Extra de fondo", "Protagonista de teatro barrial", "Fijo en una telenovela", "Protagonista de festival", "Fijo en serie de prestigio", "Soporte de blockbuster", "Estrella A-list"] },
+    { name: "Diver", nameEs: "Buzo", titles: ["Pool attendant", "Open-water intern", "Harbor salvage hand", "Commercial welder-diver", "Saturation diver", "Deep-wreck chief", "Expedition dive master"], titlesEs: ["Playero de pileta", "Pasante de aguas abiertas", "Salvamento de puerto", "Soldador submarino", "Buzo de saturación", "Jefe de pecios profundos", "Maestro de expedición"] },
+    { name: "Scientist", nameEs: "Científico", titles: ["Lab dishwasher", "Grad-school grunt", "Postdoc", "Staff researcher", "Principal investigator", "National-lab fellow", "Prize shortlist"], titlesEs: ["Lava tubos", "Becario agotado", "Postdoc", "Investigador de planta", "Investigador principal", "Fellow de laboratorio nacional", "Lista al premio"] },
+    { name: "Lawyer", nameEs: "Abogado", titles: ["Mailroom clerk", "Paralegal", "Public-defender grind", "Junior associate", "Trial counsel", "Name-on-the-door partner", "Chief counsel"], titlesEs: ["Mailroom", "Paralegal", "Defensoría pública", "Asociado junior", "Litigante", "Socio con el nombre en la puerta", "Consejero jefe"] },
+    { name: "Chef", nameEs: "Cocinero", titles: ["Dish pit", "Line cook", "Sous-chef", "Head chef", "Michelin kitchen", "Private-yacht chef", "World's-best kitchen"], titlesEs: ["Fregadero", "Cocinero de línea", "Sous-chef", "Chef ejecutivo", "Cocina Michelin", "Chef de yate", "Cocina top mundial"] },
+    { name: "Pilot", nameEs: "Piloto", titles: ["Banner-tow grunt", "Bush hopper", "Regional first officer", "Major-airline first officer", "Captain", "Long-haul captain", "Test pilot"], titlesEs: ["Arrastra carteles", "Piloto de monte", "Primer oficial regional", "Primer oficial de major", "Capitán", "Capitán de largo haul", "Piloto de pruebas"] },
+    { name: "Musician", nameEs: "Músico", titles: ["Subway busker", "Wedding-band hire", "Studio session", "Touring sideman", "Festival headliner", "Symphony soloist", "World-tour closer"], titlesEs: ["Callejero del subte", "Banda de casamientos", "Sesionista", "Músico de gira", "Headliner de festival", "Solista de sinfónica", "Cierre de gira mundial"] },
+    { name: "Athlete", nameEs: "Atleta", titles: ["Rec-league bench", "Semi-pro", "Minors call-up", "Starting roster", "All-star", "Champion", "Hall of fame"], titlesEs: ["Banca del rec", "Semi-pro", "Ascenso a menores", "Titular", "All-star", "Campeón", "Salón de la fama"] },
+    { name: "Doctor", nameEs: "Médico", titles: ["Orderly", "Nursing assistant", "Resident", "Attending", "Surgeon", "Department chief", "Hospital director"], titlesEs: ["Camillero", "Ayudante de enfermería", "Residente", "Médico de planta", "Cirujano", "Jefe de servicio", "Director de hospital"] },
+    { name: "Sailor", nameEs: "Marino", titles: ["Deck swab", "Able seaman", "Bosun", "First mate", "Ship captain", "Fleet commander", "Harbor master"], titlesEs: ["Limpia cubierta", "Marinero", "Contramaestre", "Primer oficial", "Capitán", "Comandante de flota", "Capitán de puerto"] }
   ];
   const JOB_PAY = [80, 160, 280, 480, 780, 1200, 3200];
   const FF_SPEEDS = [1.5, 2, 3];
   function perkTitle(id, tier) {
     if (id === "skip") return (window.BZ && BZ.t("declinePerk")) || "Gently decline";
+    if (id === "job") {
+      const job = currentJob();
+      const pack = (window.BZ && BZ.lang && BZ.lang() === "es") ? PERK_NAME_ES : PERK_NAME;
+      const base = job ? ((window.BZ && BZ.lang && BZ.lang() === "es") ? job.nameEs : job.name) : (pack.job || "Employment");
+      return tier <= 1 ? base : base + " " + ROMAN[Math.min(ROMAN.length - 1, tier)];
+    }
     const pack = (window.BZ && BZ.lang && BZ.lang() === "es") ? PERK_NAME_ES : PERK_NAME;
     const n = pack[id] || id;
     return tier <= 1 || id === "dca" ? n : n + " " + ROMAN[Math.min(ROMAN.length - 1, tier)];
@@ -120,7 +125,12 @@
         : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears end " + adoptBearLabel(tier);
       if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
       if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
-      if (id === "job") return es ? "sueldo cada 21 velas" : "paycheck every 21 candles";
+      if (id === "job") {
+        const job = currentJob();
+        const title = jobTitleAt(job, tier);
+        const pay = JOB_PAY[tier - 1] || 80;
+        return title + " · $" + pay + (es ? " / 21 velas" : " / 21 candles");
+      }
       if (id === "market") return es ? "abre el mercado en el HUD" : "opens the market in the HUD";
       if (id === "chance") {
         if (tier <= 1) return es ? "1 carta cada 210 velas" : "1 card every 210 candles";
@@ -226,7 +236,7 @@
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false, ranked: true,
-    perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
+    jobTrack: null, jobOffer: null, jobName: "",
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 },
     offerSeq: [1, 2, 4], nextOffer: 1, offersDone: 0,
@@ -452,7 +462,7 @@
       S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.chanceAt = []; S.chanceUntil = 0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -725,15 +735,37 @@
     if (kind === "dca") S.dcaOn = false;
     if (kind === "manip" && !S.trend) S.trend = "off";
     if (kind === "juke") fillJukebox();
-    if (kind === "job") assignJob();
+    if (kind === "job") {
+      if (S.jobTrack == null) S.jobTrack = (S.jobOffer != null ? S.jobOffer : ((Math.random() * JOBS.length) | 0));
+      S.jobOffer = S.jobTrack;
+      assignJob();
+    }
     if (kind === "chance") planChanceWindow(S.candles || 0);
+  }
+
+  function currentJob() {
+    const i = S.jobTrack != null ? S.jobTrack : S.jobOffer;
+    if (i == null) return null;
+    return JOBS[((i % JOBS.length) + JOBS.length) % JOBS.length];
+  }
+
+  function jobTitleAt(job, tier) {
+    if (!job) return "";
+    const es = window.BZ && BZ.lang && BZ.lang() === "es";
+    const list = es && job.titlesEs ? job.titlesEs : job.titles;
+    return list[Math.max(0, Math.min(list.length - 1, (tier || 1) - 1))] || "";
+  }
+
+  function pickJobOffer() {
+    if (S.jobTrack != null) { S.jobOffer = S.jobTrack; return; }
+    S.jobOffer = (Math.random() * JOBS.length) | 0;
   }
 
   function assignJob() {
     const t = S.have.job || 0;
     if (t <= 0) { S.jobName = ""; return; }
-    if (t >= 7) S.jobName = JOB_T7[(Math.random() * JOB_T7.length) | 0];
-    else S.jobName = JOB_LADDER[Math.min(JOB_LADDER.length - 1, t - 1)];
+    if (S.jobTrack == null) S.jobTrack = S.jobOffer != null ? S.jobOffer : ((Math.random() * JOBS.length) | 0);
+    S.jobName = jobTitleAt(currentJob(), t);
   }
 
   function jobPay() {
@@ -876,11 +908,14 @@
   function rollPerks() {
     const ids = perkOpen();
     if (!ids.length) { S.perkOffers = []; return; }
-    if (ids.length === 1) { S.perkOffers = [ids[0]]; return; }
-    const copy = ids.slice();
-    const a = copy.splice((Math.random() * copy.length) | 0, 1)[0];
-    const b = copy.splice((Math.random() * copy.length) | 0, 1)[0];
-    S.perkOffers = [a, b];
+    if (ids.length === 1) S.perkOffers = [ids[0]];
+    else {
+      const copy = ids.slice();
+      const a = copy.splice((Math.random() * copy.length) | 0, 1)[0];
+      const b = copy.splice((Math.random() * copy.length) | 0, 1)[0];
+      S.perkOffers = [a, b];
+    }
+    if (S.perkOffers.indexOf("job") >= 0) pickJobOffer();
   }
 
   function perkWhy(id) {
