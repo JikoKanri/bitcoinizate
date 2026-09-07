@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Player profile | Bitcoinizate</title>
+  <meta name="robots" content="index,follow">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0d0d0d">
+  <style>
+    :root { --gold:#F2A900; --ink:#0d0d0d; --paper:#f3efe6; --mute:#9a968e; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      background: radial-gradient(900px 480px at 50% -8%, #3a2808 0%, #0d0d0d 52%);
+      color: var(--paper); font-family: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+    }
+    .wrap { width: min(560px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .brand img { width: 40px; height: 40px; border-radius: 50%; }
+    .brand p { margin: 0; letter-spacing: 0.16em; font-size: 13px; color: var(--gold); }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 6vw, 40px); color: var(--gold); }
+    .lead { color: #d4d0c8; line-height: 1.5; }
+    .card { border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); padding: 16px; margin: 18px 0; }
+    .card p { margin: 0 0 8px; font-size: 14px; }
+    .k { color: var(--mute); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .awards p { font-size: 13px; color: #c4c0b8; }
+    .aw-on b { color: var(--gold); }
+    .miss { color: #ff9b92; }
+    .hide { display: none !important; }
+    .play {
+      display: block; text-align: center; font-weight: 700; background: var(--gold); color: #120c02;
+      padding: 14px; letter-spacing: 0.06em; margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <a href="/"><img src="/favicon-192.png" alt=""></a>
+      <p><a href="/">BITCOINIZATE</a></p>
+    </div>
+    <p class="k" id="k-profile">Profile</p>
+    <h1 id="who">…</h1>
+    <div class="card">
+      <p class="k" id="k-score">High score</p>
+      <p id="score">—</p>
+      <div id="awards" class="awards"></div>
+    </div>
+    <p id="miss" class="miss hide"></p>
+    <a class="play" href="/choppy-bitcoin/">Play Choppy Bitcoin</a>
+  </div>
+  <script src="/i18n.js"></script>
+  <script src="/choppy-bitcoin/supabase-lib.js"></script>
+  <script>
+    (function () {
+      var RESERVED = { "":1, "index.html":1, "privacy":1, "privacy.html":1, "choppy-bitcoin":1, "u.html":1, "robots.txt":1, "sitemap.xml":1, "favicon.ico":1 };
+      var parts = (location.pathname || "/").replace(/\/+/g, "/").split("/").filter(Boolean);
+      var q = new URLSearchParams(location.search).get("u");
+      var raw = q || parts[0] || "";
+      try { raw = decodeURIComponent(raw); } catch (e) {}
+      raw = String(raw).replace(/^@/, "").trim();
+      var es = window.BZ && BZ.lang && BZ.lang() === "es";
+      document.getElementById("k-profile").textContent = es ? "Perfil" : "Profile";
+      document.getElementById("k-score").textContent = es ? "Mejor puntaje" : "High score";
+      if (!raw || RESERVED[raw.toLowerCase()] || !/^[a-zA-Z0-9_]{3,16}$/.test(raw)) {
+        document.getElementById("who").textContent = es ? "Jugador no encontrado" : "Player not found";
+        document.getElementById("miss").textContent = es ? "Ese alias no existe." : "That alias does not exist.";
+        document.getElementById("miss").classList.remove("hide");
+        return;
+      }
+      document.title = "@" + raw + " | Bitcoinizate";
+      document.getElementById("who").textContent = "@" + raw;
+      function fmtScoreBtc(sats) {
+        var btc = (Number(sats) || 0) / 1e4;
+        if (btc >= 1) return btc.toFixed(4) + " BTC";
+        if (btc >= 0.0001) return btc.toFixed(6) + " BTC";
+        return btc.toFixed(8) + " BTC";
+      }
+      var CATALOG = [
+        { id: "maxi", name: "Maxi Soul", nameEs: "Alma maxi", why: "Never sold BTC — not by hand, not by A.I. bud.", whyEs: "Nunca vendió BTC, ni a mano ni por A.I. bud." },
+        { id: "halver", name: "Halving Catcher", nameEs: "Atrapa halvings", why: "Every halving that spawned was eaten.", whyEs: "Comió todos los halvings que salieron." },
+        { id: "nocoiner", name: "Nocoiner", nameEs: "Nocoiner", why: "Never bought BTC in that run.", whyEs: "Nunca compró BTC en esa partida." },
+        { id: "greedy", name: "Greedy Miner", nameEs: "Minero greedy", why: "Ate 0 halvings.", whyEs: "Comió 0 halvings." },
+        { id: "opsec", name: "Opsec Warrior", nameEs: "Guerrero opsec", why: "Lost 0 cold storage.", whyEs: "No perdió cold storage." },
+        { id: "paper", name: "Paper Hands", nameEs: "Manos de papel", why: "Sold BTC in a bear market.", whyEs: "Vendió BTC en un bear market." }
+      ];
+      var sb = window.supabase && window.supabase.createClient && window.supabase.createClient();
+      if (!sb) {
+        document.getElementById("miss").textContent = "—";
+        document.getElementById("miss").classList.remove("hide");
+        return;
+      }
+      sb.from("profiles").select("username, highscore, awards").ilike("username", raw).limit(1).then(function (res) {
+        var row = res && res.data && res.data[0];
+        if (res.error || !row) {
+          document.getElementById("who").textContent = es ? "Jugador no encontrado" : "Player not found";
+          document.getElementById("miss").textContent = es ? "Ese alias no existe." : "That alias does not exist.";
+          document.getElementById("miss").classList.remove("hide");
+          return;
+        }
+        var name = row.username || raw;
+        document.getElementById("who").textContent = "@" + name;
+        document.title = "@" + name + " | Bitcoinizate";
+        document.getElementById("score").textContent = fmtScoreBtc(row.highscore);
+        var owned = {};
+        (row.awards || []).forEach(function (id) { owned[id] = true; });
+        var html = CATALOG.filter(function (a) { return owned[a.id]; }).map(function (a) {
+          var n = es ? (a.nameEs || a.name) : a.name;
+          var w = es ? (a.whyEs || a.why) : a.why;
+          return "<p class=\"aw-on\"><b>✓ " + n + "</b> — " + w + "</p>";
+        }).join("");
+        document.getElementById("awards").innerHTML = html || ("<p>" + (es ? "Todavía no hay premios." : "No awards yet.") + "</p>");
+      }).catch(function () {
+        document.getElementById("miss").textContent = es ? "No se pudo cargar el perfil." : "Could not load profile.";
+        document.getElementById("miss").classList.remove("hide");
+      });
+    })();
+  </script>
+</body>
+</html>
