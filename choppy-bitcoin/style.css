@@ -1,8 +1,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   height: 100%;
-  min-height: 100vh;
+  height: 100dvh;
   min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: #070708;
   color: #f3efe6;
   font-family: "IBM Plex Mono", "Courier New", monospace;
@@ -21,6 +22,7 @@ body {
   flex-direction: column;
   background: #0a0a0c;
   transform-origin: center center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .hud-grid,
 .hud-4,

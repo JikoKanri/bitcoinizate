@@ -1484,8 +1484,11 @@
     const baseW = GAME_W;
     const baseH = app.offsetHeight || (GAME_H + 160);
     const pad = 8;
-    const sx = (window.innerWidth - pad) / baseW;
-    const sy = (window.innerHeight - pad) / baseH;
+    const inset = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    const viewW = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
+    const viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    const sx = (viewW - pad) / baseW;
+    const sy = (viewH - pad - inset) / baseH;
     const s = Math.max(0.35, Math.min(sx, sy));
     app.style.transform = "scale(" + s + ")";
   }
@@ -2239,6 +2242,7 @@
   };
   window.addEventListener("resize", layoutStage);
   window.addEventListener("orientationchange", layoutStage);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", layoutStage);
   resetWorld(false);
   fillJukebox();
   renderOverlay();
