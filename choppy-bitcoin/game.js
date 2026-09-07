@@ -880,36 +880,47 @@
     return window.BZ && BZ.lang && BZ.lang() === "es";
   }
   const CHANCE_CAST = {
-    lena: { en: "Lena, the owner of your heart", es: "Lena, la dueña de tu corazón" },
-    paco: { en: "Paco, the street dog who decided you were his person", es: "Paco, el perro de la calle que decidió que eras su persona" },
-    marek: { en: "Marek, your basketball friend from school", es: "Marek, tu amigo del básquet del colegio" },
-    nico: { en: "Nico, your cousin with a plan and a group chat", es: "Nico, tu primo con un plan y un grupo de WhatsApp" },
-    sofi: { en: "Sofi, Nico's kid who already draws you in sunglasses", es: "Sofi, la hija de Nico que ya te dibuja con anteojos" },
-    val: { en: "Val, your ex-boss from the food-truck year", es: "Val, tu ex-jefe del año del food truck" },
-    rami: { en: "Rami, who still keeps arcade tokens in the glove box", es: "Rami, el que todavía guarda fichas de arcade en la guantera" },
-    hector: { en: "Uncle Hector, who wires money with a note attached", es: "El tío Héctor, que gira plata con una nota pegada" }
+    lena: { en: "Lena, the owner of your heart", es: "Lena, la dueña de tu corazón", names: ["Lena"] },
+    paco: { en: "Paco, the street dog who chose you", es: "Paco, el perro de la calle que te eligió", names: ["Paco"] },
+    marek: { en: "Marek, your basketball friend from school", es: "Marek, tu amigo del básquet del colegio", names: ["Marek"] },
+    nico: { en: "Nico, your cousin with a plan", es: "Nico, tu primo el de los planes", names: ["Nico"] },
+    sofi: { en: "Sofi, Nico's kid", es: "Sofi, la hija de Nico", names: ["Sofi"] },
+    val: { en: "Val, your ex-boss from the food-truck year", es: "Val, tu ex-jefe del año del food truck", names: ["Val"] },
+    rami: { en: "Rami, who still keeps arcade tokens in the glove box", es: "Rami, el que todavía guarda fichas de arcade en la guantera", names: ["Rami"] },
+    hector: { en: "Uncle Hector, the one who wires money with a note", es: "El tío Héctor, el que gira plata con una nota", names: ["Uncle Hector", "tío Héctor", "Tío Héctor", "Hector", "Héctor"] }
   };
   const CHANCE_WHO = {
-    landfill: ["marek", "lena"], taxbill: ["lena", "paco"], wedding: ["nico", "lena", "paco"],
-    patagonia: ["lena", "paco", "marek"], flu: ["paco", "lena"], phish: ["lena"], crash: ["lena"],
-    casino: ["rami", "lena", "paco"], poker: ["rami", "lena"], uncle: ["hector", "lena", "paco"],
-    school: ["sofi", "nico"], roof: ["lena", "paco"], lotto: ["marek", "lena", "paco"],
-    hospital: ["lena", "paco"], startup: ["val", "lena"], tow: ["lena"], romance: ["lena"],
-    refund: ["lena"], baby: ["nico", "sofi"], flood: ["paco"], cousin: ["nico", "lena"],
-    speeding: ["lena"], wallet: ["lena", "paco"], potluck: ["lena", "paco"], usedcar: ["marek", "lena"],
-    dentist: ["lena", "paco"], friends: ["lena"], tetris: ["rami"], outrun: ["rami", "lena"], wake: ["lena", "nico"]
+    landfill: ["marek"], taxbill: ["lena"], wedding: ["nico"], patagonia: ["lena"],
+    flu: ["lena"], phish: ["lena"], crash: [], casino: ["rami"], poker: ["rami"],
+    uncle: ["hector"], school: ["sofi"], roof: ["lena"], lotto: ["marek"],
+    hospital: ["lena"], startup: ["val"], tow: ["lena"], romance: ["lena"],
+    refund: ["lena"], baby: ["nico", "sofi"], flood: ["paco"], cousin: ["nico"],
+    speeding: ["lena"], wallet: ["lena"], potluck: ["lena"], usedcar: ["marek"],
+    dentist: ["lena"], friends: ["lena"], tetris: ["rami"], outrun: ["rami"], wake: ["nico"]
   };
-  function presentCast(ids) {
+  function weaveCast(text) {
+    if (!text) return text;
     if (!S.chanceMet) S.chanceMet = {};
     const es = chanceLang();
-    const bits = [];
-    (ids || []).forEach((id) => {
+    const card = S.chanceCard;
+    const ids = (card && CHANCE_WHO[card.id]) || [];
+    ids.forEach((id) => {
+      const row = CHANCE_CAST[id];
+      if (!row) return;
       const n = S.chanceMet[id] || 0;
       S.chanceMet[id] = n + 1;
-      const row = CHANCE_CAST[id];
-      if (n < 2 && row) bits.push(es ? row.es : row.en);
+      if (n >= 2) return;
+      const label = es ? row.es : row.en;
+      for (let i = 0; i < row.names.length; i++) {
+        const nm = row.names[i];
+        const at = text.indexOf(nm);
+        if (at >= 0) {
+          text = text.slice(0, at) + label + text.slice(at + nm.length);
+          break;
+        }
+      }
     });
-    return bits.join(". ");
+    return text;
   }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
@@ -978,8 +989,8 @@
       ] },
     { id: "uncle", kind: "report",
       title: "Uncle Hector wires", titleEs: "Gira el tío Héctor",
-      body: "A note in the transfer: don't tell your aunt. Buy the dip or a sandwich for Lena. Paco is not a tax category.",
-      bodyEs: "Una nota en la transferencia: no le digas a tu tía. Comprá el dip o un sándwich para Lena. Paco no es una categoría fiscal." },
+      body: "Uncle Hector hits the account with a one-line note: don't tell your aunt. Buy the dip or a sandwich.",
+      bodyEs: "El tío Héctor pega en la cuenta con una nota de una línea: no le digas a tu tía. Comprá el dip o un sándwich." },
     { id: "school", kind: "choice",
       title: "Sofi's mint museum", titleEs: "El museo de Sofi",
       body: "Sofi — Nico's kid — needs a co-signer for the class trip to the mint museum. She already drew you on the permission slip with sunglasses.",
@@ -1316,7 +1327,9 @@
     S.chanceUsed[card.id] = true;
     S.chanceCard = card;
     S.chanceNote = "";
-    S.chanceLead = presentCast(CHANCE_WHO[card.id] || []);
+    S.chanceLead = "";
+    const es0 = chanceLang();
+    S.chanceBody = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
     if (card.kind === "report") S.chanceNote = resolveChance(card, "ok");
     try { A.speak("Chance"); } catch (e) {}
     setPhase("chance");
@@ -2556,20 +2569,19 @@
       if (!card) { setPhase("play"); return; }
       const es = chanceLang();
       const title = es ? (card.titleEs || card.title) : card.title;
-      const body = es ? (card.bodyEs || card.body) : card.body;
+      const body = S.chanceBody || (es ? (card.bodyEs || card.body) : card.body);
       const art = "chance/" + card.id + ".jpg";
-      const lead = S.chanceLead ? "<p class=\"k\">" + S.chanceLead + ".</p>" : "";
       const pic = "<img class=\"chance-art\" src=\"" + art + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>" + lead + "<p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>" + lead + "<p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
