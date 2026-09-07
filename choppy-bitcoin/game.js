@@ -83,9 +83,23 @@
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud" };
-  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud" };
-  const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6 };
+  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Chance" };
+  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Chance" };
+  const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
+  const JOB_LADDER = ["Burger flipper", "Shift lead", "Night manager", "Regional grease officer", "Franchise fixer", "Supply-chain whisperer"];
+  const JOB_T7 = [
+    "Quant at a basement hedge fund",
+    "Lightning routing operator",
+    "Cold-storage architect",
+    "Sovereign stack allocator",
+    "Professional sat whisperer",
+    "Underwater bitcoin miner",
+    "Timechain sommelier",
+    "Family-office coin mule",
+    "Mining-pool diplomat",
+    "Protocol bounty hunter"
+  ];
+  const JOB_PAY = [80, 160, 280, 480, 780, 1200, 3200];
   const FF_SPEEDS = [1.5, 2, 3];
   function perkTitle(id, tier) {
     if (id === "skip") return (window.BZ && BZ.t("declinePerk")) || "Gently decline";
@@ -106,6 +120,13 @@
         : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears end " + adoptBearLabel(tier);
       if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
       if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
+      if (id === "job") return es ? "sueldo cada 21 velas" : "paycheck every 21 candles";
+      if (id === "market") return es ? "abre el mercado en el HUD" : "opens the market in the HUD";
+      if (id === "chance") {
+        if (tier <= 1) return es ? "1 carta cada 210 velas" : "1 card every 210 candles";
+        if (tier === 2) return es ? "2 cartas cada 210 velas" : "2 cards every 210 candles";
+        return es ? "2 cartas + chance de 3ra" : "2 cards + odds of a 3rd";
+      }
       if (id === "aibud") {
         if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
         if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
@@ -206,8 +227,8 @@
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false, ranked: true,
     perkPick: "", perkHint: "", dcaOn: false, trend: "off", perkOffers: [],
-    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 },
-    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 },
+    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 },
+    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 },
     offerSeq: [1, 2, 4], nextOffer: 1, offersDone: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
@@ -424,13 +445,14 @@
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = netBtc(); S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
-      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0 };
-      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1 };
+      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 };
+      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 };
       S.offerSeq = S.ranked ? tribSeq(16) : [10, 20, 30];
       S.nextOffer = S.ranked ? 1 : 10;
       S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
+      S.jobName = ""; S.chanceAt = []; S.chanceUntil = 0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -545,7 +567,7 @@
       const line = drawLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"], 0.15);
       say(line || "Laser eyes!", true);
       A.sfx.power();
-      if (S.ranked && S.lasers === S.nextOffer) openPerkOffer();
+      if (S.ranked && S.lasers === S.nextOffer) openPerkOffer("laser");
       return;
     }
     if (it.type === "COLD") {
@@ -619,6 +641,14 @@
     try { S.best = saveBest(scoreSats()); } catch (e) {}
     if (field) field.classList.remove("is-play");
     try { setPhase("over"); } catch (e) { try { renderOverlay(); } catch (err) {} }
+  }
+
+  function flapBlocked(e) {
+    const buy = $("buy-btc");
+    if (!buy || buy.classList.contains("hide")) return false;
+    const box = buy.getBoundingClientRect();
+    const y = e.clientY != null ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY);
+    return y != null && y >= box.top - 4;
   }
 
   function flap() {
@@ -695,10 +725,87 @@
     if (kind === "dca") S.dcaOn = false;
     if (kind === "manip" && !S.trend) S.trend = "off";
     if (kind === "juke") fillJukebox();
+    if (kind === "job") assignJob();
+    if (kind === "chance") planChanceWindow(S.candles || 0);
+  }
+
+  function assignJob() {
+    const t = S.have.job || 0;
+    if (t <= 0) { S.jobName = ""; return; }
+    if (t >= 7) S.jobName = JOB_T7[(Math.random() * JOB_T7.length) | 0];
+    else S.jobName = JOB_LADDER[Math.min(JOB_LADDER.length - 1, t - 1)];
+  }
+
+  function jobPay() {
+    const t = S.have.job || 0;
+    if (t <= 0) return 0;
+    return JOB_PAY[Math.min(JOB_PAY.length - 1, t - 1)] || 80;
+  }
+
+  function payJob() {
+    const n = jobPay();
+    if (n <= 0) return;
+    grantUsd(n, S.bird.x, S.bird.y - 24, "gain");
+    say((S.jobName || "Job") + " payday", false);
+  }
+
+  function chanceP3(tier) {
+    return Math.min(0.72, 0.12 + Math.max(0, tier - 3) * 0.15);
+  }
+
+  function planChanceWindow(from) {
+    const t = S.have.chance || 0;
+    if (t <= 0) { S.chanceAt = []; S.chanceUntil = 0; return; }
+    const start = from + 1;
+    const end = from + 210;
+    const used = {};
+    const pick = () => {
+      let c, n = 0;
+      do { c = start + ((Math.random() * 210) | 0); n++; } while (used[c] && n < 30);
+      used[c] = true;
+      return c;
+    };
+    const slots = [pick()];
+    if (t >= 2) slots.push(pick());
+    if (t >= 3 && Math.random() < chanceP3(t)) slots.push(pick());
+    S.chanceAt = slots;
+    S.chanceUntil = end;
+  }
+
+  function dealChance() {
+    const cards = [
+      { t: "Found a twenty in the fryer", fn: () => grantUsd(800, S.bird.x, S.bird.y - 20, "gain") },
+      { t: "Uncle wired some sats", fn: () => { S.btc += 0.002; pop(S.bird.x, S.bird.y - 20, "+0.002 btc", BTC, "gain"); } },
+      { t: "Tax surprise", fn: () => { S.cash = Math.max(0, S.cash - 300); pop(S.bird.x, S.bird.y - 20, "-300 usd", RED, "power"); } },
+      { t: "Freezer clearance", fn: () => { S.cold += 1; pop(S.bird.x, S.bird.y - 20, "+1 cold", "#33c6e8", "power"); } },
+      { t: "Rival got liquidated", fn: () => { S.price *= 1.03; pop(S.bird.x, S.bird.y - 20, "px +3%", GREEN, "power"); } },
+      { t: "Rug rumor", fn: () => { S.price = Math.max(0.01, S.price * 0.96); pop(S.bird.x, S.bird.y - 20, "px -4%", RED, "power"); } },
+      { t: "Tip jar overflow", fn: () => grantUsd(400, S.bird.x, S.bird.y - 20, "gain") },
+      { t: "Dropped a hardware key", fn: () => {
+        if (S.cold > 0) { S.cold -= 1; S.coldLost = (S.coldLost || 0) + 1; pop(S.bird.x, S.bird.y - 20, "-1 cold", RED, "power"); }
+        else { S.cash = Math.max(0, S.cash - 200); pop(S.bird.x, S.bird.y - 20, "-200 usd", RED, "power"); }
+      } },
+      { t: "OTC desk fill", fn: () => { S.btc += 0.001; pop(S.bird.x, S.bird.y - 20, "+0.001 btc", BTC, "gain"); } },
+      { t: "Parking ticket", fn: () => { S.cash = Math.max(0, S.cash - 150); pop(S.bird.x, S.bird.y - 20, "-150 usd", RED, "power"); } }
+    ];
+    const card = cards[(Math.random() * cards.length) | 0];
+    card.fn();
+    say(card.t, true);
+    S.ticker = card.t;
+    S.tickerT = 2.6;
+  }
+
+  function tickJobChance() {
+    if ((S.have.job || 0) > 0 && S.candles > 0 && S.candles % 21 === 0) payJob();
+    if ((S.have.chance || 0) > 0) {
+      if (!S.chanceAt || !S.chanceAt.length) planChanceWindow(S.candles || 0);
+      if (S.chanceAt && S.chanceAt.indexOf(S.candles) >= 0) dealChance();
+      if (S.chanceUntil && S.candles >= S.chanceUntil) planChanceWindow(S.candles);
+    }
   }
 
   function perkOpen() {
-    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud"].filter((id) => {
+    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud", "job", "market", "chance"].filter((id) => {
       const have = S.have[id] || 0;
       const max = PERK_MAX[id] || 10;
       if (id === "dca") return have <= 0;
@@ -712,13 +819,14 @@
     return ids;
   }
 
-  function openPerkOffer() {
+  function openPerkOffer(why) {
     const left = perkOpen();
     if (!left.length) return;
     rollPerks();
     if (!S.perkOffers || !S.perkOffers.length) return;
     if (S.perkOffers[S.perkOffers.length - 1] !== "skip") S.perkOffers.push("skip");
     S.perkPick = "";
+    if (why === "laser") say("Tribonacci treshold achieved, choose your perk!", true);
     if (S.aibudOn && (S.have.aibud || 0) >= 2) {
       const real = S.perkOffers.filter((id) => id !== "skip");
       if (!real.length) { bumpOffer(); return; }
@@ -784,6 +892,9 @@
     if (id === "aibud") return es ? "A.I. bud sube de nivel" : "A.I. bud levels up";
     if (id === "ff") return es ? "Más tablero, más monedas" : "More board, more coins";
     if (id === "juke") return es ? "Música mientras stackeamos" : "Tunes while we stack";
+    if (id === "job") return es ? "Sueldo fijo cada 21 velas" : "Steady paycheck every 21 candles";
+    if (id === "market") return es ? "Comprar vidas y láseres" : "Buy lives and lasers";
+    if (id === "chance") return es ? "Cartas cada 210 velas" : "Cards every 210 candles";
     return es ? "Lo mejor para juntar bitcoin" : "Best for stacking bitcoin";
   }
 
@@ -797,6 +908,9 @@
       if (id === "manip") return 55;
       if (id === "ff") return 40;
       if (id === "juke") return 28;
+      if (id === "job") return 60;
+      if (id === "market") return 50;
+      if (id === "chance") return 52;
       if (id === "aibud") return 86;
       return 10;
     };
@@ -1090,6 +1204,7 @@
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.candles++; A.sfx.coin();
         grantUsd(100, p.x + pw * 0.5, p.gapY, "gain");
+        tickJobChance();
         if (!S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
@@ -1361,6 +1476,7 @@
     lockBtn("dca-btn", S.have.dca > 0);
     lockBtn("iabud-btn", (S.have.aibud || 0) > 0);
     lockBtn("trend-btn", S.have.manip > 0);
+    lockBtn("market-btn", (S.have.market || 0) > 0);
     const locks = aiLocks();
     const dca = $("dca-btn");
     if (dca) {
@@ -1414,6 +1530,7 @@
     if (S.halveBull) status = t("halvingNow") + "  " + Math.ceil(S.powerT) + "s";
     else if (S.power === "BULL") status = t("bullRun") + "  " + Math.ceil(S.powerT) + "s";
     else if (S.power === "BEAR") status = t("bearCrash") + "  " + Math.ceil(S.powerT) + "s";
+    if (S.jobName) status = status ? status + "  ·  " + S.jobName : S.jobName;
     if (S.laserOn) status = status ? status + "  ·  " + t("laserNow") + " " + Math.ceil(S.laserT) + "s" : t("laserNow") + "  " + Math.ceil(S.laserT) + "s";
     $("status").textContent = status;
     $("status").classList.toggle("hide", !(status && S.phase === "play"));
@@ -1656,6 +1773,14 @@
     if (panel === "help") {
       return "<h1>" + t("howPlay") + "</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
+    if (panel === "market") {
+      return "<h1>" + t("market") + "</h1>"
+        + "<p class=\"k\">" + money(S.cash) + "</p>"
+        + "<button class=\"cta\" data-buy=\"cold\">Cold storage · $1,200</button>"
+        + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · $1,800</button>"
+        + "<button class=\"cta\" data-buy=\"msig\">Multisig · $9,000</button>"
+        + "<button class=\"cta play-alt\" id=\"help-back\">" + t("back") + "</button>";
+    }
     if (panel === "feed") {
       return "<h1>" + t("feedback") + "</h1>"
         + "<textarea id=\"feed-text\" rows=\"5\" style=\"width:100%;max-width:360px;background:#0a0a0c;color:#f3efe6;border:1px solid #3a3a40;padding:8px;font:inherit\"></textarea>"
@@ -1747,6 +1872,28 @@
     };
     const helpBack = $("help-back");
     if (helpBack) helpBack.onclick = (e) => { e.stopPropagation(); S.optPanel = null; renderOverlay(); };
+    overlay.querySelectorAll("[data-buy]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const kind = btn.getAttribute("data-buy");
+        const cost = kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000;
+        if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
+        S.cash -= cost;
+        if (kind === "cold") S.cold += 1;
+        else if (kind === "laser") {
+          S.lasers += 1;
+          if (S.laserOn) S.laserT += POWER_S; else applyLaser(true);
+          if (S.ranked && S.lasers === S.nextOffer) {
+            S.optPanel = null;
+            openPerkOffer("laser");
+            return;
+          }
+        } else S.msig += 1;
+        A.sfx.coin();
+        renderOverlay();
+        renderHud();
+      };
+    });
     const optJuke = $("opt-juke");
     if (optJuke) optJuke.onclick = (e) => { e.stopPropagation(); S.optPanel = "juke"; renderOverlay(); };
     const jp = $("juke-play");
@@ -1864,7 +2011,7 @@
           : perkTitle(id, tier) + " · " + perkBlurb(id, tier);
         return "<button class=\"cta" + (id === "skip" ? " play-alt" : "") + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + label + "</button>";
       }).join("");
-      overlay.innerHTML = "<h1>" + t("perks") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
+      overlay.innerHTML = "<h1>" + t("grabPerk") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
         btn.onpointerdown = go;
@@ -1922,6 +2069,7 @@
   }
 
   canvas.addEventListener("pointerdown", (e) => {
+    if (flapBlocked(e)) return;
     e.preventDefault();
     if (A && A.unlock) try { A.unlock(); } catch (err) {}
     S.humanInput = true;
@@ -1932,12 +2080,7 @@
     if (!el) return;
     const go = (e) => {
       if (S.phase !== "play") return;
-      const trades = $("trades");
-      if (trades && !trades.classList.contains("hide")) {
-        const box = trades.getBoundingClientRect();
-        const y = e.clientY != null ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY);
-        if (y != null && y >= box.top - 4) return;
-      }
+      if (flapBlocked(e)) return;
       e.preventDefault();
       e.stopPropagation();
       S.humanInput = true;
@@ -2007,6 +2150,15 @@
     S.trend = S.trend === "off" ? "up" : S.trend === "up" ? "down" : "off";
     if (S.aibudLit) S.aibudLit.trend = false;
     renderHud();
+  };
+  const mkt = $("market-btn");
+  if (mkt) mkt.onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if ((S.have.market || 0) <= 0) return;
+    S.optBack = S.phase === "play" ? "play" : (S.optBack || "ready");
+    S.optPanel = "market";
+    if (S.phase === "play") setPhase("paused");
+    else renderOverlay();
   };
   $("buy-btc").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
