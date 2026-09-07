@@ -191,6 +191,14 @@ body {
   padding: 8px 8px 10px;
   gap: 5px;
 }
+.overlay.dock.chance-ui {
+  max-height: 84%;
+  overflow: hidden;
+  padding: 10px 10px 12px;
+  gap: 6px;
+}
+.overlay.dock.chance-ui p { font-size: 11px; line-height: 1.35; max-width: 420px; }
+.overlay.dock.chance-ui .chance-art { width: 96px; height: 96px; }
 .overlay.dock h1 { font-size: 14px; margin: 0; }
 .overlay.dock p { font-size: 11px; margin: 0; }
 .overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
