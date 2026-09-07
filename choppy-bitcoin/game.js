@@ -21,6 +21,7 @@
   } catch (e) {}
 
   const $ = (id) => document.getElementById(id);
+  const setTxt = (id, v) => { const el = $(id); if (el) el.textContent = v; };
   const fmtUsd = (n) => {
     const x = Number(n) || 0;
     const a = Math.abs(x);
@@ -1910,16 +1911,19 @@
   }
 
   function renderHud() {
-    $("clock").textContent = fmtTime(S.lifeT);
-    $("clock").classList.toggle("hide", S.phase === "ready" || S.phase === "count");
-    $("h-cash").textContent = money(S.cash);
-    $("h-btc").textContent = fmtBtcAmt(S.btc);
-    $("h-price").textContent = money(S.price);
-    $("h-cold").textContent = String(S.cold);
-    $("h-msig").textContent = String(S.msig);
-    $("h-laser").textContent = String(S.lasers);
-    $("h-halve").textContent = String(S.halveLeft);
-    $("h-halves").textContent = String(S.halvings);
+    const clock = $("clock");
+    if (clock) {
+      clock.textContent = fmtTime(S.lifeT);
+      clock.classList.toggle("hide", S.phase === "ready" || S.phase === "count");
+    }
+    setTxt("h-cash", money(S.cash));
+    setTxt("h-btc", fmtBtcAmt(S.btc));
+    setTxt("h-price", money(S.price));
+    setTxt("h-cold", String(S.cold));
+    setTxt("h-msig", String(S.msig));
+    setTxt("h-laser", String(S.lasers));
+    setTxt("h-halve", String(S.halveLeft));
+    setTxt("h-halves", String(S.halvings) + "/" + HALVE_N);
     const bonus = S.level >= 2;
     $("hud").className = "hud-grid hud-4";
     const lockBtn = (id, ready) => {
@@ -2683,10 +2687,15 @@
   window.addEventListener("resize", layoutStage);
   window.addEventListener("orientationchange", layoutStage);
   if (window.visualViewport) window.visualViewport.addEventListener("resize", layoutStage);
-  resetWorld(false);
-  fillJukebox();
-  renderOverlay();
-  renderHud();
-  layoutStage();
-  requestAnimationFrame(loop);
+  try {
+    resetWorld(false);
+    fillJukebox();
+    renderOverlay();
+    renderHud();
+    layoutStage();
+    requestAnimationFrame(loop);
+  } catch (e) {
+    try { console.error(e); } catch (err) {}
+    try { renderOverlay(); } catch (err) {}
+  }
 })();
