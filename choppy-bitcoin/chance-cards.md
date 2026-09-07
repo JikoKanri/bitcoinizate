@@ -1,331 +1,331 @@
 # Chance cards
 
-Cada 21 velas (con el perk Chance). Las que tienen **Después de** no salen hasta que esa carta ya apareció en la misma run.
+One window every 21 candles (Chance perk). Cards marked **After** never appear until that card has already shown in the same run.
 
-El % es sobre el patrimonio neto en USD (cash + BTC × precio).
+Percentages are of net worth in USD (cash + BTC × price).
 
 ---
 
-## 1. Marek y el basural — `landfill` — elección
+## 1. Marek and the dump — `landfill` — choice
 
-Marek escribe a la 1:14 desde una camioneta en Gales. Permiso para cavar Docksway Landfill, donde en 2009 se perdió un pendrive de 8.000 BTC. Quiere un socio, no un espectador. Lena ya dijo que el sillón no es una mina.
+Marek texts at 1:14 a.m. from a rented van in Wales. He has a permit to keep digging Docksway Landfill, where an 8,000 BTC pendrive vanished in 2009. He wants a partner, not a spectator. Lena already said the couch is not a mine.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Poner el 25% | 8% barro+plástico y +BTC (10–25% del patrimonio en BTC); 22% Nokia y +1.5% plata; 70% tres semanas de arcilla y nada. Siempre gastás el 25%. |
-| Poner el 75% | Igual, gastando el 75%. |
-| Decirle a Marek que paso | El pendrive se queda en la arcilla. $0. |
+| Chip in 25% | 8% mud then plastic and +BTC (10–25% of net worth in BTC); 22% a Nokia and +1.5% cash; 70% three weeks of clay and nothing. You always spend the 25%. |
+| Chip in 75% | Same table, spending 75%. |
+| Tell Marek you pass | The pendrive stays in the clay. $0. |
 
 ---
 
-## 2. Carta para Lena — `taxbill` — informe
+## 2. Letter for Lena — `taxbill` — report
 
-Sobre a nombre de los dos. Presentación trimestral. Lena lo pega en la heladera.
+Envelope addressed to both of you. Quarterly filing. Lena tapes it to the fridge.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −10% del patrimonio. Presentado. |
+| Always −10% of net worth. Filed. |
 
 ---
 
-## 3. Se casa Nico — `wedding` — elección
+## 3. Nico gets married — `wedding` — choice
 
-Salón para 400, DJ de 1998, mesa de sobre. Lena pregunta qué llevás. Paco no está invitado.
+Hall for 400, a 1998 DJ, envelope table. Lena asks what you are taking. Paco is not invited.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Mandar 4% | −4% y +1 cold storage. Brindan por vos. |
-| Mandar 0.6% y un meme | −0.6%. El meme llega, el sobre no. |
-| Saltearme el salón | $0. Ellos se saltean tu cumple. |
+| Send 4% | −4% and +1 cold storage. They toast you. |
+| Send 0.6% and a meme | −0.6%. The meme lands. The envelope does not. |
+| Skip the hall | $0. They skip your birthday. |
 
 ---
 
-## 4. Lena reservó el lago — `patagonia` — elección
+## 4. Lena booked the lake — `patagonia` — choice
 
-Últimos dos asientos al bus de Bariloche. Termo rojo. Marek puede cuidar a Paco.
+Last two seats on the Bariloche bus. Red thermos. Marek can keep Paco.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Reservar · 8% | −8%. Invulnerabilidad ~4s. |
-| Quedarme con Paco | $0. Los Andes no se ofenden. |
+| Book it · 8% | −8%. Brief invulnerability (~4s). |
+| Stay home with Paco | $0. The Andes do not mind. |
 
 ---
 
-## 5. Friends, después el piso — `flu` — informe
+## 5. Friends, then the floor — `flu` — report
 
-Sillón con Lena, Friends en el tubo. Risa enlatada, después el pecho.
+Couch with Lena, Friends on the CRT. Laugh track, then your chest.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −4%. Sopa, pañuelos, dos días. |
+| Always −4%. Soup, tissues, two lost days. |
 
 ---
 
-## 6. Mail de «soporte» — `phish` — elección
+## 6. Mail from 'support' — `phish` — choice
 
-Seed filtrada, dominio que falla por tres letras. Lena lee detrás tuyo.
+Your seed is leaking. The domain is three letters off. Lena reads it over your shoulder.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Abrir el formulario | −18%. El form era el desagüe. |
-| Borrarlo | $0. El dominio fallaba. |
+| Open the form | −18%. The form was the drain. |
+| Delete it | $0. The domain was three letters off. |
 
 ---
 
-## 7. Scooter en el semáforo — `crash` — informe
+## 7. Scooter at the light — `crash` — report
 
-Delivery besa el paragolpes. Nadie lastimado. El paragolpes igual factura.
+A delivery kid kisses the bumper. Nobody is hurt. The bumper still invoices.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −6%. Hueco del seguro. |
+| Always −6%. Insurance gap. |
 
 ---
 
-## 8. Rami encontró una mesa — `casino` — elección
+## 8. Rami found a table — `casino` — choice
 
-Rami jura que el paño tiene suerte. Lena en casa con Paco.
+Rami swears the felt is lucky. Lena is home with Paco.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Apostar 10% | 46% +2× la apuesta; 54% perdés el 10%. |
-| Apostar 30% | Igual, con el 30%. |
-| Salir | $0. Te quedás el stack y la noche. |
+| Bet 10% | 46% +2× the stake; 54% you lose the 10%. |
+| Bet 30% | Same table, with 30%. |
+| Walk out | $0. You keep the stack and the evening. |
 
 ---
 
-## 9. El crucero de póker de Rami — `poker` — elección  
-**Después de:** casino
+## 9. Rami's poker cruise — `poker` — choice  
+**After:** casino
 
-Torneo en alta mar. Buy-in que escala. Lena pide aviso cuando haya señal.
+Mid-sea tournament. Buy-in scales with the table. Lena wants a text when the ship has signal.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Buy-in 8% | 6% +8×; 22% +3×; 24% +1.4×; 48% perdés el buy-in. |
-| Buy-in 25% | Igual, con el 25%. |
-| Quedarme en el muelle | $0. El barco zarpa. |
+| Buy-in 8% | 6% +8×; 22% +3×; 24% +1.4×; 48% you lose the buy-in. |
+| Buy-in 25% | Same table, with 25%. |
+| Stay on the dock | $0. The ship leaves. |
 
 ---
 
-## 10. Gira el tío Héctor — `uncle` — informe
+## 10. Uncle Hector wires — `uncle` — report
 
-Giro un martes. Nota: no le digas a tu tía. Comprá el dip o un sándwich.
+Tuesday wire. Note: don't tell your aunt. Buy the dip or a sandwich.
 
-| Resultado |
+| Outcome |
 |---|
-| 55% +7% en USD. |
-| 45% +7% del patrimonio en BTC. |
+| 55% +7% in USD. |
+| 45% +7% of net worth in BTC. |
 
 ---
 
-## 11. El museo de Sofi — `school` — elección  
-**Después de:** wedding
+## 11. Sofi's mint museum — `school` — choice  
+**After:** wedding
 
-Viaje al museo de la casa de moneda. Sofi te dibujó en el permiso.
+Class trip to the mint museum. Sofi already drew you on the slip.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Cubrir 3% | −3%. Entrás en la lista de padres. |
-| Paso | $0. Van sin tu nombre. |
+| Cover 3% | −3%. You are on the chaperone list. |
+| Pass | $0. They go without your name. |
 
 ---
 
-## 12. La gotera del pasillo — `roof` — informe
+## 12. The hallway drip — `roof` — report
 
-Lluvia del martes. Olla. Paco toma de la olla.
+Tuesday rain. A pot. Paco drinks from the pot.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −5%. Lona, después tejas. |
+| Always −5%. Tarp, then tiles. |
 
 ---
 
-## 13. El ticket de la tapa — `lotto` — informe
+## 13. Ticket on the lid — `lotto` — report
 
-Raspa y gana pegado al café de Marek.
+Scratch ticket stuck to Marek's coffee lid.
 
-| Resultado |
+| Outcome |
 |---|
-| 4% +35% del patrimonio. |
+| 4% +35% of net worth. |
 | 41% +1.2%. |
-| 55% perdedor bajo la espuma. $0. |
+| 55% a loser under the foam. $0. |
 
 ---
 
-## 14. Cuatro puntos — `hospital` — informe
+## 14. Four stitches — `hospital` — report
 
-Cordón vs. mirada. Lena en la sala con Paco en mochila.
+You looked one way. The curb looked the other. Lena in the waiting room.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −7%. Puntos y factura. |
+| Always −7%. Stitches and invoice. |
 
 ---
 
-## 15. La última ronda de Val — `startup` — elección
+## 15. Val's last round — `startup` — choice
 
-Pre-revenue, post-vibe. Pizarrón: sinergia. ¿El Val del food truck?
+Pre-revenue, post-vibe. Whiteboard still says synergy. Same Val from the food-truck year?
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Invertir 20% | 28% 4× sobre lo puesto; 72% venció el dominio, perdés el 20%. |
-| Paso | $0. Ellos se quedan el pitch. |
+| Invest 20% | 28% 4× what you put in; 72% the domain expired, you lose the 20%. |
+| Pass | $0. They keep the pitch deck. |
 
 ---
 
-## 16. Nueve minutos de cordón — `tow` — informe
+## 16. Nine-minute curb — `tow` — report
 
-El cartel decía diez. Esperaron nueve.
+The sign said ten. They waited nine.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −2%. Playón más orgullo. |
+| Always −2%. Lot fee plus pride. |
 
 ---
 
-## 17. El general en el teléfono — `romance` — elección
+## 17. General on the phone — `romance` — choice
 
-Oficial con medallas necesita nafta y una llave de bóveda. Lena se ríe una vez.
+A decorated officer needs gas money and a vault key. Lena laughs once.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Girar 10% | −10%. La llave no aborda. |
-| Bloquear y contarle a Lena | $0. El general se retira. |
+| Wire 10% | −10%. The vault key never boards. |
+| Block and tell Lena | $0. The general retreats. |
 
 ---
 
-## 18. Depósito quieto — `refund` — informe
+## 18. Quiet deposit — `refund` — report
 
-Devolvieron de más del trimestre.
+They over-collected last quarter. It comes back.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre +3.5%. |
+| Always +3.5%. |
 
 ---
 
-## 19. Nico otra vez — `baby` — elección  
-**Después de:** wedding
+## 19. Nico again — `baby` — choice  
+**After:** wedding
 
-Nace el segundo. Sofi elige el color del body. Sobre más chico, grupo más ruidoso.
+Second kid. Sofi picks the onesie color. Smaller envelope, louder chat.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Mandar 2% | −2%. Body comprado. |
-| Mandar un PDF de deseos | $0. |
+| Send 2% | −2%. Onesie acquired. |
+| Send a PDF of wishes | $0. |
 
 ---
 
-## 20. El lavarropas se revela — `flood` — informe
+## 20. Washer revolt — `flood` — report
 
-Se corta la manguera. Lago en el sótano. Paco no ayuda.
+The hose retires. Basement lake. Paco does not help.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −8%. Aspiradora de agua y yeso. |
+| Always −8%. Shop-vac and drywall. |
 
 ---
 
-## 21. El ticker de Nico — `cousin` — elección
+## 21. Nico's ticker — `cousin` — choice
 
-No lo puede pronunciar y dice x10 el viernes.
+He cannot pronounce it and still says 10x by Friday.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Meter 40% | 50% 2.2×; 50% suspendido, perdés el 40%. |
-| Dejar el stack | $0. El ticker ya va −40% after hours (solo texto). |
+| Put 40% in | 50% 2.2×; 50% halted, you lose the 40%. |
+| Keep the stack | $0. The ticker is already −40% after hours (flavor only). |
 
 ---
 
-## 22. La misma esquina — `speeding` — informe
+## 22. Same intersection — `speeding` — report
 
-Flash. Carta. Heladera, debajo de rentas.
+Flash. Letter. Fridge, under the tax envelope.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −1.5%. |
+| Always −1.5%. |
 
 ---
 
-## 23. Asiento 14 del bondi — `wallet` — informe
+## 23. Bus seat 14 — `wallet` — report
 
-La billetera estaba. Después la parada.
+The wallet was there. Then the next stop.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −2.5%. |
+| Always −2.5%. |
 
 ---
 
-## 24. El guiso de la cuadra — `potluck` — elección
+## 24. Block stew — `potluck` — choice
 
-Faltan sillas, sobran discursos. Lena ya picó cebolla.
+Short on chairs, long on speeches. Lena already chopped onions.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Donar 5% | 35% −5% y +1 cold; 65% −5% y lista buena. |
-| No llevar nada | $0. Comés en casa. |
+| Donate 5% | 35% −5% and +1 cold; 65% −5% and the good list. |
+| Bring nothing | $0. You eat at home. |
 
 ---
 
-## 25. Marcador en la correa — `usedcar` — elección
+## 25. Marker on the belt — `usedcar` — choice
 
-Hatch 2009. «Correa nueva» a marcador. Marek conoce al de la agencia.
+2009 hatch. "New timing belt" in marker. Marek knows the lot guy.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Comprarlo · 12% | 30% anda, −12% y después +3%; 70% limón, −12% y −4% extra. |
-| Seguir de largo | $0. La tinta todavía secaba. |
+| Buy it · 12% | 30% it runs, −12% then +3%; 70% lemon, −12% and −4% extra. |
+| Keep walking | $0. The marker ink was still wet. |
 
 ---
 
-## 26. Esa muela — `dentist` — informe
+## 26. That molar — `dentist` — report
 
-Queja formal. Lena reserva. Paco en el auto.
+Formal complaint. Lena books the chair. Paco waits in the car.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −3%. |
+| Always −3%. |
 
 ---
 
-## 27. El de la factura — `friends` — informe  
-**Después de:** flu
+## 27. The one with the invoice — `friends` — report  
+**After:** flu
 
-Otra vez Friends en el tubo. Temporada cuatro. El pulso vuelve a facturar.
+Same couch, same CRT, season four. Pulse files paperwork again.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −7%. |
+| Always −7%. |
 
 ---
 
-## 28. Noche de Tetris — `tetris` — elección
+## 28. Tetris night — `tetris` — choice
 
-Cabinet del club de barrio. Rami dejó una ficha en el vidrio.
+Rec-center cabinet. Rami already put a coin on the glass.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Anotarme · 8% | 42% 3× la apuesta; 58% perdés el 8%. |
-| Mirar desde el kiosco | $0. Un pibe de doce hace four-line. |
+| Enter · 8% | 42% 3× the stake; 58% you lose the 8%. |
+| Watch from the snack bar | $0. A twelve-year-old four-lines the room. |
 
 ---
 
-## 29. El cabinet de Out Run — `outrun` — elección
+## 29. Out Run cabinet — `outrun` — choice
 
-Ferrari, palmeras, timer. Rami dice una etapa más.
+Ferrari, palm trees, timer. Rami says one more stage.
 
-| Opción | Resultado |
+| Option | Outcome |
 |---|---|
-| Alimentarlo con 6% | 40% 2.4×; 60% timer en cero, perdés el 6%. |
-| Guardar las fichas | $0. El Ferrari da la vuelta sin vos. |
+| Feed it 6% | 40% 2.4×; 60% timer hits zero, you lose the 6%. |
+| Keep the tokens | $0. The Ferrari loops without you. |
 
 ---
 
-## 30. Traje negro, sala negra — `wake` — informe
+## 30. Black tie, black room — `wake` — report
 
-Velorio de la tía Rosa. Nico lee un papel del bondi.
+Aunt Rosa's wake. Nico reads a paper he wrote on the bus.
 
-| Resultado |
+| Outcome |
 |---|
-| Siempre −3.5% en flores. |
+| Always −3.5% in flowers. |
