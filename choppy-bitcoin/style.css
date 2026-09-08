@@ -213,7 +213,7 @@ body {
   text-justify: inter-word;
   white-space: pre-wrap;
 }
-.overlay.dock.chance-ui .chance-art { width: 288px; height: 288px; align-self: center; margin: 0 auto; display: block; }
+.overlay.dock.chance-ui .chance-art { width: 144px; height: 144px; align-self: center; margin: 0 auto; display: block; }
 .overlay.dock.chance-ui .arc-actions {
   width: 100%;
   display: flex;
@@ -240,7 +240,7 @@ body {
   object-fit: cover; border: 2px solid #c8960a;
   background: #0a0a0c; flex: 0 0 auto;
 }
-.overlay.dock .chance-art { width: 144px; height: 144px; }
+.overlay.dock .chance-art { width: 72px; height: 72px; }
 .overlay.dock .opt-item { min-height: 30px; font-size: 11px; }
 .overlay.dock .opt-menu { gap: 4px; }
 .overlay.dock .cta { min-height: 30px; min-width: 0; padding: 0 10px; font-size: 11px; }

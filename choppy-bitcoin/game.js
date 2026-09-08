@@ -989,7 +989,7 @@
       opts: [
         { k: "a", label: "Keep talking", labelEs: "Keep talking" },
         { k: "b", label: "Get ice cream", labelEs: "Get ice cream" },
-        { k: "c", label: "Go home", labelEs: "Go home" }
+        { k: "c", label: "Cab home", labelEs: "Cab home" }
       ] },
     { id: "casino", kind: "choice", after: ["landfill"],
       title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
@@ -1221,16 +1221,16 @@
         "Nadie se lastimó. El paragolpes igual quiere plata. −" + money(paid) + ".");
     }
     if (card.id === "wine") {
-      if (opt === "c") return say("You leave thinking Marek may have made a good point.",
-        "You leave thinking Marek may have made a good point.");
+      if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
+        "The conversation eventually turns to free will and incentives.");
       if (opt === "b") {
-        const paid = cutPct(0.003);
-        return say("You finish the movie. Marek says the ending is overrated.\n\n−" + money(paid) + ".",
-          "You finish the movie. Marek says the ending is overrated.\n\n−" + money(paid) + ".");
+        cutBill(17);
+        return say("You finish the movie. Marek says the ending is overrated.\n\n−$17.",
+          "You finish the movie. Marek says the ending is overrated.\n\n−$17.");
       }
-      const paid = cutPct(0.01);
-      return say("The conversation eventually turns to free will and incentives.\n\n−" + money(paid) + ".",
-        "The conversation eventually turns to free will and incentives.\n\n−" + money(paid) + ".");
+      cutBill(25);
+      return say("You leave thinking Marek may have made a good point.\n\n−$25.",
+        "You leave thinking Marek may have made a good point.\n\n−$25.");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
