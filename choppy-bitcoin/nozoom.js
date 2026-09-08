@@ -1,4 +1,7 @@
 (function () {
+  const style = document.createElement("style");
+  style.textContent = "html,body{touch-action:manipulation;overscroll-behavior:none}";
+  document.documentElement.appendChild(style);
   const block = (e) => {
     if (e.touches && e.touches.length > 1) e.preventDefault();
   };
