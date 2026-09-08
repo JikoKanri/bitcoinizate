@@ -287,7 +287,7 @@
     jobTrack: null, jobOffer: null, jobName: "",
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 },
-    offerSeq: [1, 2], nextOffer: 1, offersDone: 0,
+    offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
@@ -508,6 +508,7 @@
       S.offerSeq = S.ranked ? fibSeq(16) : [10, 20, 30];
       S.nextOffer = S.ranked ? 1 : 10;
       S.offersDone = 0;
+      S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
       S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = "";
@@ -623,7 +624,7 @@
       const line = drawLine(A.LASER && A.LASER.length ? A.LASER : ["Laser eyes!"], 0.15);
       say(line || "Laser eyes!", true);
       A.sfx.power();
-      if (S.ranked && S.lasers === S.nextOffer) openPerkOffer("laser");
+      if (S.ranked) tryRankedPerk(false);
       return;
     }
     if (it.type === "COLD") {
@@ -754,12 +755,7 @@
   }
   function togglePause() {
     if (S.phase === "perk") {
-      if (!S.perkPick) return;
-      grantPerk(S.perkPick);
-      S.perkPick = "";
-      S.perkOffers = [];
-      bumpOffer();
-      setPhase("play");
+      confirmPerk();
       return;
     }
     if (S.phase === "play") { S.optBack = "play"; setPhase("paused"); }
@@ -767,9 +763,31 @@
   }
 
   function pickPerk(kind) {
+    if (S.perkPick && S.perkPick === kind) {
+      confirmPerk();
+      return;
+    }
     S.perkPick = kind;
     renderOverlay();
     renderHud();
+  }
+
+  function confirmPerk() {
+    if (S.phase !== "perk" || !S.perkPick) return;
+    grantPerk(S.perkPick);
+    S.perkPick = "";
+    S.perkOffers = [];
+    bumpOffer();
+    const resume = S.perkResume;
+    S.perkResume = null;
+    if (resume && resume.phase === "paused") {
+      S.optPanel = resume.panel || "market";
+      S.optBack = "play";
+      setPhase("paused");
+      tryRankedPerk(true);
+      return;
+    }
+    setPhase("play");
   }
 
   function grantPerk(kind) {
@@ -1557,7 +1575,30 @@
     return ids;
   }
 
-  function openPerkOffer(why) {
+  function perkOfferTitle() {
+    if (S.ranked) {
+      const n = S.perkFib || S.nextOffer || 1;
+      const es = window.BZ && BZ.lang && BZ.lang() === "es";
+      return es ? ("Fibonacci " + n + ": ¡agarrá tu perk!") : ("Fibonacci " + n + ": grab your perk!");
+    }
+    return t("grabPerk");
+  }
+
+  function tryRankedPerk(fromMarket) {
+    if (!S.ranked) return false;
+    if (S.phase === "perk") return false;
+    if ((S.lasers || 0) < (S.nextOffer || 1)) return false;
+    if (fromMarket || S.phase === "paused") {
+      S.perkResume = { phase: "paused", panel: S.optPanel || "market" };
+    } else {
+      S.perkResume = null;
+    }
+    S.perkFib = S.nextOffer;
+    openPerkOffer("laser", fromMarket || S.phase === "paused");
+    return S.phase === "perk";
+  }
+
+  function openPerkOffer(why, forceUi) {
     const left = perkOpen();
     if (!left.length) return;
     rollPerks();
@@ -1565,7 +1606,7 @@
     if (S.perkOffers[S.perkOffers.length - 1] !== "skip") S.perkOffers.push("skip");
     S.perkPick = "";
     if (why === "laser") say("Fibonacci treshold reached, grab your perk!", true);
-    if (S.aibudOn && (S.have.aibud || 0) >= 2) {
+    if (!forceUi && S.aibudOn && (S.have.aibud || 0) >= 2) {
       const real = S.perkOffers.filter((id) => id !== "skip");
       if (!real.length) { bumpOffer(); return; }
       const pick = bestAiPerk(real);
@@ -2213,7 +2254,7 @@
     setTxt("h-price", money(S.price));
     setTxt("h-cold", String(S.cold));
     setTxt("h-msig", String(S.msig));
-    setTxt("h-laser", String(S.lasers));
+    setTxt("h-laser", S.ranked ? (S.lasers + "/" + (S.nextOffer || 1)) : String(S.lasers));
     setTxt("h-halve", String(S.halveLeft));
     setTxt("h-halves", String(S.halvings) + "/" + HALVE_N);
     const bonus = S.level >= 2;
@@ -2646,11 +2687,11 @@
         else if (kind === "laser") {
           S.lasers += 1;
           if (S.laserOn) S.laserT += POWER_S; else applyLaser(true);
-          if (S.ranked && S.lasers === S.nextOffer) {
-            S.optPanel = null;
-            openPerkOffer("laser");
-            return;
-          }
+          A.sfx.coin();
+          renderHud();
+          if (tryRankedPerk(true)) return;
+          renderOverlay();
+          return;
         } else S.msig += 1;
         A.sfx.coin();
         renderOverlay();
@@ -2800,7 +2841,7 @@
           : perkTitle(id, tier) + " · " + perkBlurb(id, tier);
         return "<button class=\"cta" + (id === "skip" ? " play-alt" : "") + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + label + "</button>";
       }).join("");
-      overlay.innerHTML = "<h1>" + t("grabPerk") + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
+      overlay.innerHTML = "<h1>" + perkOfferTitle() + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
       overlay.querySelectorAll("[data-perk]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickPerk(btn.getAttribute("data-perk")); };
         btn.onpointerdown = go;
