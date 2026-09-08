@@ -1132,8 +1132,8 @@
       ] },
     { id: "usedcar", kind: "choice", after: ["landfill"],
       title: "The Used Car", titleEs: "El usado",
-      body: "Nico has another opportunity. A 2009 hatchback. The seller says it has a new timing belt. Nico looks under the hood. \"It has Sharpie.\" You are not sure what that means. Nico says it means \"basically new.\"",
-      bodyEs: "Nico tiene otra oportunidad. Un hatch 2009. El vendedor dice que tiene correa nueva. Nico mira bajo el capó. \"Tiene Sharpie.\" No sabés qué significa. Nico dice que significa \"casi nuevo.\"",
+      body: "Nico has another opportunity. A 2009 Honda Fit. The seller says it has a new timing belt. Nico looks under the hood. \"It has Sharpie.\" You are not sure what that means. Nico says it means \"basically new.\"",
+      bodyEs: "Nico tiene otra oportunidad. Un Honda Fit 2009. El vendedor dice que tiene correa nueva. Nico mira bajo el capó. \"Tiene Sharpie.\" No sabés qué significa. Nico dice que significa \"casi nuevo.\"",
       opts: [
         { k: "a", label: "Buy it · 12%", labelEs: "Comprarlo · 12%" },
         { k: "b", label: "Walk away", labelEs: "Irte" }
@@ -1450,12 +1450,15 @@
     S.chanceNote = "";
     S.chanceLead = "";
     S.chanceSettled = false;
+    S.arcPending = null;
     const es0 = chanceLang();
     let body = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
     if (card.kind === "report") {
+      const before = { cash: S.cash, btc: S.btc, cold: S.cold };
       const note = resolveChance(card, "ok");
+      S.arcPending = { cash: S.cash, btc: S.btc, cold: S.cold };
+      S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       S.chanceSettled = true;
-      settleArcBooks();
       const clean = String(note || "").trim();
       const base = String(body || "").trim();
       const first = clean.split("\n")[0].trim();
@@ -1469,7 +1472,13 @@
     renderHud();
   }
 
-  function settleArcBooks() {
+  function commitArcBooks() {
+    if (S.arcPending) {
+      S.cash = S.arcPending.cash;
+      S.btc = S.arcPending.btc;
+      S.cold = S.arcPending.cold;
+      S.arcPending = null;
+    }
     try { renderHud(); } catch (e) {}
   }
 
@@ -1478,6 +1487,7 @@
     if (!card) { setPhase("play"); renderHud(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
+        commitArcBooks();
         S.chanceCard = null;
         S.chanceNote = "";
         S.chanceSettled = false;
@@ -1485,14 +1495,18 @@
         renderHud();
         return;
       }
+      const before = { cash: S.cash, btc: S.btc, cold: S.cold };
       S.chanceNote = resolveChance(card, opt);
-      settleArcBooks();
+      S.arcPending = { cash: S.cash, btc: S.btc, cold: S.cold };
+      S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       renderOverlay();
       renderHud();
       return;
     }
+    commitArcBooks();
     S.chanceCard = null;
     S.chanceNote = "";
+    S.chanceSettled = false;
     setPhase("play");
     renderHud();
   }

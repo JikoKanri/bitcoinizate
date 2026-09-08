@@ -213,20 +213,25 @@ body {
   text-justify: inter-word;
   white-space: pre-wrap;
 }
-.overlay.dock.chance-ui .chance-art { width: 72px; height: 72px; align-self: center; }
+.overlay.dock.chance-ui .chance-art { width: 144px; height: 144px; align-self: center; margin: 0 auto; }
 .overlay.dock.chance-ui .perk-list {
-  width: 100%;
+  width: min(260px, 92%);
+  max-width: 260px;
   position: static;
-  margin-top: auto;
+  margin: auto auto 0;
   padding-top: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  align-self: center;
 }
 .overlay.dock.chance-ui .perk-list .cta {
-  min-width: 200px;
-  width: auto;
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  text-align: center;
 }
 .overlay.dock h1 { font-size: 14px; margin: 0; }
 .overlay.dock p { font-size: 11px; margin: 0; }
