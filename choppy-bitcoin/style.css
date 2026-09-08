@@ -204,15 +204,29 @@ body {
   align-items: stretch;
 }
 .overlay.dock.chance-ui h1 { text-align: left; }
-.overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; white-space: pre-wrap; }
+.overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; }
+.overlay.dock.chance-ui .arc-body {
+  font-size: 12.1px;
+  line-height: 1.38;
+  max-width: none;
+  text-align: justify;
+  text-justify: inter-word;
+  white-space: pre-wrap;
+}
 .overlay.dock.chance-ui .chance-art { width: 72px; height: 72px; align-self: center; }
 .overlay.dock.chance-ui .perk-list {
   width: 100%;
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  background: rgba(10,10,12,0.92);
-  padding-top: 6px;
+  position: static;
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.overlay.dock.chance-ui .perk-list .cta {
+  min-width: 200px;
+  width: auto;
 }
 .overlay.dock h1 { font-size: 14px; margin: 0; }
 .overlay.dock p { font-size: 11px; margin: 0; }

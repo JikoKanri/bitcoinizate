@@ -501,7 +501,7 @@
       S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceMet = {}; S.chanceLead = "";
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = "";
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1449,9 +1449,21 @@
     S.chanceCard = card;
     S.chanceNote = "";
     S.chanceLead = "";
+    S.chanceSettled = false;
     const es0 = chanceLang();
-    S.chanceBody = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
-    S.chanceNote = "";
+    let body = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
+    if (card.kind === "report") {
+      const note = resolveChance(card, "ok");
+      S.chanceSettled = true;
+      settleArcBooks();
+      const clean = String(note || "").trim();
+      const base = String(body || "").trim();
+      const first = clean.split("\n")[0].trim();
+      const same = !clean || base.indexOf(clean) >= 0 || (first && base.indexOf(first) >= 0 && clean.length < base.length);
+      S.chanceBody = same ? base : (base + "\n\n" + clean);
+    } else {
+      S.chanceBody = body;
+    }
     try { A.speak("Arc"); } catch (e) {}
     setPhase("chance");
     renderHud();
@@ -1465,7 +1477,15 @@
     const card = S.chanceCard;
     if (!card) { setPhase("play"); renderHud(); return; }
     if (!S.chanceNote) {
-      S.chanceNote = resolveChance(card, card.kind === "report" ? "ok" : opt);
+      if (card.kind === "report" || S.chanceSettled) {
+        S.chanceCard = null;
+        S.chanceNote = "";
+        S.chanceSettled = false;
+        setPhase("play");
+        renderHud();
+        return;
+      }
+      S.chanceNote = resolveChance(card, opt);
       settleArcBooks();
       renderOverlay();
       renderHud();
@@ -2704,14 +2724,14 @@
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
         if (!btns) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
