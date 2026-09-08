@@ -937,13 +937,12 @@
   }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
-      title: "The Landfill", titleEs: "El basural",
-      body: "It is 1:14 A.M. You are standing outside Docksway landfill in Wales with Nico. He has a flashlight, two shovels, and the kind of confidence that usually means you are about to lose money. He claims an old USB drive containing 8,000 BTC was buried here in 2009. You have no idea how he found this. Lena made you promise not to do anything stupid tonight. The promise was poorly defined.",
-      bodyEs: "Es la 1:14. Estás afuera del basural de Docksway, en Gales, con Nico. Trae linterna, dos palas y esa confianza que suele terminar en plata perdida. Dice que acá enterraron en 2009 un pendrive con 8.000 BTC. No sabés de dónde sacó el dato. Lena te hizo prometer que esta noche no ibas a hacer ninguna estupidez. La promesa estaba mal definida.",
+      title: "The Landfill", titleEs: "The Landfill",
+      body: "At 1:14 AM, your cousin Nico sends a voice message.\n\nA dark photo. A truck. A shovel leaning against the hood.\n\n“I'm in Wales. I got permission to dig Docksway.”\n\nIn 2009, a USB drive containing 8,000 BTC was supposedly lost there.\n\n“I need a partner, Choppy” he writes. “Not a spectator.”\n\nFrom the other side of the bed, Lena opens one eye.\n\n—If you invest in a gross treasure hunt at 1 A.M., I'm calling you Fartface next time you're about to come.\n\nYou look at the photo again.\n\nThe shovel does look surprisingly convincing.",
+      bodyEs: "At 1:14 AM, your cousin Nico sends a voice message.\n\nA dark photo. A truck. A shovel leaning against the hood.\n\n“I'm in Wales. I got permission to dig Docksway.”\n\nIn 2009, a USB drive containing 8,000 BTC was supposedly lost there.\n\n“I need a partner, Choppy” he writes. “Not a spectator.”\n\nFrom the other side of the bed, Lena opens one eye.\n\n—If you invest in a gross treasure hunt at 1 A.M., I'm calling you Fartface next time you're about to come.\n\nYou look at the photo again.\n\nThe shovel does look surprisingly convincing.",
       opts: [
-        { k: "a", label: "Invest 25%", labelEs: "Invertir 25%" },
-        { k: "b", label: "Invest 75%", labelEs: "Invertir 75%" },
-        { k: "c", label: "Go home", labelEs: "Volver a casa" }
+        { k: "a", label: "Put in 25% of net worth", labelEs: "Put in 25% of net worth" },
+        { k: "b", label: "Put in 75% of net worth", labelEs: "Put in 75% of net worth" }
       ] },
     { id: "taxbill", kind: "report",
       title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
@@ -1165,22 +1164,25 @@
     const es = chanceLang();
     const say = (en, esTxt) => (es ? esTxt : en);
     if (card.id === "landfill") {
-      if (opt === "c") return say("You go home. The pendrive stays in the clay.", "Volvés a casa. El pendrive se queda en la arcilla.");
       const pct = opt === "b" ? 0.75 : 0.25;
-      const paid = cutPct(pct);
+      const cashCut = (S.cash || 0) * pct;
+      const btcCut = (S.btc || 0) * pct;
+      S.cash -= cashCut;
+      S.btc -= btcCut;
       const r = Math.random();
-      if (r < 0.08) {
-        const got = Math.max(0.001, (wealthUsd() * (0.1 + Math.random() * 0.15)) / Math.max(S.price, 0.01));
-        S.btc += got;
-        return say("Mud, then plastic. Something from 2009. +" + got.toFixed(4) + " BTC. You spent " + money(paid) + ".",
-          "Barro, después plástico. Algo de 2009. +" + got.toFixed(4) + " BTC. Gastaste " + money(paid) + ".");
+      if (r < 0.00029) {
+        const share = opt === "b" ? 4000 : (4000 / 3);
+        S.btc += share;
+        return say("Find the USB. +" + share.toFixed(2) + " BTC.",
+          "Find the USB. +" + share.toFixed(2) + " BTC.");
       }
-      if (r < 0.3) {
-        const junk = grantWealthPct(0.015);
-        return say("An old Nokia. +" + money(junk) + " in silver. You spent " + money(paid) + ".",
-          "Un Nokia viejo. +" + money(junk) + " en plata. Gastaste " + money(paid) + ".");
+      if (r < 0.00029 + 0.22) {
+        S.cash += 8;
+        return say("Find old Nokia. +$8.",
+          "Find old Nokia. +$8.");
       }
-      return say("Three weeks of clay. Nothing. You spent " + money(paid) + ".", "Tres semanas de arcilla. Nada. Gastaste " + money(paid) + ".");
+      return say("Three weeks digging through clay and nothing.",
+        "Three weeks digging through clay and nothing.");
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
