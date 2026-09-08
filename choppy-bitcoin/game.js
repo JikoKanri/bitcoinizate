@@ -1723,47 +1723,60 @@
     if (S.aiAcc < 0.22) return;
     S.aiAcc = 0;
     const t = S.have.aibud;
-    const incomingBad = incomingKind(["BEAR", "SWAN"], 2.4);
-    const incomingGood = incomingKind(["BULL", "HALVE"], 2.4);
+    const inSwan = !!S.swanBear;
+    const inBear = S.power === "BEAR" || inSwan;
+    const inBull = S.power === "BULL";
+    const incomingDump = incomingKind(["BEAR", "SWAN"], 2.8);
+    const incomingPump = incomingKind(["BULL", "HALVE"], 2.8);
     const u = cycleU();
-    const bullPeak = S.power === "BULL" && u > 0.66;
-    const bearLow = S.power === "BEAR" && u > 0.58;
-    const dumpSoon = !!(incomingBad || bullPeak || (S.power === "BULL" && S.powerT < 1.15));
-    const dipSoon = !!(incomingGood || bearLow || S.swanBear || (S.power === "BEAR" && S.powerT < 1.2));
+    const bullPeak = inBull && (u >= 0.52 || S.powerT < 1.35);
+    let acted = false;
 
     if (t >= 4 && canAiTrade()) {
       const bag = netBtc();
-      if (S.btc > 0 && dumpSoon) {
+      const shouldSell = S.btc > 0 && !inBear && (bullPeak || incomingDump);
+      const shouldBuy = S.cash > 0 && !inBull && (inBear || incomingPump);
+      if (shouldSell) {
         S.aiSilent = true; sellBtc(); S.aiSilent = false;
         S.iaProfit += netBtc() - bag;
         S.aibudLit = Object.assign({}, S.aibudLit, { sell: true, buy: false });
         S.aiTradeAt = S.candles || 0;
         markAiTrade();
-        aiAct("Sold BTC", incomingBad ? "Dump incoming · stack more later" : "Sold the peak · stack more later");
-      } else if (S.cash > 0 && S.btc <= 0 && (dipSoon || S.power !== "BULL")) {
+        aiAct("Sold BTC", incomingDump ? "Dump incoming · raise cash for the dip" : "Sold the bull · raise cash for the dip");
+        acted = true;
+      } else if (shouldBuy) {
         S.aiSilent = true; buyBtc(); S.aiSilent = false;
         S.iaProfit += netBtc() - bag;
         S.aibudLit = Object.assign({}, S.aibudLit, { buy: true, sell: false });
         S.aiTradeAt = S.candles || 0;
         markAiTrade();
-        aiAct("Bought BTC", incomingGood ? "Pump incoming · accumulate" : "Bought the dip · accumulate");
+        aiAct("Bought BTC", incomingPump ? "Pump incoming · accumulate" : (inSwan ? "Bought the black swan" : "Bought the bear"));
+        acted = true;
       }
     }
+
     if (t >= 3 && S.have.dca > 0) {
-      const want = !!(S.btc <= 0 || S.power === "BEAR" || S.swanBear || incomingBad || dipSoon);
-      if (want !== S.dcaOn) {
+      const want = !!(inBear && !inBull);
+      if (want !== !!S.dcaOn) {
         S.dcaOn = want;
         S.aibudLit = Object.assign({}, S.aibudLit, { dca: true });
-        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Income to bitcoin" : "Do not buy the top");
+        aiAct(want ? "DCA ON" : "DCA OFF", want ? "Bear/swan · income to bitcoin" : "Bull · do not buy the top");
+        acted = true;
       }
     }
+
     if (t >= 3 && S.have.manip > 0) {
-      const want = S.btc > 0 ? "up" : "down";
+      const holding = (S.btc || 0) > 1e-12;
+      const want = holding ? "up" : "down";
       if (want !== S.trend) {
         S.trend = want;
         S.aibudLit = Object.assign({}, S.aibudLit, { trend: true });
-        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", want === "up" ? "Pump the bag" : "Cheaper next buy");
+        aiAct(want === "up" ? "Trend UP" : "Trend DOWN", holding ? "Holding · pump the bag" : "Flat · cheaper next buy");
+        acted = true;
       }
+    }
+    if (acted) {
+      try { renderHud(); } catch (e) {}
     }
   }
 
