@@ -2700,7 +2700,7 @@
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
