@@ -1440,16 +1440,29 @@
     S.chanceLead = "";
     const es0 = chanceLang();
     S.chanceBody = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
-    if (card.kind === "report") S.chanceNote = resolveChance(card, "ok");
+    S.chanceNote = "";
     try { A.speak("Arc"); } catch (e) {}
     setPhase("chance");
+    renderHud();
+  }
+
+  function settleArcBooks() {
+    try { renderHud(); } catch (e) {}
   }
 
   function pickChance(opt) {
     const card = S.chanceCard;
-    if (!card) { setPhase("play"); return; }
-    if (card.kind === "choice" && !S.chanceNote) {
-      S.chanceNote = resolveChance(card, opt);
+    if (!card) { setPhase("play"); renderHud(); return; }
+    if (!S.chanceNote) {
+      S.chanceNote = resolveChance(card, card.kind === "report" ? "ok" : opt);
+      settleArcBooks();
+      if (card.kind === "report") {
+        S.chanceCard = null;
+        S.chanceNote = "";
+        setPhase("play");
+        renderHud();
+        return;
+      }
       renderOverlay();
       renderHud();
       return;
@@ -1457,6 +1470,7 @@
     S.chanceCard = null;
     S.chanceNote = "";
     setPhase("play");
+    renderHud();
   }
 
   function tickJobChance() {
@@ -2196,7 +2210,7 @@
       pauseBtn.setAttribute("aria-label", paused ? "Play" : "Pause");
     }
     if (S.have.ff <= 0) S.speedMul = 1;
-    const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk";
+    const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk" || S.phase === "chance";
     $("trades").classList.toggle("hide", !playing);
     $("pause-btn").classList.toggle("hide", !playing);
     let status = "";
