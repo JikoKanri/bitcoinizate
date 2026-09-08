@@ -93,8 +93,8 @@
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Chance" };
-  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Chance" };
+  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Arc" };
+  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Arco" };
   const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
   const JOBS = [
     { name: "Acting career", nameEs: "Carrera de actuación", curve: "hit",
@@ -172,9 +172,9 @@
       }
       if (id === "market") return es ? "abre el mercado en el HUD" : "opens the market in the HUD";
       if (id === "chance") {
-        if (tier <= 1) return es ? "1 carta cada 21 velas" : "1 card every 21 candles";
-        if (tier === 2) return es ? "2 cartas cada 21 velas" : "2 cards every 21 candles";
-        return es ? "2 cartas + chance de 3ra" : "2 cards + odds of a 3rd";
+        if (tier <= 1) return es ? "1 carta Arc cada 21 velas" : "1 Arc card every 21 candles";
+        if (tier === 2) return es ? "2 cartas Arc cada 21 velas" : "2 Arc cards every 21 candles";
+        return es ? "2 cartas Arc + chance de 3ra" : "2 Arc cards + odds of a 3rd";
       }
       if (id === "aibud") {
         if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
@@ -876,59 +876,61 @@
   function cutPct(p) {
     return takeWealthPct(p);
   }
+  function cutBill(usd) {
+    const w = wealthUsd();
+    if (w <= 0) return 0;
+    const pinch = Math.max(usd, w * 0.006);
+    return takeWealthPct(Math.min(0.2, pinch / w));
+  }
   function chanceLang() {
     return window.BZ && BZ.lang && BZ.lang() === "es";
   }
   const CHANCE_CAST = {
     lena: {
       names: ["Lena"],
-      en: ["Lena, the love of your life", "Lena, who owns the other half of the fridge", "Lena, your person since the cheap-rent years"],
-      es: ["Lena, el amor de tu vida", "Lena, la dueña de tu corazón", "Lena, tu compañera desde el depto de reja"]
+      en: ["Lena, the love of your life", "Lena, who still calls you Fartface", "Lena, your person since the cheap-rent years"],
+      es: ["Lena, el amor de tu vida", "Lena, la que todavía te dice Fartface", "Lena, tu compañera desde el depto de reja"]
     },
     paco: {
       names: ["Paco"],
-      en: ["Paco, your dog", "Paco, the street mutt who claimed you", "Paco, who sleeps on your side of the bed"],
-      es: ["Paco, tu perro", "Paco, el pichicho de la calle que te adoptó", "Paco, el que duerme de tu lado de la cama"]
+      en: ["Paco, your French bulldog", "Paco, who votes by eating the brochure", "Paco, who sits under the leak on purpose"],
+      es: ["Paco, tu bulldog francés", "Paco, el que vota comiéndose el folleto", "Paco, el que se sienta bajo la gotera a propósito"]
     },
     marek: {
       names: ["Marek"],
-      en: ["Marek, your basketball friend from school", "Marek, who still fouls you in pickup games", "Marek, the one who kept your jersey"],
-      es: ["Marek, tu amigo del básquet del colegio", "Marek, el que todavía te hace falta en el pick-up", "Marek, el que se quedó con tu camiseta"]
+      en: ["Marek, your friend who always has wine on the table", "Marek, who talks like certainty is optional", "Marek, who takes you to machines in the back of bars"],
+      es: ["Marek, tu amigo que siempre tiene vino en la mesa", "Marek, el que habla como si la certeza fuera opcional", "Marek, el que te lleva a las máquinas del fondo del bar"]
     },
     nico: {
       names: ["Nico"],
-      en: ["Nico, your cousin", "Nico, the cousin who always has a hall to book", "Nico, family by blood and by group chat"],
-      es: ["Nico, tu primo", "Nico, el primo que siempre alquila un salón", "Nico, familia de sangre y de grupo"]
+      en: ["Nico, your cousin", "Nico, who always has three things going before lunch", "Nico, family by blood and by group chat"],
+      es: ["Nico, tu primo", "Nico, el que siempre tiene tres cosas antes del mediodía", "Nico, familia de sangre y de grupo"]
     },
     sofi: {
       names: ["Sofi"],
-      en: ["Sofi, Nico's daughter", "Sofi, your cousin's kid who already draws you", "Sofi, the niece who treats you like an uncle"],
-      es: ["Sofi, la hija de Nico", "Sofi, la nena de tu primo que ya te dibuja", "Sofi, la sobrina que te trata de tío"]
-    },
-    val: {
-      names: ["Val"],
-      en: ["Val, your ex-boss from the food-truck year", "Val, who used to sign your shifts", "Val, the old boss you still answer on the second ring"],
-      es: ["Val, tu ex-jefe del año del food truck", "Val, el que te firmaba los turnos", "Val, el ex-jefe al que todavía le atendés al segundo tono"]
-    },
-    rami: {
-      names: ["Rami"],
-      en: ["Rami, your friend from college", "Rami, who you still call Indie Jones", "Rami, the roommate who taught you the arcade"],
-      es: ["Rami, tu amigo de la facultad", "Rami, a quien cariñosamente apodas Indie Jones", "Rami, el compañero de depto que te enseñó el arcade"]
+      en: ["Sofi, your niece", "Sofi, Nico's kid who sends photos you cannot parse", "Sofi, the niece who treats you like an uncle"],
+      es: ["Sofi, tu sobrina", "Sofi, la nena de Nico que manda fotos que no entendés", "Sofi, la sobrina que te trata de tío"]
     },
     hector: {
-      names: ["Uncle Hector", "tío Héctor", "Tío Héctor", "El tío Héctor", "el tío Héctor"],
-      en: ["Uncle Hector, your mother's brother", "Uncle Hector, the uncle who never arrives empty-handed", "Uncle Hector, family from your mother's side"],
-      es: ["El tío Héctor, el hermano de tu vieja", "El tío Héctor, el tío que no llega con las manos vacías", "El tío Héctor, familia del lado de tu mamá"]
+      names: ["Uncle Héctor", "Uncle Hector", "tío Héctor", "Tío Héctor", "El tío Héctor", "el tío Héctor"],
+      en: ["Uncle Héctor, your mother's brother", "Uncle Héctor, who wires money with no explanation", "Uncle Héctor, family from your mother's side"],
+      es: ["El tío Héctor, el hermano de tu vieja", "El tío Héctor, el que gira plata sin explicar", "El tío Héctor, familia del lado de tu mamá"]
+    },
+    mike: {
+      names: ["Uncle Mike", "tío Mike", "Tío Mike"],
+      en: ["Uncle Mike, who treats a tip line like a debate stage", "Uncle Mike, in town for one dinner", "Uncle Mike, family who studies the check first"],
+      es: ["El tío Mike, el que trata la propina como un debate", "El tío Mike, de paso por una cena", "El tío Mike, familia que mira la cuenta primero"]
     }
   };
   const CHANCE_WHO = {
-    landfill: ["marek"], taxbill: ["lena"], wedding: ["nico"], patagonia: ["lena"],
-    flu: ["lena"], phish: ["lena"], crash: [], casino: ["rami"], poker: ["rami"],
-    uncle: ["hector"], school: ["sofi"], roof: ["lena"], lotto: ["marek"],
-    hospital: ["lena"], startup: ["val"], tow: ["lena"], romance: ["lena"],
-    refund: ["lena"], baby: ["nico", "sofi"], flood: ["paco"], cousin: ["nico"],
-    speeding: ["lena"], wallet: ["lena"], potluck: ["lena"], usedcar: ["marek"],
-    dentist: ["lena"], friends: ["lena"], tetris: ["rami"], outrun: ["rami"], wake: ["nico"]
+    landfill: ["nico", "lena"], taxbill: [], nicoWedding: ["nico", "lena", "paco"], mexico: ["lena", "paco"],
+    flu: ["lena", "paco"], phish: [], crash: [], casino: ["nico"], poker: ["marek"],
+    uncle: ["hector"], school: ["sofi", "lena"], roof: ["paco"], lotto: ["marek"],
+    hospital: ["lena"], startup: ["nico"], tow: [], courage: ["marek", "lena"],
+    ring: ["lena"], date: ["lena"], proposal: ["lena"], wedding: ["lena", "nico", "paco"],
+    honeymoon: ["lena", "paco"], pregnancy: ["lena"], baby: ["lena", "paco"], cousin: ["nico"],
+    speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"],
+    unclemike: ["mike"]
   };
   function weaveCast(text) {
     if (!text) return text;
@@ -957,396 +959,469 @@
   }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
-      title: "Marek and the dump", titleEs: "Marek y el basural",
-      body: "Marek texts at 1:14 a.m. from a rented van in Wales. He finally got a permit to keep digging Docksway Landfill, the dump where an 8,000 BTC pendrive vanished in 2009. He wants a partner who can stand the smell, not a spectator with opinions. Lena already said the couch is not a mine.",
-      bodyEs: "Marek escribe a la 1:14 desde una camioneta alquilada en Gales. Por fin consiguió permiso para seguir cavando el basural de Docksway, donde en 2009 se perdió un pendrive de 8.000 BTC. Quiere un socio que aguante el olor, no un espectador con opiniones. Lena ya dijo que el sillón no es una mina.",
+      title: "The Landfill", titleEs: "El basural",
+      body: "It is 1:14 A.M. You are standing outside Docksway landfill in Wales with Nico. He has a flashlight, two shovels, and the kind of confidence that usually means you are about to lose money. He claims an old USB drive containing 8,000 BTC was buried here in 2009. You have no idea how he found this. Lena made you promise not to do anything stupid tonight. The promise was poorly defined.",
+      bodyEs: "Es la 1:14. Estás afuera del basural de Docksway, en Gales, con Nico. Trae linterna, dos palas y esa confianza que suele terminar en plata perdida. Dice que acá enterraron en 2009 un pendrive con 8.000 BTC. No sabés de dónde sacó el dato. Lena te hizo prometer que esta noche no ibas a hacer ninguna estupidez. La promesa estaba mal definida.",
       opts: [
-        { k: "a", label: "Chip in 25% of net worth", labelEs: "Poner el 25% del patrimonio" },
-        { k: "b", label: "Chip in 75% of net worth", labelEs: "Poner el 75% del patrimonio" },
-        { k: "c", label: "Tell Marek you pass", labelEs: "Decirle a Marek que paso" }
+        { k: "a", label: "Invest 25%", labelEs: "Invertir 25%" },
+        { k: "b", label: "Invest 75%", labelEs: "Invertir 75%" },
+        { k: "c", label: "Go home", labelEs: "Volver a casa" }
       ] },
     { id: "taxbill", kind: "report",
-      title: "Letter for Lena", titleEs: "Carta para Lena",
-      body: "The envelope is addressed to both of you and it is not a birthday. Quarterly filing. Lena tapes it to the fridge next to Paco's vet reminder and waits for you to stop pretending you did not see it.",
-      bodyEs: "El sobre viene a nombre de los dos y no es un cumple. Presentación trimestral. Lena lo pega en la heladera, al lado del recordatorio del vet de Paco, y espera a que dejes de hacerte el que no lo viste." },
-    { id: "wedding", kind: "choice",
-      title: "Nico gets married", titleEs: "Se casa Nico",
-      body: "Nico booked a hall that seats four hundred and a DJ who still shouts 'put your hands up' like it is 1998. There will be a seating chart, a group photo, and an envelope table that does not blink. Lena asks what you are taking. Paco is not invited and he already knows.",
-      bodyEs: "Nico alquiló un salón para cuatrocientos y un DJ que sigue gritando 'las manos arriba' como si fuera 1998. Va a haber mesa de sobre, foto grupal y un seating chart que no pestañea. Lena pregunta qué llevás. Paco no está invitado y ya lo sabe.",
+      title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
+      body: "Your quarterly tax bill arrives. You open it, stare at it, close it, then open it again as if the number might have changed. It has not.",
+      bodyEs: "Llega la boleta trimestral. La abrís, la mirás, la cerrás y la volvés a abrir por si el número cambió. No cambió." },
+    { id: "nicoWedding", kind: "choice",
+      title: "Nico Gets Married", titleEs: "Se casa Nico",
+      body: "Nico is getting married. He has always had too much energy and at least three things going on at once. You arrive with Lena and Paco, who has already decided he dislikes the venue. The salon holds 400 people. You recognize maybe twelve. The DJ is playing old CDs from 1998. Nico is near the bar explaining an extremely complicated idea to a stranger who did not ask. Lena looks at you. \"Please don't let your cousin talk you into anything tonight.\" At the envelope table, you have to decide how much to give.",
+      bodyEs: "Nico se casa. Siempre tuvo demasiada energía y al menos tres cosas al mismo tiempo. Llegan con Lena y Paco, que ya decidió que el salón no le gusta. Entran 400. Reconocés doce. El DJ pone CDs de 1998. Nico está en la barra explicándole una idea complicada a un desconocido que no preguntó. Lena te mira. \"Esta noche no dejes que tu primo te convenza de nada.\" En la mesa de sobres hay que decidir cuánto dejar.",
       opts: [
-        { k: "a", label: "Send 4% of net worth", labelEs: "Mandar 4% del patrimonio" },
-        { k: "b", label: "Send 0.6% and a meme", labelEs: "Mandar 0.6% y un meme" },
-        { k: "c", label: "Skip the hall", labelEs: "Saltearme el salón" }
+        { k: "a", label: "Be generous · 4%", labelEs: "Ser generoso · 4%" },
+        { k: "b", label: "Give less · 0.6%", labelEs: "Dar menos · 0.6%" },
+        { k: "c", label: "Skip the gift", labelEs: "No dejar sobre" }
       ] },
-    { id: "patagonia", kind: "choice",
-      title: "Lena booked the lake", titleEs: "Lena reservó el lago",
-      body: "Last two seats on the Bariloche bus leave at dawn. Lena already packed the red thermos and the one decent sweater you own. Marek can keep Paco for a week if you go. The Andes do not offer a rain check.",
-      bodyEs: "Los últimos dos asientos al bus de Bariloche salen al alba. Lena ya guardó el termo rojo y el único sweater decente que tenés. Marek puede quedarse con Paco una semana si se van. Los Andes no dan rain check.",
+    { id: "mexico", kind: "choice",
+      title: "Mexico", titleEs: "México",
+      body: "Lena suggests a few days in the Mexican Riviera. Tulum. Warm water, white sand, small restaurants, and a hotel that looks more expensive in the photos than it probably is. Sounds like a nice place to leave a ColdCard randomness incident behind. You look at the flights together. Paco watches from the floor. Lena wants five days. You think three would be enough. Paco eats one of the travel brochures. You take that as his vote.",
+      bodyEs: "Lena propone unos días en la Riviera Mexicana. Tulum. Agua tibia, arena blanca, restoranes chicos y un hotel que en las fotos se ve más caro de lo que probablemente es. Un buen lugar para dejar atrás el incidente de aleatoriedad del ColdCard. Miran los vuelos juntos. Paco observa desde el piso. Lena quiere cinco días. Vos pensás que con tres alcanza. Paco se come uno de los folletos. Lo tomás como su voto.",
       opts: [
-        { k: "a", label: "Book it · 8% of net worth", labelEs: "Reservar · 8% del patrimonio" },
-        { k: "b", label: "Stay home with Paco", labelEs: "Quedarme con Paco" }
+        { k: "a", label: "Book the trip · 8%", labelEs: "Reservar · 8%" },
+        { k: "b", label: "Stay home", labelEs: "Quedarnos" }
       ] },
     { id: "flu", kind: "report",
-      title: "Friends, then the floor", titleEs: "Friends, después el piso",
-      body: "You were on the couch with Lena watching Friends in syndication on the old CRT. The laugh track hit. Then your chest did. The pharmacy bag is on the table and the soup is the only plan that still works.",
-      bodyEs: "Estaban en el sillón con Lena viendo Friends en sindicación en el tubo viejo. Sonó la risa enlatada. Después el pecho. La bolsa de la farmacia está en la mesa y la sopa es el único plan que sigue andando." },
+      title: "Flu", titleEs: "Gripe",
+      body: "Lena gets the flu. You spend the day bringing her water, medicine, soup, and whatever else she asks for. By evening you have spent money you will not get back. Paco eats half the soup. Lena does not notice.",
+      bodyEs: "A Lena le da gripe. Pasás el día llevándole agua, remedio, sopa y lo que pida. A la noche ya gastaste plata que no vuelve. Paco se come la mitad de la sopa. Lena no se da cuenta." },
     { id: "phish", kind: "choice",
-      title: "Mail from 'support'", titleEs: "Mail de «soporte»",
-      body: "The mail says your seed is leaking and you have eleven minutes. The domain is three letters off and the logo looks printed with a thumb. Lena reads it over your shoulder and does not blink.",
-      bodyEs: "El mail dice que se filtra tu seed y que tenés once minutos. El dominio falla por tres letras y el logo parece impreso con el pulgar. Lena lo lee detrás tuyo y no pestañea.",
+      title: "Phishing", titleEs: "Phishing",
+      body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
+      bodyEs: "Llega un mail de soporte. Dicen que hay un problema con tu cuenta. Necesitan tu seed para verificar la identidad. El mail se ve extremadamente convincente.",
       opts: [
-        { k: "a", label: "Open the form", labelEs: "Abrir el formulario" },
+        { k: "a", label: "Open the link", labelEs: "Abrir el enlace" },
         { k: "b", label: "Delete it", labelEs: "Borrarlo" }
       ] },
     { id: "crash", kind: "report",
-      title: "Scooter at the light", titleEs: "Scooter en el semáforo",
-      body: "A delivery kid on a scooter kisses the bumper while you wait for Lena's call. Nobody is hurt. The bumper still wants a name, a number, and an invoice.",
-      bodyEs: "Un pibe de delivery en scooter besa el paragolpes mientras esperás el llamado de Lena. Nadie se lastima. El paragolpes igual quiere un nombre, un número y una factura." },
+      title: "Scooter Crash", titleEs: "El scooter",
+      body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
+      bodyEs: "Un scooter de delivery pega tu auto a muy baja velocidad. Nadie sale realmente lastimado. El pibe se disculpa seis veces. Vos te disculpás dos. Nadie sabe por qué lo hiciste." },
     { id: "casino", kind: "choice",
-      title: "Rami found a table", titleEs: "Rami encontró una mesa",
-      body: "Rami swears the felt is lucky tonight and he already pulled out a chair. Lena is at home with Paco and a movie you said you would watch. The door of the casino still opens both ways.",
-      bodyEs: "Rami jura que el paño hoy tiene suerte y ya corrió una silla. Lena está en casa con Paco y una peli que dijiste que ibas a ver. La puerta del casino sigue abriendo para los dos lados.",
+      title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
+      body: "Nico calls at 11:40 P.M. \"I found a table.\" You ask where. \"A casino.\" You should probably ask more questions. Instead, you go. He has already found a game that he considers interesting.",
+      bodyEs: "Nico llama a las 23:40. \"Encontré una mesa.\" Preguntás dónde. \"Un casino.\" Deberías hacer más preguntas. En vez de eso, vas. Ya encontró un juego que considera interesante.",
       opts: [
-        { k: "a", label: "Bet 10% of net worth", labelEs: "Apostar 10% del patrimonio" },
-        { k: "b", label: "Bet 30% of net worth", labelEs: "Apostar 30% del patrimonio" },
-        { k: "c", label: "Walk out", labelEs: "Salir" }
+        { k: "a", label: "Bet 10%", labelEs: "Apostar 10%" },
+        { k: "b", label: "Bet 30%", labelEs: "Apostar 30%" },
+        { k: "c", label: "Leave", labelEs: "Irte" }
       ] },
     { id: "poker", kind: "choice", after: ["casino"],
-      title: "Rami's poker cruise", titleEs: "El crucero de póker de Rami",
-      body: "After the felt, Rami doubles down: a mid-sea tournament with a cabin already in his name. The buy-in scales with the table. Lena says if you go, you text when the ship has signal, not when you feel like it.",
-      bodyEs: "Después del paño, Rami dobla: un torneo en alta mar con camarote a su nombre. El buy-in escala con la mesa. Lena dice que si vas, avisás cuando el barco tenga señal, no cuando se te cante.",
+      title: "Poker", titleEs: "Póker",
+      body: "Marek invites you to a poker game. Not a casino. Just people he knows, sitting around a table late at night. He is already there when you arrive, drinking wine and watching the game. He looks at your chips. \"You're playing?\" \"I guess.\" He nods. \"Good.\"",
+      bodyEs: "Marek te invita a un póker. No es un casino. Gente que él conoce, mesa de madrugada. Ya está cuando llegás, con vino, mirando el juego. Mira tus fichas. \"¿Jugás?\" \"Supongo.\" Asiente. \"Bien.\"",
       opts: [
-        { k: "a", label: "Buy-in 8% of net worth", labelEs: "Buy-in 8% del patrimonio" },
-        { k: "b", label: "Buy-in 25% of net worth", labelEs: "Buy-in 25% del patrimonio" },
-        { k: "c", label: "Stay on the dock", labelEs: "Quedarme en el muelle" }
+        { k: "a", label: "Buy in · 8%", labelEs: "Buy-in · 8%" },
+        { k: "b", label: "Buy in · 25%", labelEs: "Buy-in · 25%" },
+        { k: "c", label: "Stay at the pier", labelEs: "Quedarte en el muelle" }
       ] },
     { id: "uncle", kind: "report",
-      title: "Uncle Hector wires", titleEs: "Gira el tío Héctor",
-      body: "Uncle Hector hits the account on a Tuesday with a one-line note. Don't tell your aunt. Buy the dip or a sandwich. The amount is already there when you refresh.",
-      bodyEs: "El tío Héctor pega en la cuenta un martes con una nota de una línea. No le digas a tu tía. Comprá el dip o un sándwich. El monto ya está cuando recargás." },
-    { id: "school", kind: "choice", after: ["wedding"],
-      title: "Sofi's mint museum", titleEs: "El museo de Sofi",
-      body: "After the wedding, Sofi starts school trips. The class is going to the mint museum and the form needs a co-signer who is not Nico. She already drew you on the slip with sunglasses and a red bandana.",
-      bodyEs: "Después del casamiento, Sofi arranca los viajes de estudio. El curso va al museo de la casa de moneda y el permiso pide un firmante que no sea Nico. Ya te dibujó en la hoja, con anteojos y vincha roja.",
+      title: "Uncle Héctor", titleEs: "El tío Héctor",
+      body: "Uncle Héctor sends a message. No explanation. Just: \"Check your account.\" He has transferred you some money. You call him. He refuses to explain why.",
+      bodyEs: "El tío Héctor manda un mensaje. Sin explicación. Solo: \"Fijate la cuenta.\" Te giró plata. Lo llamás. Se niega a decir por qué." },
+    { id: "school", kind: "choice",
+      title: "School Trip", titleEs: "El viaje de estudio",
+      body: "Sofi is going on a school trip to the Mint Museum. Her family is a little short this month. Lena thinks you should help. You agree, or you don't.",
+      bodyEs: "Sofi se va de viaje de estudio al museo de la Casa de Moneda. En casa este mes están justos. Lena cree que deberías ayudar. Aceptás, o no.",
       opts: [
-        { k: "a", label: "Cover 3% of net worth", labelEs: "Cubrir 3% del patrimonio" },
-        { k: "b", label: "Pass", labelEs: "Paso" }
+        { k: "a", label: "Cover the trip", labelEs: "Cubrir el viaje" },
+        { k: "b", label: "Let them handle it", labelEs: "Que se arreglen" }
       ] },
     { id: "roof", kind: "report",
-      title: "The hallway drip", titleEs: "La gotera del pasillo",
-      body: "Tuesday rain finds the crack above the hallway that you have been calling a character stain. Lena puts a pot under it. Paco drinks from the pot like this was the renovation plan.",
-      bodyEs: "La lluvia del martes encuentra la grieta del pasillo que venías llamando mancha de carácter. Lena pone una olla. Paco toma de la olla como si este fuera el plan de obra." },
+      title: "Roof", titleEs: "El techo",
+      body: "Paco finds the leak in the roof before you do. He sits directly underneath it. The workers arrive. He moves. He immediately finds another place to sit.",
+      bodyEs: "Paco encuentra la gotera antes que vos. Se sienta justo debajo. Llegan los de la obra. Se corre. Enseguida encuentra otro lugar donde sentarse." },
     { id: "lotto", kind: "report",
-      title: "Ticket on the lid", titleEs: "El ticket de la tapa",
-      body: "A scratch ticket is stuck to Marek's coffee lid after the night shift. He shrugs like it came with the cup. Lena says scratch it before Paco decides it is food.",
-      bodyEs: "Un raspa y gana está pegado a la tapa del café de Marek después del turno noche. Se encoge de hombros como si viniera con el vaso. Lena dice que lo raspes antes de que Paco decida que es comida." },
+      title: "Lottery Ticket", titleEs: "El raspa y gana",
+      body: "You are having wine with Marek. At some point the conversation turns to probability. You buy a lottery ticket. The next morning Marek asks if you checked the numbers. You did not.",
+      bodyEs: "Estás tomando vino con Marek. En algún momento la charla vira a probabilidad. Comprás un raspa y gana. A la mañana Marek pregunta si miraste los números. No los miraste." },
     { id: "hospital", kind: "report",
-      title: "Four stitches", titleEs: "Cuatro puntos",
-      body: "You looked one way. The curb looked the other. Four stitches and a lecture about looking both ways. Lena meets you in the waiting room with Paco in a backpack that is not allowed.",
-      bodyEs: "Vos miraste para un lado. El cordón para el otro. Cuatro puntos y un sermón sobre mirar a ambos lados. Lena te espera en la sala con Paco en una mochila que no se puede." },
+      title: "Four Stitches", titleEs: "Cuatro puntos",
+      body: "You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\"",
+      bodyEs: "Necesitás cuatro puntos. Lena te lleva al hospital. Espera con vos. De vuelta a casa dice: \"Tratá de no sangrar sobre nada.\"" },
     { id: "startup", kind: "choice",
-      title: "Val's last round", titleEs: "La última ronda de Val",
-      body: "Val is pre-revenue, post-vibe, and calling it the last friends-and-family round. The whiteboard still says synergy. Lena asks, from the doorway, if this is the same Val who signed your shifts at the food truck.",
-      bodyEs: "Val está pre-revenue, post-vibe, y dice que es la última ronda friends and family. El pizarrón sigue diciendo sinergia. Lena pregunta, desde el umbral, si es el mismo Val que te firmaba los turnos en el food truck.",
+      title: "Startup", titleEs: "La startup",
+      body: "Nico calls. \"I have a plan.\" You already know this is going somewhere. He has built a 47-slide presentation for an app that combines subscriptions, artificial intelligence, and something he calls community ownership. He says the upside is massive.",
+      bodyEs: "Llama Nico. \"Tengo un plan.\" Ya sabés que esto va a algún lado. Armó una presentación de 47 diapositivas para una app que combina suscripciones, inteligencia artificial y algo que llama community ownership. Dice que el upside es enorme.",
       opts: [
-        { k: "a", label: "Invest 20% of net worth", labelEs: "Invertir 20% del patrimonio" },
+        { k: "a", label: "Invest 20%", labelEs: "Invertir 20%" },
         { k: "b", label: "Pass", labelEs: "Paso" }
       ] },
     { id: "tow", kind: "report",
-      title: "Nine-minute curb", titleEs: "Nueve minutos de cordón",
-      body: "The sign said ten minutes. They waited nine. The lot is three blocks away and already charging by the hour. Lena is walking over with the spare key and a face you recognize.",
-      bodyEs: "El cartel decía diez minutos. Esperaron nueve. El playón queda a tres cuadras y ya cobra por hora. Lena camina para allá con la llave de más y una cara que conocés." },
-    { id: "romance", kind: "choice",
-      title: "General on the phone", titleEs: "El general en el teléfono",
-      body: "A decorated officer in a bad photo needs gas money to fly over with a vault key. The chat is long and the grammar is doing its best. Lena reads it once and laughs once, which is worse than yelling.",
-      bodyEs: "Un oficial con medallas y una foto fea necesita nafta para volar con la llave de una bóveda. El chat es largo y la gramática hace lo que puede. Lena lo lee una vez y se ríe una vez, que es peor que gritar.",
+      title: "Nine Minutes", titleEs: "Nueve minutos",
+      body: "You parked in the wrong place for nine minutes. You check the sign again. It was very clear.",
+      bodyEs: "Estacionaste mal durante nueve minutos. Volvés a mirar el cartel. Estaba muy claro." },
+    { id: "courage", kind: "choice",
+      title: "Courage", titleEs: "Coraje",
+      body: "You are at Marek's apartment. There is wine on the table and 12 Monkeys paused on the TV. You end up talking about A.I., futurism, and whether people actually know what they want. Eventually you mention Lena. Marek looks at you. \"So?\" You shrug. \"We've been together for years.\" He takes a sip. \"Maybe you're waiting for certainty.\" Then he presses play again. You keep thinking about it.",
+      bodyEs: "Estás en el depto de Marek. Hay vino en la mesa y 12 Monkeys en pausa. Terminan hablando de I.A., futurismo y si la gente sabe lo que quiere. En algún momento nombrás a Lena. Marek te mira. \"¿Y?\" Te encogés de hombros. \"Hace años que estamos.\" Toma un sorbo. \"Capaz estás esperando certeza.\" Vuelve a darle play. Segís pensándolo.",
       opts: [
-        { k: "a", label: "Wire 10% of net worth", labelEs: "Girar 10% del patrimonio" },
-        { k: "b", label: "Block and tell Lena", labelEs: "Bloquear y contarle a Lena" }
+        { k: "a", label: "Buy the ring · 6%", labelEs: "Comprar el anillo · 6%" },
+        { k: "b", label: "Wait", labelEs: "Esperar" }
       ] },
-    { id: "refund", kind: "report",
-      title: "Quiet deposit", titleEs: "Depósito quieto",
-      body: "They over-collected last quarter and the money comes back without a parade. Lena screenshots the amount for the shared note titled proof we are adults.",
-      bodyEs: "Cobrarón de más el trimestre pasado y la plata vuelve sin desfile. Lena captura el monto para la nota compartida que se llama prueba de que somos adultos." },
-    { id: "baby", kind: "choice", after: ["wedding"],
-      title: "Nico again", titleEs: "Nico otra vez",
-      body: "The hall from the wedding is gone. Now Nico is in a group chat posting hospital lighting and a hat the size of a teacup. Sofi, already in the family, wants you to pick the onesie color. The envelope is smaller. The chat is not.",
-      bodyEs: "El salón del casamiento ya fue. Ahora Nico está en un grupo subiendo la luz del hospital y un gorrito del tamaño de una taza. Sofi, que ya era de la familia, quiere que elijas el color del body. El sobre es más chico. El grupo no.",
+    { id: "ring", kind: "choice", after: ["courage"],
+      title: "The Ring", titleEs: "El anillo",
+      body: "You go to the jewelry store. You know exactly why you are there. You do not know what size of diamond makes you look responsible without looking ridiculous.",
+      bodyEs: "Vas a la joyería. Sabés exactamente por qué estás ahí. No sabés qué tamaño de diamante te hace parecer responsable sin parecer ridículo.",
       opts: [
-        { k: "a", label: "Send 2% of net worth", labelEs: "Mandar 2% del patrimonio" },
-        { k: "b", label: "Send a PDF of wishes", labelEs: "Mandar un PDF de deseos" }
+        { k: "a", label: "Buy the ring · 8%", labelEs: "Comprar el anillo · 8%" },
+        { k: "b", label: "Buy the cheaper one · 3%", labelEs: "El más barato · 3%" }
       ] },
-    { id: "flood", kind: "report",
-      title: "Washer revolt", titleEs: "El lavarropas se revela",
-      body: "The washer hose retires without notice and the basement becomes a lake. Paco supervises from the third step and does not help. The shop-vac is going to send a bill either way.",
-      bodyEs: "La manguera del lavarropas se jubila sin aviso y el sótano se vuelve un lago. Paco supervisa desde el tercer escalón y no ayuda. La aspiradora de agua va a mandar factura igual." },
+    { id: "date", kind: "choice", after: ["ring"],
+      title: "Date", titleEs: "La cita",
+      body: "You plan a proper date. A nice restaurant. A walk. The lake at sunset. The restaurant is nice. The walk is quiet. The lake looks good at sunset. Nothing goes wrong. This feels suspicious.",
+      bodyEs: "Planeás una cita en forma. Un restorán bueno. Una caminata. El lago al atardecer. El restorán está bien. La caminata es silenciosa. El lago se ve bien. No pasa nada malo. Eso se siente sospechoso.",
+      opts: [
+        { k: "a", label: "Nice restaurant", labelEs: "Restorán bueno" },
+        { k: "b", label: "Keep it simple", labelEs: "Dejarlo simple" },
+        { k: "c", label: "Cancel", labelEs: "Cancelar" }
+      ] },
+    { id: "proposal", kind: "choice", after: ["date"],
+      title: "Proposal", titleEs: "La propuesta",
+      body: "The lake is getting dark. You and Lena are standing by the water. The date went well enough that you are starting to worry. The ring is in your pocket. You take a breath. You tell Lena you love her. You ask her to marry you. She looks at you for a moment. Then she smiles. \"Yes, Fartface.\"",
+      bodyEs: "El lago se oscurece. Están parados junto al agua. La cita salió lo bastante bien como para que empieces a preocuparte. El anillo está en el bolsillo. Respirás. Le decís que la querés. Le pedís que se case con vos. Te mira un segundo. Sonríe. \"Sí, Fartface.\"",
+      opts: [
+        { k: "a", label: "Propose properly · 2%", labelEs: "Proponerlo en forma · 2%" },
+        { k: "b", label: "Panic and stand there", labelEs: "Entrar en pánico y quedarte" },
+        { k: "c", label: "Make a joke and run · 1%", labelEs: "Hacer un chiste y correr · 1%" }
+      ] },
+    { id: "wedding", kind: "choice", after: ["proposal"],
+      title: "Wedding", titleEs: "La boda",
+      body: "You and Lena are getting married. There are invitations, food, relatives, flowers, music, and several decisions you did not realize were decisions. Lena has opinions. You have some opinions. Most of hers win.",
+      bodyEs: "Se casan con Lena. Hay invitaciones, comida, parientes, flores, música y varias decisiones que no sabías que eran decisiones. Lena tiene opiniones. Vos tenés algunas. Ganan casi todas las de ella.",
+      opts: [
+        { k: "a", label: "The wedding Lena wants · 12%", labelEs: "La boda que quiere Lena · 12%" },
+        { k: "b", label: "Keep it small · 5%", labelEs: "Hacerla chica · 5%" },
+        { k: "c", label: "Run away together · 1%", labelEs: "Fugarse juntos · 1%" }
+      ] },
+    { id: "honeymoon", kind: "choice", after: ["wedding"],
+      title: "Honeymoon", titleEs: "La luna de miel",
+      body: "You and Lena finally leave. For several days you agree on one rule: no checking the portfolio. You immediately wonder whether looking at the total counts. Lena takes your phone away. You have three possible itineraries.",
+      bodyEs: "Por fin se van. Durante varios días acuerdan una regla: no mirar el portfolio. Enseguida te preguntás si mirar solo el total cuenta. Lena te saca el teléfono. Hay tres itinerarios posibles.",
+      opts: [
+        { k: "a", label: "Japan · 10%", labelEs: "Japón · 10%" },
+        { k: "b", label: "Italy · 6%", labelEs: "Italia · 6%" },
+        { k: "c", label: "Patagonia · 4%", labelEs: "Patagonia · 4%" }
+      ] },
+    { id: "pregnancy", kind: "report", after: ["honeymoon"],
+      title: "Pregnancy", titleEs: "El test",
+      body: "The test has two lines. You look at it. Lena looks at it. You look at it again. Neither of you says anything for a few seconds. Then the planning begins. Doctor. Appointments. Preparations. You spend the rest of the evening trying to understand what exactly you are supposed to buy.",
+      bodyEs: "El test tiene dos rayas. Lo mirás. Lena lo mira. Lo volvés a mirar. Unos segundos sin hablar. Después empieza la planificación. Médico. Turnos. Preparativos. El resto de la noche intentás entender qué se supone que hay que comprar." },
+    { id: "baby", kind: "choice", after: ["pregnancy"],
+      title: "Baby", titleEs: "El bebé",
+      body: "The baby arrives. You are tired. Lena is tired. Paco is confused. You start thinking about what kind of future you want to build.",
+      bodyEs: "Llega el bebé. Estás cansado. Lena está cansada. Paco está confundido. Empezás a pensar qué clase de futuro quieren armar.",
+      opts: [
+        { k: "a", label: "Set things up properly · 5%", labelEs: "Dejarlo bien armado · 5%" },
+        { k: "b", label: "Keep it simple · 2%", labelEs: "Dejarlo simple · 2%" },
+        { k: "c", label: "Send a PDF of financial advice", labelEs: "Mandar un PDF de consejos" }
+      ] },
     { id: "cousin", kind: "choice",
-      title: "Nico's ticker", titleEs: "El ticker de Nico",
-      body: "Nico cannot pronounce the ticker and still says it ten-times by Friday. He has a screenshot and a cousin-to-cousin voice note. Lena leaves the room so she does not have to hear the pitch twice.",
-      bodyEs: "Nico no puede pronunciar el ticker y igual dice que x10 para el viernes. Tiene un screenshot y un audio de primo a primo. Lena se va de la pieza para no escuchar el pitch dos veces.",
+      title: "Nico's New Thing", titleEs: "La nueva de Nico",
+      body: "Nico calls again. \"I found something.\" Of course he did. This time it is a new token. He says it will do ten times by Friday. You ask what it actually does. He says that is not the important part.",
+      bodyEs: "Nico llama de nuevo. \"Encontré algo.\" Claro que sí. Esta vez es un token nuevo. Dice que hace x10 para el viernes. Preguntás qué hace. Dice que esa no es la parte importante.",
       opts: [
-        { k: "a", label: "Put 40% of net worth in", labelEs: "Meter 40% del patrimonio" },
-        { k: "b", label: "Keep the stack", labelEs: "Dejar el stack" }
+        { k: "a", label: "Invest 40%", labelEs: "Invertir 40%" },
+        { k: "b", label: "Walk away", labelEs: "Salir de ahí" }
       ] },
     { id: "speeding", kind: "report",
-      title: "Same intersection", titleEs: "La misma esquina",
-      body: "Flash. Letter. The same intersection as always, the one you swore you crawl through. The camera has a better memory than you. Lena puts it on the fridge under the tax envelope.",
-      bodyEs: "Flash. Carta. La misma esquina de siempre, la que juraste que pasás a paso. La cámara tiene mejor memoria que vos. Lena la pone en la heladera, debajo del sobre de rentas." },
+      title: "Six Miles Per Hour", titleEs: "Diez kilómetros de más",
+      body: "You are six miles per hour over the limit. Same corner. Same officer. Same bad decision.",
+      bodyEs: "Vas diez kilómetros arriba del límite. La misma esquina. El mismo oficial. La misma mala decisión." },
     { id: "wallet", kind: "report",
-      title: "Bus seat 14", titleEs: "Asiento 14 del bondi",
-      body: "The wallet was on bus seat 14. Then the next stop happened. Lena cancels the cards while Paco sniffs the empty pocket like it is evidence.",
-      bodyEs: "La billetera estaba en el asiento 14 del bondi. Después llegó la parada. Lena cancela las tarjetas mientras Paco olfatea el bolsillo vacío como si fuera prueba." },
+      title: "Seat 14", titleEs: "Asiento 14",
+      body: "You leave your wallet on bus seat 14. You realize it three stops later. You call the company. Someone found it. The cash is gone. Your cards are still there. You consider this a partial victory.",
+      bodyEs: "Dejás la billetera en el asiento 14 del bondi. Te das cuenta tres paradas después. Llamás. Alguien la encontró. El efectivo no está. Las tarjetas sí. Lo considerás una victoria parcial." },
     { id: "potluck", kind: "choice",
-      title: "Block stew", titleEs: "El guiso de la cuadra",
-      body: "The block potluck is short on chairs and long on speeches. Lena already chopped onions. Paco will steal a napkin whether you donate or not.",
-      bodyEs: "La olla de la cuadra está corta de sillas y larga de discursos. Lena ya picó cebolla. Paco se va a robar una servilleta dones o no dones.",
+      title: "Neighborhood Potluck", titleEs: "La olla de la cuadra",
+      body: "Lena signs both of you up for a neighborhood potluck. She also signs Paco up. You explain that Paco cannot cook. She says: \"He can attend.\" Paco eats half of what you brought before you arrive.",
+      bodyEs: "Lena los anota a los dos en la olla de la cuadra. También anota a Paco. Explicás que Paco no cocina. Dice: \"Puede asistir.\" Paco se come la mitad de lo que llevaron antes de llegar.",
       opts: [
-        { k: "a", label: "Donate 5% of net worth", labelEs: "Donar 5% del patrimonio" },
+        { k: "a", label: "Donate generously · 5%", labelEs: "Donar en serio · 5%" },
         { k: "b", label: "Bring nothing", labelEs: "No llevar nada" }
       ] },
     { id: "usedcar", kind: "choice",
-      title: "Marker on the belt", titleEs: "Marcador en la correa",
-      body: "A 2009 hatch at the lot has new timing belt written in marker on the windshield. Marek knows the guy. Lena wants a second look at the tires before anyone shakes a hand.",
-      bodyEs: "Hay un hatch 2009 en la agencia con correa nueva escrito a marcador en el parabrisas. Marek conoce al de la agencia. Lena quiere mirar las gomas otra vez antes de que alguien dé la mano.",
+      title: "The Used Car", titleEs: "El usado",
+      body: "Nico has another opportunity. A 2009 hatchback. The seller says it has a new timing belt. Nico looks under the hood. \"It has Sharpie.\" You are not sure what that means. Nico says it means \"basically new.\"",
+      bodyEs: "Nico tiene otra oportunidad. Un hatch 2009. El vendedor dice que tiene correa nueva. Nico mira bajo el capó. \"Tiene Sharpie.\" No sabés qué significa. Nico dice que significa \"casi nuevo.\"",
       opts: [
-        { k: "a", label: "Buy it · 12% of net worth", labelEs: "Comprarlo · 12% del patrimonio" },
-        { k: "b", label: "Keep walking", labelEs: "Seguir de largo" }
+        { k: "a", label: "Buy it · 12%", labelEs: "Comprarlo · 12%" },
+        { k: "b", label: "Walk away", labelEs: "Irte" }
       ] },
-    { id: "dentist", kind: "report",
-      title: "That molar", titleEs: "Esa muela",
-      body: "That molar filed a formal complaint and it is done waiting. Lena books the chair before you invent an excuse. Paco waits in the car like a getaway driver who does not have a license.",
-      bodyEs: "Esa muela presentó una queja formal y ya no espera. Lena reserva el sillón antes de que inventes una excusa. Paco espera en el auto como chofer de fuga sin registro." },
-    { id: "friends", kind: "report", after: ["flu"],
-      title: "The one with the invoice", titleEs: "El de la factura",
-      body: "You are back on the same couch, same CRT, same syndication of Friends. Season four, the episode everyone quotes. Mid-credit your pulse files paperwork again. The VHS is still humming like nothing happened last time.",
-      bodyEs: "Otra vez el mismo sillón, el mismo tubo, la misma sindicación de Friends. Temporada cuatro, el capítulo que todos citan. A mitad de los créditos el pulso vuelve a presentar papeles. El VHS sigue zumbando como si la otra vez no hubiera pasado." },
     { id: "tetris", kind: "choice",
-      title: "Tetris night", titleEs: "Noche de Tetris",
-      body: "The rec center still has the Tetris cabinet with the Soviet theme and a line of kids who do not blink. Entry fee scales with the room. Rami already put a coin on the glass so nobody takes the machine.",
-      bodyEs: "El club de barrio todavía tiene el cabinet de Tetris con el tema soviético y una fila de pibes que no pestañean. La entrada escala con la sala. Rami ya dejó una ficha sobre el vidrio para que nadie se lleve la máquina.",
+      title: "Tetris", titleEs: "Tetris",
+      body: "Marek takes you to an old bar with an arcade machine in the back. There is a Tetris cabinet nobody seems to use. He starts playing. He gets unusually focused. \"Trying not to make it worse.\" After a few minutes he steps aside. \"Your turn.\"",
+      bodyEs: "Marek te lleva a un bar viejo con una máquina de arcade al fondo. Hay un cabinet de Tetris que nadie usa. Empieza a jugar. Se concentra de un modo raro. \"Trato de no empeorarlo.\" A los minutos se corre. \"Tu turno.\"",
       opts: [
-        { k: "a", label: "Enter · 8% of net worth", labelEs: "Anotarme · 8% del patrimonio" },
-        { k: "b", label: "Watch from the snack bar", labelEs: "Mirar desde el kiosco" }
+        { k: "a", label: "Put money in", labelEs: "Meterle plata" },
+        { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek" }
       ] },
-    { id: "outrun", kind: "choice",
-      title: "Out Run cabinet", titleEs: "El cabinet de Out Run",
-      body: "The sit-down Out Run cabinet is free for one song of the attract mode. Ferrari, palm trees, timer. Rami says one more stage. Lena is holding the jacket you swore you would not take off.",
-      bodyEs: "El cabinet de asiento de Out Run está libre durante una canción del attract mode. Ferrari, palmeras, timer. Rami dice una etapa más. Lena sostiene la campera que juraste no sacarte.",
+    { id: "unclemike", kind: "choice",
+      title: "Fancy Dinner with Uncle Mike", titleEs: "Cena con el tío Mike",
+      body: "Uncle Mike is in town. You meet him at a fancy restaurant. The food is excellent. The wine is excellent. When the check arrives he studies it, looks at the tip line, and puts the pen down. \"Why am I paying their salary?!\" He goes on a long rant about tipping culture. You agree. You just want to go home. The waiter is still standing there.",
+      bodyEs: "El tío Mike está de paso. Quedan en un restorán caro. La comida es excelente. El vino también. Cuando llega la cuenta la estudia, mira la línea de propina y deja la birome. \"¿Por qué les pago el sueldo yo?!\" Arranca un discurso largo sobre la cultura de la propina. Estás de acuerdo. Solo querés irte a casa. El mozo sigue parado ahí.",
       opts: [
-        { k: "a", label: "Feed it 6% of net worth", labelEs: "Alimentarlo con 6% del patrimonio" },
-        { k: "b", label: "Keep the tokens", labelEs: "Guardar las fichas" }
-      ] },
-    { id: "wake", kind: "report",
-      title: "Black tie, black room", titleEs: "Traje negro, sala negra",
-      body: "Aunt Rosa's wake is in a room that smells like flowers and floor wax. Nico reads a paper he wrote on the bus. Showing up costs money. So do the flowers with your name on the card.",
-      bodyEs: "El velorio de la tía Rosa es en una sala que huele a flores y a cera. Nico lee un papel que escribió en el bondi. Aparecer sale plata. También las flores con tu nombre en la tarjeta." }
+        { k: "a", label: "Leave a 20% tip", labelEs: "Dejar 20% de propina" },
+        { k: "b", label: "Leave no tip", labelEs: "No dejar propina" },
+        { k: "c", label: "Leave a small voluntary tip", labelEs: "Dejar una propina chica" }
+      ] }
   ];
-
   function resolveChance(card, opt) {
     const es = chanceLang();
     const say = (en, esTxt) => (es ? esTxt : en);
     if (card.id === "landfill") {
-      if (opt === "c") return say("You pass. The pendrive stays in the clay.", "Pasás. El pendrive se queda en la arcilla.");
+      if (opt === "c") return say("You go home. The pendrive stays in the clay.", "Volvés a casa. El pendrive se queda en la arcilla.");
       const pct = opt === "b" ? 0.75 : 0.25;
-      const paid = takeWealthPct(pct);
+      const paid = cutPct(pct);
       const r = Math.random();
       if (r < 0.08) {
-        const got = Math.max(0.001, (wealthUsd() * (0.1 + Math.random() * 0.25)) / Math.max(S.price, 0.01));
+        const got = Math.max(0.001, (wealthUsd() * (0.1 + Math.random() * 0.15)) / Math.max(S.price, 0.01));
         S.btc += got;
-        return say("Mud, then plastic. A fragment of the 2009 dump. +" + got.toFixed(4) + " BTC. You spent " + money(paid) + ".",
-          "Barro, después plástico. Un fragmento del basural de 2009. +" + got.toFixed(4) + " BTC. Gastaste " + money(paid) + ".");
+        return say("Mud, then plastic. Something from 2009. +" + got.toFixed(4) + " BTC. You spent " + money(paid) + ".",
+          "Barro, después plástico. Algo de 2009. +" + got.toFixed(4) + " BTC. Gastaste " + money(paid) + ".");
       }
       if (r < 0.3) {
         const junk = grantWealthPct(0.015);
-        return say("A Nokia and a loyalty card. +" + money(junk) + ". You spent " + money(paid) + ".",
-          "Un Nokia y una tarjeta de puntos. +" + money(junk) + ". Gastaste " + money(paid) + ".");
+        return say("An old Nokia. +" + money(junk) + " in silver. You spent " + money(paid) + ".",
+          "Un Nokia viejo. +" + money(junk) + " en plata. Gastaste " + money(paid) + ".");
       }
-      return say("Three weeks of clay. Nothing. You spent " + money(paid) + ".",
-        "Tres semanas de arcilla. Nada. Gastaste " + money(paid) + ".");
+      return say("Three weeks of clay. Nothing. You spent " + money(paid) + ".", "Tres semanas de arcilla. Nada. Gastaste " + money(paid) + ".");
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
-      return say("Filed. −" + money(paid) + ".", "Presentado. −" + money(paid) + ".");
+      return say("It has not changed. −" + money(paid) + ".", "No cambió. −" + money(paid) + ".");
     }
-    if (card.id === "wedding") {
-      if (opt === "c") return say("You skip the hall. They skip your birthday.", "Te salteás el salón. Ellos tu cumple.");
-      const paid = cutPct(opt === "a" ? 0.04 : 0.006);
-      if (opt === "a") { S.cold += 1; return say("They toast you. −" + money(paid) + " and +1 cold storage.", "Brindan por vos. −" + money(paid) + " y +1 cold storage."); }
-      return say("The meme lands. The envelope does not. −" + money(paid) + ".", "El meme llega. El sobre no. −" + money(paid) + ".");
+    if (card.id === "nicoWedding") {
+      if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "El resto de la noche evitás a Nico en la barra.");
+      if (opt === "a") {
+        const paid = cutPct(0.04);
+        S.cold += 1;
+        return say("They toast you. −" + money(paid) + ". Nico hands you a cold-storage device. \"Part of the wedding experience.\"",
+          "Brindan por vos. −" + money(paid) + ". Nico te pasa un cold storage. \"Parte de la experiencia.\"");
+      }
+      const paid = cutPct(0.006);
+      return say("Nico looks at the envelope, then at you. \"Fair.\" −" + money(paid) + ".",
+        "Nico mira el sobre, después a vos. \"Justo.\" −" + money(paid) + ".");
     }
-    if (card.id === "patagonia") {
-      if (opt === "b") return say("You stay. The Andes do not mind.", "Te quedás. Los Andes no se ofenden.");
+    if (card.id === "mexico") {
+      if (opt === "b") return say("You stay home. Paco destroys a cushion.", "Se quedan. Paco destruye un almohadón.");
       const paid = cutPct(0.08);
       S.invuln = Math.max(S.invuln || 0, 4);
-      return say("Lake air. −" + money(paid) + ". You feel hard to kill for a bit.", "Aire de lago. −" + money(paid) + ". Te sentís difícil de matar un rato.");
+      return say("Five days in Tulum. −" + money(paid) + ". About four seconds of feeling untouchable.",
+        "Cinco días en Tulum. −" + money(paid) + ". Unos cuatro segundos de sentirte intocable.");
     }
     if (card.id === "flu") {
-      const paid = cutPct(0.04);
-      return say("Soup, tissues, two lost days. −" + money(paid) + ".", "Sopa, pañuelos, dos días perdidos. −" + money(paid) + ".");
+      const paid = cutBill(120);
+      return say("Soup, medicine, half eaten by Paco. −" + money(paid) + ".", "Sopa, remedio, la mitad se la comió Paco. −" + money(paid) + ".");
     }
     if (card.id === "phish") {
-      if (opt === "b") return say("Deleted. The domain was three letters off.", "Borrado. El dominio fallaba por tres letras.");
+      if (opt === "b") return say("Deleted. You stare at the empty inbox for thirty seconds anyway.", "Borrado. Igual mirás la bandeja treinta segundos.");
       const paid = cutPct(0.18);
-      return say("The form was the drain. −" + money(paid) + ".", "El formulario era el desagüe. −" + money(paid) + ".");
+      return say("The site looked convincing. So did the transaction. −" + money(paid) + ".",
+        "El sitio se veía convincente. La transacción también. −" + money(paid) + ".");
     }
     if (card.id === "crash") {
-      const paid = cutPct(0.06);
-      return say("Insurance gap. −" + money(paid) + ".", "Hueco del seguro. −" + money(paid) + ".");
+      const paid = cutBill(650);
+      return say("Nobody was hurt. The bumper still wants money. −" + money(paid) + ".",
+        "Nadie se lastimó. El paragolpes igual quiere plata. −" + money(paid) + ".");
     }
     if (card.id === "casino") {
-      if (opt === "c") return say("You keep your stack and your evening.", "Te quedás con el stack y con la noche.");
+      if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
       const stake = cutPct(opt === "b" ? 0.3 : 0.1);
       if (Math.random() < 0.46) {
         S.cash += stake * 2;
-        return say("The number hits. +" + money(stake * 2) + " back on a " + money(stake) + " stake.",
-          "Sale el número. +" + money(stake * 2) + " sobre una apuesta de " + money(stake) + ".");
+        return say("The number hits. +" + money(stake * 2) + " on " + money(stake) + ".",
+          "Sale el número. +" + money(stake * 2) + " sobre " + money(stake) + ".");
       }
-      return say("The wheel does not know you. Stake " + money(stake) + " is gone.",
-        "La rueda no te conoce. La apuesta de " + money(stake) + " se fue.");
+      return say("The table does not know you. −" + money(stake) + ".", "La mesa no te conoce. −" + money(stake) + ".");
     }
     if (card.id === "poker") {
-      if (opt === "c") return say("The ship leaves. Your stack stays.", "El barco zarpa. Tu stack se queda.");
+      if (opt === "c") return say("Marek joins you ten minutes later. \"Probably better.\" He says it without looking at you.",
+        "Marek te alcanza a los diez minutos. \"Mejor.\" Lo dice sin mirarte.");
       const stake = cutPct(opt === "b" ? 0.25 : 0.08);
       const r = Math.random();
-      if (r < 0.06) {
-        S.cash += stake * 8;
-        return say("Heads-up. You scoop the cruise. +" + money(stake * 8) + " on a " + money(stake) + " buy-in.",
-          "Heads-up. Te llevás el crucero. +" + money(stake * 8) + " sobre un buy-in de " + money(stake) + ".");
-      }
-      if (r < 0.28) {
-        S.cash += stake * 3;
-        return say("Final table. +" + money(stake * 3) + " on a " + money(stake) + " buy-in.",
-          "Mesa final. +" + money(stake * 3) + " sobre un buy-in de " + money(stake) + ".");
-      }
-      if (r < 0.52) {
-        S.cash += stake * 1.4;
-        return say("Min-cash. +" + money(stake * 1.4) + " on a " + money(stake) + " buy-in.",
-          "Min-cash. +" + money(stake * 1.4) + " sobre un buy-in de " + money(stake) + ".");
-      }
-      return say("Busted on the river. Buy-in " + money(stake) + " feeds the rail.",
-        "Eliminado en el river. El buy-in de " + money(stake) + " se queda en la baranda.");
+      if (r < 0.06) { S.cash += stake * 8; return say("You scoop the table. +" + money(stake * 8) + ".", "Te llevás la mesa. +" + money(stake * 8) + "."); }
+      if (r < 0.28) { S.cash += stake * 3; return say("+" + money(stake * 3) + " on a " + money(stake) + " buy-in.", "+" + money(stake * 3) + " sobre " + money(stake) + "."); }
+      if (r < 0.52) { S.cash += stake * 1.4; return say("Min-cash. +" + money(stake * 1.4) + ".", "Min-cash. +" + money(stake * 1.4) + "."); }
+      return say("Busted. −" + money(stake) + ".", "Afuera. −" + money(stake) + ".");
     }
     if (card.id === "uncle") {
       if (Math.random() < 0.55) {
         const n = grantWealthPct(0.07);
-        return say("Wire lands. +" + money(n) + ".", "Llega el giro. +" + money(n) + ".");
+        return say("Check your account. +" + money(n) + ".", "Fijate la cuenta. +" + money(n) + ".");
       }
       const b = Math.max(0.0001, (wealthUsd() * 0.07) / Math.max(S.price, 0.01));
       S.btc += b;
       return say("He sent sats. +" + b.toFixed(4) + " BTC.", "Mandó sats. +" + b.toFixed(4) + " BTC.");
     }
     if (card.id === "school") {
-      if (opt === "b") return say("They go without your name on the form.", "Van sin tu nombre en la planilla.");
-      const paid = cutPct(0.03);
-      return say("You are on the chaperone list. −" + money(paid) + ".", "Estás en la lista de padres. −" + money(paid) + ".");
+      if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Se arreglan. Sofi igual manda una foto que no entendés.");
+      const paid = cutBill(300);
+      return say("Sofi sends a photo from the museum. You have no idea what is in it. −" + money(paid) + ".",
+        "Sofi manda una foto del museo. No sabés qué hay en la foto. −" + money(paid) + ".");
     }
     if (card.id === "roof") {
-      const paid = cutPct(0.05);
-      return say("Tarp, then tiles. −" + money(paid) + ".", "Lona, después tejas. −" + money(paid) + ".");
+      const paid = cutBill(900);
+      return say("Paco found it first. −" + money(paid) + ".", "Paco lo encontró primero. −" + money(paid) + ".");
     }
     if (card.id === "lotto") {
       const r = Math.random();
-      if (r < 0.04) { const n = grantWealthPct(0.35); return say("The lid was lucky. +" + money(n) + ".", "La tapa tenía suerte. +" + money(n) + "."); }
-      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Coffee-lid money. +" + money(n) + ".", "Plata de la tapa. +" + money(n) + "."); }
-      return say("It was a loser under the foam.", "Era un perdedor bajo la espuma.");
+      if (r < 0.04) { const n = grantWealthPct(0.35); return say("Marek reads the numbers. Not bad. +" + money(n) + ".", "Marek lee los números. Nada mal. +" + money(n) + "."); }
+      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Marek: \"Not bad.\" He meant the odds. +" + money(n) + ".", "Marek: \"Nada mal.\" Hablaba de las probas. +" + money(n) + "."); }
+      return say("You lost the ticket price. Marek was referring to the odds.", "Perdiste el ticket. Marek hablaba de las probas.");
     }
     if (card.id === "hospital") {
-      const paid = cutPct(0.07);
-      return say("Stitches hold. Invoice too. −" + money(paid) + ".", "Los puntos aguantan. La factura también. −" + money(paid) + ".");
+      const paid = cutBill(250);
+      return say("Four stitches. Try not to bleed on anything. −" + money(paid) + ".", "Cuatro puntos. Tratá de no sangrar sobre nada. −" + money(paid) + ".");
     }
     if (card.id === "startup") {
-      if (opt === "b") return say("You keep the stack. They keep the pitch deck.", "Te quedás el stack. Ellos el pitch.");
+      if (opt === "b") return say("Nico says: \"Your loss.\" You are fairly sure that is not how losses work.",
+        "Nico: \"Tu pérdida.\" Estás bastante seguro de que las pérdidas no funcionan así.");
       const paid = cutPct(0.2);
       if (Math.random() < 0.28) {
         S.cash += paid * 4;
-        return say("They actually ship. 4x back on " + money(paid) + ".", "De verdad publican. 4x sobre " + money(paid) + ".");
+        return say("They actually ship. 4× on " + money(paid) + ".", "De verdad publican. 4× sobre " + money(paid) + ".");
       }
       return say("The domain expired. " + money(paid) + " is a case study.", "Venció el dominio. " + money(paid) + " es un caso de estudio.");
     }
     if (card.id === "tow") {
+      const paid = cutBill(85);
+      return say("Nine minutes. The sign was very clear. −" + money(paid) + ".", "Nueve minutos. El cartel estaba muy claro. −" + money(paid) + ".");
+    }
+    if (card.id === "courage") {
+      if (opt === "b") return say("You go home. Lena asks why you are quiet. You say you are tired. \"Sure, Fartface.\"",
+        "Volvés. Lena pregunta por qué estás callado. Decís que estás cansado. \"Claro, Fartface.\"");
+      const paid = cutPct(0.06);
+      return say("You are officially doing this. −" + money(paid) + ".", "Oficialmente lo estás haciendo. −" + money(paid) + ".");
+    }
+    if (card.id === "ring") {
+      const paid = cutPct(opt === "b" ? 0.03 : 0.08);
+      if (opt === "b") return say("You still have a ring. Lena later finds the receipt. She says nothing. She just looks at you. −" + money(paid) + ".",
+        "Igual hay anillo. Lena después encuentra el ticket. No dice nada. Solo te mira. −" + money(paid) + ".");
+      return say("You now have a ring. −" + money(paid) + ".", "Ahora hay anillo. −" + money(paid) + ".");
+    }
+    if (card.id === "date") {
+      if (opt === "c") return say("Tomorrow is probably better.", "Mañana probablemente esté mejor.");
+      const paid = cutBill(opt === "a" ? 180 : 60);
+      if (opt === "a") return say("Everything goes according to plan. That still feels suspicious. −" + money(paid) + ".",
+        "Todo sale según el plan. Sigue sintiéndose sospechoso. −" + money(paid) + ".");
+      return say("Dinner is good anyway. −" + money(paid) + ".", "La cena está bien igual. −" + money(paid) + ".");
+    }
+    if (card.id === "proposal") {
+      if (opt === "b") return say("You forget every word. You eventually say, \"So… anyway.\" The moment passes.",
+        "Se te olvidan las palabras. Terminás diciendo: \"Bueno… eso.\" Se pasa el momento.");
+      if (opt === "c") {
+        const paid = cutPct(0.01);
+        return say("You say \"Actually, forget it\" and start walking. Lena chases you. The ring survives. −" + money(paid) + ".",
+          "Decís \"En realidad, olvidalo\" y arrancás. Lena te persigue. El anillo sobrevive. −" + money(paid) + ".");
+      }
       const paid = cutPct(0.02);
-      return say("Lot fee plus pride. −" + money(paid) + ".", "Playón más orgullo. −" + money(paid) + ".");
+      return say("You put the ring on her finger. \"Yes, Fartface.\" −" + money(paid) + ".",
+        "Le ponés el anillo. \"Sí, Fartface.\" −" + money(paid) + ".");
     }
-    if (card.id === "romance") {
-      if (opt === "b") return say("Blocked. The general retreats.", "Bloqueado. El general se retira.");
-      const paid = cutPct(0.1);
-      return say("The vault key never boards. −" + money(paid) + ".", "La llave de la bóveda no aborda. −" + money(paid) + ".");
+    if (card.id === "wedding") {
+      if (opt === "a") {
+        const paid = cutPct(0.12);
+        return say("Everyone has a good time. Even Nico. His speech lasts eleven minutes. −" + money(paid) + ".",
+          "Todos la pasan bien. Hasta Nico. El discurso dura once minutos. −" + money(paid) + ".");
+      }
+      if (opt === "b") {
+        const paid = cutPct(0.05);
+        return say("Fewer people. Less noise. Paco is not allowed to attend. He does not know why. −" + money(paid) + ".",
+          "Menos gente. Menos ruido. Paco no puede entrar. No sabe por qué. −" + money(paid) + ".");
+      }
+      const paid = cutPct(0.01);
+      return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + money(paid) + ".",
+        "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + money(paid) + ".");
     }
-    if (card.id === "refund") {
-      const n = grantWealthPct(0.035);
-      return say("Quiet deposit. +" + money(n) + ".", "Depósito quieto. +" + money(n) + ".");
+    if (card.id === "honeymoon") {
+      const map = { a: 0.1, b: 0.06, c: 0.04 };
+      const paid = cutPct(map[opt] || 0.04);
+      if (opt === "a") return say("Tokyo, Kyoto, too many trains. The system works better than you do. −" + money(paid) + ".",
+        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que vos. −" + money(paid) + ".");
+      if (opt === "b") return say("Rome, Florence, long dinners. Lena buys something she refuses to explain until dinner. −" + money(paid) + ".",
+        "Roma, Florencia, cenas largas. Lena compra algo que no explica hasta la cena. −" + money(paid) + ".");
+      return say("Mountains, lakes, fewer people. You miss Paco after two days. He does not appear to miss you. −" + money(paid) + ".",
+        "Montañas, lagos, menos gente. Extrañás a Paco a los dos días. Él no parece extrañarte. −" + money(paid) + ".");
+    }
+    if (card.id === "pregnancy") {
+      const paid = cutBill(450);
+      return say("Two lines. Then the planning. −" + money(paid) + ".", "Dos rayas. Después la planificación. −" + money(paid) + ".");
     }
     if (card.id === "baby") {
-      if (opt === "b") return say("You send a PDF of well wishes.", "Mandás un PDF de buenos deseos.");
+      if (opt === "c") return say("Lena looks at the PDF. Then at you. \"Fartface.\"", "Lena mira el PDF. Después a vos. \"Fartface.\"");
+      if (opt === "a") {
+        const paid = cutPct(0.05);
+        S.cold += 1;
+        return say("Money aside, and a cold-storage device in the house. −" + money(paid) + ".",
+          "Plata de lado y un cold storage en casa. −" + money(paid) + ".");
+      }
       const paid = cutPct(0.02);
-      return say("Onesie acquired. −" + money(paid) + ".", "Body comprado. −" + money(paid) + ".");
-    }
-    if (card.id === "flood") {
-      const paid = cutPct(0.08);
-      return say("Shop-vac and drywall. −" + money(paid) + ".", "Aspiradora de agua y yeso. −" + money(paid) + ".");
+      return say("You buy what you need and figure out the rest later. −" + money(paid) + ".",
+        "Compran lo que hace falta y el resto después. −" + money(paid) + ".");
     }
     if (card.id === "cousin") {
-      if (opt === "b") return say("The ticker is already −40% in after-hours.", "El ticker ya va −40% after hours.");
+      if (opt === "b") return say("Three hours later Nico texts. The token is already down 40%. \"Temporary.\"",
+        "A las tres horas Nico escribe. El token ya va −40%. \"Temporal.\"");
       const paid = cutPct(0.4);
       if (Math.random() < 0.5) {
         S.cash += paid * 2.2;
-        return say("Friday arrives early. 2.2x on " + money(paid) + ".", "El viernes llega temprano. 2.2x sobre " + money(paid) + ".");
+        return say("Friday arrives early. 2.2× on " + money(paid) + ".", "El viernes llega temprano. 2.2× sobre " + money(paid) + ".");
       }
       return say("Halted. " + money(paid) + " is a screenshot now.", "Suspendido. " + money(paid) + " ahora es un screenshot.");
     }
     if (card.id === "speeding") {
-      const paid = cutPct(0.015);
-      return say("Camera does not take excuses. −" + money(paid) + ".", "La cámara no acepta excusas. −" + money(paid) + ".");
+      const paid = cutBill(75);
+      return say("Same corner. Same officer. −" + money(paid) + ".", "La misma esquina. El mismo oficial. −" + money(paid) + ".");
     }
     if (card.id === "wallet") {
-      const paid = cutPct(0.025);
-      return say("Wallet walks. −" + money(paid) + ".", "Camina la billetera. −" + money(paid) + ".");
+      const paid = cutBill(40);
+      return say("Cash gone. Cards still there. Partial victory. −" + money(paid) + ".",
+        "El efectivo no está. Las tarjetas sí. Victoria parcial. −" + money(paid) + ".");
     }
     if (card.id === "potluck") {
-      if (opt === "b") return say("You eat at home. Fine stew, thinner social graph.", "Comés en casa. Buen guiso, grafo social más fino.");
+      if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Sos increíble.\"");
       const paid = cutPct(0.05);
-      if (Math.random() < 0.35) { S.cold += 1; return say("Someone hands you a spare key. −" + money(paid) + " and +1 cold.", "Alguien te pasa una llave de más. −" + money(paid) + " y +1 cold."); }
-      return say("You are on the good list. −" + money(paid) + ".", "Quedás en la lista buena. −" + money(paid) + ".");
+      return say("People remember your name. Paco remembers the food. −" + money(paid) + ".",
+        "La gente se acuerda de tu nombre. Paco, de la comida. −" + money(paid) + ".");
     }
     if (card.id === "usedcar") {
-      if (opt === "b") return say("The marker ink was still wet. Good call.", "La tinta del marcador todavía secaba. Buena.");
+      if (opt === "b") return say("You walk. Nico buys it anyway.", "Te vas. Nico lo compra igual.");
       const paid = cutPct(0.12);
       if (Math.random() < 0.3) {
         const back = grantWealthPct(0.03);
-        return say("It runs. Spare tire sale. −" + money(paid) + " then +" + money(back) + ".", "Anda. Vendés el auxilio. −" + money(paid) + " y después +" + money(back) + ".");
+        return say("It works. −" + money(paid) + " then +" + money(back) + ".", "Anda. −" + money(paid) + " y después +" + money(back) + ".");
       }
       const extra = cutPct(0.04);
-      return say("Lemon. Timing belt was a rumor. −" + money(paid + extra) + ".", "Limón. La correa era un rumor. −" + money(paid + extra) + ".");
-    }
-    if (card.id === "dentist") {
-      const paid = cutPct(0.03);
-      return say("The molar stands down. −" + money(paid) + ".", "La muela se rinde. −" + money(paid) + ".");
-    }
-    if (card.id === "friends") {
-      const paid = cutPct(0.07);
-      return say("The laugh track keeps going. Invoice too. −" + money(paid) + ".", "La risa enlatada sigue. La factura también. −" + money(paid) + ".");
+      return say("Lemon. The Sharpie was the honest part. −" + money(paid + extra) + ".",
+        "Limón. Lo honesto era el Sharpie. −" + money(paid + extra) + ".");
     }
     if (card.id === "tetris") {
-      if (opt === "b") return say("You watch a twelve-year-old four-line the room.", "Miras a un pibe de doce hacer un four-line al salón.");
-      const stake = cutPct(0.08);
+      if (opt === "b") return say("Marek gets to level 18. Then loses. He nods. \"Good enough.\"",
+        "Marek llega al nivel 18. Pierde. Asiente. \"Alcanza.\"");
+      const stake = cutBill(20);
       if (Math.random() < 0.42) {
         S.cash += stake * 3;
-        return say("The well stays clean. 3x on " + money(stake) + ".", "El pozo queda limpio. 3x sobre " + money(stake) + ".");
+        return say("The well stays clean. +" + money(stake * 3) + ".", "El pozo queda limpio. +" + money(stake * 3) + ".");
       }
-      return say("A long bar would have saved you. Stake " + money(stake) + " is gone.", "Una barra larga te salvaba. La apuesta de " + money(stake) + " se fue.");
+      return say("A long bar would have saved you. −" + money(stake) + ".", "Una barra larga te salvaba. −" + money(stake) + ".");
     }
-    if (card.id === "outrun") {
-      if (opt === "b") return say("The Ferrari loops without you.", "El Ferrari da la vuelta sin vos.");
-      const stake = cutPct(0.06);
-      if (Math.random() < 0.4) {
-        S.cash += stake * 2.4;
-        return say("Checkpoint. 2.4x on " + money(stake) + ".", "Checkpoint. 2.4x sobre " + money(stake) + ".");
-      }
-      return say("The timer hits zero in the palm trees. −" + money(stake) + ".", "El timer llega a cero entre palmeras. −" + money(stake) + ".");
-    }
-    if (card.id === "wake") {
-      const paid = cutPct(0.035);
-      return say("You signed the book. −" + money(paid) + " in flowers.", "Firmaste el libro. −" + money(paid) + " en flores.");
+    if (card.id === "unclemike") {
+      const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
+      const paid = cutBill(bill);
+      if (opt === "a") return say("Uncle Mike watches you sign. \"That just encourages the system.\" −" + money(paid) + ".",
+        "El tío Mike te mira firmar. \"Así se alienta el sistema.\" −" + money(paid) + ".");
+      if (opt === "b") return say("Uncle Mike seems satisfied. The waiter does not. −" + money(paid) + ".",
+        "El tío Mike parece conforme. El mozo no. −" + money(paid) + ".");
+      return say("Uncle Mike nods. \"That's different.\" You are not sure it is. −" + money(paid) + ".",
+        "El tío Mike asiente. \"Eso es distinto.\" No estás seguro. −" + money(paid) + ".");
     }
     return say("Nothing else happens.", "No pasa nada más.");
   }
@@ -1366,7 +1441,7 @@
     const es0 = chanceLang();
     S.chanceBody = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
     if (card.kind === "report") S.chanceNote = resolveChance(card, "ok");
-    try { A.speak("Chance"); } catch (e) {}
+    try { A.speak("Arc"); } catch (e) {}
     setPhase("chance");
   }
 
@@ -1486,7 +1561,7 @@
     if (id === "juke") return es ? "Música mientras stackeamos" : "Tunes while we stack";
     if (id === "job") return es ? "Sueldo fijo cada 21 velas" : "Steady paycheck every 21 candles";
     if (id === "market") return es ? "Comprar vidas y láseres" : "Buy lives and lasers";
-    if (id === "chance") return es ? "Cartas cada 21 velas" : "Cards every 21 candles";
+    if (id === "chance") return es ? "Cartas Arc cada 21 velas" : "Arc cards every 21 candles";
     return es ? "Lo mejor para juntar bitcoin" : "Best for stacking bitcoin";
   }
 
