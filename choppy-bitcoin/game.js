@@ -1114,7 +1114,7 @@
         { k: "a", label: "Invest 40%", labelEs: "Invertir 40%" },
         { k: "b", label: "Walk away", labelEs: "Salir de ahí" }
       ] },
-    { id: "speeding", kind: "report",
+    { id: "speeding", kind: "report", after: ["tow"],
       title: "Six Miles Per Hour", titleEs: "Diez kilómetros de más",
       body: "You are six miles per hour over the limit. Same corner. Same officer. Same bad decision.",
       bodyEs: "Vas diez kilómetros arriba del límite. La misma esquina. El mismo oficial. La misma mala decisión." },
@@ -1467,13 +1467,6 @@
     if (!S.chanceNote) {
       S.chanceNote = resolveChance(card, card.kind === "report" ? "ok" : opt);
       settleArcBooks();
-      if (card.kind === "report") {
-        S.chanceCard = null;
-        S.chanceNote = "";
-        setPhase("play");
-        renderHud();
-        return;
-      }
       renderOverlay();
       renderHud();
       return;
