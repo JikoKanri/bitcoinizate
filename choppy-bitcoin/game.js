@@ -2717,6 +2717,7 @@
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
+        if (!btns) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
         overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p>" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
