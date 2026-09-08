@@ -204,6 +204,7 @@ body {
   align-items: stretch;
 }
 .overlay.dock.chance-ui h1 { text-align: left; }
+.overlay.dock.chance-ui p.k { text-decoration: underline; color: #f3efe6; }
 .overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; }
 .overlay.dock.chance-ui .arc-body {
   font-size: 12.1px;
