@@ -949,7 +949,7 @@
       title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
       body: "Your quarterly tax bill arrives. You open it, stare at it, close it, then open it again as if the number might have changed. It has not.",
       bodyEs: "Llega la boleta trimestral. La abrís, la mirás, la cerrás y la volvés a abrir por si el número cambió. No cambió." },
-    { id: "nicoWedding", kind: "choice",
+    { id: "nicoWedding", kind: "choice", after: ["landfill"],
       title: "Nico Gets Married", titleEs: "Se casa Nico",
       body: "Nico is getting married. He has always had too much energy and at least three things going on at once. You arrive with Lena and Paco, who has already decided he dislikes the venue. The salon holds 400 people. You recognize maybe twelve. The DJ is playing old CDs from 1998. Nico is near the bar explaining an extremely complicated idea to a stranger who did not ask. Lena looks at you. \"Please don't let your cousin talk you into anything tonight.\" At the envelope table, you have to decide how much to give.",
       bodyEs: "Nico se casa. Siempre tuvo demasiada energía y al menos tres cosas al mismo tiempo. Llegan con Lena y Paco, que ya decidió que el salón no le gusta. Entran 400. Reconocés doce. El DJ pone CDs de 1998. Nico está en la barra explicándole una idea complicada a un desconocido que no preguntó. Lena te mira. \"Esta noche no dejes que tu primo te convenza de nada.\" En la mesa de sobres hay que decidir cuánto dejar.",
@@ -958,7 +958,7 @@
         { k: "b", label: "Give less · 0.6%", labelEs: "Dar menos · 0.6%" },
         { k: "c", label: "Skip the gift", labelEs: "No dejar sobre" }
       ] },
-    { id: "mexico", kind: "choice",
+    { id: "mexico", kind: "choice", after: ["landfill"],
       title: "Mexico", titleEs: "México",
       body: "Lena suggests a few days in the Mexican Riviera. Tulum. Warm water, white sand, small restaurants, and a hotel that looks more expensive in the photos than it probably is. Sounds like a nice place to leave a ColdCard randomness incident behind. You look at the flights together. Paco watches from the floor. Lena wants five days. You think three would be enough. Paco eats one of the travel brochures. You take that as his vote.",
       bodyEs: "Lena propone unos días en la Riviera Mexicana. Tulum. Agua tibia, arena blanca, restoranes chicos y un hotel que en las fotos se ve más caro de lo que probablemente es. Un buen lugar para dejar atrás el incidente de aleatoriedad del ColdCard. Miran los vuelos juntos. Paco observa desde el piso. Lena quiere cinco días. Vos pensás que con tres alcanza. Paco se come uno de los folletos. Lo tomás como su voto.",
@@ -966,7 +966,7 @@
         { k: "a", label: "Book the trip · 8%", labelEs: "Reservar · 8%" },
         { k: "b", label: "Stay home", labelEs: "Quedarnos" }
       ] },
-    { id: "flu", kind: "report",
+    { id: "flu", kind: "report", after: ["landfill"],
       title: "Flu", titleEs: "Gripe",
       body: "Lena gets the flu. You spend the day bringing her water, medicine, soup, and whatever else she asks for. By evening you have spent money you will not get back. Paco eats half the soup. Lena does not notice.",
       bodyEs: "A Lena le da gripe. Pasás el día llevándole agua, remedio, sopa y lo que pida. A la noche ya gastaste plata que no vuelve. Paco se come la mitad de la sopa. Lena no se da cuenta." },
@@ -982,7 +982,11 @@
       title: "Scooter Crash", titleEs: "El scooter",
       body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
       bodyEs: "Un scooter de delivery pega tu auto a muy baja velocidad. Nadie sale realmente lastimado. El pibe se disculpa seis veces. Vos te disculpás dos. Nadie sabe por qué lo hiciste." },
-    { id: "casino", kind: "choice",
+    { id: "wine", kind: "report", after: ["landfill"],
+      title: "Wine", titleEs: "Wine",
+      body: "You are having wine with Marek.",
+      bodyEs: "You are having wine with Marek." },
+    { id: "casino", kind: "choice", after: ["landfill"],
       title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
       body: "Nico calls at 11:40 P.M. \"I found a table.\" You ask where. \"A casino.\" You should probably ask more questions. Instead, you go. He has already found a game that he considers interesting.",
       bodyEs: "Nico llama a las 23:40. \"Encontré una mesa.\" Preguntás dónde. \"Un casino.\" Deberías hacer más preguntas. En vez de eso, vas. Ya encontró un juego que considera interesante.",
@@ -991,7 +995,7 @@
         { k: "b", label: "Bet 30%", labelEs: "Apostar 30%" },
         { k: "c", label: "Leave", labelEs: "Irte" }
       ] },
-    { id: "poker", kind: "choice", after: ["casino"],
+    { id: "poker", kind: "choice", after: ["wine", "casino"],
       title: "Poker", titleEs: "Póker",
       body: "Marek invites you to a poker game. Not a casino. Just people he knows, sitting around a table late at night. He is already there when you arrive, drinking wine and watching the game. He looks at your chips. \"You're playing?\" \"I guess.\" He nods. \"Good.\"",
       bodyEs: "Marek te invita a un póker. No es un casino. Gente que él conoce, mesa de madrugada. Ya está cuando llegás, con vino, mirando el juego. Mira tus fichas. \"¿Jugás?\" \"Supongo.\" Asiente. \"Bien.\"",
@@ -1004,7 +1008,7 @@
       title: "Uncle Héctor", titleEs: "El tío Héctor",
       body: "Uncle Héctor sends a message. No explanation. Just: \"Check your account.\" He has transferred you some money. You call him. He refuses to explain why.",
       bodyEs: "El tío Héctor manda un mensaje. Sin explicación. Solo: \"Fijate la cuenta.\" Te giró plata. Lo llamás. Se niega a decir por qué." },
-    { id: "school", kind: "choice",
+    { id: "school", kind: "choice", after: ["nicoWedding"],
       title: "School Trip", titleEs: "El viaje de estudio",
       body: "Sofi is going on a school trip to the Mint Museum. Her family is a little short this month. Lena thinks you should help. You agree, or you don't.",
       bodyEs: "Sofi se va de viaje de estudio al museo de la Casa de Moneda. En casa este mes están justos. Lena cree que deberías ayudar. Aceptás, o no.",
@@ -1016,15 +1020,15 @@
       title: "Roof", titleEs: "El techo",
       body: "Paco finds the leak in the roof before you do. He sits directly underneath it. The workers arrive. He moves. He immediately finds another place to sit.",
       bodyEs: "Paco encuentra la gotera antes que vos. Se sienta justo debajo. Llegan los de la obra. Se corre. Enseguida encuentra otro lugar donde sentarse." },
-    { id: "lotto", kind: "report",
+    { id: "lotto", kind: "report", after: ["wine"],
       title: "Lottery Ticket", titleEs: "El raspa y gana",
       body: "You are having wine with Marek. At some point the conversation turns to probability. You buy a lottery ticket. The next morning Marek asks if you checked the numbers. You did not.",
       bodyEs: "Estás tomando vino con Marek. En algún momento la charla vira a probabilidad. Comprás un raspa y gana. A la mañana Marek pregunta si miraste los números. No los miraste." },
-    { id: "hospital", kind: "report",
+    { id: "hospital", kind: "report", after: ["landfill"],
       title: "Four Stitches", titleEs: "Cuatro puntos",
       body: "You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\"",
       bodyEs: "Necesitás cuatro puntos. Lena te lleva al hospital. Espera con vos. De vuelta a casa dice: \"Tratá de no sangrar sobre nada.\"" },
-    { id: "startup", kind: "choice",
+    { id: "startup", kind: "choice", after: ["landfill"],
       title: "Startup", titleEs: "La startup",
       body: "Nico calls. \"I have a plan.\" You already know this is going somewhere. He has built a 47-slide presentation for an app that combines subscriptions, artificial intelligence, and something he calls community ownership. He says the upside is massive.",
       bodyEs: "Llama Nico. \"Tengo un plan.\" Ya sabés que esto va a algún lado. Armó una presentación de 47 diapositivas para una app que combina suscripciones, inteligencia artificial y algo que llama community ownership. Dice que el upside es enorme.",
@@ -1036,7 +1040,7 @@
       title: "Nine Minutes", titleEs: "Nueve minutos",
       body: "You parked in the wrong place for nine minutes. You check the sign again. It was very clear.",
       bodyEs: "Estacionaste mal durante nueve minutos. Volvés a mirar el cartel. Estaba muy claro." },
-    { id: "courage", kind: "choice",
+    { id: "courage", kind: "choice", after: ["wine"],
       title: "Courage", titleEs: "Coraje",
       body: "You are at Marek's apartment. There is wine on the table and 12 Monkeys paused on the TV. You end up talking about A.I., futurism, and whether people actually know what they want. Eventually you mention Lena. Marek looks at you. \"So?\" You shrug. \"We've been together for years.\" He takes a sip. \"Maybe you're waiting for certainty.\" Then he presses play again. You keep thinking about it.",
       bodyEs: "Estás en el depto de Marek. Hay vino en la mesa y 12 Monkeys en pausa. Terminan hablando de I.A., futurismo y si la gente sabe lo que quiere. En algún momento nombrás a Lena. Marek te mira. \"¿Y?\" Te encogés de hombros. \"Hace años que estamos.\" Toma un sorbo. \"Capaz estás esperando certeza.\" Vuelve a darle play. Segís pensándolo.",
@@ -1102,7 +1106,7 @@
         { k: "b", label: "Keep it simple", labelEs: "Keep it simple" },
         { k: "c", label: "Send a PDF of financial advice", labelEs: "Send a PDF of financial advice" }
       ] },
-    { id: "cousin", kind: "choice",
+    { id: "cousin", kind: "choice", after: ["landfill"],
       title: "Nico's New Thing", titleEs: "La nueva de Nico",
       body: "Nico calls again. \"I found something.\" Of course he did. This time it is a new token. He says it will do ten times by Friday. You ask what it actually does. He says that is not the important part.",
       bodyEs: "Nico llama de nuevo. \"Encontré algo.\" Claro que sí. Esta vez es un token nuevo. Dice que hace x10 para el viernes. Preguntás qué hace. Dice que esa no es la parte importante.",
@@ -1118,7 +1122,7 @@
       title: "Seat 14", titleEs: "Asiento 14",
       body: "You leave your wallet on bus seat 14. You realize it three stops later. You call the company. Someone found it. The cash is gone. Your cards are still there. You consider this a partial victory.",
       bodyEs: "Dejás la billetera en el asiento 14 del bondi. Te das cuenta tres paradas después. Llamás. Alguien la encontró. El efectivo no está. Las tarjetas sí. Lo considerás una victoria parcial." },
-    { id: "potluck", kind: "choice",
+    { id: "potluck", kind: "choice", after: ["landfill"],
       title: "Neighborhood Potluck", titleEs: "La olla de la cuadra",
       body: "Lena signs both of you up for a neighborhood potluck. She also signs Paco up. You explain that Paco cannot cook. She says: \"He can attend.\" Paco eats half of what you brought before you arrive.",
       bodyEs: "Lena los anota a los dos en la olla de la cuadra. También anota a Paco. Explicás que Paco no cocina. Dice: \"Puede asistir.\" Paco se come la mitad de lo que llevaron antes de llegar.",
@@ -1126,7 +1130,7 @@
         { k: "a", label: "Donate generously · 5%", labelEs: "Donar en serio · 5%" },
         { k: "b", label: "Bring nothing", labelEs: "No llevar nada" }
       ] },
-    { id: "usedcar", kind: "choice",
+    { id: "usedcar", kind: "choice", after: ["landfill"],
       title: "The Used Car", titleEs: "El usado",
       body: "Nico has another opportunity. A 2009 hatchback. The seller says it has a new timing belt. Nico looks under the hood. \"It has Sharpie.\" You are not sure what that means. Nico says it means \"basically new.\"",
       bodyEs: "Nico tiene otra oportunidad. Un hatch 2009. El vendedor dice que tiene correa nueva. Nico mira bajo el capó. \"Tiene Sharpie.\" No sabés qué significa. Nico dice que significa \"casi nuevo.\"",
@@ -1134,7 +1138,7 @@
         { k: "a", label: "Buy it · 12%", labelEs: "Comprarlo · 12%" },
         { k: "b", label: "Walk away", labelEs: "Irte" }
       ] },
-    { id: "tetris", kind: "choice",
+    { id: "tetris", kind: "choice", after: ["wine"],
       title: "Tetris", titleEs: "Tetris",
       body: "Marek takes you to an old bar with an arcade machine in the back. There is a Tetris cabinet nobody seems to use. He starts playing. He gets unusually focused. \"Trying not to make it worse.\" After a few minutes he steps aside. \"Your turn.\"",
       bodyEs: "Marek te lleva a un bar viejo con una máquina de arcade al fondo. Hay un cabinet de Tetris que nadie usa. Empieza a jugar. Se concentra de un modo raro. \"Trato de no empeorarlo.\" A los minutos se corre. \"Tu turno.\"",
@@ -1210,6 +1214,10 @@
       const paid = cutBill(650);
       return say("Nobody was hurt. The bumper still wants money. −" + money(paid) + ".",
         "Nadie se lastimó. El paragolpes igual quiere plata. −" + money(paid) + ".");
+    }
+    if (card.id === "wine") {
+      return say("The bottle empties. Marek is going to keep showing up.",
+        "The bottle empties. Marek is going to keep showing up.");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
@@ -1408,9 +1416,33 @@
   function dealChance() {
     if (S.phase !== "play") return;
     if (!S.chanceUsed) S.chanceUsed = {};
-    const unlocked = (c) => !(c.after && c.after.some((id) => !S.chanceUsed[id]));
+    const introOf = {
+      nico: "landfill", lena: "landfill", paco: "nicoWedding",
+      marek: "wine", sofi: "school", hector: "uncle", mike: "unclemike"
+    };
+    const namesOf = {
+      nico: ["Nico"], lena: ["Lena"], paco: ["Paco"],
+      marek: ["Marek"], sofi: ["Sofi"],
+      hector: ["Héctor", "Hector"], mike: ["Uncle Mike", "Mike"]
+    };
+    const unlocked = (c) => {
+      if (c.after && c.after.some((id) => !S.chanceUsed[id])) return false;
+      const blob = ((c.title || "") + " " + (c.body || "") + " " + (c.bodyEs || "")).toLowerCase();
+      const who = Object.keys(introOf);
+      for (let i = 0; i < who.length; i++) {
+        const key = who[i];
+        if (c.id === introOf[key]) continue;
+        const aliases = namesOf[key];
+        let hit = false;
+        for (let j = 0; j < aliases.length; j++) {
+          if (blob.indexOf(aliases[j].toLowerCase()) >= 0) { hit = true; break; }
+        }
+        if (hit && !S.chanceUsed[introOf[key]]) return false;
+      }
+      return true;
+    };
     const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && unlocked(c));
-    const src = pool.length ? pool : CHANCE_CARDS.filter(unlocked);
+    const src = pool.length ? pool : CHANCE_CARDS.filter((c) => unlocked(c) && !S.chanceUsed[c.id]);
     if (!src.length) return;
     const card = src[(Math.random() * src.length) | 0];
     S.chanceUsed[card.id] = true;
