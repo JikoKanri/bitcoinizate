@@ -95,7 +95,7 @@
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Arc" };
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Arco" };
-  const PERK_MAX = { dca: 1, ff: 3, adopt: 10, manip: 12, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
+  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
   const JOBS = [
     { name: "Acting career", nameEs: "Carrera de actuación", curve: "hit",
       pay: [240, 260, 310, 420, 780, 2100, 5600],
@@ -159,9 +159,11 @@
       if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
       if (id === "dca") return es ? "ingreso en btc" : "income in btc";
       if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
-      if (id === "adopt") return es
-        ? "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears end " + adoptBearLabel(tier)
-        : "bulls +" + (10 + tier * 2) + "/" + (15 + tier * 2) + "%, bears end " + adoptBearLabel(tier);
+      if (id === "adopt") {
+        const bear = adoptBearLabel(tier);
+        const bull = adoptBullLabel(tier);
+        return es ? "bulls +" + bull + ", bears " + bear : "bulls +" + bull + ", bears " + bear;
+      }
       if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
       if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
       if (id === "job") {
@@ -218,7 +220,7 @@
   }
 
   function adoptSoft(tier) {
-    return Math.min(1, Math.max(0, Number(tier) || 0) / 10);
+    return Math.min(1, Math.max(0, Number(tier) || 0) / 7);
   }
   function adoptBearRange(tier) {
     const soft = adoptSoft(tier);
@@ -228,6 +230,10 @@
     if (lo >= hi) return { lo: hi - 0.012, hi };
     return { lo, hi };
   }
+  function adoptBullRange(tier) {
+    const r = adoptBearRange(tier);
+    return { lo: -r.hi, hi: -r.lo };
+  }
   function adoptSwanRange(tier) {
     const soft = adoptSoft(tier);
     return { lo: -0.50 * (1 - soft * 0.50), hi: -0.25 * (1 - soft * 0.50) };
@@ -236,11 +242,14 @@
     const r = adoptBearRange(tier);
     return Math.round(r.lo * 100) + "/" + Math.round(r.hi * 100) + "%";
   }
+  function adoptBullLabel(tier) {
+    const r = adoptBullRange(tier);
+    return Math.round(r.lo * 100) + "/" + Math.round(r.hi * 100) + "%";
+  }
   function pickCycleAmp(type) {
     const t = S.have.adopt || 0;
     const soft = adoptSoft(t);
     if (type === "BULL" && S.halveBull) return 1 + (Math.random() * 0.2 - 0.1);
-    if (type === "BULL") return 0.22 + t * 0.018;
     if (S.swanBear) return (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
     return (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
   }
@@ -546,10 +555,8 @@
       const residual = 0.1 + Math.random() * 0.08;
       next = Math.max(floor, S.cycleStart * (1 + residual));
     } else if (S.power === "BULL") {
-      const t = S.have.adopt || 0;
-      const lo = t ? 0.10 + t * 0.02 : 0.05;
-      const span = t ? 0.05 : 0.05;
-      next = S.cycleStart * (1 + lo + Math.random() * span);
+      const r = adoptBullRange(S.have.adopt || 0);
+      next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
     } else if (S.swanBear) {
       const r = adoptSwanRange(S.have.adopt || 0);
       next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
@@ -1621,7 +1628,7 @@
     const es = window.BZ && BZ.lang && BZ.lang() === "es";
     if (id === "candy") return es ? "Más cash de velas para juntar sats" : "More candle cash to stack sats";
     if (id === "dca") return es ? "El ingreso se vuelve bitcoin" : "Income becomes bitcoin";
-    if (id === "adopt") return es ? "Bulls más gordos, bears más suaves" : "Fatter bulls, milder bears";
+    if (id === "adopt") return es ? "Ciclos más suaves a ambos lados" : "Milder cycles both ways";
     if (id === "manip") return es ? "Mover el precio si holdeamos" : "Steer price while we hold";
     if (id === "aibud") return es ? "A.I. bud sube de nivel" : "A.I. bud levels up";
     if (id === "ff") return es ? "Más tablero, más monedas" : "More board, more coins";
@@ -1890,7 +1897,7 @@
     } else {
       let bias = 0.0006, mid = 0.48;
       if (S.have.manip > 0) {
-        const k = S.have.manip;
+        const k = (S.have.manip || 0) * (12 / 7);
         if (S.trend === "up") { bias = 0.004 * k; mid = Math.max(0.22, 0.42 - 0.02 * k); }
         else if (S.trend === "down") { bias = -0.004 * k; mid = Math.min(0.78, 0.42 + 0.02 * k); }
         else { bias = 0; mid = 0.5; }
