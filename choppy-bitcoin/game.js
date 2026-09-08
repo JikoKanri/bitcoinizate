@@ -2534,11 +2534,13 @@
       return "<h1>" + t("howPlay") + "</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "market") {
+      const mul = S.ranked ? 10 : 1;
+      const cold = 1200 * mul, laser = 1800 * mul, msig = 9000 * mul;
       return "<h1>" + t("market") + "</h1>"
         + "<p class=\"k\">" + money(S.cash) + "</p>"
-        + "<button class=\"cta\" data-buy=\"cold\">Cold storage · $1,200</button>"
-        + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · $1,800</button>"
-        + "<button class=\"cta\" data-buy=\"msig\">Multisig · $9,000</button>"
+        + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + money(cold) + "</button>"
+        + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + money(laser) + "</button>"
+        + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>"
         + "<button class=\"cta play-alt\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "feed") {
@@ -2636,7 +2638,8 @@
       btn.onclick = (e) => {
         e.stopPropagation();
         const kind = btn.getAttribute("data-buy");
-        const cost = kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000;
+        const mul = S.ranked ? 10 : 1;
+        const cost = (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
         if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
         S.cash -= cost;
         if (kind === "cold") S.cold += 1;
