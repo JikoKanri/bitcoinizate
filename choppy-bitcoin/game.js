@@ -982,10 +982,15 @@
       title: "Scooter Crash", titleEs: "El scooter",
       body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
       bodyEs: "Un scooter de delivery pega tu auto a muy baja velocidad. Nadie sale realmente lastimado. El pibe se disculpa seis veces. Vos te disculpás dos. Nadie sabe por qué lo hiciste." },
-    { id: "wine", kind: "report", after: ["landfill"],
+    { id: "wine", kind: "choice", after: ["landfill"],
       title: "Wine", titleEs: "Wine",
-      body: "You are having wine with Marek.",
-      bodyEs: "You are having wine with Marek." },
+      body: "It's Friday night. You are at Marek's apartment with a bottle of wine, dinner half-finished, and 12 Monkeys paused on the TV.\n\nThis is how you usually spend time together: wine, old movies, and conversations that go much longer than planned.\n\nTo nobody's surprise, you eventually end up debating A.I. and futurism.\n\nYou're usually the more enthusiastic one.\n\nMarek knows more, but trusts human nature less.\n\nNeither of you wins.",
+      bodyEs: "It's Friday night. You are at Marek's apartment with a bottle of wine, dinner half-finished, and 12 Monkeys paused on the TV.\n\nThis is how you usually spend time together: wine, old movies, and conversations that go much longer than planned.\n\nTo nobody's surprise, you eventually end up debating A.I. and futurism.\n\nYou're usually the more enthusiastic one.\n\nMarek knows more, but trusts human nature less.\n\nNeither of you wins.",
+      opts: [
+        { k: "a", label: "Keep talking", labelEs: "Keep talking" },
+        { k: "b", label: "Get ice cream", labelEs: "Get ice cream" },
+        { k: "c", label: "Go home", labelEs: "Go home" }
+      ] },
     { id: "casino", kind: "choice", after: ["landfill"],
       title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
       body: "Nico calls at 11:40 P.M. \"I found a table.\" You ask where. \"A casino.\" You should probably ask more questions. Instead, you go. He has already found a game that he considers interesting.",
@@ -1216,8 +1221,16 @@
         "Nadie se lastimó. El paragolpes igual quiere plata. −" + money(paid) + ".");
     }
     if (card.id === "wine") {
-      return say("The bottle empties. Marek is going to keep showing up.",
-        "The bottle empties. Marek is going to keep showing up.");
+      if (opt === "c") return say("You leave thinking Marek may have made a good point.",
+        "You leave thinking Marek may have made a good point.");
+      if (opt === "b") {
+        const paid = cutPct(0.003);
+        return say("You finish the movie. Marek says the ending is overrated.\n\n−" + money(paid) + ".",
+          "You finish the movie. Marek says the ending is overrated.\n\n−" + money(paid) + ".");
+      }
+      const paid = cutPct(0.01);
+      return say("The conversation eventually turns to free will and incentives.\n\n−" + money(paid) + ".",
+        "The conversation eventually turns to free will and incentives.\n\n−" + money(paid) + ".");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
@@ -2738,14 +2751,14 @@
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + S.chanceNote + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + S.chanceNote + "</p><div class=\"arc-actions\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
         if (!btns) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p><div class=\"perk-list\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p><div class=\"arc-actions\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
