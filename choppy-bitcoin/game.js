@@ -287,7 +287,7 @@
     jobTrack: null, jobOffer: null, jobName: "",
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 },
-    offerSeq: [1, 2, 4], nextOffer: 1, offersDone: 0,
+    offerSeq: [1, 2], nextOffer: 1, offersDone: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
@@ -505,7 +505,7 @@
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 };
-      S.offerSeq = S.ranked ? tribSeq(16) : [10, 20, 30];
+      S.offerSeq = S.ranked ? fibSeq(16) : [10, 20, 30];
       S.nextOffer = S.ranked ? 1 : 10;
       S.offersDone = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
@@ -1564,7 +1564,7 @@
     if (!S.perkOffers || !S.perkOffers.length) return;
     if (S.perkOffers[S.perkOffers.length - 1] !== "skip") S.perkOffers.push("skip");
     S.perkPick = "";
-    if (why === "laser") say("Tribonacci treshold achieved, choose your perk!", true);
+    if (why === "laser") say("Fibonacci treshold reached, grab your perk!", true);
     if (S.aibudOn && (S.have.aibud || 0) >= 2) {
       const real = S.perkOffers.filter((id) => id !== "skip");
       if (!real.length) { bumpOffer(); return; }
@@ -1581,11 +1581,10 @@
     setPhase("perk");
   }
 
-  function tribSeq(n) {
-    const s = [1, 2, 4];
+  function fibSeq(n) {
+    const s = [1, 2];
     while (s.length < n) {
-      const i = s.length;
-      s.push(s[i - 1] + s[i - 2] + s[i - 3]);
+      s.push(s[s.length - 1] + s[s.length - 2]);
     }
     return s;
   }
@@ -1593,11 +1592,11 @@
   function bumpOffer() {
     S.offersDone += 1;
     if (S.ranked) {
-      const s = S.offerSeq && S.offerSeq.length ? S.offerSeq : tribSeq(16);
+      const s = S.offerSeq && S.offerSeq.length ? S.offerSeq : fibSeq(16);
       S.offerSeq = s;
       while (s.length <= S.offersDone) {
         const i = s.length;
-        s.push(s[i - 1] + s[i - 2] + s[i - 3]);
+        s.push(s[i - 1] + s[i - 2]);
       }
       S.nextOffer = s[S.offersDone];
       return;
