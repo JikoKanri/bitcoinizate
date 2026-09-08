@@ -8,6 +8,8 @@ html, body {
   color: #f3efe6;
   font-family: "IBM Plex Mono", "Courier New", monospace;
   overflow: hidden;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 body {
   display: flex;
@@ -200,7 +202,7 @@ body {
   align-items: stretch;
 }
 .overlay.dock.chance-ui h1 { text-align: left; }
-.overlay.dock.chance-ui p { font-size: 11px; line-height: 1.38; max-width: none; text-align: left; }
+.overlay.dock.chance-ui p { font-size: 11px; line-height: 1.38; max-width: none; text-align: left; white-space: pre-wrap; }
 .overlay.dock.chance-ui .chance-art { width: 72px; height: 72px; align-self: center; }
 .overlay.dock.chance-ui .perk-list { width: 100%; }
 .overlay.dock h1 { font-size: 14px; margin: 0; }

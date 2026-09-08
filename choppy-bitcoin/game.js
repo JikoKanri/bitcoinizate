@@ -933,28 +933,6 @@
     unclemike: ["mike"]
   };
   function weaveCast(text) {
-    if (!text) return text;
-    if (!S.chanceMet) S.chanceMet = {};
-    const es = chanceLang();
-    const card = S.chanceCard;
-    const ids = (card && CHANCE_WHO[card.id]) || [];
-    ids.forEach((id) => {
-      const row = CHANCE_CAST[id];
-      if (!row) return;
-      const n = S.chanceMet[id] || 0;
-      S.chanceMet[id] = n + 1;
-      const pack = es ? row.es : row.en;
-      const label = pack[n % pack.length];
-      const names = row.names.slice().sort((a, b) => b.length - a.length);
-      for (let i = 0; i < names.length; i++) {
-        const nm = names[i];
-        const at = text.indexOf(nm);
-        if (at >= 0) {
-          text = text.slice(0, at) + label + text.slice(at + nm.length);
-          break;
-        }
-      }
-    });
     return text;
   }
   const CHANCE_CARDS = [
@@ -1111,17 +1089,18 @@
         { k: "c", label: "Patagonia · 4%", labelEs: "Patagonia · 4%" }
       ] },
     { id: "pregnancy", kind: "report", after: ["honeymoon"],
-      title: "Pregnancy", titleEs: "El test",
-      body: "The test has two lines. You look at it. Lena looks at it. You look at it again. Neither of you says anything for a few seconds. Then the planning begins. Doctor. Appointments. Preparations. You spend the rest of the evening trying to understand what exactly you are supposed to buy.",
-      bodyEs: "El test tiene dos rayas. Lo mirás. Lena lo mira. Lo volvés a mirar. Unos segundos sin hablar. Después empieza la planificación. Médico. Turnos. Preparativos. El resto de la noche intentás entender qué se supone que hay que comprar." },
+      title: "Being Four", titleEs: "Being Four",
+      body: "Two lines on a test change everything.\n\nYou and Lena are going to have a baby.\n\nFor a few seconds, neither of you says anything.\n\nPaco yawns.\n\nYou look at him.\n\n‘Four,’ you say.\n\nLena smiles.\n\nThere will be doctors, appointments, preparations, and a lot of things to pay for. The first costs come to $450.\n\nYou sleep surprisingly well that night.",
+      bodyEs: "Two lines on a test change everything.\n\nYou and Lena are going to have a baby.\n\nFor a few seconds, neither of you says anything.\n\nPaco yawns.\n\nYou look at him.\n\n‘Four,’ you say.\n\nLena smiles.\n\nThere will be doctors, appointments, preparations, and a lot of things to pay for. The first costs come to $450.\n\nYou sleep surprisingly well that night." },
     { id: "baby", kind: "choice", after: ["pregnancy"],
-      title: "Baby", titleEs: "El bebé",
-      body: "The baby arrives. You are tired. Lena is tired. Paco is confused. You start thinking about what kind of future you want to build.",
-      bodyEs: "Llega el bebé. Estás cansado. Lena está cansada. Paco está confundido. Empezás a pensar qué clase de futuro quieren armar.",
+      title: "The night must fade and give to light a brand new day",
+      titleEs: "The night must fade and give to light a brand new day",
+      body: "The baby arrives.\n\nYou are tired.\n\nLena is tired.\n\nPaco is confused.\n\nKids grow fast. You start thinking about what kind of future you want to build.",
+      bodyEs: "The baby arrives.\n\nYou are tired.\n\nLena is tired.\n\nPaco is confused.\n\nKids grow fast. You start thinking about what kind of future you want to build.",
       opts: [
-        { k: "a", label: "Set things up properly · 5%", labelEs: "Dejarlo bien armado · 5%" },
-        { k: "b", label: "Keep it simple · 2%", labelEs: "Dejarlo simple · 2%" },
-        { k: "c", label: "Send a PDF of financial advice", labelEs: "Mandar un PDF de consejos" }
+        { k: "a", label: "Set things up properly", labelEs: "Set things up properly" },
+        { k: "b", label: "Keep it simple", labelEs: "Keep it simple" },
+        { k: "c", label: "Send a PDF of financial advice", labelEs: "Send a PDF of financial advice" }
       ] },
     { id: "cousin", kind: "choice",
       title: "Nico's New Thing", titleEs: "La nueva de Nico",
@@ -1356,7 +1335,7 @@
       return say("Two lines. Then the planning. −" + money(paid) + ".", "Dos rayas. Después la planificación. −" + money(paid) + ".");
     }
     if (card.id === "baby") {
-      if (opt === "c") return say("Lena looks at the PDF. Then at you. \"Fartface.\"", "Lena mira el PDF. Después a vos. \"Fartface.\"");
+      if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.", "Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.");
       if (opt === "a") {
         const paid = cutPct(0.05);
         S.cold += 1;
