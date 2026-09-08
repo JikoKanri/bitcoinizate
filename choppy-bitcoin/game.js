@@ -1147,13 +1147,13 @@
         { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek" }
       ] },
     { id: "unclemike", kind: "choice",
-      title: "Fancy Dinner with Uncle Mike", titleEs: "Cena con el tío Mike",
-      body: "Uncle Mike is in town. You meet him at a fancy restaurant. The food is excellent. The wine is excellent. When the check arrives he studies it, looks at the tip line, and puts the pen down. \"Why am I paying their salary?!\" He goes on a long rant about tipping culture. You agree. You just want to go home. The waiter is still standing there.",
-      bodyEs: "El tío Mike está de paso. Quedan en un restorán caro. La comida es excelente. El vino también. Cuando llega la cuenta la estudia, mira la línea de propina y deja la birome. \"¿Por qué les pago el sueldo yo?!\" Arranca un discurso largo sobre la cultura de la propina. Estás de acuerdo. Solo querés irte a casa. El mozo sigue parado ahí.",
+      title: "Fancy Dinner with Uncle Mike", titleEs: "Fancy Dinner with Uncle Mike",
+      body: "Your Uncle Mike is in town.\n\nYou meet him for dinner at a fancy restaurant.\n\nThe food is excellent.\n\nThe wine is excellent.\n\nWhen the check arrives, Uncle Mike studies it.\n\nThen he looks at the tip line.\n\nHe puts the pen down.\n\n“Why am I paying their salary?!”\n\nYou explain that the tip is expected.\n\n“That's the problem.”\n\nHe goes on a long rant about tipping culture, explaining that restaurants should pay their employees properly instead of making customers responsible for their wages.\n\nYou agree.\n\nYou just want to go home.\n\nThe waiter is still standing there.\n\nYou look at the tip line again.",
+      bodyEs: "Your Uncle Mike is in town.\n\nYou meet him for dinner at a fancy restaurant.\n\nThe food is excellent.\n\nThe wine is excellent.\n\nWhen the check arrives, Uncle Mike studies it.\n\nThen he looks at the tip line.\n\nHe puts the pen down.\n\n“Why am I paying their salary?!”\n\nYou explain that the tip is expected.\n\n“That's the problem.”\n\nHe goes on a long rant about tipping culture, explaining that restaurants should pay their employees properly instead of making customers responsible for their wages.\n\nYou agree.\n\nYou just want to go home.\n\nThe waiter is still standing there.\n\nYou look at the tip line again.",
       opts: [
-        { k: "a", label: "Leave a 20% tip", labelEs: "Dejar 20% de propina" },
-        { k: "b", label: "Leave no tip", labelEs: "No dejar propina" },
-        { k: "c", label: "Leave a small voluntary tip", labelEs: "Dejar una propina chica" }
+        { k: "a", label: "Leave a 20% tip", labelEs: "Leave a 20% tip" },
+        { k: "b", label: "Leave no tip", labelEs: "Leave no tip" },
+        { k: "c", label: "Leave a small voluntary tip", labelEs: "Leave a small voluntary tip" }
       ] }
   ];
   function resolveChance(card, opt) {
@@ -1402,13 +1402,13 @@
     }
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
-      const paid = cutBill(bill);
-      if (opt === "a") return say("Uncle Mike watches you sign. \"That just encourages the system.\" −" + money(paid) + ".",
-        "El tío Mike te mira firmar. \"Así se alienta el sistema.\" −" + money(paid) + ".");
-      if (opt === "b") return say("Uncle Mike seems satisfied. The waiter does not. −" + money(paid) + ".",
-        "El tío Mike parece conforme. El mozo no. −" + money(paid) + ".");
-      return say("Uncle Mike nods. \"That's different.\" You are not sure it is. −" + money(paid) + ".",
-        "El tío Mike asiente. \"Eso es distinto.\" No estás seguro. −" + money(paid) + ".");
+      cutBill(bill);
+      if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.",
+        "Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.");
+      if (opt === "b") return say("Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.",
+        "Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.");
+      return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.",
+        "Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.");
     }
     return say("Nothing else happens.", "No pasa nada más.");
   }
