@@ -106,7 +106,8 @@
       if (tag) {
         tag.classList.remove("hide");
         const hs = seasonScore(profile);
-        tag.innerHTML = "<a class=\"user-link\" href=\"" + profileHref(name) + "\" target=\"_blank\" rel=\"noopener\">@" + name + "</a><small>" + fmtScoreBtc(hs) + "</small>";
+        tag.innerHTML = "<a class=\"user-link\" href=\"" + profileHref(name) + "\" target=\"_blank\" rel=\"noopener\">@" + name + "</a>"
+          + (/choppy-bitcoin/.test(location.pathname || "") ? ("<small>" + fmtScoreBtc(hs) + "</small>") : "");
       }
     } else {
       window.choppySignedIn = false;

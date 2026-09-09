@@ -2245,16 +2245,25 @@
 
   function renderHud() {
     const clock = $("clock");
+    const candles = $("h-candles");
+    const hideClock = S.phase === "ready" || S.phase === "count";
     if (clock) {
       clock.textContent = fmtTime(S.lifeT);
-      clock.classList.toggle("hide", S.phase === "ready" || S.phase === "count");
+      clock.classList.toggle("hide", hideClock);
     }
+    if (candles) {
+      candles.textContent = String(S.candles || 0);
+      candles.classList.toggle("hide", hideClock);
+    }
+    const box = $("clock-box");
+    if (box) box.classList.toggle("hide", hideClock);
     setTxt("h-cash", money(S.cash));
     setTxt("h-btc", fmtBtcAmt(S.btc));
     setTxt("h-price", money(S.price));
     setTxt("h-cold", String(S.cold));
     setTxt("h-msig", String(S.msig));
-    setTxt("h-laser", S.ranked ? (S.lasers + "/" + (S.nextOffer || 1)) : String(S.lasers));
+    setTxt("h-laser", String(S.lasers || 0));
+    setTxt("h-fib", String(S.ranked ? (S.nextOffer || 1) : 0));
     setTxt("h-halve", String(S.halveLeft));
     setTxt("h-halves", String(S.halvings) + "/" + HALVE_N);
     const bonus = S.level >= 2;
