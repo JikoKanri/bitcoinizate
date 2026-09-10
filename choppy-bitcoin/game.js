@@ -300,7 +300,7 @@
     lastGapY: 0, spawnX: 0, best: loadBest(),
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
-    tape: [], tapeVt: [], level: 1,
+    tape: [], tapeVt: [], tapeMarks: [], eventPeaks: [], eventBottoms: [], level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
@@ -561,7 +561,9 @@
     S.lastGapY = S.bird.y; S.dead = false;
     S.cycleStart = S.price; S.cycleDur = POWER_S; S.cycleElapsed = 0;
     S.cycleAmp = 0;
+    S.cycleMax = S.price; S.cycleMin = S.price; S.cycleMaxI = 0; S.cycleMinI = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
+    S.tapeMarks = []; S.eventPeaks = []; S.eventBottoms = [];
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
@@ -575,6 +577,8 @@
     if (S.power === type) { S.powerT += POWER_S; S.cycleDur += POWER_S; return; }
     S.cycleStart = S.price; S.vtCycle = S.vtPrice;
     S.cycleDur = POWER_S; S.cycleElapsed = 0;
+    S.cycleMax = S.price; S.cycleMin = S.price;
+    S.cycleMaxI = S.tape.length; S.cycleMinI = S.tape.length;
     S.power = type; S.powerT = POWER_S;
     S.cycleAmp = pickCycleAmp(type);
   }
@@ -583,8 +587,39 @@
     return 15000 * Math.max(1, S.halvings);
   }
 
+  function beatLast3(arr, price, higher) {
+    const prev = (arr || []).slice(-3);
+    if (!prev.length) return true;
+    return higher ? price > Math.max.apply(null, prev) : price < Math.min.apply(null, prev);
+  }
+
+  function stampCycleMark() {
+    if (S.power === "NONE") return;
+    if (!S.tapeMarks) S.tapeMarks = [];
+    if (S.power === "BULL") {
+      const p = S.cycleMax != null ? S.cycleMax : S.price;
+      const ok = beatLast3(S.eventPeaks, p, true);
+      S.eventPeaks = (S.eventPeaks || []).concat(p);
+      if (ok) S.tapeMarks.push({ kind: "peak", price: p, i: S.cycleMaxI || S.tape.length });
+    } else if (S.power === "BEAR") {
+      const p = S.cycleMin != null ? S.cycleMin : S.price;
+      const ok = beatLast3(S.eventBottoms, p, false);
+      S.eventBottoms = (S.eventBottoms || []).concat(p);
+      if (ok) S.tapeMarks.push({ kind: "bottom", price: p, i: S.cycleMinI || S.tape.length });
+    }
+    if (S.tapeMarks.length > 24) S.tapeMarks = S.tapeMarks.slice(-24);
+  }
+
+  function noteCyclePrice() {
+    if (S.power !== "BULL" && S.power !== "BEAR") return;
+    const i = S.tape.length;
+    if (S.cycleMax == null || S.price >= S.cycleMax) { S.cycleMax = S.price; S.cycleMaxI = i; }
+    if (S.cycleMin == null || S.price <= S.cycleMin) { S.cycleMin = S.price; S.cycleMinI = i; }
+  }
+
   function endCycle() {
     if (S.power === "NONE") return;
+    stampCycleMark();
     let next;
     if (S.halveBull && S.power === "BULL") {
       const floor = S.cycleStart + halveMinRise();
@@ -1968,6 +2003,7 @@
       const wobble = Math.sin(S.cycleElapsed * 3.2) * (S.halveBull ? 0.05 : 0.03);
       S.price = Math.max(0.01, S.cycleStart * (1 + dir * amp * envelope + wobble));
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * envelope + wobble * 0.45));
+      noteCyclePrice();
       if (S.powerT <= 0) endCycle();
     } else {
       let bias = 0.0006, mid = 0.48;
@@ -2168,7 +2204,14 @@
     if (!vis.length) return;
     let lo = vis[0].l, hi = vis[0].h;
     for (const b of vis) { if (b.l < lo) lo = b.l; if (b.h > hi) hi = b.h; }
-    const pad = (hi - lo) * 0.08 || 1;
+    const span = Math.max(0.01, hi - lo);
+    const mid = (lo + hi) / 2;
+    const fade = Math.max(0, 1 - (data.length / 100));
+    const zoom = 1 + 0.5 * fade;
+    const view = span * zoom;
+    lo = mid - view / 2;
+    hi = mid + view / 2;
+    const pad = span * 0.08;
     lo -= pad; hi += pad;
     if (S.tapeLo == null) { S.tapeLo = lo; S.tapeHi = hi; }
     S.tapeLo = S.tapeLo * 0.88 + lo * 0.12;
@@ -2181,6 +2224,28 @@
       ctx.fillStyle = b.c >= b.o ? up : dn;
       ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.2, Math.abs(py(b.c) - py(b.o))));
     });
+    const startB = buckets.length > maxFit ? buckets.length - maxFit : 0;
+    const marks = S.tapeMarks || [];
+    if (marks.length) {
+      ctx.save();
+      ctx.font = "700 8px \"IBM Plex Mono\", monospace";
+      ctx.textAlign = "center";
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(10,10,12,0.82)";
+      for (const mk of marks) {
+        const vi = Math.floor((mk.i || 0) / bucket) - startB;
+        if (vi < 0 || vi >= vis.length) continue;
+        const x = 10 + vi * stepX + cw / 2;
+        const peak = mk.kind === "peak";
+        const y = py(mk.price) + (peak ? -5 : 5);
+        ctx.textBaseline = peak ? "bottom" : "top";
+        ctx.fillStyle = peak ? "rgba(168,220,184,0.95)" : "rgba(236,176,166,0.95)";
+        const lab = fmtUsd(mk.price);
+        ctx.strokeText(lab, x, y);
+        ctx.fillText(lab, x, y);
+      }
+      ctx.restore();
+    }
   }
 
   function draw(ctx) {
