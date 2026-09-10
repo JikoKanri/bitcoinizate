@@ -94,6 +94,7 @@ body {
 .speed-bar button {
   flex: 1; min-width: 0;
   min-height: 28px; padding: 0 6px;
+  text-transform: uppercase;
   border: 1px solid #3a3a40; background: #141416; color: #8a8680;
   font: inherit; cursor: pointer; letter-spacing: 0.06em;
 }
@@ -183,17 +184,17 @@ body {
 #spd-2.dock-spd,
 #spd-2.dock-spd.on,
 #spd-2.dock-spd:disabled {
-  flex: 0 0 40px; width: 40px; min-width: 40px; max-width: 40px;
-  min-height: 40px; padding: 0;
-  font-size: 11px; font-weight: 700; letter-spacing: 0;
+  flex: 0 0 60px; width: 60px; min-width: 60px; max-width: 60px;
+  min-height: 60px; padding: 0;
+  font-size: 17px; font-weight: 700; letter-spacing: 0;
   border-color: #c8960a; background: #c8960a; color: #09090b;
   opacity: 1; filter: none;
 }
 .buy, .sell, .pause, .cta { font: inherit; cursor: pointer; border: 0; }
-.cta { background: #c8960a; color: #120c02; min-height: 44px; padding: 0 16px; font-weight: 700; }
+.cta { background: #c8960a; color: #120c02; min-height: 44px; padding: 0 16px; font-weight: 700; text-transform: uppercase; }
 .play-alt { background: transparent; color: #f3efe6; border: 1px solid #c8960a; }
 .speed-bar button:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.7); }
-.buy, .sell { flex: 1; min-height: 40px; font-size: 12px; font-weight: 700; white-space: nowrap; background: transparent; }
+.buy, .sell { flex: 1; min-height: 52px; font-size: 24px; font-weight: 700; white-space: nowrap; background: transparent; text-transform: uppercase; letter-spacing: 0.04em; }
 .buy:disabled, .sell:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.65); }
 .buy { color: rgba(31, 138, 76, 0.75); border: 1px solid rgba(31, 138, 76, 0.75); background: rgba(31, 138, 76, 0.12); }
 .sell { color: rgba(163, 58, 50, 0.75); border: 1px solid rgba(163, 58, 50, 0.75); background: rgba(163, 58, 50, 0.12); }
@@ -308,7 +309,17 @@ body {
 .juke-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
 .juke-btn { min-height: 40px; min-width: 44px; padding: 0 12px; border: 1px solid #3a3a40; background: #1a1a1e; color: #f3efe6; font: inherit; cursor: pointer; }
 .juke-play { min-width: 88px; background: #c8960a; color: #09090b; border-color: #f0d060; font-weight: 700; }
-.juke-list { display: flex; flex-direction: column; gap: 4px; max-height: 148px; overflow-y: auto; }
+.overlay.dock.juke-ui {
+  max-height: 92%;
+  overflow-y: auto;
+  gap: 4px;
+  padding: 6px 8px 8px;
+}
+.overlay.juke-ui .juke.retro { padding: 8px 8px 6px; }
+.overlay.juke-ui .juke-list { max-height: none; overflow: visible; }
+.overlay.juke-ui .juke-lab { margin-bottom: 2px; }
+.overlay.juke-ui .juke-gen { margin-bottom: 4px; }
+.opt-item, .mute-tog { text-transform: uppercase; }
 .juke-track.dim { opacity: 0.4; text-decoration: line-through; }
 .juke-move.on { border-color: #a33a32; color: #ffb4ac; background: #1a0c0c; }
 .juke-play.on { background: #f0d060; color: #09090b; box-shadow: 0 0 0 2px #fff2b0; }

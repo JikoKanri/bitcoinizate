@@ -80,7 +80,26 @@
     if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
     return wrap("", "#141416", "#3a3a40");
   }
-  function t(k) { return (window.BZ && BZ.t) ? BZ.t(k) : k; }
+  const T_UI = {
+    aiOn: "A.I. BUD ON", aiOff: "A.I. BUD OFF",
+    dcaOn: "DCA ON", dcaOff: "DCA OFF",
+    trendUp: "TREND ↑", trendDown: "TREND ↓", trendOff: "TREND OFF",
+    buyBtc: "BUY BTC", sellBtc: "SELL BTC",
+    options: "OPTIONS", paused: "PAUSED", resume: "RESUME", back: "BACK",
+    sound: "SOUND", jukebox: "JUKEBOX", tutorial: "TUTORIAL", feedback: "FEEDBACK",
+    language: "LANGUAGE", aiLog: "A.I. BUD LOG", signIn: "SIGN IN",
+    ranked: "RANKED", training: "TRAINING",
+    soundOn: "ON", soundOff: "OFF",
+    bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
+    howPlay: "HOW TO PLAY", market: "MARKETPLACE"
+  };
+  function t(k) {
+    if (window.BZ && typeof BZ.t === "function") {
+      const v = BZ.t(k);
+      if (v != null && v !== k) return v;
+    }
+    return T_UI[k] || k;
+  }
 
   function tutorialBody() {
     return "<div class=\"help\">"
@@ -158,7 +177,9 @@
       if (id === "skip") return es ? "seguir sin perk" : "keep flying, no perk";
       if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
       if (id === "dca") return es ? "ingreso en btc" : "income in btc";
-      if (id === "ff") return (FF_SPEEDS[tier - 1] || 1.5) + (es ? "x velocidad" : "x speed");
+      if (id === "ff") return es
+        ? "añade " + (FF_SPEEDS[tier - 1] || 1.5) + "x a la rotación"
+        : "adds " + (FF_SPEEDS[tier - 1] || 1.5) + "x to the speed rotation";
       if (id === "adopt") {
         const bear = adoptBearLabel(tier);
         const bull = adoptBullLabel(tier);
@@ -302,9 +323,22 @@
   function net() { return netBtc(); }
   function scoreSats() { return Math.max(0, Math.round(netBtc() * 1e4)); }
 
+  function ffSpeeds() {
+    const out = [1];
+    const n = Math.max(0, Math.min(FF_SPEEDS.length, S.have.ff || 0));
+    for (let i = 0; i < n; i++) out.push(FF_SPEEDS[i]);
+    return out;
+  }
   function ffMax() {
-    if ((S.have.ff || 0) <= 0) return 1;
-    return FF_SPEEDS[Math.min(FF_SPEEDS.length, S.have.ff) - 1] || 1.5;
+    const list = ffSpeeds();
+    return list[list.length - 1] || 1;
+  }
+  function cycleSpeed() {
+    const list = ffSpeeds();
+    if (list.length <= 1) { S.speedMul = 1; return; }
+    const cur = S.speedMul || 1;
+    let i = list.findIndex((x) => Math.abs(x - cur) < 0.001);
+    S.speedMul = list[(i < 0 ? 0 : i + 1) % list.length];
   }
 
   function metrics() {
@@ -2277,9 +2311,10 @@
     lockBtn("spd-2", S.have.ff > 0);
     const spd2 = $("spd-2");
     if (spd2) {
-      const mx = ffMax();
-      const fast = S.have.ff > 0 && S.speedMul !== 1;
-      spd2.textContent = fast ? ((mx % 1 ? mx.toFixed(1) : String(mx)) + "x") : "1x";
+      const list = ffSpeeds();
+      if (!list.some((x) => Math.abs(x - (S.speedMul || 1)) < 0.001)) S.speedMul = 1;
+      const sm = S.speedMul || 1;
+      spd2.textContent = (sm % 1 ? sm.toFixed(1) : String(sm)) + "X";
       spd2.classList.add("on");
     }
     lockBtn("dca-btn", S.have.dca > 0);
@@ -2819,6 +2854,7 @@
     showOverlay();
     overlay.classList.toggle("dock", p === "perk" || p === "paused" || p === "chance");
     overlay.classList.toggle("chance-ui", p === "chance");
+    overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready") && S.optPanel === "juke");
     if (p === "ready") {
       if (S.optPanel) {
         overlay.innerHTML = pauseMarkup();
@@ -3067,7 +3103,7 @@
     btn.onpointerdown = (e) => {
       e.stopPropagation(); e.preventDefault();
       if (S.have.ff <= 0) return;
-      S.speedMul = S.speedMul === 1 ? ffMax() : 1;
+      cycleSpeed();
       renderHud();
     };
   });
