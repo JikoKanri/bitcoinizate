@@ -2371,10 +2371,14 @@
       play.classList.toggle("on", playing);
       play.disabled = !ready;
     }
-    ["juke-hud-vol-down", "juke-hud-vol-up"].forEach((hid) => {
-      const el = $(hid);
-      if (el) el.disabled = !ready;
-    });
+    const vol = $("juke-hud-vol");
+    if (vol) {
+      vol.disabled = !ready;
+      if (!vol.matches(":active") && document.activeElement !== vol) {
+        const pct = Math.round(((A.jukeVolume && A.jukeVolume()) || 0.8) * 100);
+        if (String(vol.value) !== String(pct)) vol.value = String(pct);
+      }
+    }
   }
 
   function paintJukeUi() {
@@ -3002,16 +3006,19 @@
     else jukePlay();
     paintJukeHud();
   };
-  const bumpJukeVol = (d) => {
-    if ((S.have.juke || 0) <= 0 || !A.setJukeVolume) return;
-    const cur = A.jukeVolume ? A.jukeVolume() : 0.8;
-    A.setJukeVolume(Math.max(0, Math.min(1, Math.round((cur + d) * 20) / 20)));
-    paintJukeHud();
-  };
-  const jukeVolDown = $("juke-hud-vol-down");
-  if (jukeVolDown) jukeVolDown.onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); bumpJukeVol(-0.1); };
-  const jukeVolUp = $("juke-hud-vol-up");
-  if (jukeVolUp) jukeVolUp.onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); bumpJukeVol(0.1); };
+  const jukeVol = $("juke-hud-vol");
+  if (jukeVol) {
+    const applyVol = (e) => {
+      if (e) e.stopPropagation();
+      if ((S.have.juke || 0) <= 0 || !A.setJukeVolume) return;
+      A.setJukeVolume((Number(jukeVol.value) || 0) / 100);
+    };
+    jukeVol.onpointerdown = (e) => e.stopPropagation();
+    jukeVol.onpointerup = (e) => e.stopPropagation();
+    jukeVol.onclick = (e) => e.stopPropagation();
+    jukeVol.oninput = applyVol;
+    jukeVol.onchange = applyVol;
+  }
   $("dca-btn").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (S.have.dca <= 0 || aiLocks().dca) return;

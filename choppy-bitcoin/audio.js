@@ -699,23 +699,68 @@ w: And ev-er since then my head's been red.`),
   let abcWant = false;
   let abcId = "bonny";
   let jukeVol = 0.8;
+  try {
+    const saved = parseFloat(localStorage.getItem("choppy-juke-vol"));
+    if (saved >= 0 && saved <= 1) jukeVol = saved;
+  } catch (e) {}
   let jukeGainNode = null;
+  let jukeSrc = null;
+  let jukeBuf = null;
 
   function jukeDest() {
-    if (!ctx) return undefined;
+    if (!ctx) return null;
     if (!jukeGainNode) {
       jukeGainNode = ctx.createGain();
-      jukeGainNode.gain.value = jukeVol;
       jukeGainNode.connect(ctx.destination);
     }
+    jukeGainNode.gain.value = jukeVol;
     return jukeGainNode;
   }
   A.jukeVolume = () => jukeVol;
   A.setJukeVolume = (v) => {
-    jukeVol = Math.max(0, Math.min(1, Number(v)));
-    if (jukeGainNode) jukeGainNode.gain.value = jukeVol;
+    const n = Number(v);
+    jukeVol = Math.max(0, Math.min(1, isNaN(n) ? jukeVol : n));
+    try { localStorage.setItem("choppy-juke-vol", String(jukeVol)); } catch (e) {}
+    try { if (!ctx) A.unlock(); } catch (e) {}
+    const g = jukeDest();
+    if (g && ctx) {
+      try { g.gain.setTargetAtTime(jukeVol, ctx.currentTime, 0.015); }
+      catch (e) { g.gain.value = jukeVol; }
+    }
     return jukeVol;
   };
+
+  function stopJukeSource() {
+    if (!jukeSrc) return;
+    try { jukeSrc.onended = null; } catch (e) {}
+    try { jukeSrc.stop(); } catch (e) {}
+    try { jukeSrc.disconnect(); } catch (e) {}
+    jukeSrc = null;
+  }
+
+  function playJukeBuffer(offset) {
+    const dest = jukeDest();
+    if (!ctx || !jukeBuf || !dest) return false;
+    stopJukeSource();
+    const src = ctx.createBufferSource();
+    src.buffer = jukeBuf;
+    src.connect(dest);
+    const dur = jukeBuf.duration || abcDur || 0;
+    const off = Math.max(0, Math.min(Math.max(0, dur - 0.04), offset || 0));
+    src.onended = () => {
+      if (src !== jukeSrc || abcPaused || !abcWant) return;
+      jukeOn = false;
+      jukeSrc = null;
+      abcElapsed = dur;
+      if (typeof A.onJukeEnd === "function") A.onJukeEnd();
+    };
+    src.start(0, off);
+    jukeSrc = src;
+    abcStart = ctx.currentTime;
+    abcElapsed = off;
+    abcDur = dur;
+    return true;
+  }
 
   function abcLib() { return window.ABCJS || null; }
   function songAbc(id) {
@@ -763,6 +808,7 @@ w: And ev-er since then my head's been red.`),
 
   function stopJukeTimer() {
     if (jukeTimer != null) { clearTimeout(jukeTimer); jukeTimer = null; }
+    stopJukeSource();
     if (abcSynth && abcSynth.stop) try { abcSynth.stop(); } catch (e) {}
     jukeOn = false;
     abcPaused = false;
@@ -791,7 +837,6 @@ w: And ev-er since then my head's been red.`),
     await synth.init({
       visualObj: abcVisual,
       audioContext: ctx,
-      destination: jukeDest(),
       millisecondsPerMeasure: abcVisual.millisecondsPerMeasure ? abcVisual.millisecondsPerMeasure() : 1800
     });
     const primed = await synth.prime();
@@ -800,6 +845,8 @@ w: And ev-er since then my head's been red.`),
       const bars = (abcVisual.getTotalBeats && abcVisual.getTotalBeats()) || 32;
       abcDur = (abcVisual.millisecondsPerMeasure() * Math.max(8, bars / 3)) / 1000;
     }
+    try { jukeBuf = synth.getAudioBuffer ? synth.getAudioBuffer() : null; } catch (e) { jukeBuf = null; }
+    if (jukeBuf && jukeBuf.duration) abcDur = jukeBuf.duration;
     abcSynth = synth;
     return synth;
   }
@@ -811,23 +858,26 @@ w: And ev-er since then my head's been red.`),
     const gen = ++jukeGen;
     const run = async () => {
       try {
+        stopJukeSource();
         if (abcSynth && abcSynth.stop) try { abcSynth.stop(); } catch (e) {}
         const synth = await ensureSynth(id || "bonny");
         if (!synth || !abcWant || gen !== jukeGen) return;
         jukeOn = true;
         abcElapsed = 0;
         abcStart = ctx ? ctx.currentTime : 0;
-        armJukeEnd(abcDur, gen);
-        const done = synth.start();
-        if (done && typeof done.then === "function") {
-          done.then(() => {
-            if (gen !== jukeGen || !abcWant || abcPaused) return;
-            if (jukeTimer != null) { clearTimeout(jukeTimer); jukeTimer = null; }
-            jukeOn = false;
-            abcElapsed = abcDur;
-            if (typeof A.onJukeEnd === "function") A.onJukeEnd();
-          });
+        if (!playJukeBuffer(0)) {
+          const done = synth.start();
+          if (done && typeof done.then === "function") {
+            done.then(() => {
+              if (gen !== jukeGen || !abcWant || abcPaused) return;
+              if (jukeTimer != null) { clearTimeout(jukeTimer); jukeTimer = null; }
+              jukeOn = false;
+              abcElapsed = abcDur;
+              if (typeof A.onJukeEnd === "function") A.onJukeEnd();
+            });
+          }
         }
+        armJukeEnd(abcDur, gen);
       } catch (err) {
         jukeOn = false;
       }
@@ -840,6 +890,7 @@ w: And ev-er since then my head's been red.`),
     abcPaused = true;
     if (jukeTimer != null) { clearTimeout(jukeTimer); jukeTimer = null; }
     if (ctx) abcElapsed += Math.max(0, ctx.currentTime - abcStart);
+    stopJukeSource();
     if (abcSynth && abcSynth.pause) try { abcSynth.pause(); } catch (e) {}
   };
 
@@ -851,6 +902,10 @@ w: And ev-er since then my head's been red.`),
     abcPaused = false;
     abcWant = true;
     jukeOn = true;
+    if (jukeBuf && playJukeBuffer(abcElapsed)) {
+      armJukeEnd(Math.max(0.2, (abcDur || 0) - abcElapsed));
+      return;
+    }
     abcStart = ctx ? ctx.currentTime : 0;
     armJukeEnd(Math.max(0.2, (abcDur || 0) - abcElapsed));
     if (abcSynth && abcSynth.resume) try { abcSynth.resume(); } catch (e) { A.jukePlay(abcId || "bonny"); }

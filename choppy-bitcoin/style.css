@@ -72,13 +72,17 @@ body {
   font-size: 8px; letter-spacing: 0.03em; color: #fff6d0; text-align: center;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 0 2px;
 }
-.juke-hud-row { display: flex; gap: 2px; flex: 1 1 auto; min-height: 0; }
+.juke-hud-row { display: flex; gap: 3px; flex: 1 1 auto; min-height: 0; align-items: center; }
 .juke-hud-btn {
-  flex: 1 1 0; min-width: 0; min-height: 0; border: 1px solid #3a3a40; background: #141416; color: #f3efe6;
-  font: inherit; font-size: 11px; line-height: 1; cursor: pointer; padding: 0;
+  flex: 0 0 22px; width: 22px; min-width: 22px; min-height: 18px; border: 1px solid #3a3a40; background: #141416; color: #f3efe6;
+  font: inherit; font-size: 10px; line-height: 1; cursor: pointer; padding: 0;
 }
 .juke-hud-btn:hover { border-color: #c8960a; color: #fff6d0; }
 .juke-hud-btn.on { border-color: #c8960a; background: #c8960a; color: #09090b; }
+#juke-hud-vol {
+  flex: 1 1 auto; min-width: 0; height: 14px; margin: 0; padding: 0;
+  accent-color: #c8960a; cursor: pointer; background: transparent;
+}
 .opt-btn { width: 100%; flex: 1 1 auto; min-height: 0; border: 1px solid #3a3a40; background: #141416; color: #f3efe6; font: inherit; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; line-height: 1.15; padding: 2px 4px; }
 .opt-btn small { display: block; font-size: 8px; letter-spacing: 0; text-transform: none; font-weight: 700; color: #fff6d0; }
 .user-link { color: #F2A900; text-decoration: none; }
