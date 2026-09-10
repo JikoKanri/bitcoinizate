@@ -332,7 +332,7 @@
     lastGapY: 0, spawnX: 0, best: loadBest(),
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
-    tape: [], tapeVt: [], tapeMarks: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: 0.0006, level: 1,
+    tape: [], tapeVt: [], tapeMarks: [], tapeTrades: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: 0.0006, level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
@@ -527,9 +527,20 @@
     return { top: top0 * S.heightMul, bot: S.H - (S.H - bot0) * S.heightMul };
   }
 
+  function pipeEndsRaw(p) {
+    let top0 = p.gapY - p.gapH / 2;
+    let bot0 = p.gapY + p.gapH / 2;
+    if (S.power === "BEAR") {
+      const cut = S.swanBear ? 0.045 : 0.025;
+      top0 += p.gapH * cut;
+      bot0 -= p.gapH * cut;
+    }
+    return { top: top0, bot: bot0 };
+  }
+
   function wickAxis(p, r) {
     const pw = pipePw();
-    const ends = pipeEnds(p);
+    const ends = pipeEndsRaw(p);
     const wick = Math.min(22, p.gapH * 0.14);
     const rad = r || 14;
     const lo = ends.top + rad;
@@ -542,13 +553,18 @@
   }
 
   function pinItem(it) {
-    if (!it.pipe || S.pipes.indexOf(it.pipe) < 0) return false;
-    const box = wickAxis(it.pipe, it.r);
-    it.x = box.x;
-    it.lo = box.lo;
-    it.hi = box.hi;
-    if (it.type === "HALVE") {
-      it.y = it.halveUp ? box.lo : box.hi;
+    if (it.pipe && S.pipes.indexOf(it.pipe) >= 0) {
+      const box = wickAxis(it.pipe, it.r);
+      it.x = box.x;
+      it.lo = box.lo;
+      it.hi = box.hi;
+      it.freeX = false;
+    } else {
+      it.pipe = null;
+      it.freeX = true;
+    }
+    if (it.type === "HALVE" && it.lo != null) {
+      it.y = it.halveUp ? it.lo : it.hi;
     }
     return true;
   }
@@ -586,7 +602,7 @@
         lo: box.lo,
         hi: box.hi,
         vy: (Math.random() < 0.5 ? -1 : 1) * (22 + Math.random() * 16),
-        type, r,
+        type, r, freeX: false,
       });
     }
   }
@@ -655,11 +671,11 @@
     S.cycleAmp = 0;
     S.cycleMax = S.price; S.cycleMin = S.price; S.cycleMaxI = 0; S.cycleMinI = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
-    S.tapeMarks = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
+    S.tapeMarks = []; S.tapeTrades = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
     S.waves = []; S.priceBase = clampPx(S.price);
     S.drift = 0.0006 * (1 + (Math.random() * 2 - 1));
-    S.runTab = null; S.runTape = []; S.runMarks = [];
+    S.runTab = null; S.runTape = []; S.runMarks = []; S.runTrades = [];
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
@@ -801,18 +817,21 @@
     for (let i = S.pipes.length - 1; i >= 0; i--) {
       if (!itemsOnPipe(S.pipes[i]).length) { pipe = S.pipes[i]; break; }
     }
-    if (!pipe) return;
     const r = 17;
-    const box = wickAxis(pipe, r);
     const up = S.halveSide !== "down";
-    S.items.push({
-      pipe,
-      x: box.x,
-      y: up ? box.lo : box.hi,
-      type: "HALVE",
-      r,
-      halveUp: up,
-    });
+    if (pipe) {
+      const box = wickAxis(pipe, r);
+      S.items.push({
+        pipe, x: box.x, y: up ? box.lo : box.hi, lo: box.lo, hi: box.hi,
+        type: "HALVE", r, halveUp: up, freeX: false
+      });
+    } else {
+      const y = up ? (r + 16) : (S.H - 78);
+      S.items.push({
+        pipe: null, x: S.W + 56, y, lo: y, hi: y,
+        type: "HALVE", r, halveUp: up, freeX: true
+      });
+    }
     A.sfx.cap();
   }
 
@@ -954,6 +973,7 @@
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(spent, "usd"), RED, "trade");
+    markTrade("buy");
   }
   function sellBtc() {
     if (S.phase !== "play" || S.btc <= 0) return;
@@ -966,6 +986,7 @@
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(btc, "btc"), RED, "trade");
+    markTrade("sell");
   }
   function buyVt() {
     if (S.phase !== "play" || S.level < 2 || S.cash <= 0 || S.vtPrice <= 0) return;
@@ -985,18 +1006,18 @@
   }
   function togglePause() {
     if (S.phase === "perk") {
-      confirmPerk();
+      if (S.perkPick) confirmPerk();
       return;
     }
     if (S.phase === "play") { S.optBack = "play"; setPhase("paused"); }
     else if (S.phase === "paused") setPhase(S.optBack || "play");
   }
 
+  function markTrade(kind) {
+    if (!S.tapeTrades) S.tapeTrades = [];
+    S.tapeTrades.push({ i: (S.tape || []).length, kind, price: clampPx(S.price) });
+  }
   function pickPerk(kind) {
-    if (S.perkPick && S.perkPick === kind) {
-      confirmPerk();
-      return;
-    }
     S.perkPick = kind;
     renderOverlay();
     renderHud();
@@ -1008,18 +1029,10 @@
     S.perkPick = "";
     S.perkOffers = [];
     bumpOffer();
-    const resume = S.perkResume;
     S.perkResume = null;
-    if (resume && resume.phase === "paused") {
-      S.optPanel = resume.panel || "market";
-      S.optBack = "play";
-      setPhase("paused");
-      tryRankedPerk(true);
-      return;
-    }
     S.optPanel = null;
     S.optBack = "play";
-    setPhase("paused");
+    setPhase("play");
   }
 
   function grantPerk(kind) {
@@ -2268,7 +2281,8 @@
     }
     for (let j = S.items.length - 1; j >= 0; j--) {
       const it = S.items[j];
-      if (!pinItem(it)) { S.items.splice(j, 1); continue; }
+      pinItem(it);
+      if (it.freeX) it.x -= speed * dt;
       if (it.type !== "HALVE") {
         it.y += (it.vy || 0) * dt;
         const lo = it.lo != null ? it.lo : 20;
@@ -2461,8 +2475,7 @@
     }
     for (const it of S.items) {
       const p = it.pipe && S.pipes.indexOf(it.pipe) >= 0 ? it.pipe : null;
-      if (p) it.x = p.wx;
-      else pinItem(it);
+      if (p && !it.freeX) it.x = p.wx;
       drawPowerIcon(ctx, it, wash);
     }
     const blink = S.invuln > 0 && Math.floor(S.invuln * 10) % 2 === 0;
@@ -2743,6 +2756,7 @@
     S.stats = collectRunStats();
     S.runTape = (S.tape || []).slice();
     S.runMarks = (S.tapeMarks || []).slice();
+    S.runTrades = (S.tapeTrades || []).slice();
   }
 
   function recapL(en, es) {
@@ -2873,7 +2887,38 @@
       ctx.strokeText(lab, x, y);
       ctx.fillText(lab, x, y);
     }
+    const trades = S.runTrades || [];
+    ctx.font = "700 9px \"IBM Plex Mono\", monospace";
+    ctx.textBaseline = "middle";
+    for (const tr of trades) {
+      const vi = Math.floor((tr.i || 0) / bucket);
+      if (vi < 0 || vi >= bars.length) continue;
+      const x = left + vi * stepX + cw / 2;
+      const y = py(tr.price);
+      const buy = tr.kind === "buy";
+      ctx.fillStyle = buy ? GREEN : RED;
+      ctx.beginPath();
+      if (buy) {
+        ctx.moveTo(x, y - 8); ctx.lineTo(x + 5.5, y + 3); ctx.lineTo(x - 5.5, y + 3);
+      } else {
+        ctx.moveTo(x, y + 8); ctx.lineTo(x + 5.5, y - 3); ctx.lineTo(x - 5.5, y - 3);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.fillStyle = buy ? GREEN : RED;
+      ctx.textBaseline = buy ? "bottom" : "top";
+      ctx.strokeText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
+      ctx.fillText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
+    }
     ctx.restore();
+    ctx.font = "700 9px \"IBM Plex Mono\", monospace";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = GREEN;
+    ctx.fillText("▲ B buy", 10, H - 12);
+    ctx.fillStyle = RED;
+    ctx.fillText("▼ S sell", 78, H - 12);
   }
   const AWARD_CATALOG = [
     { id: "maxi", name: "Maxi Soul", nameEs: "Alma maxi", why: "Never sold BTC — not by hand, not by A.I. bud.", whyEs: "Nunca vendió BTC, ni a mano ni por A.I. bud." },
