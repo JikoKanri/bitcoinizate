@@ -9,6 +9,12 @@
   const GREEN = "#4f9d6e";
   const RED = "#c45c4a";
   const BTC = "#c8960a";
+  const PX_MIN = 1;
+  function clampPx(v) {
+    const n = Number(v);
+    if (!isFinite(n) || n < PX_MIN) return PX_MIN;
+    return n;
+  }
   const KEY = "bitcoinizate-v1";
   try {
     if (localStorage.getItem("choppy-reset-420") !== "1") {
@@ -317,7 +323,7 @@
 
   function netUsd() { return S.cash + S.btc * S.price + S.vt * S.vtPrice; }
   function netBtc() {
-    const px = Math.max(0.01, S.price || 0);
+    const px = clampPx(S.price);
     return S.btc + S.cash / px + (S.vt * (S.vtPrice || 0)) / px;
   }
   function net() { return netBtc(); }
@@ -366,8 +372,8 @@
 
   function grantUsd(n, x, y, kind) {
     if (kind === "gain" && S.have.candy > 0) n *= 2 ** S.have.candy;
-    if (S.dcaOn && S.have.dca > 0 && S.price > 0) {
-      const got = n / S.price;
+    if (S.dcaOn && S.have.dca > 0 && clampPx(S.price) > 0) {
+      const got = n / clampPx(S.price);
       S.btc += got;
       pop(x, y, "+" + fmtAmt(got, "btc"), BTC, kind);
     } else {
@@ -583,7 +589,7 @@
       S.cycleStacks = (S.cycleStacks || 1) + 1;
       return;
     }
-    S.cycleStart = S.price; S.vtCycle = S.vtPrice;
+    S.cycleStart = clampPx(S.price); S.vtCycle = S.vtPrice;
     S.cycleDur = POWER_S; S.cycleElapsed = 0;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 1;
     S.cycleMax = S.price; S.cycleMin = S.price;
@@ -658,7 +664,7 @@
       next = S.cycleStart * (1 + one * n) * m;
     }
     if (S.halveFloor > 0) next = Math.max(next, S.halveFloor);
-    S.price = Math.max(0.01, next);
+    S.price = clampPx(next);
     if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (S.halveBull ? 1.06 : 1 + (S.price / S.cycleStart - 1) * 0.55));
     S.power = "NONE"; S.powerT = 0; S.halveBull = false; S.swanBear = false;
     S.cycleStacks = 0; S.cycleManip = 1; S.cycleEnv = 0; S.tapeLive = null;
@@ -815,8 +821,8 @@
     try { if (A && A.sfx && A.sfx.jump) A.sfx.jump(); } catch (e) {}
   }
   function buyBtc() {
-    if (S.phase !== "play" || S.cash <= 0 || S.price <= 0) return;
-    const usd = S.cash, got = usd / S.price;
+    if (S.phase !== "play" || S.cash <= 0 || clampPx(S.price) <= 0) return;
+    const usd = S.cash, got = usd / clampPx(S.price);
     S.btc += got; S.cash = 0; S.buys++; S.boughtBtc = true; A.sfx.buy();
     if (!S.aiSilent) {
       const buyLine = drawLine(A.BUY, 0.3);
@@ -976,7 +982,7 @@
   }
 
   function wealthUsd() {
-    return Math.max(0, (S.cash || 0) + (S.btc || 0) * Math.max(0.01, S.price || 0));
+    return Math.max(0, (S.cash || 0) + (S.btc || 0) * clampPx(S.price));
   }
   function takeWealthPct(p) {
     const w = wealthUsd();
@@ -1387,7 +1393,7 @@
         const n = grantWealthPct(0.07);
         return say("Check your account. +" + money(n) + ".", "Fijate la cuenta. +" + money(n) + ".");
       }
-      const b = Math.max(0.0001, (wealthUsd() * 0.07) / Math.max(S.price, 0.01));
+      const b = Math.max(0.0001, (wealthUsd() * 0.07) / clampPx(S.price));
       S.btc += b;
       return say("He sent sats. +" + b.toFixed(4) + " BTC.", "Mandó sats. +" + b.toFixed(4) + " BTC.");
     }
@@ -2029,7 +2035,7 @@
     if (S.power === "BULL" || S.power === "BEAR" || S.laserOn) speed *= 1.28;
     if (S.power === "BULL" || S.power === "BEAR") {
       S.powerT -= dt; S.cycleElapsed += dt;
-      S.cycleManip = (S.cycleManip || 1) * (1 + trendBias() * dt);
+      S.cycleManip = Math.max(0.15, (S.cycleManip || 1) * (1 + trendBias() * dt));
       const u = Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
       const env = 1 - Math.pow(1 - u, 1.2);
       S.cycleEnv = Math.max(S.cycleEnv || 0, env);
@@ -2037,14 +2043,16 @@
       const n = Math.max(1, S.cycleStacks || 1);
       const amp = S.cycleAmp || (S.halveBull ? 0.62 : 0.275);
       const wobble = Math.sin(S.cycleElapsed * 1.35) * (0.008 / Math.sqrt(n));
-      S.price = Math.max(0.01, S.cycleStart * (1 + dir * amp * S.cycleEnv + wobble) * S.cycleManip);
+      const move = 1 + dir * amp * S.cycleEnv + wobble;
+      S.price = clampPx(S.cycleStart * Math.max(0.08, move) * S.cycleManip);
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * S.cycleEnv + wobble * 0.45) * S.cycleManip);
       noteCyclePrice();
       if (S.powerT <= 0) endCycle();
     } else {
       const bias = trendBias();
       const mid = bias > 0.001 ? 0.42 : bias < -0.001 ? 0.58 : 0.48;
-      S.price = Math.max(0.01, S.price + (Math.random() - mid) * S.price * 0.012 * dt + S.price * bias * dt);
+      const px = clampPx(S.price);
+      S.price = clampPx(px + (Math.random() - mid) * px * 0.012 * dt + px * bias * dt);
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtPrice + (Math.random() - 0.45) * S.vtPrice * 0.01 * dt + S.vtPrice * 0.0012 * dt);
     }
     S.lifeT += dt; S.sampleAcc += dt;
