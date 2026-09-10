@@ -690,7 +690,7 @@
       S.offersDone = 0;
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
-      S.aibudOn = false; S.aibudLit = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
+      S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
       S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = "";
       if (A && A.jukeStop) A.jukeStop();
     }
@@ -2075,6 +2075,7 @@
         S.aiSilent = true; sellBtc(); S.aiSilent = false;
         S.iaProfit += netBtc() - bag;
         S.aibudLit = Object.assign({}, S.aibudLit, { sell: true, buy: false });
+        S.aibudLitAt = Object.assign({}, S.aibudLitAt, { sell: S.lifeT, buy: 0 });
         S.aiTradeAt = S.candles || 0;
         markAiTrade();
         aiAct("Sold BTC", incomingDump ? "Dump incoming · raise cash for the dip" : "Sold the bull · raise cash for the dip");
@@ -2083,6 +2084,7 @@
         S.aiSilent = true; buyBtc(); S.aiSilent = false;
         S.iaProfit += netBtc() - bag;
         S.aibudLit = Object.assign({}, S.aibudLit, { buy: true, sell: false });
+        S.aibudLitAt = Object.assign({}, S.aibudLitAt, { buy: S.lifeT, sell: 0 });
         S.aiTradeAt = S.candles || 0;
         markAiTrade();
         aiAct("Bought BTC", incomingPump ? "Pump incoming · accumulate" : (inSwan ? "Bought the black swan" : "Bought the bear"));
@@ -2664,13 +2666,15 @@
     if (buy) {
       buy.disabled = locks.trade;
       buy.classList.toggle("ai-lock", locks.trade);
-      buy.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.buy));
+      buy.classList.toggle("ai-lit", !!(S.aibudOn && S.aibudLit && S.aibudLit.buy));
+      buy.classList.remove("on");
       buy.textContent = t("buyBtc");
     }
     if (sell) {
       sell.disabled = locks.trade;
       sell.classList.toggle("ai-lock", locks.trade);
-      sell.classList.toggle("ai-lit", !!(S.aibudLit && S.aibudLit.sell));
+      sell.classList.toggle("ai-lit", !!(S.aibudOn && S.aibudLit && S.aibudLit.sell));
+      sell.classList.remove("on");
       sell.textContent = t("sellBtc");
     }
     const pauseBtn = $("pause-btn");
@@ -3593,7 +3597,7 @@
     e.stopPropagation(); e.preventDefault();
     if ((S.have.aibud || 0) <= 0) return;
     S.aibudOn = !S.aibudOn;
-    if (!S.aibudOn) S.aibudLit = {};
+    if (!S.aibudOn) { S.aibudLit = {}; S.aibudLitAt = {}; }
     renderHud();
   };
   const trendBtn = $("trend-btn");
@@ -3616,15 +3620,30 @@
   $("buy-btc").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (aiLocks().trade) return;
-    if (S.aibudLit) S.aibudLit.buy = false;
+    if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     buyBtc();
+    const el = $("buy-btc");
+    if (el) { el.classList.remove("ai-lit", "on"); el.blur(); }
+    renderHud();
   };
   $("sell-btc").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (aiLocks().trade) return;
-    if (S.aibudLit) S.aibudLit.sell = false;
+    if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     sellBtc();
+    const el = $("sell-btc");
+    if (el) { el.classList.remove("ai-lit", "on"); el.blur(); }
+    renderHud();
   };
+  const unstickTrade = (id) => {
+    const el = $(id);
+    if (!el) return;
+    el.onpointerup = () => { el.blur(); if (!(S.aibudOn && S.aibudLit && ((id === "buy-btc" && S.aibudLit.buy) || (id === "sell-btc" && S.aibudLit.sell)))) el.classList.remove("ai-lit", "on"); };
+    el.onpointercancel = () => el.blur();
+    el.onpointerleave = () => el.blur();
+  };
+  unstickTrade("buy-btc");
+  unstickTrade("sell-btc");
   document.querySelectorAll(".spd").forEach((btn) => {
     btn.onpointerdown = (e) => {
       e.stopPropagation(); e.preventDefault();
