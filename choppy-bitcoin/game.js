@@ -267,11 +267,11 @@
     const r = adoptBullRange(tier);
     return Math.round(r.lo * 100) + "/" + Math.round(r.hi * 100) + "%";
   }
-  function pickCycleAmp(type) {
+  function pickCycleAmp(kind) {
     const t = S.have.adopt || 0;
     const soft = adoptSoft(t);
-    if (type === "BULL" && S.halveBull) return 1 + (Math.random() * 0.2 - 0.1);
-    if (S.swanBear) return (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
+    if (kind === "HALVE") return 1 + (Math.random() * 0.2 - 0.1);
+    if (kind === "SWAN") return (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
     return (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
   }
 
@@ -563,24 +563,34 @@
     S.cycleAmp = 0;
     S.cycleMax = S.price; S.cycleMin = S.price; S.cycleMaxI = 0; S.cycleMinI = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
-    S.tapeMarks = []; S.eventPeaks = []; S.eventBottoms = [];
+    S.tapeMarks = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
+    S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
     S.spawnX = first + m.spacing * 2;
   }
 
-  function beginCycle(type) {
+  function beginCycle(type, kind) {
     if (S.power !== "NONE" && S.power !== type) endCycle();
     if (type !== "BULL") S.halveBull = false;
     if (type !== "BEAR") S.swanBear = false;
-    if (S.power === type) { S.powerT += POWER_S; S.cycleDur += POWER_S; return; }
+    const extra = pickCycleAmp(kind || type);
+    if (S.power === type) {
+      S.powerT += POWER_S;
+      S.cycleDur += POWER_S;
+      S.cycleAmp = (S.cycleAmp || 0) + extra;
+      S.cycleStacks = (S.cycleStacks || 1) + 1;
+      return;
+    }
     S.cycleStart = S.price; S.vtCycle = S.vtPrice;
     S.cycleDur = POWER_S; S.cycleElapsed = 0;
+    S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 1;
     S.cycleMax = S.price; S.cycleMin = S.price;
     S.cycleMaxI = S.tape.length; S.cycleMinI = S.tape.length;
+    S.tapeLive = { kind: type === "BULL" ? "peak" : "bottom", price: S.price, i: S.tape.length };
     S.power = type; S.powerT = POWER_S;
-    S.cycleAmp = pickCycleAmp(type);
+    S.cycleAmp = extra;
   }
 
   function halveMinRise() {
@@ -605,30 +615,53 @@
     const i = S.tape.length;
     if (S.cycleMax == null || S.price >= S.cycleMax) { S.cycleMax = S.price; S.cycleMaxI = i; }
     if (S.cycleMin == null || S.price <= S.cycleMin) { S.cycleMin = S.price; S.cycleMinI = i; }
+    const peak = S.power === "BULL";
+    S.tapeLive = {
+      kind: peak ? "peak" : "bottom",
+      price: peak ? S.cycleMax : S.cycleMin,
+      i: peak ? S.cycleMaxI : S.cycleMinI
+    };
+  }
+
+  function trendBias() {
+    let bias = 0.0006 * (1 + (Math.random() * 2 - 1) * 0.05);
+    if ((S.have.manip || 0) > 0) {
+      const k = (S.have.manip || 0) * (12 / 7);
+      if (S.trend === "up") bias += 0.004 * k;
+      else if (S.trend === "down") bias -= 0.004 * k;
+    }
+    return bias;
   }
 
   function endCycle() {
     if (S.power === "NONE") return;
     stampCycleMark();
+    S.tapeLive = null;
+    const n = Math.max(1, S.cycleStacks || 1);
+    const m = S.cycleManip || 1;
     let next;
     if (S.halveBull && S.power === "BULL") {
       const floor = S.cycleStart + halveMinRise();
-      const residual = 0.1 + Math.random() * 0.08;
-      next = Math.max(floor, S.cycleStart * (1 + residual));
+      const residual = 0.50 + Math.random() * 0.25;
+      next = Math.max(floor, S.cycleStart * (1 + residual) * m);
     } else if (S.power === "BULL") {
       const r = adoptBullRange(S.have.adopt || 0);
-      next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
+      const one = r.lo + Math.random() * (r.hi - r.lo);
+      next = S.cycleStart * (1 + one * n) * m;
     } else if (S.swanBear) {
       const r = adoptSwanRange(S.have.adopt || 0);
-      next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
+      const one = r.lo + Math.random() * (r.hi - r.lo);
+      next = S.cycleStart * (1 + one * n) * m;
     } else {
       const r = adoptBearRange(S.have.adopt || 0);
-      next = S.cycleStart * (1 + r.lo + Math.random() * (r.hi - r.lo));
+      const one = r.lo + Math.random() * (r.hi - r.lo);
+      next = S.cycleStart * (1 + one * n) * m;
     }
     if (S.halveFloor > 0) next = Math.max(next, S.halveFloor);
     S.price = Math.max(0.01, next);
     if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (S.halveBull ? 1.06 : 1 + (S.price / S.cycleStart - 1) * 0.55));
     S.power = "NONE"; S.powerT = 0; S.halveBull = false; S.swanBear = false;
+    S.cycleStacks = 0; S.cycleManip = 1; S.cycleEnv = 0; S.tapeLive = null;
   }
 
   function spawnHalve() {
@@ -675,7 +708,7 @@
       applyLaser(false);
       if (S.cold > 0) { S.coldLost = (S.coldLost || 0) + S.cold; S.cold = 0; }
       S.swanBear = true;
-      beginCycle("BEAR");
+      beginCycle("BEAR", "SWAN");
       return;
     }
     if (it.type === "LASER") {
@@ -704,11 +737,18 @@
     }
     if (it.type === "HALVE") {
       S.halvings += 1;
-      beginCycle("BULL");
       S.halveBull = true;
-      S.halveFloor = Math.max(S.halveFloor, S.cycleStart + halveMinRise());
-      S.cycleDur = POWER_S * 1.2;
-      S.powerT = S.cycleDur;
+      const wasBull = S.power === "BULL";
+      const floorFrom = wasBull ? S.cycleStart : S.price;
+      S.halveFloor = Math.max(S.halveFloor, floorFrom + halveMinRise());
+      beginCycle("BULL", "HALVE");
+      if (!wasBull) {
+        S.cycleDur = POWER_S * 1.2;
+        S.powerT = S.cycleDur;
+      } else {
+        S.cycleDur += POWER_S * 0.2;
+        S.powerT += POWER_S * 0.2;
+      }
       say("Halving number " + S.halvings, true, "halve");
       A.sfx.cap();
       return;
@@ -906,7 +946,10 @@
     const n = jobPay();
     if (n <= 0) return;
     grantUsd(n, S.bird.x, S.bird.y - 24, "gain");
-    say((S.jobName || "Job") + " payday", false);
+    const job = currentJob();
+    const t = Math.max(1, Math.min(7, S.have.job || 1));
+    const title = (job && job.titles && job.titles[t - 1]) || "Job";
+    say(title + " payday", false);
   }
 
   function chanceP3(tier) {
@@ -1986,25 +2029,21 @@
     if (S.power === "BULL" || S.power === "BEAR" || S.laserOn) speed *= 1.28;
     if (S.power === "BULL" || S.power === "BEAR") {
       S.powerT -= dt; S.cycleElapsed += dt;
+      S.cycleManip = (S.cycleManip || 1) * (1 + trendBias() * dt);
       const u = Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
-      const envelope = Math.sin(Math.PI * u);
+      const env = 1 - Math.pow(1 - u, 1.2);
+      S.cycleEnv = Math.max(S.cycleEnv || 0, env);
       const dir = S.power === "BULL" ? 1 : -1;
+      const n = Math.max(1, S.cycleStacks || 1);
       const amp = S.cycleAmp || (S.halveBull ? 0.62 : 0.275);
-      const wobble = Math.sin(S.cycleElapsed * 3.2) * (S.halveBull ? 0.05 : 0.03);
-      S.price = Math.max(0.01, S.cycleStart * (1 + dir * amp * envelope + wobble));
-      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * envelope + wobble * 0.45));
+      const wobble = Math.sin(S.cycleElapsed * 1.35) * (0.008 / Math.sqrt(n));
+      S.price = Math.max(0.01, S.cycleStart * (1 + dir * amp * S.cycleEnv + wobble) * S.cycleManip);
+      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * S.cycleEnv + wobble * 0.45) * S.cycleManip);
       noteCyclePrice();
       if (S.powerT <= 0) endCycle();
     } else {
-      let bias = 0.0006, mid = 0.48;
-      if (S.have.manip > 0) {
-        const k = (S.have.manip || 0) * (12 / 7);
-        if (S.trend === "up") { bias = 0.004 * k; mid = Math.max(0.22, 0.42 - 0.02 * k); }
-        else if (S.trend === "down") { bias = -0.004 * k; mid = Math.min(0.78, 0.42 + 0.02 * k); }
-        else { bias = 0; mid = 0.5; }
-      } else {
-        bias = 0.0006 * (1 + (Math.random() * 2 - 1) * 0.05);
-      }
+      const bias = trendBias();
+      const mid = bias > 0.001 ? 0.42 : bias < -0.001 ? 0.58 : 0.48;
       S.price = Math.max(0.01, S.price + (Math.random() - mid) * S.price * 0.012 * dt + S.price * bias * dt);
       if (S.level >= 2) S.vtPrice = Math.max(1, S.vtPrice + (Math.random() - 0.45) * S.vtPrice * 0.01 * dt + S.vtPrice * 0.0012 * dt);
     }
@@ -2216,7 +2255,7 @@
       ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.2, Math.abs(py(b.c) - py(b.o))));
     });
     const startB = buckets.length > maxFit ? buckets.length - maxFit : 0;
-    const marks = S.tapeMarks || [];
+    const marks = (S.tapeMarks || []).concat(S.tapeLive ? [S.tapeLive] : []);
     if (marks.length) {
       ctx.save();
       ctx.font = "700 8px \"IBM Plex Mono\", monospace";
@@ -2224,15 +2263,13 @@
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(10,10,12,0.82)";
       for (const mk of marks) {
-        const peak = mk.kind === "peak";
-        if (peak && mk.price < visHi) continue;
-        if (!peak && mk.price > visLo) continue;
         const vi = Math.floor((mk.i || 0) / bucket) - startB;
         if (vi < 0 || vi >= vis.length) continue;
+        const peak = mk.kind === "peak";
         const x = 10 + vi * stepX + cw / 2;
         const y = py(mk.price) + (peak ? -5 : 5);
         ctx.textBaseline = peak ? "bottom" : "top";
-        ctx.fillStyle = peak ? "rgba(46, 196, 92, 0.96)" : "rgba(224, 58, 48, 0.96)";
+        ctx.fillStyle = peak ? GREEN : RED;
         const lab = fmtUsd(mk.price);
         ctx.strokeText(lab, x, y);
         ctx.fillText(lab, x, y);
@@ -2430,14 +2467,17 @@
     const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk" || S.phase === "chance";
     $("trades").classList.toggle("hide", !playing);
     $("pause-btn").classList.toggle("hide", !playing);
-    let status = "";
-    if (S.halveBull) status = t("halvingNow") + "  " + Math.ceil(S.powerT) + "s";
-    else if (S.power === "BULL") status = t("bullRun") + "  " + Math.ceil(S.powerT) + "s";
-    else if (S.power === "BEAR") status = t("bearCrash") + "  " + Math.ceil(S.powerT) + "s";
-    if (S.jobName) status = status ? status + "  ·  " + S.jobName : S.jobName;
-    if (S.laserOn) status = status ? status + "  ·  " + t("laserNow") + " " + Math.ceil(S.laserT) + "s" : t("laserNow") + "  " + Math.ceil(S.laserT) + "s";
-    $("status").textContent = status;
-    $("status").classList.toggle("hide", !(status && S.phase === "play"));
+    let powers = "";
+    if (S.halveBull) powers = t("halvingNow") + "  " + Math.ceil(S.powerT) + "s";
+    else if (S.power === "BULL") powers = t("bullRun") + "  " + Math.ceil(S.powerT) + "s";
+    else if (S.power === "BEAR") powers = t("bearCrash") + "  " + Math.ceil(S.powerT) + "s";
+    if (S.laserOn) powers = powers ? powers + "  ·  " + t("laserNow") + " " + Math.ceil(S.laserT) + "s" : t("laserNow") + "  " + Math.ceil(S.laserT) + "s";
+    const jobEl = $("status-job");
+    const powEl = $("status-powers");
+    if (powEl) { powEl.textContent = powers; powEl.classList.toggle("hide", !powers); }
+    if (jobEl) { jobEl.textContent = S.jobName || ""; jobEl.classList.toggle("hide", !S.jobName); }
+    if (!powEl && !jobEl) $("status").textContent = powers && S.jobName ? powers + "  ·  " + S.jobName : (powers || S.jobName || "");
+    $("status").classList.toggle("hide", !((powers || S.jobName) && S.phase === "play"));
     const cap = $("caption");
     if (cap) {
       cap.textContent = S.ticker || "";
