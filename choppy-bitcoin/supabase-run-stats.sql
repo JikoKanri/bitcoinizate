@@ -1,4 +1,5 @@
 -- Run in the Supabase SQL editor. Safe to re-run.
+-- If the dashboard warns about RLS / a table, click "Run without RLS".
 
 alter table public.profiles add column if not exists score_time double precision;
 alter table public.profiles add column if not exists run_stats jsonb;
@@ -19,9 +20,9 @@ set search_path = public
 as '
 declare
   uid uuid := auth.uid();
-  old_score bigint;
-  old_time double precision;
-  last_at timestamptz;
+  v_prev bigint;
+  v_time double precision;
+  v_at timestamptz;
 begin
   if uid is null then
     raise exception ''not signed in'';
@@ -42,20 +43,20 @@ begin
     raise exception ''score vs candles'';
   end if;
 
-  select highscore, score_time, last_score_at into old_score, old_time, last_at
+  select highscore, score_time, last_score_at into v_prev, v_time, v_at
   from public.profiles where id = uid;
   if not found then
     raise exception ''no profile'';
   end if;
-  if last_at is not null and last_at > now() - interval ''15 seconds'' then
+  if v_at is not null and v_at > now() - interval ''15 seconds'' then
     raise exception ''slow down'';
   end if;
-  if old_score is null then old_score := 0; end if;
-  if p_score < old_score then
-    return old_score;
+  if v_prev is null then v_prev := 0; end if;
+  if p_score < v_prev then
+    return v_prev;
   end if;
-  if p_score = old_score and old_time is not null and p_life >= old_time then
-    return old_score;
+  if p_score = v_prev and v_time is not null and p_life >= v_time then
+    return v_prev;
   end if;
 
   perform set_config(''app.score_ok'', ''1'', true);
