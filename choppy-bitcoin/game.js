@@ -239,9 +239,19 @@
     const remap = (arr) => (arr || []).map((m) => ({
       kind: m.kind, price: m.price, i: n > maxN ? Math.round((m.i || 0) * scale) : (m.i || 0)
     }));
+    const packArr = (arr) => {
+      const src = arr || [];
+      if (n <= maxN) return src.slice();
+      const out = [];
+      for (let i = 0; i < maxN; i++) out.push(src[Math.min(src.length - 1, Math.round(i / scale))] || 0);
+      return out;
+    };
     st.tape = packed;
     st.marks = remap(S.runMarks);
     st.trades = remap(S.runTrades);
+    st.tapeCash = packArr(S.runCash && S.runCash.length ? S.runCash : S.tapeCash);
+    st.tapeBtc = packArr(S.runBtcBag && S.runBtcBag.length ? S.runBtcBag : S.tapeBtcBag);
+    st.tapeNet = packArr(S.runNet && S.runNet.length ? S.runNet : S.tapeNet);
     return st;
   }
   function loadBest() {
@@ -360,7 +370,7 @@
     lastGapY: 0, spawnX: 0, best: loadBest(),
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
-    tape: [], tapeVt: [], tapeMarks: [], tapeTrades: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: 0.0006, level: 1,
+    tape: [], tapeVt: [], tapeCash: [], tapeBtcBag: [], tapeNet: [], tapeMarks: [], tapeTrades: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: 0.0006, level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
@@ -698,12 +708,12 @@
     S.cycleStart = S.price; S.cycleDur = POWER_S; S.cycleElapsed = 0;
     S.cycleAmp = 0;
     S.cycleMax = S.price; S.cycleMin = S.price; S.cycleMaxI = 0; S.cycleMinI = 0;
-    S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
+    S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeCash = []; S.tapeBtcBag = []; S.tapeNet = []; S.tapeLo = null; S.tapeHi = null;
     S.tapeMarks = []; S.tapeTrades = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
     S.waves = []; S.priceBase = clampPx(S.price);
     S.drift = 0.0006 * (1 + (Math.random() * 2 - 1));
-    S.runTab = null; S.runTape = []; S.runMarks = []; S.runTrades = [];
+    S.runTab = null; S.runTape = []; S.runMarks = []; S.runTrades = []; S.runCash = []; S.runBtcBag = []; S.runNet = []; S.chartFlags = { trades: false, btc: false, usd: false, net: false };
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
@@ -2245,6 +2255,9 @@
     tickAi(dt);
     while (S.sampleAcc >= 0.12) {
       S.tape.push(S.price);
+      S.tapeCash.push(S.cash);
+      S.tapeBtcBag.push(S.btc);
+      S.tapeNet.push(netBtc());
       if (S.level >= 2) S.tapeVt.push(S.vtPrice);
       S.sampleAcc -= 0.12;
     }
@@ -2786,6 +2799,9 @@
     S.runTape = (S.tape || []).slice();
     S.runMarks = (S.tapeMarks || []).slice();
     S.runTrades = (S.tapeTrades || []).slice();
+    S.runCash = (S.tapeCash || []).slice();
+    S.runBtcBag = (S.tapeBtcBag || []).slice();
+    S.runNet = (S.tapeNet || []).slice();
   }
 
   function recapL(en, es) {
@@ -2805,7 +2821,8 @@
       + "</div>";
     let body;
     if (tab === "chart") {
-      body = "<canvas id=\"run-tape\" width=\"420\" height=\"228\"></canvas>";
+      body = "<canvas id=\"run-tape\" width=\"420\" height=\"228\"></canvas>"
+        + (window.chartOptsHtml ? window.chartOptsHtml(S.chartFlags || { trades: false, btc: false, usd: false, net: false }) : "");
     } else {
       const startNet = (st.startCash || 0) / Math.max(0.01, st.startPrice || 1);
       const pxMul = (st.endPrice || 0) / Math.max(0.01, st.startPrice || 1);
@@ -2841,6 +2858,17 @@
       + "<button type=\"button\" class=\"cta\" id=\"recap-back\">" + t("back") + "</button>";
   }
 
+  function recapBag() {
+    return {
+      tape: S.runTape || S.tape || [],
+      marks: S.runMarks || [],
+      trades: S.runTrades || [],
+      tapeCash: S.runCash || S.tapeCash || [],
+      tapeBtc: S.runBtcBag || S.tapeBtcBag || [],
+      tapeNet: S.runNet || S.tapeNet || []
+    };
+  }
+
   function bindRunRecap() {
     const stBtn = $("recap-stats");
     const chBtn = $("recap-chart");
@@ -2854,7 +2882,14 @@
   function paintRunTape() {
     const canvas = $("run-tape");
     if (!canvas) return;
-    const data = S.runTape || S.tape || [];
+    if (!S.chartFlags) S.chartFlags = { trades: false, btc: false, usd: false, net: false };
+    const bag = recapBag();
+    if (window.paintRunChart) {
+      window.paintRunChart(canvas, bag, S.chartFlags);
+      if (window.bindChartControls) window.bindChartControls(overlay, bag, S.chartFlags, canvas);
+      return;
+    }
+    const data = bag.tape || [];
     const ctx = canvas.getContext("2d");
     const W = canvas.width, H = canvas.height;
     ctx.fillStyle = "#0a0a0c";

@@ -1,6 +1,9 @@
 (() => {
   const GREEN = "#4f9d6e";
   const RED = "#c45c4a";
+  const GOLD = "#F2A900";
+  const CYAN = "#9befff";
+  const CREAM = "#fff6d0";
   function es() { return window.BZ && BZ.lang && BZ.lang() === "es"; }
   function t(en, esTxt) { return es() ? esTxt : en; }
   function fmtTime(sec) {
@@ -53,8 +56,33 @@
       + "</ul>";
   }
 
-  function paintTape(canvas, bag) {
+  function emptyOpts() { return { trades: false, btc: false, usd: false, net: false }; }
+
+  function chartOptsHtml(opts) {
+    opts = opts || emptyOpts();
+    const box = (key, lab) => "<label class=\"chart-opt\"><input type=\"checkbox\" data-opt=\"" + key + "\"" + (opts[key] ? " checked" : "") + "> " + lab + "</label>";
+    return "<div class=\"chart-opts\">"
+      + box("trades", t("Buys / sells", "Compras / ventas"))
+      + box("btc", t("BTC bag", "Bolsa BTC"))
+      + box("usd", t("USD bag", "Bolsa USD"))
+      + box("net", t("Net worth", "Patrimonio"))
+      + "<button type=\"button\" class=\"stats-mini\" data-chart-large=\"1\">" + t("Open large", "Abrir grande") + "</button>"
+      + "</div>";
+  }
+
+  function bucketSeries(arr, bucket, nBars) {
+    const src = arr || [];
+    const out = [];
+    for (let i = 0; i < nBars; i++) {
+      const sl = src.slice(i * bucket, i * bucket + bucket);
+      out.push(sl.length ? sl[sl.length - 1] : (out.length ? out[out.length - 1] : 0));
+    }
+    return out;
+  }
+
+  function paintRunChart(canvas, bag, opts) {
     if (!canvas || !bag) return;
+    opts = opts || emptyOpts();
     const data = bag.tape || [];
     const ctx = canvas.getContext("2d");
     const W = canvas.width, H = canvas.height;
@@ -67,7 +95,7 @@
       ctx.fillText("—", W / 2, H / 2);
       return;
     }
-    const target = 92;
+    const target = Math.max(80, Math.min(220, Math.floor(W / 6)));
     const bucket = Math.max(1, Math.ceil(data.length / target));
     const bars = [];
     for (let i = 0; i < data.length; i += bucket) {
@@ -79,10 +107,10 @@
     for (const b of bars) { if (b.l < lo) lo = b.l; if (b.h > hi) hi = b.h; }
     const pad = Math.max(0.01, (hi - lo) * 0.08);
     lo -= pad; hi += pad;
-    const left = 8, right = 8, top = 16, bot = 16;
+    const left = 10, right = 10, top = 16, bot = 22;
     const innerW = W - left - right, innerH = H - top - bot;
     const stepX = innerW / Math.max(1, bars.length);
-    const cw = Math.max(1.2, Math.min(5.2, stepX * 0.72));
+    const cw = Math.max(1.2, Math.min(6.5, stepX * 0.72));
     const py = (v) => top + (1 - (v - lo) / Math.max(0.01, hi - lo)) * innerH;
     bars.forEach((b, i) => {
       const x = left + i * stepX;
@@ -113,27 +141,81 @@
       ctx.strokeText(lab, x, y);
       ctx.fillText(lab, x, y);
     });
-    (bag.trades || []).forEach((tr) => {
-      const vi = Math.floor((tr.i || 0) / bucket);
-      if (vi < 0 || vi >= bars.length) return;
-      const x = left + vi * stepX + cw / 2;
-      const y = py(tr.price);
-      const buy = tr.kind === "buy";
-      ctx.fillStyle = buy ? GREEN : RED;
+    if (opts.trades) {
+      (bag.trades || []).forEach((tr) => {
+        const vi = Math.floor((tr.i || 0) / bucket);
+        if (vi < 0 || vi >= bars.length) return;
+        const x = left + vi * stepX + cw / 2;
+        const y = py(tr.price);
+        const buy = tr.kind === "buy";
+        ctx.fillStyle = buy ? GREEN : RED;
+        ctx.beginPath();
+        if (buy) { ctx.moveTo(x, y - 8); ctx.lineTo(x + 5.5, y + 3); ctx.lineTo(x - 5.5, y + 3); }
+        else { ctx.moveTo(x, y + 8); ctx.lineTo(x + 5.5, y - 3); ctx.lineTo(x - 5.5, y - 3); }
+        ctx.closePath(); ctx.fill();
+        ctx.textBaseline = buy ? "bottom" : "top";
+        ctx.strokeText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
+        ctx.fillText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
+      });
+    }
+    function strokeSeries(arr, color) {
+      if (!arr || arr.length < 2) return;
+      const vals = bucketSeries(arr, bucket, bars.length);
+      let sLo = vals[0], sHi = vals[0];
+      for (let i = 1; i < vals.length; i++) { if (vals[i] < sLo) sLo = vals[i]; if (vals[i] > sHi) sHi = vals[i]; }
+      if (sHi - sLo < 1e-12) { sLo -= 1; sHi += 1; }
       ctx.beginPath();
-      if (buy) { ctx.moveTo(x, y - 8); ctx.lineTo(x + 5.5, y + 3); ctx.lineTo(x - 5.5, y + 3); }
-      else { ctx.moveTo(x, y + 8); ctx.lineTo(x + 5.5, y - 3); ctx.lineTo(x - 5.5, y - 3); }
-      ctx.closePath(); ctx.fill();
-      ctx.textBaseline = buy ? "bottom" : "top";
-      ctx.strokeText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
-      ctx.fillText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
-    });
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.8;
+      vals.forEach((v, i) => {
+        const x = left + i * stepX + cw / 2;
+        const y = top + (1 - (v - sLo) / (sHi - sLo)) * innerH;
+        if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      });
+      ctx.stroke();
+    }
+    if (opts.btc) strokeSeries(bag.tapeBtc, GOLD);
+    if (opts.usd) strokeSeries(bag.tapeCash, CYAN);
+    if (opts.net) strokeSeries(bag.tapeNet, CREAM);
     ctx.restore();
     ctx.font = "700 9px monospace";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillStyle = GREEN; ctx.fillText("▲ B", 10, H - 12);
-    ctx.fillStyle = RED; ctx.fillText("▼ S", 50, H - 12);
+    let lx = 10;
+    function legend(color, lab) {
+      ctx.fillStyle = color;
+      ctx.fillText(lab, lx, H - 14);
+      lx += ctx.measureText(lab).width + 12;
+    }
+    legend("#8a8680", t("Price", "Precio"));
+    if (opts.trades) { legend(GREEN, "B"); legend(RED, "S"); }
+    if (opts.btc) legend(GOLD, t("BTC bag", "BTC"));
+    if (opts.usd) legend(CYAN, t("USD bag", "USD"));
+    if (opts.net) legend(CREAM, t("Net", "Net"));
+  }
+
+  function openRunChartTab(bag, opts) {
+    try {
+      sessionStorage.setItem("choppy-chart", JSON.stringify({ bag: bag || {}, opts: opts || emptyOpts() }));
+    } catch (e) {}
+    window.open("/choppy-bitcoin/chart.html", "_blank", "noopener");
+  }
+
+  function bindChartControls(root, bag, opts, canvas, onChange) {
+    if (!root) return;
+    root.querySelectorAll("[data-opt]").forEach((el) => {
+      el.onchange = () => {
+        opts[el.getAttribute("data-opt")] = !!el.checked;
+        if (onChange) onChange(opts);
+        paintRunChart(canvas, bag, opts);
+      };
+    });
+    const large = root.querySelector("[data-chart-large]");
+    if (large) large.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openRunChartTab(bag, opts);
+    };
   }
 
   function ensureModal() {
@@ -153,6 +235,9 @@
         + "#saved-run-modal .recap-list li{display:flex;justify-content:space-between;padding:2px 0;font-size:12px}"
         + "#saved-run-modal .k{color:#8a8680}"
         + "#saved-run-modal #saved-run-tape{width:100%;height:220px;background:#0a0a0c;border:1px solid #2a2a2e}"
+        + "#saved-run-modal .chart-opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;font-size:11px}"
+        + "#saved-run-modal .chart-opt{display:flex;align-items:center;gap:4px;color:#c8c4bc}"
+        + "#saved-run-modal .chart-opt input{accent-color:#c8960a}"
         + "#saved-run-modal .recap-close{margin-top:12px;width:100%;min-height:40px;background:#c8960a;color:#09090b;border:0;font:inherit;font-weight:700;cursor:pointer}";
       document.head.appendChild(css);
     }
@@ -176,26 +261,37 @@
     const m = ensureModal();
     const card = document.getElementById("saved-run-card");
     let tab = "stats";
+    const opts = emptyOpts();
     function draw() {
       card.innerHTML = "<h1>" + t("RUN TAPE", "CINTA DE LA RUN") + "</h1>"
         + "<div class=\"recap-tabs\">"
         + "<button type=\"button\" class=\"" + (tab === "stats" ? "on" : "") + "\" data-tab=\"stats\">STATS</button>"
         + "<button type=\"button\" class=\"" + (tab === "chart" ? "on" : "") + "\" data-tab=\"chart\">CHART</button>"
         + "</div>"
-        + (tab === "chart" ? "<canvas id=\"saved-run-tape\" width=\"420\" height=\"228\"></canvas>" : statsList(bag))
+        + (tab === "chart"
+          ? "<canvas id=\"saved-run-tape\" width=\"420\" height=\"228\"></canvas>" + chartOptsHtml(opts)
+          : statsList(bag))
         + "<button type=\"button\" class=\"recap-close\" id=\"saved-run-close\">" + t("BACK", "VOLVER") + "</button>";
       card.querySelectorAll("[data-tab]").forEach((btn) => {
         btn.onclick = () => { tab = btn.getAttribute("data-tab"); draw(); };
       });
       const close = document.getElementById("saved-run-close");
       if (close) close.onclick = closeSavedRunStats;
-      if (tab === "chart") paintTape(document.getElementById("saved-run-tape"), bag);
+      if (tab === "chart") {
+        const canvas = document.getElementById("saved-run-tape");
+        paintRunChart(canvas, bag, opts);
+        bindChartControls(card, bag, opts, canvas);
+      }
     }
     draw();
     m.classList.add("open");
     m.style.display = "flex";
   }
 
+  window.paintRunChart = paintRunChart;
+  window.chartOptsHtml = chartOptsHtml;
+  window.bindChartControls = bindChartControls;
+  window.openRunChartTab = openRunChartTab;
   window.openSavedRunStats = openSavedRunStats;
   window.closeSavedRunStats = closeSavedRunStats;
 })();
