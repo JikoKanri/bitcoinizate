@@ -46,14 +46,14 @@ body {
   min-width: 0;
 }
 .stat span {
-  font-size: clamp(8px, 2.1vw, 10px);
+  font-size: clamp(9px, 2.4vw, 12px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #8a8680;
   white-space: nowrap;
 }
 .stat b {
-  font-size: clamp(11px, 2.8vw, 13px);
+  font-size: clamp(13px, 3.2vw, 15px);
   font-weight: 700;
   line-height: 1.2;
   min-width: 0;
@@ -123,7 +123,6 @@ body {
   text-shadow: 0 0 4px #000, 0 1px 0 #000, 1px 1px 0 #000, -1px -1px 0 #000;
   background: rgba(10,10,12,0.88); border: 1px solid #3a3a40; padding: 5px 10px;
 }
-.banner.top { top: 8px; z-index: 8; max-width: 70%; }
 .ia-log { width: 100%; max-width: 420px; text-align: left; border: 1px solid #2a2a2e; background: #0e0e10; padding: 8px 10px; max-height: 160px; overflow-y: auto; }
 .ia-log p { font-size: 11px; color: #b4b0a8; max-width: none; margin: 0 0 6px; line-height: 1.35; }
 .ia-log .ia-when { color: #8a8680; margin-right: 6px; }
@@ -152,9 +151,16 @@ body {
   80% { transform: translate(5px, 3px); }
 }
 .banner { position: absolute; left: 50%; transform: translateX(-50%); max-width: 90%; text-align: center; font-size: 12px; background: rgba(10,10,12,0.85); border: 1px solid #2a2a2e; padding: 6px 12px; border-radius: 4px; pointer-events: none; z-index: 5; }
-.banner.top { top: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #c8960a; }
+.banner.top {
+  top: 8px; left: 10px; right: 88px; transform: none; z-index: 8;
+  max-width: none; width: auto; text-align: left;
+  white-space: normal; line-height: 1.2;
+  letter-spacing: 0.04em; color: #c8960a;
+}
+  letter-spacing: 0.04em; color: #c8960a;
+}
 .banner.bot { bottom: 88px; }
-.trades { position: absolute; left: 12px; right: 56px; bottom: 12px; z-index: 8; display: flex; flex-direction: column; gap: 6px; }
+.trades { position: absolute; left: 12px; right: 64px; bottom: 12px; z-index: 8; display: flex; flex-direction: column; gap: 6px; }
 .lyric-stage {
   position: absolute; left: 12px; right: auto; bottom: 58px; z-index: 8;
   width: min(52%, 240px); max-width: 240px;
@@ -184,23 +190,25 @@ body {
 #spd-2.dock-spd,
 #spd-2.dock-spd.on,
 #spd-2.dock-spd:disabled {
-  flex: 0 0 60px; width: 60px; min-width: 60px; max-width: 60px;
-  min-height: 60px; padding: 0;
+  flex: 0 0 45px; width: 45px; min-width: 45px; max-width: 45px;
+  min-height: 45px; height: 45px; padding: 0;
   font-size: 17px; font-weight: 700; letter-spacing: 0;
-  border-color: #c8960a; background: #c8960a; color: #09090b;
+  border: 1px solid rgba(200, 150, 10, 0.75);
+  background: rgba(200, 150, 10, 0.12);
+  color: rgba(240, 208, 96, 0.9);
   opacity: 1; filter: none;
 }
 .buy, .sell, .pause, .cta { font: inherit; cursor: pointer; border: 0; }
 .cta { background: #c8960a; color: #120c02; min-height: 44px; padding: 0 16px; font-weight: 700; text-transform: uppercase; }
 .play-alt { background: transparent; color: #f3efe6; border: 1px solid #c8960a; }
 .speed-bar button:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.7); }
-.buy, .sell { flex: 1; min-height: 52px; font-size: 24px; font-weight: 700; white-space: nowrap; background: transparent; text-transform: uppercase; letter-spacing: 0.04em; }
+.buy, .sell { flex: 1; min-height: 45px; height: 45px; font-size: 24px; font-weight: 700; white-space: nowrap; background: transparent; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
 .buy:disabled, .sell:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.65); }
 .buy { color: rgba(31, 138, 76, 0.75); border: 1px solid rgba(31, 138, 76, 0.75); background: rgba(31, 138, 76, 0.12); }
 .sell { color: rgba(163, 58, 50, 0.75); border: 1px solid rgba(163, 58, 50, 0.75); background: rgba(163, 58, 50, 0.12); }
 .pause {
   position: absolute; right: 12px; bottom: 12px; z-index: 8;
-  min-width: 40px; min-height: 40px; width: 40px; height: 40px; padding: 0;
+  min-width: 45px; min-height: 45px; width: 45px; height: 45px; padding: 0;
   background: rgba(10, 10, 12, 0.12); color: rgba(243, 239, 230, 0.75);
   border: 1px solid rgba(243, 239, 230, 0.35);
 }
