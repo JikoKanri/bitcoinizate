@@ -221,7 +221,7 @@
       chanceOutcome: "Resultado",
       market: "Mercado",
       pickOne: "Elige uno. Después toca ▶.",
-      declinePerk: "Rechazar suave",
+      declinePerk: "Rechazar cortésmente",
       declinePerkSub: "seguir sin perk",
       selected: "Elegido. Toca ▶ para seguir.",
       play: "Jugar Choppy Bitcoin",

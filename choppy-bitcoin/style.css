@@ -60,6 +60,8 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.hud-grid > .stat:nth-child(-n+6) span { font-size: clamp(8.6px, 2.28vw, 11.4px); }
+.hud-grid > .stat:nth-child(-n+6) b { font-size: clamp(12.4px, 3.04vw, 14.25px); }
 .stat span.sub { margin-top: 0; }
 #h-cold-wrap,
 #h-laser-wrap,
@@ -291,7 +293,13 @@ body {
 .overlay-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .overlay .home { margin-left: 0; }
 .perk-list { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 360px; }
-.perk-list .cta { width: 100%; font-size: 12px; min-height: 52px; background: #1a1a1e; color: #f3efe6; border: 1px solid #3a3a40; }
+.perk-list .cta {
+  width: 100%; font-size: 12px; min-height: 52px; background: #1a1a1e; color: #f3efe6; border: 1px solid #3a3a40;
+  text-transform: none; line-height: 1.25;
+}
+.perk-name { display: block; text-transform: uppercase; font-weight: 700; }
+.perk-desc { display: block; text-transform: lowercase; font-weight: 500; font-size: 11px; color: #b4b0a8; margin-top: 2px; }
+.perk-list .cta.on .perk-desc { color: #3a3010; }
 .perk-list .cta.on { background: #c8960a; color: #09090b; border-color: #f0d060; outline: 3px solid #fff2b0; }
 .field.perk-ui .overlay { pointer-events: none; padding-bottom: 88px; }
 .field.perk-ui .overlay > * { pointer-events: auto; }

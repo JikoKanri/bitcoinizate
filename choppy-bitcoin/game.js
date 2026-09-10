@@ -301,7 +301,7 @@
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
     tape: [], tapeVt: [], level: 1,
-    startCash: 0, startPrice: 0, peakNet: 0, candles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
+    startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false, ranked: true,
@@ -383,7 +383,7 @@
       x, y, text, color,
       life: gain || power ? 0.825 : 1.1,
       vy: gain || power ? -32 : -38,
-      size: power ? 7.7 : gain ? 7 : 13,
+      size: power ? 7.7 : gain ? 7.35 : 13,
       maxA: gain || power ? 0.75 : 0.875,
     });
   }
@@ -535,7 +535,7 @@
       S.btc = 0; S.vt = 0; S.vtPrice = 0; S.level = 1; S.hitCap = false;
       S.price = gauss(20000, 0, 40000);
       S.startCash = S.cash; S.startPrice = S.price;
-      S.peakNet = netBtc(); S.candles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
+      S.peakNet = netBtc(); S.candles = 0; S.shownCandles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 };
@@ -549,6 +549,7 @@
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
+    S.shownCandles = 0;
     S.swanBear = false; S.halveSpeechUntil = 0;
     S.cold = S.ranked ? 0 : 9;
     S.invuln = 0;
@@ -2025,8 +2026,9 @@
     for (let i = S.pipes.length - 1; i >= 0; i--) {
       const p = S.pipes[i];
       p.x -= speed * dt;
-      if (!p.seen && p.x <= S.W && p.x > S.W - Math.max(speed * dt, 6) - 2) {
+      if (!p.seen && p.x + pw >= 0 && p.x <= S.W) {
         p.seen = true;
+        S.shownCandles = (S.shownCandles || 0) + 1;
         tickHalve();
       }
       if (!p.scored && p.x + pw < S.bird.x) {
@@ -2286,7 +2288,7 @@
       clock.classList.toggle("hide", hideClock);
     }
     if (candles) {
-      candles.textContent = String(S.candles || 0);
+      candles.textContent = String(S.shownCandles || 0);
       candles.classList.toggle("hide", hideClock);
     }
     const box = $("clock-box");
@@ -2913,8 +2915,8 @@
         const tier = (S.have[id] || 0) + 1;
         const sel = chosen === id;
         const label = id === "skip"
-          ? t("declinePerk") + " · " + t("declinePerkSub")
-          : perkTitle(id, tier) + " · " + perkBlurb(id, tier);
+          ? "<span class=\"perk-name\">" + t("declinePerk") + "</span><span class=\"perk-desc\">" + t("declinePerkSub") + "</span>"
+          : "<span class=\"perk-name\">" + perkTitle(id, tier) + "</span><span class=\"perk-desc\">" + perkBlurb(id, tier) + "</span>";
         return "<button class=\"cta" + (id === "skip" ? " play-alt" : "") + (sel ? " on" : "") + "\" data-perk=\"" + id + "\">" + (sel ? "✓ " : "") + label + "</button>";
       }).join("");
       overlay.innerHTML = "<h1>" + perkOfferTitle() + "</h1><p>" + (chosen ? t("selected") : t("pickOne")) + (S.perkHint ? "</p><p class=\"k\">A.I. bud: " + perkTitle(S.perkHint, S.poolTier[S.perkHint] || 1) + " — " + perkWhy(S.perkHint) : "") + "</p><div class=\"perk-list\">" + btns + "</div>";
