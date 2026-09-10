@@ -4,6 +4,8 @@
   const overlay = document.getElementById("overlay");
   const A = window.ArcadeAudio;
   const POWER_S = 5;
+  const WAVE_UP = 3;
+  const WAVE_BACK = 2;
   const HALVE_N = 21;
   const HALVE_GAP = 210;
   const GREEN = "#4f9d6e";
@@ -281,6 +283,24 @@
     return (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
   }
 
+  function pickCycleResid(kind, amp) {
+    let mag;
+    if (kind === "HALVE") mag = 0.50 + Math.random() * 0.25;
+    else if (kind === "SWAN") {
+      const r = adoptSwanRange(S.have.adopt || 0);
+      mag = Math.abs(r.lo + Math.random() * (r.hi - r.lo));
+    } else if (kind === "BULL") {
+      const r = adoptBullRange(S.have.adopt || 0);
+      mag = r.lo + Math.random() * (r.hi - r.lo);
+    } else {
+      const r = adoptBearRange(S.have.adopt || 0);
+      mag = Math.abs(r.lo + Math.random() * (r.hi - r.lo));
+    }
+    mag = Math.max(0.004, mag);
+    if (mag > amp * 0.92) mag = amp * 0.72;
+    return mag;
+  }
+
   function pickItem() {
     const bag = ["BULL","BULL","BULL","BULL","BULL","BULL","BULL","BULL","BEAR","BEAR","BEAR","BEAR","BEAR","LASER","LASER","COLD","COLD","COLD","SWAN","SWAN","SWAN","SWAN"];
     let type = bag[(Math.random() * bag.length) | 0];
@@ -306,7 +326,7 @@
     lastGapY: 0, spawnX: 0, best: loadBest(),
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
-    tape: [], tapeVt: [], tapeMarks: [], eventPeaks: [], eventBottoms: [], level: 1,
+    tape: [], tapeVt: [], tapeMarks: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
@@ -571,32 +591,95 @@
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeLo = null; S.tapeHi = null;
     S.tapeMarks = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
+    S.waves = []; S.priceBase = clampPx(S.price);
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
     S.spawnX = first + m.spacing * 2;
   }
 
-  function beginCycle(type, kind) {
-    if (S.power !== "NONE" && S.power !== type) endCycle();
-    if (type !== "BULL") S.halveBull = false;
-    if (type !== "BEAR") S.swanBear = false;
-    const extra = pickCycleAmp(kind || type);
-    if (S.power === type) {
-      S.powerT += POWER_S;
-      S.cycleDur += POWER_S;
-      S.cycleAmp = (S.cycleAmp || 0) + extra;
-      S.cycleStacks = (S.cycleStacks || 1) + 1;
-      return;
+  function waveK(w, now) {
+    const t = now - w.t0;
+    if (t <= 0) return 0;
+    const dur = WAVE_UP + WAVE_BACK;
+    const dir = w.dir;
+    if (t <= WAVE_UP) {
+      const u = t / WAVE_UP;
+      const e = u * u * (3 - 2 * u);
+      return dir * w.amp * e;
     }
-    S.cycleStart = clampPx(S.price); S.vtCycle = S.vtPrice;
-    S.cycleDur = POWER_S; S.cycleElapsed = 0;
-    S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 1;
-    S.cycleMax = S.price; S.cycleMin = S.price;
-    S.cycleMaxI = S.tape.length; S.cycleMinI = S.tape.length;
-    S.tapeLive = { kind: type === "BULL" ? "peak" : "bottom", price: S.price, i: S.tape.length };
-    S.power = type; S.powerT = POWER_S;
-    S.cycleAmp = extra;
+    if (t < dur) {
+      const u = (t - WAVE_UP) / WAVE_BACK;
+      const e = u * u * (3 - 2 * u);
+      return dir * (w.amp + (w.resid - w.amp) * e);
+    }
+    return dir * w.resid;
+  }
+
+  function syncWaveFlags() {
+    const waves = S.waves || [];
+    S.halveBull = waves.some((w) => w.kind === "HALVE");
+    S.swanBear = waves.some((w) => w.kind === "SWAN");
+    S.cycleStacks = waves.length;
+    const dur = WAVE_UP + WAVE_BACK;
+    let left = 0;
+    for (const w of waves) left = Math.max(left, w.t0 + dur - S.lifeT);
+    S.powerT = Math.max(0, left);
+    if (!waves.length) { S.power = "NONE"; S.powerT = 0; }
+  }
+
+  function cutWaves() {
+    if (!(S.waves && S.waves.length)) return;
+    stampCycleMark();
+    S.priceBase = clampPx(S.price);
+    S.waves = [];
+    S.tapeLive = null;
+    S.halveBull = false;
+    S.swanBear = false;
+    S.power = "NONE";
+    S.powerT = 0;
+    S.cycleManip = 1;
+    S.cycleStacks = 0;
+  }
+
+  function beginCycle(type, kind) {
+    const k = kind || type;
+    const dir = type === "BULL" ? 1 : -1;
+    if ((S.waves || []).length && S.power && S.power !== type) cutWaves();
+    const amp = pickCycleAmp(k);
+    const resid = pickCycleResid(k, amp);
+    if (!(S.waves && S.waves.length)) {
+      S.priceBase = clampPx(S.price);
+      S.cycleStart = S.priceBase;
+      S.vtCycle = S.vtPrice;
+      S.cycleManip = 1;
+      S.cycleMax = S.price;
+      S.cycleMin = S.price;
+      S.cycleMaxI = S.tape.length;
+      S.cycleMinI = S.tape.length;
+      S.tapeLive = { kind: dir > 0 ? "peak" : "bottom", price: S.price, i: S.tape.length };
+      S.waves = [];
+    }
+    S.waves.push({ type: type, kind: k, dir: dir, amp: amp, resid: resid, t0: S.lifeT });
+    S.power = type;
+    if (k === "HALVE") S.halveBull = true;
+    if (k === "SWAN") S.swanBear = true;
+    syncWaveFlags();
+  }
+
+  function endCycle() {
+    if (S.power === "NONE" && !(S.waves && S.waves.length)) return;
+    stampCycleMark();
+    let sum = 0;
+    for (const w of (S.waves || [])) sum += w.dir * w.resid;
+    let next = (S.priceBase || S.price) * (1 + sum) * (S.cycleManip || 1);
+    if (S.halveFloor > 0 && S.power === "BULL") next = Math.max(next, S.halveFloor);
+    S.price = clampPx(next);
+    S.priceBase = S.price;
+    if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + sum * 0.45) * (S.cycleManip || 1));
+    S.waves = [];
+    S.power = "NONE"; S.powerT = 0; S.halveBull = false; S.swanBear = false;
+    S.cycleStacks = 0; S.cycleManip = 1; S.cycleEnv = 0; S.tapeLive = null;
   }
 
   function halveMinRise() {
@@ -637,37 +720,6 @@
       else if (S.trend === "down") bias -= 0.004 * k;
     }
     return bias;
-  }
-
-  function endCycle() {
-    if (S.power === "NONE") return;
-    stampCycleMark();
-    S.tapeLive = null;
-    const n = Math.max(1, S.cycleStacks || 1);
-    const m = S.cycleManip || 1;
-    let next;
-    if (S.halveBull && S.power === "BULL") {
-      const floor = S.cycleStart + halveMinRise();
-      const residual = 0.50 + Math.random() * 0.25;
-      next = Math.max(floor, S.cycleStart * (1 + residual) * m);
-    } else if (S.power === "BULL") {
-      const r = adoptBullRange(S.have.adopt || 0);
-      const one = r.lo + Math.random() * (r.hi - r.lo);
-      next = S.cycleStart * (1 + one * n) * m;
-    } else if (S.swanBear) {
-      const r = adoptSwanRange(S.have.adopt || 0);
-      const one = r.lo + Math.random() * (r.hi - r.lo);
-      next = S.cycleStart * (1 + one * n) * m;
-    } else {
-      const r = adoptBearRange(S.have.adopt || 0);
-      const one = r.lo + Math.random() * (r.hi - r.lo);
-      next = S.cycleStart * (1 + one * n) * m;
-    }
-    if (S.halveFloor > 0) next = Math.max(next, S.halveFloor);
-    S.price = clampPx(next);
-    if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (S.halveBull ? 1.06 : 1 + (S.price / S.cycleStart - 1) * 0.55));
-    S.power = "NONE"; S.powerT = 0; S.halveBull = false; S.swanBear = false;
-    S.cycleStacks = 0; S.cycleManip = 1; S.cycleEnv = 0; S.tapeLive = null;
   }
 
   function spawnHalve() {
@@ -743,18 +795,9 @@
     }
     if (it.type === "HALVE") {
       S.halvings += 1;
-      S.halveBull = true;
-      const wasBull = S.power === "BULL";
-      const floorFrom = wasBull ? S.cycleStart : S.price;
+      const floorFrom = S.power === "BULL" ? (S.priceBase || S.price) : S.price;
       S.halveFloor = Math.max(S.halveFloor, floorFrom + halveMinRise());
       beginCycle("BULL", "HALVE");
-      if (!wasBull) {
-        S.cycleDur = POWER_S * 1.2;
-        S.powerT = S.cycleDur;
-      } else {
-        S.cycleDur += POWER_S * 0.2;
-        S.powerT += POWER_S * 0.2;
-      }
       say("Halving number " + S.halvings, true, "halve");
       A.sfx.cap();
       return;
@@ -2034,20 +2077,20 @@
     let speed = m.speed * scrollMul();
     if (S.power === "BULL" || S.power === "BEAR" || S.laserOn) speed *= 1.28;
     if (S.power === "BULL" || S.power === "BEAR") {
-      S.powerT -= dt; S.cycleElapsed += dt;
       S.cycleManip = Math.max(0.15, (S.cycleManip || 1) * (1 + trendBias() * dt));
-      const u = Math.min(1, S.cycleElapsed / Math.max(0.001, S.cycleDur));
-      const env = 1 - Math.pow(1 - u, 1.2);
-      S.cycleEnv = Math.max(S.cycleEnv || 0, env);
-      const dir = S.power === "BULL" ? 1 : -1;
-      const n = Math.max(1, S.cycleStacks || 1);
-      const amp = S.cycleAmp || (S.halveBull ? 0.62 : 0.275);
-      const wobble = Math.sin(S.cycleElapsed * 1.35) * (0.008 / Math.sqrt(n));
-      const move = 1 + dir * amp * S.cycleEnv + wobble;
-      S.price = clampPx(S.cycleStart * Math.max(0.08, move) * S.cycleManip);
-      if (S.level >= 2) S.vtPrice = Math.max(1, S.vtCycle * (1 + dir * (S.halveBull ? 0.22 : 0.125) * S.cycleEnv + wobble * 0.45) * S.cycleManip);
+      const now = S.lifeT;
+      const dur = WAVE_UP + WAVE_BACK;
+      let sum = 0;
+      let live = false;
+      for (const w of (S.waves || [])) {
+        sum += waveK(w, now);
+        if (now < w.t0 + dur) live = true;
+      }
+      S.price = clampPx((S.priceBase || S.cycleStart || S.price) * (1 + sum) * S.cycleManip);
+      if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + sum * 0.45) * S.cycleManip);
       noteCyclePrice();
-      if (S.powerT <= 0) endCycle();
+      syncWaveFlags();
+      if (!live) endCycle();
     } else {
       const bias = trendBias();
       const mid = bias > 0.001 ? 0.42 : bias < -0.001 ? 0.58 : 0.48;
