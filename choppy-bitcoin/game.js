@@ -943,7 +943,9 @@
       tryRankedPerk(true);
       return;
     }
-    setPhase("play");
+    S.optPanel = null;
+    S.optBack = "play";
+    setPhase("paused");
   }
 
   function grantPerk(kind) {
