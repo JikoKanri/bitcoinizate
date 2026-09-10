@@ -101,7 +101,8 @@
     ranked: "RANKED", training: "TRAINING",
     soundOn: "ON", soundOff: "OFF",
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
-    howPlay: "HOW TO PLAY", market: "MARKETPLACE"
+    howPlay: "HOW TO PLAY", market: "MARKETPLACE",
+    runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE"
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -680,6 +681,7 @@
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
     S.waves = []; S.priceBase = clampPx(S.price);
     S.drift = 0.0006 * (1 + (Math.random() * 2 - 1));
+    S.runTab = null; S.runTape = []; S.runMarks = [];
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
@@ -938,6 +940,7 @@
     try { if (A && A.speak) A.speak("Rekt! You got liquidated", true); } catch (e) {}
     S.ticker = t("liquidated");
     try { S.best = saveBest(scoreSats()); } catch (e) {}
+    snapshotRun();
     if (field) field.classList.remove("is-play");
     try { setPhase("over"); } catch (e) { try { renderOverlay(); } catch (err) {} }
   }
@@ -2170,6 +2173,7 @@
 
   function keepPlaying() {
     S.hitCap = true;
+    S.runTab = null;
     setPhase("play");
   }
 
@@ -2229,7 +2233,7 @@
       S.btc = BTC_CAP;
       S.hitCap = true; A.sfx.cap();
       A.speak(t("floatYours"), true);
-      S.stats = collectRunStats();
+      snapshotRun();
       setPhase("win");
       return;
     }
@@ -2753,6 +2757,142 @@
       iabud: S.have.iabud || 0
     };
   }
+  function snapshotRun() {
+    S.stats = collectRunStats();
+    S.runTape = (S.tape || []).slice();
+    S.runMarks = (S.tapeMarks || []).slice();
+  }
+
+  function recapL(en, es) {
+    return (window.BZ && BZ.lang && BZ.lang() === "es") ? es : en;
+  }
+
+  function recapRow(k, v) {
+    return "<li><span class=\"k\">" + k + "</span><span>" + v + "</span></li>";
+  }
+
+  function runRecapHtml() {
+    const st = S.stats || collectRunStats();
+    const tab = S.runTab === "chart" ? "chart" : "stats";
+    const tabs = "<div class=\"recap-tabs\">"
+      + "<button type=\"button\" class=\"cta play-alt" + (tab === "stats" ? " on" : "") + "\" id=\"recap-stats\">" + t("runStats") + "</button>"
+      + "<button type=\"button\" class=\"cta play-alt" + (tab === "chart" ? " on" : "") + "\" id=\"recap-chart\">" + t("runChart") + "</button>"
+      + "</div>";
+    let body;
+    if (tab === "chart") {
+      body = "<canvas id=\"run-tape\" width=\"420\" height=\"228\"></canvas>";
+    } else {
+      const startNet = (st.startCash || 0) / Math.max(0.01, st.startPrice || 1);
+      const pxMul = (st.endPrice || 0) / Math.max(0.01, st.startPrice || 1);
+      const netMul = (st.net || 0) / Math.max(1e-9, startNet);
+      const awards = runAwards(st);
+      body = "<ul class=\"recap-list\">"
+        + recapRow(recapL("Time", "Tiempo"), fmtTime(st.time))
+        + recapRow(recapL("Candles", "Velas"), String(st.candles || 0))
+        + recapRow(recapL("Start cash", "Cash inicial"), money(st.startCash))
+        + recapRow(recapL("End cash", "Cash final"), money(st.endCash))
+        + recapRow(recapL("BTC stacked", "BTC apilado"), fmtBtc(st.endBtc))
+        + recapRow(recapL("Start BTC px", "Precio inicial"), money(st.startPrice))
+        + recapRow(recapL("End BTC px", "Precio final"), money(st.endPrice))
+        + recapRow(recapL("Price multiple", "Múltiplo de precio"), pxMul.toFixed(2) + "x")
+        + recapRow(recapL("Peak net", "Pico patrimonio"), fmtBtc(st.peakNet))
+        + recapRow(recapL("Net worth", "Patrimonio"), fmtBtc(st.net))
+        + recapRow(recapL("Stack multiple", "Múltiplo de stack"), netMul.toFixed(2) + "x")
+        + recapRow(recapL("Buys / sells", "Compras / ventas"), (st.buys || 0) + " / " + (st.sells || 0))
+        + recapRow(recapL("Bear sells", "Ventas en bear"), String(st.sellsBear || 0))
+        + recapRow(recapL("Halvings", "Halvings"), (st.halvings || 0) + " · miss " + (st.halveMiss || 0))
+        + recapRow(recapL("Swans vaporized", "Swans vaporizados"), String(st.swans || 0))
+        + recapRow(recapL("Laser eyes", "Ojos láser"), String(st.lasers || 0))
+        + recapRow(recapL("Cold lost", "Cold perdidos"), String(st.coldLost || 0))
+        + recapRow(recapL("Perks taken", "Perks tomadas"), String(st.haveSum || 0))
+        + "</ul>"
+        + (awards.length
+          ? "<div class=\"awards\"><p class=\"k\">" + recapL("Awards", "Premios") + "</p>"
+            + awards.map((a) => "<p><span class=\"ia-act\">" + awardName(a) + "</span> — " + awardWhy(a) + "</p>").join("")
+            + "</div>"
+          : "");
+    }
+    return "<h1>" + t("runRecap") + "</h1>" + tabs + body
+      + "<button type=\"button\" class=\"cta\" id=\"recap-back\">" + t("back") + "</button>";
+  }
+
+  function bindRunRecap() {
+    const stBtn = $("recap-stats");
+    const chBtn = $("recap-chart");
+    const back = $("recap-back");
+    if (stBtn) stBtn.onclick = (e) => { e.stopPropagation(); S.runTab = "stats"; renderOverlay(); };
+    if (chBtn) chBtn.onclick = (e) => { e.stopPropagation(); S.runTab = "chart"; renderOverlay(); };
+    if (back) back.onclick = (e) => { e.stopPropagation(); S.runTab = null; renderOverlay(); };
+    if (S.runTab === "chart") paintRunTape();
+  }
+
+  function paintRunTape() {
+    const canvas = $("run-tape");
+    if (!canvas) return;
+    const data = S.runTape || S.tape || [];
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = "#0a0a0c";
+    ctx.fillRect(0, 0, W, H);
+    if (data.length < 2) {
+      ctx.fillStyle = "#8a8680";
+      ctx.font = "12px \"IBM Plex Mono\", monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("—", W / 2, H / 2);
+      return;
+    }
+    const target = 92;
+    const bucket = Math.max(4, Math.ceil(data.length / target));
+    const bars = [];
+    for (let i = 0; i < data.length; i += bucket) {
+      const sl = data.slice(i, i + bucket);
+      const o = bars.length ? bars[bars.length - 1].c : sl[0];
+      bars.push({ o: o, h: Math.max.apply(null, sl), l: Math.min.apply(null, sl), c: sl[sl.length - 1], i: i });
+    }
+    let lo = bars[0].l, hi = bars[0].h;
+    for (const b of bars) { if (b.l < lo) lo = b.l; if (b.h > hi) hi = b.h; }
+    const pad = Math.max(0.01, (hi - lo) * 0.08);
+    lo -= pad; hi += pad;
+    const left = 8, right = 8, top = 16, bot = 14;
+    const innerW = W - left - right, innerH = H - top - bot;
+    const stepX = innerW / Math.max(1, bars.length);
+    const cw = Math.max(1.2, Math.min(5.2, stepX * 0.72));
+    const py = (v) => top + (1 - (v - lo) / Math.max(0.01, hi - lo)) * innerH;
+    bars.forEach((b, i) => {
+      const x = left + i * stepX;
+      const up = b.c >= b.o;
+      ctx.strokeStyle = up ? GREEN : RED;
+      ctx.fillStyle = up ? GREEN : RED;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + cw / 2, py(b.h));
+      ctx.lineTo(x + cw / 2, py(b.l));
+      ctx.stroke();
+      ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.1, Math.abs(py(b.c) - py(b.o))));
+    });
+    const marks = S.runMarks || [];
+    ctx.save();
+    ctx.font = "700 8px \"IBM Plex Mono\", monospace";
+    ctx.textAlign = "center";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(10,10,12,0.82)";
+    let lastX = -99;
+    for (const mk of marks) {
+      const vi = Math.floor((mk.i || 0) / bucket);
+      if (vi < 0 || vi >= bars.length) continue;
+      const x = left + vi * stepX + cw / 2;
+      if (Math.abs(x - lastX) < 28) continue;
+      lastX = x;
+      const peak = mk.kind === "peak";
+      const y = py(mk.price) + (peak ? -4 : 4);
+      ctx.textBaseline = peak ? "bottom" : "top";
+      ctx.fillStyle = peak ? GREEN : RED;
+      const lab = fmtUsd(mk.price);
+      ctx.strokeText(lab, x, y);
+      ctx.fillText(lab, x, y);
+    }
+    ctx.restore();
+  }
   const AWARD_CATALOG = [
     { id: "maxi", name: "Maxi Soul", nameEs: "Alma maxi", why: "Never sold BTC — not by hand, not by A.I. bud.", whyEs: "Nunca vendió BTC, ni a mano ni por A.I. bud." },
     { id: "halver", name: "Halving Catcher", nameEs: "Atrapa halvings", why: "Every halving that spawned was eaten.", whyEs: "Comió todos los halvings que salieron." },
@@ -3216,39 +3356,36 @@
       bindPauseUi();
     } else if (p === "over") {
       try {
-        const ids = runAwardIds(collectRunStats());
+        if (!S.stats) snapshotRun();
+        const ids = runAwardIds(S.stats);
         mergeAwards(ids);
       } catch (e) {}
-      overlay.innerHTML = "<p class=\"k\">" + t("rekt") + (S.ranked ? "" : " · " + t("trainCamp")) + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + (S.ranked ? t("best") + " " + fmtBtc((S.best || 0) / 1e4) : t("trainNote")) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
-      if ($("go")) {
-        $("go").onclick = replay;
-        $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };
+      if (S.runTab) {
+        overlay.innerHTML = runRecapHtml();
+        bindRunRecap();
+      } else {
+        overlay.innerHTML = "<p class=\"k\">" + t("rekt") + (S.ranked ? "" : " · " + t("trainCamp")) + "</p><h1>" + fmtBtc(netBtc()) + "</h1><p>" + money(S.cash) + " + " + fmtBtc(S.btc) + " @ " + money(S.price) + "</p><p class=\"k\">" + (S.ranked ? t("best") + " " + fmtBtc((S.best || 0) / 1e4) : t("trainNote")) + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("tryAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"run-stats\">" + t("runStats") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
+        if ($("go")) {
+          $("go").onclick = replay;
+          $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };
+        }
+        if ($("run-stats")) $("run-stats").onclick = (e) => { e.stopPropagation(); S.runTab = "stats"; renderOverlay(); };
+        if ($("share-run")) $("share-run").onclick = () => shareRun("over");
       }
-      if ($("share-run")) $("share-run").onclick = () => shareRun("over");
     } else if (p === "win" && S.stats) {
-      const st = S.stats;
-      mergeAwards(runAwardIds(st));
-      const awards = runAwards(st);
-      overlay.innerHTML = "<p class=\"k\">TWENTY ONE MILLION</p><h1>" + t("congrats") + "</h1>"
-        + "<p>" + t("stacked") + "</p><ul>"
-        + "<li><span class=\"k\">Time</span><span>" + fmtTime(st.time) + "</span></li>"
-        + "<li><span class=\"k\">Start cash</span><span>" + money(st.startCash) + "</span></li>"
-        + "<li><span class=\"k\">Start BTC px</span><span>" + money(st.startPrice) + "</span></li>"
-        + "<li><span class=\"k\">End BTC px</span><span>" + money(st.endPrice) + "</span></li>"
-        + "<li><span class=\"k\">Peak net</span><span>" + fmtBtc(st.peakNet) + "</span></li>"
-        + "<li><span class=\"k\">Net worth</span><span>" + fmtBtc(st.net) + "</span></li>"
-        + "<li><span class=\"k\">BTC held</span><span>" + fmtBtc(st.endBtc) + "</span></li>"
-        + "<li><span class=\"k\">Candles</span><span>" + st.candles + "</span></li>"
-        + "<li><span class=\"k\">Buys / sells</span><span>" + st.buys + " / " + st.sells + "</span></li>"
-        + "<li><span class=\"k\">Halvings</span><span>" + (st.halvings || 0) + " caught · " + (st.halveMiss || 0) + " missed</span></li>"
-        + "<li><span class=\"k\">Swans vaporized</span><span>" + st.swans + "</span></li></ul>"
-        + "<div class=\"awards\"><p class=\"k\">Awards</p>"
-        + (awards.length ? awards.map((a) => "<p><span class=\"ia-act\">" + a.name + "</span> — " + a.why + "</p>").join("") : "<p>No extra medals. The cap is the medal.</p>")
-        + "</div>"
-        + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("keepPlaying") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"go-again\">" + t("playAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
-      if ($("go")) $("go").onclick = keepPlaying;
-      if ($("go-again")) $("go-again").onclick = replay;
-      if ($("share-run")) $("share-run").onclick = () => shareRun("win");
+      mergeAwards(runAwardIds(S.stats));
+      if (S.runTab) {
+        overlay.innerHTML = runRecapHtml();
+        bindRunRecap();
+      } else {
+        overlay.innerHTML = "<p class=\"k\">TWENTY ONE MILLION</p><h1>" + t("congrats") + "</h1>"
+          + "<p>" + t("stacked") + "</p>"
+          + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("keepPlaying") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"run-stats\">" + t("runStats") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"go-again\">" + t("playAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
+        if ($("go")) $("go").onclick = keepPlaying;
+        if ($("run-stats")) $("run-stats").onclick = (e) => { e.stopPropagation(); S.runTab = "stats"; renderOverlay(); };
+        if ($("go-again")) $("go-again").onclick = replay;
+        if ($("share-run")) $("share-run").onclick = () => shareRun("win");
+      }
     }
   }
 
