@@ -2087,6 +2087,7 @@
 
     let speed = m.speed * scrollMul();
     if (S.power === "BULL" || S.power === "BEAR" || S.laserOn) speed *= 1.28;
+    for (const f of S.floats) f.x -= speed * dt;
     if (S.power === "BULL" || S.power === "BEAR") {
       S.cycleManip = Math.max(0.15, (S.cycleManip || 1) * (1 + trendBias() * dt));
       const now = S.lifeT;
