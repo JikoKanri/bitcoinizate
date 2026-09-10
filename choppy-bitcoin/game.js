@@ -8,6 +8,7 @@
   const WAVE_BACK = 2;
   const HALVE_N = 21;
   const HALVE_GAP = 210;
+  const BTC_CAP = 21e6;
   const GREEN = "#4f9d6e";
   const RED = "#c45c4a";
   const BTC = "#c8960a";
@@ -93,6 +94,7 @@
     dcaOn: "DCA ON", dcaOff: "DCA OFF",
     trendUp: "TREND ↑", trendDown: "TREND ↓", trendOff: "TREND OFF",
     buyBtc: "BUY BTC", sellBtc: "SELL BTC",
+    keepPlaying: "KEEP PLAYING", playAgain: "PLAY AGAIN",
     options: "OPTIONS", paused: "PAUSED", resume: "RESUME", back: "BACK",
     sound: "SOUND", jukebox: "JUKEBOX", tutorial: "TUTORIAL", feedback: "FEEDBACK",
     language: "LANGUAGE", aiLog: "A.I. BUD LOG", signIn: "SIGN IN",
@@ -351,6 +353,23 @@
   }
   function net() { return netBtc(); }
   function scoreSats() { return Math.max(0, Math.round(netBtc() * 1e4)); }
+  function btcRoom() { return Math.max(0, BTC_CAP - (S.btc || 0)); }
+  function creditBtc(amount) {
+    const want = Math.max(0, Number(amount) || 0);
+    if (!want) return { take: 0, cash: 0 };
+    const take = Math.min(want, btcRoom());
+    const extra = want - take;
+    S.btc = (S.btc || 0) + take;
+    const cash = extra * clampPx(S.price);
+    if (cash > 0) S.cash += cash;
+    return { take, cash };
+  }
+  function clampHoldings() {
+    if ((S.btc || 0) <= BTC_CAP) return;
+    const extra = S.btc - BTC_CAP;
+    S.btc = BTC_CAP;
+    S.cash += extra * clampPx(S.price);
+  }
 
   function ffSpeeds() {
     const out = [1];
@@ -396,9 +415,15 @@
   function grantUsd(n, x, y, kind) {
     if (kind === "gain" && S.have.candy > 0) n *= 2 ** S.have.candy;
     if (S.dcaOn && S.have.dca > 0 && clampPx(S.price) > 0) {
-      const got = n / clampPx(S.price);
-      S.btc += got;
-      pop(x, y, "+" + fmtAmt(got, "btc"), BTC, kind);
+      const px = clampPx(S.price);
+      const want = n / px;
+      const out = creditBtc(want);
+      if (out.take > 0) pop(x, y, "+" + fmtAmt(out.take, "btc"), BTC, kind);
+      if (out.cash > 0) pop(x, y + (out.take > 0 ? 14 : 0), "+" + fmtAmt(out.cash, "usd"), GREEN, kind);
+      if (out.take <= 0 && out.cash <= 0) {
+        S.cash += n;
+        pop(x, y, "+" + n + " usd", GREEN, kind);
+      }
     } else {
       S.cash += n;
       pop(x, y, "+" + n + " usd", GREEN, kind);
@@ -933,14 +958,21 @@
   }
   function buyBtc() {
     if (S.phase !== "play" || S.cash <= 0 || clampPx(S.price) <= 0) return;
-    const usd = S.cash, got = usd / clampPx(S.price);
-    S.btc += got; S.cash = 0; S.buys++; S.boughtBtc = true; A.sfx.buy();
+    const px = clampPx(S.price);
+    const room = btcRoom();
+    if (room <= 0) return;
+    const spent = Math.min(S.cash, room * px);
+    if (spent <= 0) return;
+    const got = spent / px;
+    creditBtc(got);
+    S.cash -= spent;
+    S.buys++; S.boughtBtc = true; A.sfx.buy();
     if (!S.aiSilent) {
       const buyLine = drawLine(A.BUY, 0.3);
       if (buyLine) say(buyLine, true);
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
-    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(usd, "usd"), RED, "trade");
+    pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(spent, "usd"), RED, "trade");
   }
   function sellBtc() {
     if (S.phase !== "play" || S.btc <= 0) return;
@@ -1419,7 +1451,7 @@
       const r = Math.random();
       if (r < 0.00029) {
         const share = opt === "b" ? 4000 : (4000 / 3);
-        S.btc += share;
+        creditBtc(share);
         return say("Find the USB. +" + share.toFixed(2) + " BTC.",
           "Find the USB. +" + share.toFixed(2) + " BTC.");
       }
@@ -1507,8 +1539,9 @@
         return say("Check your account. +" + money(n) + ".", "Fijate la cuenta. +" + money(n) + ".");
       }
       const b = Math.max(0.0001, (wealthUsd() * 0.07) / clampPx(S.price));
-      S.btc += b;
-      return say("He sent sats. +" + b.toFixed(4) + " BTC.", "Mandó sats. +" + b.toFixed(4) + " BTC.");
+      const out = creditBtc(b);
+      return say("He sent sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
+        "Mandó sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
     }
     if (card.id === "school") {
       if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Se arreglan. Sofi igual manda una foto que no entendés.");
@@ -1740,6 +1773,7 @@
       S.btc = S.arcPending.btc;
       S.cold = S.arcPending.cold;
       S.arcPending = null;
+      clampHoldings();
     }
     try { renderHud(); } catch (e) {}
   }
@@ -2134,6 +2168,11 @@
     renderHud();
   }
 
+  function keepPlaying() {
+    S.hitCap = true;
+    setPhase("play");
+  }
+
   function replay() {
     A.cancelSpeech();
     resetWorld(false);
@@ -2186,7 +2225,8 @@
       if (S.level >= 2) S.tapeVt.push(S.vtPrice);
       S.sampleAcc -= 0.12;
     }
-    if (!S.hitCap && netBtc() >= 21e6) {
+    if (!S.hitCap && (S.btc || 0) >= BTC_CAP) {
+      S.btc = BTC_CAP;
       S.hitCap = true; A.sfx.cap();
       A.speak(t("floatYours"), true);
       S.stats = collectRunStats();
@@ -3189,8 +3229,8 @@
       const st = S.stats;
       mergeAwards(runAwardIds(st));
       const awards = runAwards(st);
-      overlay.innerHTML = "<p class=\"k\">TWENTY ONE MILLION</p><h1>The float is yours</h1>"
-        + "<p>You stacked the cap. Here is the tape of the run.</p><ul>"
+      overlay.innerHTML = "<p class=\"k\">TWENTY ONE MILLION</p><h1>" + t("congrats") + "</h1>"
+        + "<p>" + t("stacked") + "</p><ul>"
         + "<li><span class=\"k\">Time</span><span>" + fmtTime(st.time) + "</span></li>"
         + "<li><span class=\"k\">Start cash</span><span>" + money(st.startCash) + "</span></li>"
         + "<li><span class=\"k\">Start BTC px</span><span>" + money(st.startPrice) + "</span></li>"
@@ -3205,8 +3245,9 @@
         + "<div class=\"awards\"><p class=\"k\">Awards</p>"
         + (awards.length ? awards.map((a) => "<p><span class=\"ia-act\">" + a.name + "</span> — " + a.why + "</p>").join("") : "<p>No extra medals. The cap is the medal.</p>")
         + "</div>"
-        + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">Play again</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">Share</button><a href=\"/\" class=\"home\" aria-label=\"Back to menu\" title=\"Menu\">⌂</a></div>";
-      $("go").onclick = replay;
+        + "<div class=\"overlay-actions\"><button class=\"cta\" id=\"go\">" + t("keepPlaying") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"go-again\">" + t("playAgain") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"share-run\">" + t("share") + "</button></div>";
+      if ($("go")) $("go").onclick = keepPlaying;
+      if ($("go-again")) $("go-again").onclick = replay;
       if ($("share-run")) $("share-run").onclick = () => shareRun("win");
     }
   }
@@ -3253,7 +3294,8 @@
     e.preventDefault();
     e.stopPropagation();
     if (S.phase === "ready") startGame();
-    else if (S.phase === "over" || S.phase === "win") replay();
+    else if (S.phase === "win") keepPlaying();
+    else if (S.phase === "over") replay();
     else if (S.phase === "paused" || S.optPanel) {
       S.optPanel = null;
       setPhase(S.optBack === "play" || S.phase === "paused" ? (S.optBack || "play") : "ready");
