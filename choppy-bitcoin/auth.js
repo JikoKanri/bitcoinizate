@@ -461,6 +461,7 @@
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
+    if (window.pauseChoppyForAuth) window.pauseChoppyForAuth();
     openAuth();
   }, true);
   if ($("btn-close-auth")) $("btn-close-auth").onclick = () => authModal && closeModal(authModal);

@@ -587,27 +587,17 @@
     return 15000 * Math.max(1, S.halvings);
   }
 
-  function beatLast3(arr, price, higher) {
-    const prev = (arr || []).slice(-3);
-    if (!prev.length) return true;
-    return higher ? price > Math.max.apply(null, prev) : price < Math.min.apply(null, prev);
-  }
-
   function stampCycleMark() {
     if (S.power === "NONE") return;
     if (!S.tapeMarks) S.tapeMarks = [];
     if (S.power === "BULL") {
       const p = S.cycleMax != null ? S.cycleMax : S.price;
-      const ok = beatLast3(S.eventPeaks, p, true);
-      S.eventPeaks = (S.eventPeaks || []).concat(p);
-      if (ok) S.tapeMarks.push({ kind: "peak", price: p, i: S.cycleMaxI || S.tape.length });
+      S.tapeMarks.push({ kind: "peak", price: p, i: S.cycleMaxI || S.tape.length });
     } else if (S.power === "BEAR") {
       const p = S.cycleMin != null ? S.cycleMin : S.price;
-      const ok = beatLast3(S.eventBottoms, p, false);
-      S.eventBottoms = (S.eventBottoms || []).concat(p);
-      if (ok) S.tapeMarks.push({ kind: "bottom", price: p, i: S.cycleMinI || S.tape.length });
+      S.tapeMarks.push({ kind: "bottom", price: p, i: S.cycleMinI || S.tape.length });
     }
-    if (S.tapeMarks.length > 24) S.tapeMarks = S.tapeMarks.slice(-24);
+    if (S.tapeMarks.length > 36) S.tapeMarks = S.tapeMarks.slice(-36);
   }
 
   function noteCyclePrice() {
@@ -2202,8 +2192,9 @@
     }
     const vis = buckets.length > maxFit ? buckets.slice(buckets.length - maxFit) : buckets;
     if (!vis.length) return;
-    let lo = vis[0].l, hi = vis[0].h;
-    for (const b of vis) { if (b.l < lo) lo = b.l; if (b.h > hi) hi = b.h; }
+    let visHi = vis[0].h, visLo = vis[0].l;
+    for (const b of vis) { if (b.l < visLo) visLo = b.l; if (b.h > visHi) visHi = b.h; }
+    let lo = visLo, hi = visHi;
     const span = Math.max(0.01, hi - lo);
     const mid = (lo + hi) / 2;
     const fade = Math.max(0, 1 - (data.length / 100));
@@ -2233,13 +2224,15 @@
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(10,10,12,0.82)";
       for (const mk of marks) {
+        const peak = mk.kind === "peak";
+        if (peak && mk.price < visHi) continue;
+        if (!peak && mk.price > visLo) continue;
         const vi = Math.floor((mk.i || 0) / bucket) - startB;
         if (vi < 0 || vi >= vis.length) continue;
         const x = 10 + vi * stepX + cw / 2;
-        const peak = mk.kind === "peak";
         const y = py(mk.price) + (peak ? -5 : 5);
         ctx.textBaseline = peak ? "bottom" : "top";
-        ctx.fillStyle = peak ? "rgba(168,220,184,0.95)" : "rgba(236,176,166,0.95)";
+        ctx.fillStyle = peak ? "rgba(46, 196, 92, 0.96)" : "rgba(224, 58, 48, 0.96)";
         const lab = fmtUsd(mk.price);
         ctx.strokeText(lab, x, y);
         ctx.fillText(lab, x, y);
@@ -3100,6 +3093,14 @@
       renderOverlay();
     }
     else if (S.phase === "paused") { S.optPanel = null; setPhase(S.optBack || "play"); }
+  };
+  const authHud = $("btn-show-auth");
+  if (authHud) authHud.onpointerdown = (e) => {
+    e.stopPropagation();
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
+  };
+  window.pauseChoppyForAuth = function () {
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
   };
   const jukeHudPlay = $("juke-hud-play");
   if (jukeHudPlay) jukeHudPlay.onpointerdown = (e) => {
