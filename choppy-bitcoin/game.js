@@ -329,7 +329,7 @@
     lastGapY: 0, spawnX: 0, best: loadBest(),
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
-    tape: [], tapeVt: [], tapeMarks: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, level: 1,
+    tape: [], tapeVt: [], tapeMarks: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: 0.0006, level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
@@ -509,11 +509,13 @@
   }
 
   function pinItem(it) {
-    if (!it.pipe || S.pipes.indexOf(it.pipe) < 0) {
-      it.pipe = nearestFreePipe(it.x, it);
-      if (!it.pipe) return false;
+    let p = it.pipe && S.pipes.indexOf(it.pipe) >= 0 ? it.pipe : null;
+    if (!p) {
+      p = nearestFreePipe(it.x, it) || nearestPipeAny(it.x);
+      if (!p) return false;
+      it.pipe = p;
     }
-    const box = wickAxis(it.pipe, it.r);
+    const box = wickAxis(p, it.r);
     it.x = box.x;
     it.lo = box.lo;
     it.hi = box.hi;
@@ -521,6 +523,17 @@
       it.y = it.halveUp ? box.lo : box.hi;
     }
     return true;
+  }
+
+  function nearestPipeAny(x) {
+    const m = metrics();
+    const pw = m.pipeW * S.widthMul;
+    let best = null, d = 1e9;
+    for (const p of S.pipes) {
+      const dx = Math.abs(p.x + pw * 0.5 - x);
+      if (dx < d) { d = dx; best = p; }
+    }
+    return best;
   }
 
   function nearestFreePipe(x, self) {
@@ -641,6 +654,7 @@
     S.tapeMarks = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
     S.waves = []; S.priceBase = clampPx(S.price);
+    S.drift = 0.0006 * (1 + (Math.random() * 2 - 1));
     S.speechUntil = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
@@ -766,7 +780,8 @@
   }
 
   function trendBias() {
-    let bias = 0.0006 * (1 + (Math.random() * 2 - 1) * 0.05);
+    const base = (S.drift != null ? S.drift : 0.0006);
+    let bias = base * (1 + (Math.random() * 2 - 1) * 0.05);
     if ((S.have.manip || 0) > 0) {
       const k = (S.have.manip || 0) * (12 / 7);
       if (S.trend === "up") bias += 0.004 * k;
@@ -2420,7 +2435,10 @@
       ctx.beginPath(); ctx.strokeStyle = wash ? wash : S.laserOn ? "rgba(232,144,42,0.75)" : "rgba(243,239,230,0.5)"; ctx.lineWidth = 2;
       ctx.moveTo(mx, ends.top); ctx.lineTo(mx, ends.top + wick); ctx.moveTo(mx, ends.bot); ctx.lineTo(mx, ends.bot - wick); ctx.stroke();
     }
-    for (const it of S.items) drawPowerIcon(ctx, it, wash);
+    for (const it of S.items) {
+      pinItem(it);
+      drawPowerIcon(ctx, it, wash);
+    }
     const blink = S.invuln > 0 && Math.floor(S.invuln * 10) % 2 === 0;
     if (!blink) {
       const col = wash || (S.laserOn ? "#e8902a" : BTC);
