@@ -389,16 +389,38 @@
     if (!box || !supabase) return;
     try {
       let rows = [];
-      await supabase.from("profiles").select("username, highscore, last_score_at").order("highscore", { ascending: false }).limit(20).then((res) => {
+      let res = await supabase.from("profiles").select("username, highscore, last_score_at, score_time, run_stats").order("highscore", { ascending: false }).limit(40);
+      if (res.error) {
+        res = await supabase.from("profiles").select("username, highscore, last_score_at").order("highscore", { ascending: false }).limit(40);
         if (res.error) throw res.error;
-        rows = (res.data || []).filter((row) => seasonScore(row) > 0);
+      }
+      rows = (res.data || []).filter((row) => seasonScore(row) > 0);
+      rows.sort((a, b) => {
+        const sa = seasonScore(a), sb = seasonScore(b);
+        if (sb !== sa) return sb - sa;
+        const ta = a.score_time != null ? Number(a.score_time) : 1e18;
+        const tb = b.score_time != null ? Number(b.score_time) : 1e18;
+        return ta - tb;
       });
+      rows = rows.slice(0, 20);
       if (!rows.length) { box.textContent = "—"; return; }
       box.innerHTML = rows.map((row, i) => {
         const n = row.username || "?";
         const href = validAlias(n) ? profileHref(n) : "#";
-        return (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a>   " + fmtScoreBtc(seasonScore(row));
-      }).join("<br>");
+        const has = row.run_stats ? "1" : "";
+        return "<div class=\"board-row\">" + (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a> <span>" + fmtScoreBtc(seasonScore(row)) + "</span>"
+          + (has ? " <button type=\"button\" class=\"stats-mini\" data-run=\"" + i + "\">STATS</button>" : "")
+          + "</div>";
+      }).join("");
+      box.querySelectorAll("[data-run]").forEach((btn) => {
+        btn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const i = Number(btn.getAttribute("data-run"));
+          const bag = rows[i] && rows[i].run_stats;
+          if (bag && window.openSavedRunStats) window.openSavedRunStats(bag);
+        };
+      });
     } catch (e) {
       box.textContent = "—";
     }
@@ -414,13 +436,28 @@
     if (life < 12 || candles < 3) return;
     if (meta && meta.human === false) return;
     const old = seasonScore(currentProfile);
-    if (next <= old) return;
+    const oldT = currentProfile.score_time != null ? Number(currentProfile.score_time) : null;
+    if (next < old) return;
+    if (next === old && oldT != null && life >= oldT) return;
+    const stats = meta && meta.stats ? meta.stats : null;
     try {
-      const { error } = await supabase.rpc("submit_choppy_score", {
+      let { error } = await supabase.rpc("submit_choppy_score", {
         p_score: next,
         p_life: life,
-        p_candles: candles
+        p_candles: candles,
+        p_stats: stats
       });
+      if (error) {
+        const retry = await supabase.rpc("submit_choppy_score", {
+          p_score: next,
+          p_life: life,
+          p_candles: candles
+        });
+        error = retry.error;
+        if (!error && stats) {
+          try { await supabase.from("profiles").update({ run_stats: stats, score_time: life }).eq("id", currentUser.id); } catch (e2) {}
+        }
+      }
       if (error) return;
       await loadUserProfile();
     } catch (e) {}
@@ -486,7 +523,14 @@
       if (!currentProfile) return;
       if ($("profile-score-info")) {
         const hs = seasonScore(currentProfile);
-        $("profile-score-info").textContent = ((window.BZ && BZ.t("highScore")) || "High score") + "  " + fmtScoreBtc(hs);
+        $("profile-score-info").innerHTML = ((window.BZ && BZ.t("highScore")) || "High score") + "  " + fmtScoreBtc(hs)
+          + (currentProfile.run_stats ? " <button type=\"button\" class=\"stats-mini\" id=\"profile-stats-btn\">STATS</button>" : "");
+        const ps = $("profile-stats-btn");
+        if (ps) ps.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.openSavedRunStats) window.openSavedRunStats(currentProfile.run_stats);
+        };
       }
       if ($("profile-alias")) {
         const localA = (function () { try { return localStorage.getItem("choppy-alias") || ""; } catch (e) { return ""; } })();

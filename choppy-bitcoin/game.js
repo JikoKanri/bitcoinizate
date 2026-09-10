@@ -224,6 +224,26 @@
     }
   }
 
+  function packRunStats() {
+    const st = Object.assign({}, S.stats || collectRunStats());
+    const tape = S.runTape && S.runTape.length ? S.runTape : (S.tape || []);
+    const maxN = 240;
+    const n = tape.length;
+    let packed = tape;
+    let scale = 1;
+    if (n > maxN) {
+      packed = [];
+      scale = (maxN - 1) / Math.max(1, n - 1);
+      for (let i = 0; i < maxN; i++) packed.push(tape[Math.min(n - 1, Math.round(i / scale))]);
+    }
+    const remap = (arr) => (arr || []).map((m) => ({
+      kind: m.kind, price: m.price, i: n > maxN ? Math.round((m.i || 0) * scale) : (m.i || 0)
+    }));
+    st.tape = packed;
+    st.marks = remap(S.runMarks);
+    st.trades = remap(S.runTrades);
+    return st;
+  }
   function loadBest() {
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || "{}");
@@ -235,10 +255,18 @@
     let s = { scores: { choppy: 0 } };
     try { s = Object.assign({ scores: { choppy: 0 } }, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
     s.scores = s.scores || {};
-    s.scores.choppy3 = Math.max(s.scores.choppy3 || 0, n);
-    localStorage.setItem(KEY, JSON.stringify(s));
+    const stats = packRunStats();
+    const old = s.scores.choppy3 || 0;
+    const oldT = s.choppyTime != null ? s.choppyTime : 1e18;
+    const better = n > old || (n === old && (stats.time || 0) < oldT);
+    if (better) {
+      s.scores.choppy3 = n;
+      s.choppyTime = stats.time || 0;
+      s.choppyStats = stats;
+    }
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
     if (typeof window.submitNewHighScore === "function") {
-      window.submitNewHighScore(n, { lifeT: S.lifeT, candles: S.candles, human: !!S.humanInput });
+      window.submitNewHighScore(n, { lifeT: S.lifeT, candles: S.candles, human: !!S.humanInput, stats: stats });
     }
     return s.scores.choppy3;
   }
@@ -2225,6 +2253,7 @@
       S.hitCap = true; A.sfx.cap();
       A.speak(t("floatYours"), true);
       snapshotRun();
+      try { S.best = saveBest(scoreSats()); } catch (e) {}
       setPhase("win");
       return;
     }

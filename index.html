@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Choppy Bitcoin — free bitcoin-themed games | Bitcoinizate</title>
   <meta name="description" content="Free bitcoin-themed games. Play Choppy Bitcoin in the browser. Scores are play money.">
   <meta name="keywords" content="Choppy Bitcoin, Bitcoinizate, bitcoin game, crypto arcade, trading game, Japanese candlesticks, halving, black swan, buy bitcoin, net worth">
@@ -74,6 +74,7 @@
       margin: 0; min-height: 100vh;
       background: radial-gradient(900px 480px at 50% -8%, #3a2808 0%, #0d0d0d 52%);
       color: var(--paper); font-family: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+      touch-action: manipulation; overscroll-behavior: none;
     }
     .wrap { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
     .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
@@ -148,8 +149,15 @@
     }
     .aw-on { color: #f3efe6; }
     .aw-off { color: #6a6660; }
+    .board-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .stats-mini {
+      display: inline-block; font: inherit; font-size: 10px; letter-spacing: 0.08em;
+      padding: 2px 8px; min-height: 22px; cursor: pointer;
+      background: transparent; color: #f3efe6; border: 1px solid #F2A900;
+    }
     @media (min-width: 640px) { .chips { grid-template-columns: repeat(4, 1fr); } }
   </style>
+  <script src="/choppy-bitcoin/nozoom.js"></script>
 </head>
 <body>
   <main class="wrap">
@@ -243,6 +251,7 @@
   <script src="/i18n.js"></script>
   <script src="/choppy-bitcoin/supabase-lib.js"></script>
   <script src="/choppy-bitcoin/auth.js"></script>
+  <script src="/choppy-bitcoin/run-stats.js"></script>
   <script>
     (function () {
       var auth = document.getElementById("auth-modal");

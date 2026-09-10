@@ -1,9 +1,10 @@
-drop function if exists public.submit_choppy_score(double precision, double precision, integer);
-drop function if exists public.submit_choppy_score(bigint, double precision, integer);
-drop function if exists public.submit_choppy_score(bigint, double precision, integer, jsonb);
+-- Run in the Supabase SQL editor. Safe to re-run.
 
 alter table public.profiles add column if not exists score_time double precision;
 alter table public.profiles add column if not exists run_stats jsonb;
+
+drop function if exists public.submit_choppy_score(bigint, double precision, integer);
+drop function if exists public.submit_choppy_score(bigint, double precision, integer, jsonb);
 
 create or replace function public.submit_choppy_score(
   p_score bigint,
