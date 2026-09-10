@@ -493,6 +493,45 @@
     return { top: top0 * S.heightMul, bot: S.H - (S.H - bot0) * S.heightMul };
   }
 
+  function wickAxis(p, r) {
+    const m = metrics();
+    const pw = m.pipeW * S.widthMul;
+    const ends = pipeEnds(p);
+    const wick = Math.min(22, p.gapH * 0.14);
+    const pad = (r || 14) + 2;
+    const lo = ends.top + wick + pad;
+    const hi = ends.bot - wick - pad;
+    return { x: p.x + pw * 0.5, lo, hi: Math.max(lo + 4, hi), wick, ends };
+  }
+
+  function pinItem(it) {
+    if (!it.pipe || S.pipes.indexOf(it.pipe) < 0) {
+      it.pipe = nearestPipe(it.x);
+      if (!it.pipe) return false;
+    }
+    const box = wickAxis(it.pipe, it.r);
+    it.x = box.x;
+    it.lo = box.lo;
+    it.hi = box.hi;
+    if (it.type === "HALVE") {
+      it.y = it.halveUp ? box.ends.top + box.wick : box.ends.bot - box.wick;
+    } else {
+      it.y = Math.max(box.lo, Math.min(box.hi, it.y));
+    }
+    return true;
+  }
+
+  function nearestPipe(x) {
+    const m = metrics();
+    const pw = m.pipeW * S.widthMul;
+    let best = null, d = 1e9;
+    for (const p of S.pipes) {
+      const dx = Math.abs(p.x + pw * 0.5 - x);
+      if (dx < d) { d = dx; best = p; }
+    }
+    return best;
+  }
+
   function spawnPipe(x) {
     const m = metrics();
     const gapH = m.gapH;
@@ -511,17 +550,20 @@
     }
     S.lastGapY = gapY;
     S.spawnedPipes += 1;
-    S.pipes.push({ x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false });
+    const pipe = { x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false };
+    S.pipes.push(pipe);
     if (Math.random() < 0.48) {
       const type = pickItem();
       const r = type === "SWAN" ? 17 : 14;
-      const lo = gapY - gapH / 2 + r + 6;
-      const hi = gapY + gapH / 2 - r - 6;
-      const y = lo + Math.random() * Math.max(8, hi - lo);
+      const box = wickAxis(pipe, r);
+      const span = Math.max(8, box.hi - box.lo);
+      const y = box.lo + Math.random() * span;
       S.items.push({
-        x: x + m.pipeW * S.widthMul * 0.5,
+        pipe,
+        x: box.x,
         y,
-        lo, hi,
+        lo: box.lo,
+        hi: box.hi,
         vy: (Math.random() < 0.5 ? -1 : 1) * (22 + Math.random() * 16),
         type, r,
       });
@@ -731,21 +773,18 @@
 
   function spawnHalve() {
     if (S.items.some((it) => it.type === "HALVE")) return;
-    const m = metrics();
-    const pw = m.pipeW * S.widthMul;
-    let x = S.W + 56;
-    for (const p of S.pipes) {
-      if (x > p.x - 24 && x < p.x + pw + 24) x = p.x + pw + 30;
-    }
-    if (x < S.W + 36) x = S.W + 56;
-    const up = S.halveSide !== "down";
+    let pipe = S.pipes.length ? S.pipes[S.pipes.length - 1] : null;
+    if (!pipe) return;
     const r = 17;
-    const y = up ? (r + 16) : (S.H - 78);
+    const box = wickAxis(pipe, r);
+    const up = S.halveSide !== "down";
     S.items.push({
-      x,
-      y,
+      pipe,
+      x: box.x,
+      y: up ? box.ends.top + box.wick : box.ends.bot - box.wick,
       type: "HALVE",
       r,
+      halveUp: up,
     });
     A.sfx.cap();
   }
@@ -2185,7 +2224,7 @@
     }
     for (let j = S.items.length - 1; j >= 0; j--) {
       const it = S.items[j];
-      it.x -= speed * dt;
+      if (!pinItem(it)) { S.items.splice(j, 1); continue; }
       if (it.type !== "HALVE") {
         it.y += (it.vy || 0) * dt;
         const lo = it.lo != null ? it.lo : 20;
