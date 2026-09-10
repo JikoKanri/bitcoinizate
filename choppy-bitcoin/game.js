@@ -498,10 +498,10 @@
     const pw = m.pipeW * S.widthMul;
     const ends = pipeEnds(p);
     const wick = Math.min(22, p.gapH * 0.14);
-    const pad = (r || 14) + 2;
-    const lo = ends.top + wick + pad;
-    const hi = ends.bot - wick - pad;
-    return { x: p.x + pw * 0.5, lo, hi: Math.max(lo + 4, hi), wick, ends };
+    const pad = Math.max(4, (r || 14) * 0.45);
+    const lo = ends.top + pad;
+    const hi = ends.bot - pad;
+    return { x: p.x + pw * 0.5, lo, hi: Math.max(lo + 8, hi), wick, ends };
   }
 
   function pinItem(it) {
@@ -514,9 +514,7 @@
     it.lo = box.lo;
     it.hi = box.hi;
     if (it.type === "HALVE") {
-      it.y = it.halveUp ? box.ends.top + box.wick : box.ends.bot - box.wick;
-    } else {
-      it.y = Math.max(box.lo, Math.min(box.hi, it.y));
+      it.y = it.halveUp ? box.lo : box.hi;
     }
     return true;
   }
@@ -781,7 +779,7 @@
     S.items.push({
       pipe,
       x: box.x,
-      y: up ? box.ends.top + box.wick : box.ends.bot - box.wick,
+      y: up ? box.lo : box.hi,
       type: "HALVE",
       r,
       halveUp: up,
