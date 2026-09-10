@@ -698,6 +698,24 @@ w: And ev-er since then my head's been red.`),
   let abcDur = 0;
   let abcWant = false;
   let abcId = "bonny";
+  let jukeVol = 0.8;
+  let jukeGainNode = null;
+
+  function jukeDest() {
+    if (!ctx) return undefined;
+    if (!jukeGainNode) {
+      jukeGainNode = ctx.createGain();
+      jukeGainNode.gain.value = jukeVol;
+      jukeGainNode.connect(ctx.destination);
+    }
+    return jukeGainNode;
+  }
+  A.jukeVolume = () => jukeVol;
+  A.setJukeVolume = (v) => {
+    jukeVol = Math.max(0, Math.min(1, Number(v)));
+    if (jukeGainNode) jukeGainNode.gain.value = jukeVol;
+    return jukeVol;
+  };
 
   function abcLib() { return window.ABCJS || null; }
   function songAbc(id) {
@@ -773,6 +791,7 @@ w: And ev-er since then my head's been red.`),
     await synth.init({
       visualObj: abcVisual,
       audioContext: ctx,
+      destination: jukeDest(),
       millisecondsPerMeasure: abcVisual.millisecondsPerMeasure ? abcVisual.millisecondsPerMeasure() : 1800
     });
     const primed = await synth.prime();

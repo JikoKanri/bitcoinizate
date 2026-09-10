@@ -2351,7 +2351,34 @@
     paintJukeUi();
   }
 
+  function paintJukeHud() {
+    const box = $("juke-hud");
+    if (!box) return;
+    const ready = (S.have.juke || 0) > 0;
+    box.classList.toggle("locked", !ready);
+    const title = $("juke-hud-title");
+    const id = (S.jukeList || [])[S.jukeTrack];
+    const song = id && A.SONGS && A.SONGS[id];
+    const playing = !!(A.jukePlaying && A.jukePlaying());
+    const paused = !!(A.jukePaused && A.jukePaused());
+    if (title) {
+      if (song && (playing || paused || S.jukeOn)) title.textContent = song.title || t("jukebox");
+      else title.textContent = t("jukebox");
+    }
+    const play = $("juke-hud-play");
+    if (play) {
+      play.textContent = playing ? "❚❚" : "▶";
+      play.classList.toggle("on", playing);
+      play.disabled = !ready;
+    }
+    ["juke-hud-vol-down", "juke-hud-vol-up"].forEach((hid) => {
+      const el = $(hid);
+      if (el) el.disabled = !ready;
+    });
+  }
+
   function paintJukeUi() {
+    paintJukeHud();
     const bar = $("juke-bar");
     if (bar && A.jukeProgress) bar.style.width = Math.round((A.jukeProgress().pct || 0) * 100) + "%";
     const stage = $("lyric-stage");
@@ -2967,6 +2994,24 @@
     }
     else if (S.phase === "paused") { S.optPanel = null; setPhase(S.optBack || "play"); }
   };
+  const jukeHudPlay = $("juke-hud-play");
+  if (jukeHudPlay) jukeHudPlay.onpointerdown = (e) => {
+    e.stopPropagation(); e.preventDefault();
+    if ((S.have.juke || 0) <= 0) return;
+    if ((A.jukePlaying && A.jukePlaying()) || (A.jukePaused && A.jukePaused())) jukePause();
+    else jukePlay();
+    paintJukeHud();
+  };
+  const bumpJukeVol = (d) => {
+    if ((S.have.juke || 0) <= 0 || !A.setJukeVolume) return;
+    const cur = A.jukeVolume ? A.jukeVolume() : 0.8;
+    A.setJukeVolume(Math.max(0, Math.min(1, Math.round((cur + d) * 20) / 20)));
+    paintJukeHud();
+  };
+  const jukeVolDown = $("juke-hud-vol-down");
+  if (jukeVolDown) jukeVolDown.onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); bumpJukeVol(-0.1); };
+  const jukeVolUp = $("juke-hud-vol-up");
+  if (jukeVolUp) jukeVolUp.onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); bumpJukeVol(0.1); };
   $("dca-btn").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (S.have.dca <= 0 || aiLocks().dca) return;
