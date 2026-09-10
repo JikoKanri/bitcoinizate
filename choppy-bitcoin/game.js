@@ -253,19 +253,19 @@
   }
   function adoptBearRange(tier) {
     const soft = adoptSoft(tier);
-    const lo = -0.10 * (1 - soft * 0.75);
-    let hi = -0.05 * (1 - soft * 0.80);
-    if (hi >= -0.008) hi = -0.008;
-    if (lo >= hi) return { lo: hi - 0.012, hi };
+    const lo = -0.09 * (1 - soft * 0.75);
+    let hi = -0.045 * (1 - soft * 0.80);
+    if (hi >= -0.007) hi = -0.007;
+    if (lo >= hi) return { lo: hi - 0.011, hi };
     return { lo, hi };
   }
   function adoptBullRange(tier) {
-    const r = adoptBearRange(tier);
-    return { lo: -r.hi, hi: -r.lo };
+    const soft = adoptSoft(tier);
+    return { lo: 0.05 * (1 - soft * 0.80), hi: 0.10 * (1 - soft * 0.75) };
   }
   function adoptSwanRange(tier) {
     const soft = adoptSoft(tier);
-    return { lo: -0.50 * (1 - soft * 0.50), hi: -0.25 * (1 - soft * 0.50) };
+    return { lo: -0.375 * (1 - soft * 0.50), hi: -0.1875 * (1 - soft * 0.50) };
   }
   function adoptBearLabel(tier) {
     const r = adoptBearRange(tier);
@@ -280,9 +280,9 @@
     const soft = adoptSoft(t);
     let amp;
     if (kind === "HALVE") amp = 1 + (Math.random() * 0.2 - 0.1);
-    else if (kind === "SWAN") amp = (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
+    else if (kind === "SWAN") amp = (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4) * 0.75;
+    else if (kind === "BEAR") amp = (0.17 + Math.random() * 0.05) * (1 - soft * 0.45) * 0.9;
     else amp = (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
-    if ((kind === "HALVE" || kind === "BULL") && clampPx(S.price) < 2500) amp = Math.max(amp, 2);
     return amp;
   }
 
@@ -300,10 +300,7 @@
       mag = Math.abs(r.lo + Math.random() * (r.hi - r.lo));
     }
     mag = Math.max(0.004, mag);
-    if ((kind === "HALVE" || kind === "BULL") && clampPx(S.price) < 2500) {
-      mag = Math.max(mag, amp * 0.9 - 0.1);
-      mag = Math.min(mag, amp);
-    } else if (mag > amp * 0.92) mag = amp * 0.72;
+    if (mag > amp * 0.92) mag = amp * 0.72;
     return mag;
   }
 
