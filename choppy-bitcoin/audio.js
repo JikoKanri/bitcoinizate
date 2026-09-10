@@ -137,20 +137,35 @@
     },
   };
   A.stopMusic = () => { if (musicInterval != null) { clearInterval(musicInterval); musicInterval = null; } };
+  A.musicOn = () => musicInterval != null;
   const BEAR = [98, 110, 87, 110, 73, 87, 65, 73];
   const BULL = [329, 392, 523, 659, 523, 659, 783, 1046];
   const IDLE = [146, 220, 293, 220, 164, 246, 329, 246];
-  A.startMusic = (getPower, isPlaying) => {
-    A.stopMusic(); musicStep = 0;
+  let musicGetPower = () => "NONE";
+  let musicIsPlay = () => false;
+  let musicJuke = () => false;
+  A.startMusic = (getPower, isPlaying, jukePlaying) => {
+    if (typeof getPower === "function") musicGetPower = getPower;
+    if (typeof isPlaying === "function") musicIsPlay = isPlaying;
+    if (typeof jukePlaying === "function") musicJuke = jukePlaying;
+    if (musicInterval != null) return;
+    musicStep = 0;
+    if (ctx && ctx.state === "suspended") try { ctx.resume(); } catch (e) {}
     musicInterval = setInterval(() => {
-      if (!isPlaying()) return;
+      if (!musicIsPlay()) return;
+      if (ctx && ctx.state === "suspended") try { ctx.resume(); } catch (e) {}
       if (muteTheme) { musicStep++; return; }
-      const p = getPower();
-      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.22, "sawtooth", 0.06, null, 0, "theme");
-      else if (p === "BULL") beep(BULL[musicStep % 8], 0.11, "square", 0.04, null, 0, "theme");
+      const p = musicGetPower();
+      const juke = !!(musicJuke && musicJuke());
+      if (juke && p !== "BULL" && p !== "BEAR") { musicStep++; return; }
+      if (p === "BEAR") beep(BEAR[musicStep % 8], 0.22, "sawtooth", 0.07, null, 0, "theme");
+      else if (p === "BULL") beep(BULL[musicStep % 8], 0.11, "square", 0.05, null, 0, "theme");
       else beep(IDLE[musicStep % 8], 0.18, "sine", 0.05, null, 0, "theme");
       musicStep++;
     }, 200);
+  };
+  A.ensureMusic = (getPower, isPlaying, jukePlaying) => {
+    A.startMusic(getPower, isPlaying, jukePlaying);
   };
 
 

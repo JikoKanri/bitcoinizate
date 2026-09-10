@@ -665,6 +665,7 @@
     if (k === "HALVE") S.halveBull = true;
     if (k === "SWAN") S.swanBear = true;
     syncWaveFlags();
+    kickTheme();
   }
 
   function endCycle() {
@@ -2005,15 +2006,27 @@
     }, 1000);
   }
 
+  function themeHooks() {
+    return [
+      () => S.power,
+      () => S.phase === "play",
+      () => !!(S.jukeOn && A && A.jukePlaying && A.jukePlaying())
+    ];
+  }
+  function kickTheme() {
+    if (!A || !A.startMusic) return;
+    try {
+      if (A.unlock) A.unlock();
+      A.startMusic.apply(A, themeHooks());
+    } catch (e) {}
+  }
+
   function setPhase(p) {
     S.phase = p;
     try {
-      const jukeLive = S.jukeOn && A && A.jukePlaying && A.jukePlaying();
       if (A) {
-        if (p === "play") {
-          if (S.jukeOn && A.jukePaused && A.jukePaused()) A.jukeResume();
-          else if (!jukeLive && A.startMusic) A.startMusic(() => S.power, () => S.phase === "play");
-        } else if (A.stopMusic) A.stopMusic();
+        if (p === "play") kickTheme();
+        else if (A.stopMusic) A.stopMusic();
       }
     } catch (e) {}
     if (field) {
@@ -2048,9 +2061,7 @@
     if (overlay) hideOverlay();
     if (field) field.style.pointerEvents = "auto";
     if (canvas) canvas.style.pointerEvents = "auto";
-    if (A && A.startMusic) {
-      try { A.startMusic(() => S.power, () => S.phase === "play"); } catch (e) {}
-    }
+    if (A && A.startMusic) kickTheme();
     renderHud();
   }
 
@@ -2743,8 +2754,10 @@
     S.jukeUnlock = S.jukeUnlock.concat(extra);
     const t = Math.max(0, S.have.juke || 0);
     const n = t <= 0 ? 0 : Math.min(all.length, t <= 1 ? 2 : 2 + (t - 1) * 4);
+    const keep = (S.jukeList || [])[S.jukeTrack];
     S.jukeList = S.jukeUnlock.slice(0, n);
-    if (S.jukeTrack >= S.jukeList.length) S.jukeTrack = 0;
+    const idx = keep ? S.jukeList.indexOf(keep) : -1;
+    S.jukeTrack = idx >= 0 ? idx : 0;
   }
   function jukeSelect(i) {
     fillJukebox();
@@ -2764,7 +2777,6 @@
     if (!pool.includes(S.jukeList[S.jukeTrack])) S.jukeTrack = S.jukeList.indexOf(pool[0]);
     const id = S.jukeList[S.jukeTrack];
     A.unlock();
-    A.stopMusic();
     A.jukePlay(id);
     S.jukeOn = true;
     renderOverlay();
