@@ -278,9 +278,12 @@
   function pickCycleAmp(kind) {
     const t = S.have.adopt || 0;
     const soft = adoptSoft(t);
-    if (kind === "HALVE") return 1 + (Math.random() * 0.2 - 0.1);
-    if (kind === "SWAN") return (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
-    return (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
+    let amp;
+    if (kind === "HALVE") amp = 1 + (Math.random() * 0.2 - 0.1);
+    else if (kind === "SWAN") amp = (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4);
+    else amp = (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
+    if ((kind === "HALVE" || kind === "BULL") && clampPx(S.price) < 2500) amp = Math.max(amp, 2);
+    return amp;
   }
 
   function pickCycleResid(kind, amp) {
@@ -297,7 +300,10 @@
       mag = Math.abs(r.lo + Math.random() * (r.hi - r.lo));
     }
     mag = Math.max(0.004, mag);
-    if (mag > amp * 0.92) mag = amp * 0.72;
+    if ((kind === "HALVE" || kind === "BULL") && clampPx(S.price) < 2500) {
+      mag = Math.max(mag, amp * 0.9 - 0.1);
+      mag = Math.min(mag, amp);
+    } else if (mag > amp * 0.92) mag = amp * 0.72;
     return mag;
   }
 
@@ -409,7 +415,7 @@
       x, y, text, color,
       life: gain || power ? 0.825 : 1.1,
       vy: gain || power ? -32 : -38,
-      size: power ? 7.7 : gain ? 7.35 : 13,
+      size: gain || power ? 7.35 * 1.05 : 13,
       maxA: gain || power ? 0.75 : 0.875,
     });
   }
@@ -2161,7 +2167,7 @@
       }
       if (!p.scored && p.x + pw < S.bird.x) {
         p.scored = true; S.candles++; A.sfx.coin();
-        grantUsd(100, p.x + pw * 0.5, p.gapY, "gain");
+        grantUsd(100, p.x + pw * 0.5, p.gapY - 50, "gain");
         tickJobChance();
         if (!S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
       }
@@ -2169,7 +2175,7 @@
       if (inX) {
         const ends = pipeEnds(p);
         if (S.bird.y - hitR < ends.top + 2 || S.bird.y + hitR > ends.bot - 2) {
-          if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); grantUsd(200, p.x + pw * 0.5, S.bird.y - 16, "gain"); S.pipes.splice(i, 1); continue; }
+          if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); grantUsd(200, p.x + pw * 0.5, S.bird.y - 66, "gain"); S.pipes.splice(i, 1); continue; }
           else if (S.invuln <= 0) hitFatal();
         }
       }
