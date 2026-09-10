@@ -1,7 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/choppy-bitcoin", "destination": "/choppy-bitcoin/index.html" },
-    { "source": "/privacy", "destination": "/privacy.html" },
-    { "source": "/:user", "destination": "/u.html" }
-  ]
-}
