@@ -498,15 +498,19 @@
     const pw = m.pipeW * S.widthMul;
     const ends = pipeEnds(p);
     const wick = Math.min(22, p.gapH * 0.14);
-    const pad = Math.max(4, (r || 14) * 0.45);
-    const lo = ends.top + pad;
-    const hi = ends.bot - pad;
+    const rad = r || 14;
+    const lo = ends.top + rad;
+    const hi = ends.bot - rad;
     return { x: p.x + pw * 0.5, lo, hi: Math.max(lo + 8, hi), wick, ends };
+  }
+
+  function itemsOnPipe(pipe) {
+    return S.items.filter((it) => it.pipe === pipe);
   }
 
   function pinItem(it) {
     if (!it.pipe || S.pipes.indexOf(it.pipe) < 0) {
-      it.pipe = nearestPipe(it.x);
+      it.pipe = nearestFreePipe(it.x, it);
       if (!it.pipe) return false;
     }
     const box = wickAxis(it.pipe, it.r);
@@ -519,11 +523,13 @@
     return true;
   }
 
-  function nearestPipe(x) {
+  function nearestFreePipe(x, self) {
     const m = metrics();
     const pw = m.pipeW * S.widthMul;
     let best = null, d = 1e9;
     for (const p of S.pipes) {
+      const taken = S.items.some((it) => it !== self && it.pipe === p);
+      if (taken) continue;
       const dx = Math.abs(p.x + pw * 0.5 - x);
       if (dx < d) { d = dx; best = p; }
     }
@@ -550,7 +556,7 @@
     S.spawnedPipes += 1;
     const pipe = { x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false };
     S.pipes.push(pipe);
-    if (Math.random() < 0.48) {
+    if (Math.random() < 0.48 && !itemsOnPipe(pipe).length) {
       const type = pickItem();
       const r = type === "SWAN" ? 17 : 14;
       const box = wickAxis(pipe, r);
@@ -771,7 +777,10 @@
 
   function spawnHalve() {
     if (S.items.some((it) => it.type === "HALVE")) return;
-    let pipe = S.pipes.length ? S.pipes[S.pipes.length - 1] : null;
+    let pipe = null;
+    for (let i = S.pipes.length - 1; i >= 0; i--) {
+      if (!itemsOnPipe(S.pipes[i]).length) { pipe = S.pipes[i]; break; }
+    }
     if (!pipe) return;
     const r = 17;
     const box = wickAxis(pipe, r);
