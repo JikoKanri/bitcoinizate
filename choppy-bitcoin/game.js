@@ -508,6 +508,14 @@
     } else { S.laserT = 0; S.widthT = 1; S.heightT = 1; }
   }
 
+  function pipePw() {
+    return metrics().pipeW * (S.widthMul || 1);
+  }
+  function pipeWx(p, pw) {
+    const w = pw != null ? pw : pipePw();
+    return p.x + w * 0.5;
+  }
+
   function pipeEnds(p) {
     let top0 = p.gapY - p.gapH / 2;
     let bot0 = p.gapY + p.gapH / 2;
@@ -520,14 +528,13 @@
   }
 
   function wickAxis(p, r) {
-    const m = metrics();
-    const pw = m.pipeW * S.widthMul;
+    const pw = pipePw();
     const ends = pipeEnds(p);
     const wick = Math.min(22, p.gapH * 0.14);
     const rad = r || 14;
     const lo = ends.top + rad;
     const hi = ends.bot - rad;
-    return { x: p.x + pw * 0.5, lo, hi: Math.max(lo + 8, hi), wick, ends };
+    return { x: pipeWx(p, pw), pw, lo, hi: Math.max(lo + 8, hi), wick, ends };
   }
 
   function itemsOnPipe(pipe) {
@@ -535,13 +542,8 @@
   }
 
   function pinItem(it) {
-    let p = it.pipe && S.pipes.indexOf(it.pipe) >= 0 ? it.pipe : null;
-    if (!p) {
-      p = nearestFreePipe(it.x, it) || nearestPipeAny(it.x);
-      if (!p) return false;
-      it.pipe = p;
-    }
-    const box = wickAxis(p, it.r);
+    if (!it.pipe || S.pipes.indexOf(it.pipe) < 0) return false;
+    const box = wickAxis(it.pipe, it.r);
     it.x = box.x;
     it.lo = box.lo;
     it.hi = box.hi;
@@ -549,30 +551,6 @@
       it.y = it.halveUp ? box.lo : box.hi;
     }
     return true;
-  }
-
-  function nearestPipeAny(x) {
-    const m = metrics();
-    const pw = m.pipeW * S.widthMul;
-    let best = null, d = 1e9;
-    for (const p of S.pipes) {
-      const dx = Math.abs(p.x + pw * 0.5 - x);
-      if (dx < d) { d = dx; best = p; }
-    }
-    return best;
-  }
-
-  function nearestFreePipe(x, self) {
-    const m = metrics();
-    const pw = m.pipeW * S.widthMul;
-    let best = null, d = 1e9;
-    for (const p of S.pipes) {
-      const taken = S.items.some((it) => it !== self && it.pipe === p);
-      if (taken) continue;
-      const dx = Math.abs(p.x + pw * 0.5 - x);
-      if (dx < d) { d = dx; best = p; }
-    }
-    return best;
   }
 
   function spawnPipe(x) {
@@ -595,7 +573,7 @@
     S.spawnedPipes += 1;
     const pipe = { x, gapY, gapH, green: Math.random() > 0.45, scored: false, seen: false };
     S.pipes.push(pipe);
-    if (Math.random() < 0.48 && !itemsOnPipe(pipe).length) {
+    if (Math.random() < 0.52 && !itemsOnPipe(pipe).length) {
       const type = pickItem();
       const r = type === "SWAN" ? 17 : 14;
       const box = wickAxis(pipe, r);
@@ -2466,21 +2444,25 @@
     drawTape(ctx, S.tape, S.H * 0.196, S.H * 0.804, "rgba(79,157,110,0.52)", "rgba(196,92,74,0.52)");
 
     const m = metrics();
-    const pw = m.pipeW * S.widthMul;
+    const pw = pipePw();
     const endingFlash = S.power === "BULL" && S.powerT < 1.15 && Math.floor(S.powerT * 9) % 2 === 0;
     const edge = wash || (S.laserOn ? "#e8902a" : "rgba(243,239,230,0.85)");
     for (const p of S.pipes) {
       const col = endingFlash ? RED : wash || (p.green ? GREEN : RED);
       const ends = pipeEnds(p);
+      const wx = pipeWx(p, pw);
+      p.wx = wx;
       ctx.fillStyle = col; ctx.strokeStyle = edge; ctx.lineWidth = S.laserOn ? 2.4 : 1.6;
       ctx.fillRect(p.x, 0, pw, ends.top); ctx.strokeRect(p.x + 0.5, 0.5, pw - 1, Math.max(0, ends.top - 1));
       ctx.fillRect(p.x, ends.bot, pw, S.H - ends.bot); ctx.strokeRect(p.x + 0.5, ends.bot + 0.5, pw - 1, Math.max(0, S.H - ends.bot - 1));
-      const mx = p.x + pw * 0.5, wick = Math.min(22, p.gapH * 0.14);
+      const wick = Math.min(22, p.gapH * 0.14);
       ctx.beginPath(); ctx.strokeStyle = wash ? wash : S.laserOn ? "rgba(232,144,42,0.75)" : "rgba(243,239,230,0.5)"; ctx.lineWidth = 2;
-      ctx.moveTo(mx, ends.top); ctx.lineTo(mx, ends.top + wick); ctx.moveTo(mx, ends.bot); ctx.lineTo(mx, ends.bot - wick); ctx.stroke();
+      ctx.moveTo(wx, ends.top); ctx.lineTo(wx, ends.top + wick); ctx.moveTo(wx, ends.bot); ctx.lineTo(wx, ends.bot - wick); ctx.stroke();
     }
     for (const it of S.items) {
-      pinItem(it);
+      const p = it.pipe && S.pipes.indexOf(it.pipe) >= 0 ? it.pipe : null;
+      if (p) it.x = p.wx;
+      else pinItem(it);
       drawPowerIcon(ctx, it, wash);
     }
     const blink = S.invuln > 0 && Math.floor(S.invuln * 10) % 2 === 0;
