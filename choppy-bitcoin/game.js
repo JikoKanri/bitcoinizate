@@ -123,9 +123,16 @@
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Arc" };
-  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Arco" };
-  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 7, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
+  const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Arc", opsec: "Opsec" };
+  const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Arco", opsec: "Opsec" };
+  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 7, juke: 5, aibud: 6, job: 7, market: 1, chance: 7, opsec: 5 };
+  const OPSEC_GIFT = [
+    { cold: 1, msig: 0 },
+    { cold: 2, msig: 0 },
+    { cold: 3, msig: 0 },
+    { cold: 0, msig: 1 },
+    { cold: 0, msig: 2 }
+  ];
   const JOBS = [
     { name: "Acting career", nameEs: "Carrera de actuación", curve: "hit",
       pay: [240, 260, 310, 420, 780, 2100, 5600],
@@ -209,6 +216,11 @@
         if (tier <= 1) return es ? "1 carta Arc cada 21 velas" : "1 Arc card every 21 candles";
         if (tier === 2) return es ? "2 cartas Arc cada 21 velas" : "2 Arc cards every 21 candles";
         return es ? "2 cartas Arc + chance de 3ra" : "2 Arc cards + odds of a 3rd";
+      }
+      if (id === "opsec") {
+        const g = OPSEC_GIFT[tier - 1] || OPSEC_GIFT[0];
+        if (g.msig) return "+" + g.msig + " multisig";
+        return "+" + g.cold + " cold storage";
       }
       if (id === "aibud") {
         if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
@@ -376,8 +388,8 @@
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false, ranked: true,
     jobTrack: null, jobOffer: null, jobName: "",
-    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 },
-    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 },
+    have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 },
+    poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
     offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
     optPanel: null, optBack: "ready",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
@@ -708,8 +720,8 @@
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = netBtc(); S.candles = 0; S.shownCandles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
       S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
-      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0 };
-      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1 };
+      S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 };
+      S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 };
       S.offerSeq = S.ranked ? fibSeq(16) : [10, 20, 30];
       S.nextOffer = S.ranked ? 1 : 10;
       S.offersDone = 0;
@@ -934,9 +946,8 @@
     }
     if (it.type === "COLD") {
       S.cold += 1;
-      if (S.cold >= 10) {
-        S.cold -= 10;
-        S.msig += 1;
+      packCold();
+      if (S.cold === 0) {
         const line = Math.random() < 0.5 ? "Multisig enabled" : "Security improved to multisig";
         say(line, true);
       } else say("Cold storage secured!");
@@ -1114,6 +1125,21 @@
       assignJob();
     }
     if (kind === "chance") planChanceWindow(S.candles || 0);
+    if (kind === "opsec") applyOpsec(S.have.opsec);
+  }
+
+  function packCold() {
+    while ((S.cold || 0) >= 10) {
+      S.cold -= 10;
+      S.msig = (S.msig || 0) + 1;
+    }
+  }
+
+  function applyOpsec(tier) {
+    const g = OPSEC_GIFT[Math.max(0, (tier || 1) - 1)] || OPSEC_GIFT[0];
+    if (g.cold) S.cold = (S.cold || 0) + g.cold;
+    if (g.msig) S.msig = (S.msig || 0) + g.msig;
+    packCold();
   }
 
   function currentJob() {
@@ -1875,7 +1901,7 @@
   }
 
   function perkOpen() {
-    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud", "job", "market", "chance"].filter((id) => {
+    const ids = ["dca", "ff", "adopt", "manip", "candy", "juke", "aibud", "job", "market", "chance", "opsec"].filter((id) => {
       const have = S.have[id] || 0;
       const max = PERK_MAX[id] || 10;
       if (id === "dca") return have <= 0;
@@ -1990,6 +2016,7 @@
     if (id === "chance") return "Arc shots at more bitcoin";
     if (id === "ff") return "More candles, more cash to stack";
     if (id === "juke") return "No stack value, last resort";
+    if (id === "opsec") return "Extra lives to keep stacking";
     return "Best for stacking bitcoin";
   }
 
@@ -2004,7 +2031,8 @@
       market: "Marketplace",
       chance: "Arc",
       ff: "FastForward",
-      juke: "Jukebox"
+      juke: "Jukebox",
+      opsec: "Opsec"
     }[id] || "a perk";
     const lines = [
       "A.I. bud takes " + name,
@@ -2023,10 +2051,12 @@
     const score = (id) => {
       if (!id || id === "skip") return -1;
       if (id === "market" && S.ranked && lives < 1) return 110;
+      if (id === "opsec" && S.ranked && lives < 1) return 108;
       if (id === "dca" && !dca) return 100;
       if (id === "aibud" && aiT < 4) return 96;
       if (id === "manip") return 90;
       if (id === "market") return 86;
+      if (id === "opsec") return 84;
       if (id === "candy") return dca ? 82 : 76;
       if (id === "job") return dca ? 80 : 64;
       if (id === "aibud" && aiT < 6) return 72;
@@ -3335,7 +3365,7 @@
         const cost = (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
         if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
         S.cash -= cost;
-        if (kind === "cold") S.cold += 1;
+        if (kind === "cold") { S.cold += 1; packCold(); }
         else if (kind === "laser") {
           S.lasers += 1;
           if (S.laserOn) S.laserT += POWER_S; else applyLaser(true);
