@@ -2011,20 +2011,19 @@
     const lives = (S.cold || 0) + (S.msig || 0);
     const score = (id) => {
       if (!id || id === "skip") return -1;
+      if (id === "market" && S.ranked && lives < 1) return 110;
       if (id === "dca" && !dca) return 100;
       if (id === "aibud" && aiT < 4) return 96;
-      if (id === "candy") return dca ? 92 : 84;
-      if (id === "job") return dca ? 88 : 66;
-      if (id === "aibud" && aiT < 6) return 80;
-      if (id === "market" && S.ranked && lives < 1) return 78;
-      if (id === "manip" && (holding || aiT >= 3)) return 74;
-      if (id === "adopt") return 64;
-      if (id === "market") return 58;
+      if (id === "manip") return 90;
+      if (id === "market") return 86;
+      if (id === "candy") return dca ? 82 : 76;
+      if (id === "job") return dca ? 80 : 64;
+      if (id === "aibud" && aiT < 6) return 72;
       if (id === "chance") return 54;
-      if (id === "manip") return 48;
       if (id === "ff") return 36;
       if (id === "aibud") return 22;
-      if (id === "juke") return 12;
+      if (id === "juke") return 18;
+      if (id === "adopt") return 8;
       return 10;
     };
     let best = ids[0], bestS = -1;
