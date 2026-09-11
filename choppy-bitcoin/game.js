@@ -2606,14 +2606,20 @@
     if (data.length < 2) return;
     const bucket = 4, cw = 4.75, stepX = 5.1;
     const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
-    const buckets = [];
-    for (let i = 0; i < data.length; i += bucket) {
-      const sl = data.slice(i, i + bucket);
-      if (!sl.length) continue;
-      const o = buckets.length ? buckets[buckets.length - 1].c : sl[0];
-      buckets.push({ o: o, h: Math.max.apply(null, sl), l: Math.min.apply(null, sl), c: sl[sl.length - 1] });
+    const startI = Math.max(0, data.length - maxFit * bucket);
+    const startB = Math.floor(startI / bucket);
+    const vis = [];
+    for (let i = startI; i < data.length; i += bucket) {
+      const end = Math.min(data.length, i + bucket);
+      let o = vis.length ? vis[vis.length - 1].c : data[i];
+      let h = data[i], l = data[i];
+      for (let j = i + 1; j < end; j++) {
+        const v = data[j];
+        if (v > h) h = v;
+        if (v < l) l = v;
+      }
+      vis.push({ o: o, h: h, l: l, c: data[end - 1] });
     }
-    const vis = buckets.length > maxFit ? buckets.slice(buckets.length - maxFit) : buckets;
     if (!vis.length) return;
     let visHi = vis[0].h, visLo = vis[0].l;
     for (const b of vis) { if (b.l < visLo) visLo = b.l; if (b.h > visHi) visHi = b.h; }
@@ -2638,7 +2644,6 @@
       ctx.fillStyle = b.c >= b.o ? up : dn;
       ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.2, Math.abs(py(b.c) - py(b.o))));
     });
-    const startB = buckets.length > maxFit ? buckets.length - maxFit : 0;
     const marks = (S.tapeMarks || []).concat(S.tapeLive ? [S.tapeLive] : []);
     if (marks.length) {
       ctx.save();
