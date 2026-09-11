@@ -499,8 +499,17 @@
     return line;
   }
 
+  function formatVoice(line) {
+    let s = String(line || "").replace(/\s+/g, " ").trim();
+    if (!s) return "";
+    s = s.replace(/[.]+$/g, "");
+    s = s.replace(/(^|[.!?]\s+)([a-záéíóúüñ])/g, (m, a, b) => a + b.toUpperCase());
+    return s;
+  }
+
   function say(line, urgent, kind) {
     if (!line) return;
+    line = formatVoice(line);
     const halve = kind === "halve";
     const bud = kind === "aibud";
     if (!halve && !bud && S.lifeT < S.halveSpeechUntil) return;
@@ -890,8 +899,7 @@
         ? A.SWAN
         : A.SWAN.filter((l) => l !== "Cold storage lost!");
       const line = Math.random() < 0.15 ? "" : pool[(Math.random() * pool.length) | 0];
-      S.ticker = line; S.tickerT = 2.4;
-      if (S.lifeT >= S.halveSpeechUntil) A.speak(spoken(line), true);
+      if (line) say(line, true);
       A.sfx.boom();
       applyLaser(false);
       if (S.cold > 0) { S.coldLost = (S.coldLost || 0) + S.cold; S.cold = 0; }
@@ -972,7 +980,7 @@
     S.power = "NONE"; S.powerT = 0;
     try { if (A && A.sfx && A.sfx.die) A.sfx.die(); } catch (e) {}
     try { if (A && A.cancelSpeech) A.cancelSpeech(); } catch (e) {}
-    try { if (A && A.speak) A.speak("Rekt! You got liquidated", true); } catch (e) {}
+    try { if (A && A.speak) A.speak(formatVoice("Rekt! You got liquidated"), true); } catch (e) {}
     S.ticker = t("liquidated");
     try { S.best = saveBest(scoreSats()); } catch (e) {}
     snapshotRun();
@@ -2025,7 +2033,7 @@
     if (S.aiTimingStart == null) {
       S.aiTimingStart = S.lifeT;
       S.aiTimingLast = S.lifeT;
-      say("A.I bud is timing the market for you!", true, "aibud");
+      say("A.I. bud is timing the market for you!", true, "aibud");
     }
   }
 
@@ -2034,7 +2042,7 @@
     if ((S.aiTimingLast || 0) && S.lifeT - S.aiTimingLast < 60) return;
     if (!S.aiTimingLast && S.lifeT - S.aiTimingStart < 60) return;
     S.aiTimingLast = S.lifeT;
-    say("A.I bud is timing the market for you!", true, "aibud");
+    say("A.I. bud is timing the market for you!", true, "aibud");
   }
 
   function incomingKind(kinds, horizon) {
@@ -2188,7 +2196,7 @@
     if (!S.welcomed) {
       S.welcomed = true;
       try {
-        A.speak("Welcome to Choppy Bitcoin: Survive the market!");
+        A.speak(formatVoice("Welcome to Choppy Bitcoin: Survive the market!"));
         S.ticker = t("welcome");
         S.tickerT = 3;
       } catch (e) {}
