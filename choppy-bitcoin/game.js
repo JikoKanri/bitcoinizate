@@ -328,6 +328,24 @@
     const r = adoptBullRange(tier);
     return Math.round(r.lo * 100) + "/" + Math.round(r.hi * 100) + "%";
   }
+  function crashGuard() {
+    const px = clampPx(S.price);
+    if (px < 2500) return 4;
+    if (px < 5000) return 3;
+    if (px < 7500) return 2;
+    if (px < 10000) return 1;
+    return 0;
+  }
+  function crashScale(kind, dir) {
+    const g = crashGuard();
+    if (g <= 0) return 1;
+    const down = dir < 0 || kind === "BEAR" || kind === "SWAN";
+    const bull = kind === "BULL" || (dir > 0 && kind !== "HALVE");
+    if (down) return Math.max(0.16, 1 - 0.21 * g);
+    if (bull) return 1 + 0.38 * g;
+    return 1;
+  }
+
   function pickCycleAmp(kind) {
     const t = S.have.adopt || 0;
     const soft = adoptSoft(t);
@@ -764,17 +782,18 @@
     const t = waveAge(w, now);
     if (t <= 0) return 0;
     const dir = w.dir;
+    const k = crashScale(w.kind, dir);
     if (t <= WAVE_UP) {
       const u = Math.min(1, t / WAVE_UP);
       const e = u * u * (3 - 2 * u);
-      return dir * w.amp * e;
+      return dir * w.amp * e * k;
     }
     if (t < waveDur()) {
       const u = Math.min(1, (t - WAVE_UP) / WAVE_BACK);
       const e = u * u * (3 - 2 * u);
-      return dir * (w.amp + (w.resid - w.amp) * e);
+      return dir * (w.amp + (w.resid - w.amp) * e) * k;
     }
-    return dir * w.resid;
+    return dir * w.resid * k;
   }
 
   function syncWaveFlags() {
@@ -819,7 +838,7 @@
   function endCycle() {
     if (!(S.waves && S.waves.length)) return;
     let sum = 0;
-    for (const w of S.waves) sum += w.dir * w.resid;
+    for (const w of S.waves) sum += w.dir * w.resid * crashScale(w.kind, w.dir);
     let next = (S.priceBase || S.price) * (1 + sum) * (S.cycleManip || 1);
     if (S.halveFloor > 0 && S.waves.some((w) => w.kind === "HALVE")) next = Math.max(next, S.halveFloor);
     S.price = clampPx(next);

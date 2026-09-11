@@ -243,6 +243,21 @@ body {
   gap: 5px;
   text-align: left;
   align-items: stretch;
+  isolation: isolate;
+  filter: none !important;
+  background: rgba(22, 18, 12, 0.96);
+}
+.overlay.dock.chance-ui .chance-art {
+  width: 168px;
+  height: 168px;
+  border-radius: 18px;
+  object-fit: contain;
+  background: #3a3020;
+  align-self: center;
+  margin: 0 auto;
+  display: block;
+  filter: none !important;
+  mix-blend-mode: normal !important;
 }
 .overlay.dock.chance-ui h1 { text-align: left; }
 .overlay.dock.chance-ui p.k { text-decoration: underline; color: #f3efe6; }
@@ -255,7 +270,6 @@ body {
   text-justify: inter-word;
   white-space: pre-wrap;
 }
-.overlay.dock.chance-ui .chance-art { width: 144px; height: 144px; align-self: center; margin: 0 auto; display: block; }
 .overlay.dock.chance-ui .arc-actions {
   width: 100%;
   display: flex;
@@ -278,9 +292,10 @@ body {
 .overlay.dock p { font-size: 11px; margin: 0; }
 .overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
 .chance-art {
-  width: 184px; height: 184px; border-radius: 50%;
-  object-fit: cover; border: 2px solid #c8960a;
-  background: #0a0a0c; flex: 0 0 auto;
+  width: 184px; height: 184px; border-radius: 18px;
+  object-fit: contain; border: 2px solid #c8960a;
+  background: #3a3020; flex: 0 0 auto;
+  filter: none; mix-blend-mode: normal;
 }
 .overlay.dock .chance-art { width: 72px; height: 72px; }
 .overlay.dock .opt-item { min-height: 30px; font-size: 11px; }
