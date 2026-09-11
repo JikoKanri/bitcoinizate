@@ -340,10 +340,13 @@
   }
   function crashScale(kind, dir) {
     const g = crashGuard();
-    if (g <= 0) return 1;
-    const down = dir < 0 || kind === "BEAR" || kind === "SWAN";
-    if (down) return Math.max(0.16, 1 - 0.21 * g);
-    return 1;
+    let k = 1;
+    if (g > 0) {
+      const down = dir < 0 || kind === "BEAR" || kind === "SWAN";
+      if (down) k = Math.max(0.16, 1 - 0.21 * g);
+    }
+    if (kind === "SWAN") k *= 0.95;
+    return k;
   }
 
   function pickCycleAmp(kind) {
