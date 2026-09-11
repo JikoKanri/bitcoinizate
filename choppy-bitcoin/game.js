@@ -1880,6 +1880,24 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
+  let chanceArtBusy = false;
+  function preloadChanceArt() {
+    if (chanceArtBusy) return;
+    chanceArtBusy = true;
+    const ids = CHANCE_CARDS.map((c) => c.id);
+    ids.push("hero");
+    let i = 0;
+    const kick = (n) => {
+      while (n-- > 0 && i < ids.length) {
+        const im = new Image();
+        im.decoding = "async";
+        im.onload = im.onerror = () => kick(1);
+        im.src = "chance/" + ids[i++] + ".jpg";
+      }
+    };
+    kick(4);
+  }
+
   function dealChance() {
     if (S.phase !== "play") return;
     if (!S.chanceUsed) S.chanceUsed = {};
@@ -2355,6 +2373,7 @@
     if (A && A.sfx && A.sfx.start) try { A.sfx.start(); } catch (e) {}
     S.humanInput = true;
     S.introCounted = true;
+    preloadChanceArt();
     if (!S.welcomed) {
       S.welcomed = true;
       try {
@@ -3876,6 +3895,7 @@
     renderOverlay();
     renderHud();
     layoutStage();
+    preloadChanceArt();
     requestAnimationFrame(loop);
   } catch (e) {
     try { console.error(e); } catch (err) {}
