@@ -775,6 +775,21 @@
     S.spawnX = first + m.spacing * 2;
   }
 
+  function sameDirN(w) {
+    const waves = S.waves || [];
+    const idx = waves.indexOf(w);
+    if (idx < 0) return 1;
+    let n = 0;
+    for (let i = 0; i <= idx; i++) if (waves[i].dir === w.dir) n++;
+    return Math.max(1, n);
+  }
+  function stackW(w) {
+    return 1 / sameDirN(w);
+  }
+  function waveMul(sum) {
+    return Math.max(0.18, Math.min(3.2, 1 + sum));
+  }
+
   function waveDur() { return WAVE_UP + WAVE_BACK; }
   function waveAge(w, now) { return (now != null ? now : S.lifeT) - w.t0; }
   function waveLive(w, now) { return waveAge(w, now) < waveDur(); }
@@ -784,7 +799,7 @@
     const t = waveAge(w, now);
     if (t <= 0) return 0;
     const dir = w.dir;
-    const k = crashScale(w.kind, dir);
+    const k = crashScale(w.kind, dir) * stackW(w);
     if (t <= WAVE_UP) {
       const u = Math.min(1, t / WAVE_UP);
       const e = u * u * (3 - 2 * u);
@@ -840,8 +855,8 @@
   function endCycle() {
     if (!(S.waves && S.waves.length)) return;
     let sum = 0;
-    for (const w of S.waves) sum += w.dir * w.resid * crashScale(w.kind, w.dir);
-    let next = (S.priceBase || S.price) * (1 + sum) * (S.cycleManip || 1);
+    for (const w of S.waves) sum += w.dir * w.resid * crashScale(w.kind, w.dir) * stackW(w);
+    let next = (S.priceBase || S.price) * waveMul(sum) * (S.cycleManip || 1);
     if (S.halveFloor > 0 && S.waves.some((w) => w.kind === "HALVE")) next = Math.max(next, S.halveFloor);
     S.price = clampPx(next);
     S.priceBase = S.price;
@@ -2371,7 +2386,7 @@
         sum += waveK(w, now);
         if (waveLive(w, now)) live = true;
       }
-      S.price = clampPx((S.priceBase || S.cycleStart || S.price) * (1 + sum) * S.cycleManip);
+      S.price = clampPx((S.priceBase || S.cycleStart || S.price) * waveMul(sum) * S.cycleManip);
       if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + sum * 0.45) * S.cycleManip);
       noteCyclePrice();
       updateTapeLive(now);
