@@ -1908,7 +1908,6 @@
     if (!S.perkOffers || !S.perkOffers.length) return;
     if (S.perkOffers[S.perkOffers.length - 1] !== "skip") S.perkOffers.push("skip");
     S.perkPick = "";
-    if (why === "laser") say("Fibonacci treshold reached, grab your perk!", true);
     if (!forceUi && S.aibudOn && (S.have.aibud || 0) >= 2) {
       const real = S.perkOffers.filter((id) => id !== "skip");
       if (!real.length) { bumpOffer(); return; }
@@ -1916,8 +1915,10 @@
       grantPerk(pick.id);
       bumpOffer();
       aiAct("Perk " + perkTitle(pick.id, S.have[pick.id]), pick.why);
+      say(aiPerkVoice(pick.id), true, "aibud");
       return;
     }
+    if (why === "laser") say("Fibonacci treshold reached, grab your perk!", true);
     if (S.aibudOn && (S.have.aibud || 0) >= 1) {
       const pick = bestAiPerk(S.perkOffers.filter((id) => id !== "skip"));
       S.perkHint = pick && pick.id;
@@ -1968,34 +1969,62 @@
   }
 
   function perkWhy(id) {
-    const es = window.BZ && BZ.lang && BZ.lang() === "es";
-    if (id === "candy") return es ? "Más cash de velas para juntar sats" : "More candle cash to stack sats";
-    if (id === "dca") return es ? "El ingreso se vuelve bitcoin" : "Income becomes bitcoin";
-    if (id === "adopt") return es ? "Ciclos más suaves a ambos lados" : "Milder cycles both ways";
-    if (id === "manip") return es ? "Mover el precio si holdeamos" : "Steer price while we hold";
-    if (id === "aibud") return es ? "A.I. bud sube de nivel" : "A.I. bud levels up";
-    if (id === "ff") return es ? "Más tablero, más monedas" : "More board, more coins";
-    if (id === "juke") return es ? "Música mientras stackeamos" : "Tunes while we stack";
-    if (id === "job") return es ? "Sueldo fijo cada 21 velas" : "Steady paycheck every 21 candles";
-    if (id === "market") return es ? "Comprar vidas y láseres" : "Buy lives and lasers";
-    if (id === "chance") return es ? "Cartas Arc cada 21 velas" : "Arc cards every 21 candles";
-    return es ? "Lo mejor para juntar bitcoin" : "Best for stacking bitcoin";
+    if (id === "dca") return "Income becomes bitcoin";
+    if (id === "candy") return "More candle cash to stack sats";
+    if (id === "job") return "Paycheck to convert into bitcoin";
+    if (id === "aibud") return "Better timing for the stack";
+    if (id === "manip") return "Steer price while we accumulate";
+    if (id === "market") return "Lasers and lives to keep stacking";
+    if (id === "adopt") return "Tamer bears protect the bag";
+    if (id === "chance") return "Arc shots at more bitcoin";
+    if (id === "ff") return "More candles, more cash to stack";
+    if (id === "juke") return "No stack value, last resort";
+    return "Best for stacking bitcoin";
+  }
+
+  function aiPerkVoice(id) {
+    const name = {
+      dca: "D.C.A.",
+      candy: "Candle candy",
+      job: "Employment",
+      aibud: "an A.I. bud upgrade",
+      manip: "Manipulation",
+      adopt: "Adoption",
+      market: "Marketplace",
+      chance: "Arc",
+      ff: "FastForward",
+      juke: "Jukebox"
+    }[id] || "a perk";
+    const lines = [
+      "A.I. bud takes " + name,
+      "A.I. bud picks " + name,
+      "Stacking with " + name
+    ];
+    return lines[(Math.random() * lines.length) | 0];
   }
 
   function bestAiPerk(ids) {
+    const have = S.have || {};
+    const aiT = have.aibud || 0;
+    const dca = (have.dca || 0) > 0;
+    const holding = (S.btc || 0) > 1e-8;
+    const lives = (S.cold || 0) + (S.msig || 0);
     const score = (id) => {
-      if (id === "aibud" && (S.have.aibud || 0) >= 1) return 90;
-      if (id === "dca" && S.have.dca <= 0) return 88;
-      if (id === "candy") return 80;
-      if (id === "adopt") return 74;
-      if (id === "manip" && S.btc > 0) return 70;
-      if (id === "manip") return 55;
-      if (id === "ff") return 40;
-      if (id === "juke") return 28;
-      if (id === "job") return 60;
-      if (id === "market") return 50;
-      if (id === "chance") return 52;
-      if (id === "aibud") return 86;
+      if (!id || id === "skip") return -1;
+      if (id === "dca" && !dca) return 100;
+      if (id === "aibud" && aiT < 4) return 96;
+      if (id === "candy") return dca ? 92 : 84;
+      if (id === "job") return dca ? 88 : 66;
+      if (id === "aibud" && aiT < 6) return 80;
+      if (id === "market" && S.ranked && lives < 1) return 78;
+      if (id === "manip" && (holding || aiT >= 3)) return 74;
+      if (id === "adopt") return 64;
+      if (id === "market") return 58;
+      if (id === "chance") return 54;
+      if (id === "manip") return 48;
+      if (id === "ff") return 36;
+      if (id === "aibud") return 22;
+      if (id === "juke") return 12;
       return 10;
     };
     let best = ids[0], bestS = -1;
