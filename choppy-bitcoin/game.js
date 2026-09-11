@@ -13,6 +13,7 @@
   const RED = "#c45c4a";
   const BTC = "#c8960a";
   const PX_MIN = 1;
+  const PHI = (1 + Math.sqrt(5)) / 2;
   function clampPx(v) {
     const n = Number(v);
     if (!isFinite(n) || n < PX_MIN) return PX_MIN;
@@ -946,6 +947,7 @@
         type: "HALVE", r, halveUp: up, freeX: true
       });
     }
+    S.drift = (S.drift != null ? S.drift : 0.0006) * PHI;
     A.sfx.cap();
   }
 
