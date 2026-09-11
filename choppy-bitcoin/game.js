@@ -638,9 +638,7 @@
       it.pipe = null;
       it.freeX = true;
     }
-    if (it.type === "HALVE" && it.lo != null) {
-      it.y = it.halveUp ? it.lo : it.hi;
-    }
+    if (it.type === "HALVE") it.y = halveSlotY(it.halveUp, it.r);
     return true;
   }
 
@@ -886,6 +884,28 @@
     return bias;
   }
 
+  function fibAt(n) {
+    const i = Math.max(1, n | 0);
+    const s = fibSeq(Math.max(2, i));
+    return s[i - 1] || 1;
+  }
+
+  function halveSlotY(up, r) {
+    const rad = r || 17;
+    const pad = rad + 10;
+    if (up) return pad;
+    const buy = $("buy-btc");
+    const c = $("c");
+    if (buy && c) {
+      const cb = c.getBoundingClientRect();
+      const bb = buy.getBoundingClientRect();
+      const scale = S.H / Math.max(1, cb.height);
+      const y = (bb.top - cb.top) * scale - pad;
+      if (isFinite(y)) return Math.max(pad, Math.min(S.H - pad, y));
+    }
+    return S.H - 78;
+  }
+
   function spawnHalve() {
     if (S.items.some((it) => it.type === "HALVE")) return;
     let pipe = null;
@@ -894,14 +914,14 @@
     }
     const r = 17;
     const up = S.halveSide !== "down";
+    const y = halveSlotY(up, r);
     if (pipe) {
       const box = wickAxis(pipe, r);
       S.items.push({
-        pipe, x: box.x, y: up ? box.lo : box.hi, lo: box.lo, hi: box.hi,
+        pipe, x: box.x, y, lo: box.lo, hi: box.hi,
         type: "HALVE", r, halveUp: up, freeX: false
       });
     } else {
-      const y = up ? (r + 16) : (S.H - 78);
       S.items.push({
         pipe: null, x: S.W + 56, y, lo: y, hi: y,
         type: "HALVE", r, halveUp: up, freeX: true
@@ -960,6 +980,10 @@
     }
     if (it.type === "HALVE") {
       S.halvings += 1;
+      const gift = fibAt(S.halvings);
+      const out = creditBtc(gift);
+      if (out.take > 0) pop(it.x, it.y - 36, "+" + fmtAmt(out.take, "btc"), BTC, "power");
+      if (out.cash > 0) pop(it.x, it.y - 50, "+" + fmtAmt(out.cash, "usd"), GREEN, "power");
       const floorFrom = S.power === "BULL" ? (S.priceBase || S.price) : S.price;
       S.halveFloor = Math.max(S.halveFloor, floorFrom + halveMinRise());
       beginCycle("BULL", "HALVE");
