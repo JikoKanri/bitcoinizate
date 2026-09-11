@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/madcap-hash", "destination": "/madcap-hash/index.html" },
     { "source": "/choppy-bitcoin", "destination": "/choppy-bitcoin/index.html" },
     { "source": "/choppy-bitcoin/chart", "destination": "/choppy-bitcoin/chart.html" },
     { "source": "/privacy", "destination": "/privacy.html" },

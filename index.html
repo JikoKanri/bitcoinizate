@@ -63,6 +63,19 @@
         "inLanguage": "en",
         "author": { "@type": "Organization", "name": "Bitcoinizate" },
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+      },
+      {
+        "@type": "VideoGame",
+        "name": "Madcap Hash",
+        "url": "https://bitcoinizate.com/madcap-hash/",
+        "image": "https://bitcoinizate.com/og-icon.png",
+        "description": "World-board rally: invest in cities, play sabotage cards, and dump Dr. Drago on your rivals. Play-money sats.",
+        "genre": ["Board game", "Strategy"],
+        "gamePlatform": "Web browser",
+        "playMode": "MultiPlayer",
+        "inLanguage": "en",
+        "author": { "@type": "Organization", "name": "Bitcoinizate" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
       }
     ]
   }
@@ -92,6 +105,15 @@
     .play small { display: block; margin-top: 5px; font-weight: 400; font-size: 11px; letter-spacing: 0.1em; opacity: 0.72; }
     .play:hover { filter: brightness(1.08); }
     .play-alt { width: 100%; margin-top: 10px; background: transparent; color: var(--paper); border: 1px solid var(--gold); cursor: pointer; font: inherit; }
+    .games { display: grid; gap: 12px; margin: 0 0 28px; }
+    @media (min-width: 640px) { .games { grid-template-columns: 1fr 1fr; } }
+    .game-card {
+      border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); padding: 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .game-card h3 { margin: 0; color: var(--gold); font-size: 18px; letter-spacing: -0.03em; }
+    .game-card p { margin: 0; color: #c4c0b8; font-size: 13px; line-height: 1.45; flex: 1; }
+    .game-card .play { padding: 14px; }
     .chips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 22px 0 0; }
     .chip { border: 1px solid #2a2a2e; background: rgba(10,10,12,0.55); padding: 12px; }
     .chip b { display: block; color: var(--gold); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
@@ -178,11 +200,21 @@
         <span class="auth-chip hide" id="user-profile-tag"></span>
       </div>
     </header>
-    <h2>Choppy <span>Bitcoin</span></h2>
-    <p class="lead" data-i18n="lead1">Bitcoinizate is a new games site. This is our first title.</p>
-    <p class="lead" data-i18n="enjoy">We hope you try and enjoy our first game.</p>
-    <p class="lead" data-i18n="lead2">Fly through Japanese candles. The price moves while you fly. Score is total net worth in BTC at the in-game price.</p>
-    <a class="play" href="/choppy-bitcoin/index.html"><span data-i18n="play">Play Choppy Bitcoin</span></a>
+    <h2>Bitcoinizate</h2>
+    <p class="lead" data-i18n="lead1">Bitcoinizate is a new games site. These are our titles.</p>
+    <p class="lead" data-i18n="enjoy">We hope you try them and enjoy the ride.</p>
+    <div class="games">
+      <article class="game-card">
+        <h3>Choppy Bitcoin</h3>
+        <p data-i18n="lead2">Fly through Japanese candles. The price moves while you fly. Score is total net worth in BTC at the in-game price.</p>
+        <a class="play" href="/choppy-bitcoin/"><span data-i18n="play">Play Choppy Bitcoin</span></a>
+      </article>
+      <article class="game-card">
+        <h3>Madcap Hash</h3>
+        <p data-i18n="madcapLead">Roll a world board, buy shops in bitcoin cities, plant traps, and dump Dr. Drago on whoever is last. Richest stack wins.</p>
+        <a class="play" href="/madcap-hash/"><span data-i18n="playMadcap">Play Madcap Hash</span></a>
+      </article>
+    </div>
     <button type="button" class="play play-alt" id="cta-signup"><span data-i18n="ctaAccount">Create a free account</span><small data-i18n="ctaSub">Save your score · be on the board for prizes</small></button>
     <section class="how">
       <h3 data-i18n="board">Leaderboard</h3>
@@ -206,7 +238,7 @@
       <h3 data-i18n="faq">FAQ</h3>
       <details>
         <summary data-i18n="faqWhat">What is Bitcoinizate?</summary>
-        <p data-i18n="faqWhatA">A site of free bitcoin-themed games. One game now: Choppy Bitcoin. No token. In the browser.</p>
+        <p data-i18n="faqWhatA">A site of free bitcoin-themed games. Now: Choppy Bitcoin and Madcap Hash. No token. In the browser.</p>
       </details>
       <details>
         <summary data-i18n="faqAcc">Do I need an account?</summary>

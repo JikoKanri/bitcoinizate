@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Madcap Hash | Bitcoinizate</title>
+  <meta name="description" content="A world-board rally: buy shops in bitcoin cities, plant traps, dump Dr. Drago on rivals. Play-money sats. Free in the browser.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://bitcoinizate.com/madcap-hash/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bitcoinizate">
+  <meta property="og:title" content="Madcap Hash | Bitcoinizate">
+  <meta property="og:description" content="World rally of sats, shops and sabotage. Inspired by a classic board chase.">
+  <meta property="og:url" content="https://bitcoinizate.com/madcap-hash/">
+  <meta property="og:image" content="https://bitcoinizate.com/madcap-hash/banner.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="style.css">
+  <script src="/nozoom.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header class="top">
+      <a class="brand" href="/">BITCOINIZATE</a>
+      <h1>Madcap <span>Hash</span></h1>
+      <p id="tag" class="tag"></p>
+    </header>
+    <div id="stage">
+      <canvas id="board" width="960" height="540"></canvas>
+      <aside id="side">
+        <div id="hud">
+          <div id="hud-drago" class="hide"><img src="drago.png" alt="" width="48" height="48"><span id="hud-drago-txt"></span></div>
+          <div id="hud-meta"></div>
+          <div id="hud-players"></div>
+        </div>
+        <div id="legend"></div>
+        <div id="log"></div>
+      </aside>
+      <div id="panel"></div>
+    </div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
