@@ -951,7 +951,6 @@ w: And ev-er since then my head's been red.`),
     "Stay humble stack Sats",
     "Have fun staying poor!",
     "Fix the money fix the world!",
-    "Going up forever Laura!",
     "Unconfiscable power!",
     "Do it for Scottie Pippen"
   ];
@@ -975,7 +974,7 @@ w: And ev-er since then my head's been red.`),
     "Buy the dip!"
   ];
   A.SELL = [
-    "Shame on you, nocoiner!",
+    "Greater fool found",
     "Short it!",
     "You are now a nocoiner",
     "Bitcoin sold",
