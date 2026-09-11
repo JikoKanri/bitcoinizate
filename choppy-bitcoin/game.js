@@ -125,7 +125,7 @@
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Arc" };
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Arco" };
-  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 10, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
+  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 7, juke: 5, aibud: 6, job: 7, market: 1, chance: 7 };
   const JOBS = [
     { name: "Acting career", nameEs: "Carrera de actuación", curve: "hit",
       pay: [240, 260, 310, 420, 780, 2100, 5600],
