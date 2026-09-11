@@ -13,6 +13,7 @@
   const RED = "#c45c4a";
   const BTC = "#c8960a";
   const PX_MIN = 1;
+  const DRIFT0 = 0.0012;
   const PHI = (1 + Math.sqrt(5)) / 2;
   function clampPx(v) {
     const n = Number(v);
@@ -343,7 +344,7 @@
     const down = dir < 0 || kind === "BEAR" || kind === "SWAN";
     const bull = kind === "BULL" || (dir > 0 && kind !== "HALVE");
     if (down) return Math.max(0.16, 1 - 0.21 * g);
-    if (bull) return 1 + 0.38 * g;
+    if (bull) return 1 + 0.19 * g;
     return 1;
   }
 
@@ -401,7 +402,7 @@
     lastGapY: 0, spawnX: 0, best: loadBest(),
     dead: false, cycleStart: 20000, cycleDur: POWER_S, cycleElapsed: 0,
     vtCycle: 200, hitCap: false, lifeT: 0, sampleAcc: 0,
-    tape: [], tapeVt: [], tapeCash: [], tapeBtcBag: [], tapeNet: [], tapeMarks: [], tapeTrades: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: 0.0006, level: 1,
+    tape: [], tapeVt: [], tapeCash: [], tapeBtcBag: [], tapeNet: [], tapeMarks: [], tapeTrades: [], eventPeaks: [], eventBottoms: [], waves: [], priceBase: 20000, drift: DRIFT0, level: 1,
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
@@ -411,7 +412,7 @@
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
     offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
     optPanel: null, optBack: "ready",
-    sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0,
+    sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0, halveSpawned: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
     aibudOn: false, aibudLit: {}, iaLog: [], iaProfit: 0, aibudSpeechUntil: 0, aiAcc: 0,
   };
@@ -736,7 +737,7 @@
       S.price = gauss(20000, 0, 40000);
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = netBtc(); S.candles = 0; S.shownCandles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
-      S.halvings = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
+      S.halvings = 0; S.halveMiss = 0; S.halveSpawned = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 };
       S.offerSeq = S.ranked ? fibSeq(16) : [10, 20, 30];
@@ -766,7 +767,7 @@
     S.tapeMarks = []; S.tapeTrades = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
     S.waves = []; S.priceBase = clampPx(S.price);
-    S.drift = 0.0006 * (1 + (Math.random() * 2 - 1));
+    S.drift = DRIFT0 * (1 + (Math.random() * 2 - 1));
     S.runTab = null; S.runTape = []; S.runMarks = []; S.runTrades = []; S.runCash = []; S.runBtcBag = []; S.runNet = []; S.chartFlags = { trades: false, btc: false, usd: false, net: false };
     S.speechUntil = 0;
     const first = S.bird.x + 210;
@@ -894,7 +895,7 @@
   }
 
   function trendBias() {
-    const base = (S.drift != null ? S.drift : 0.0006);
+    const base = (S.drift != null ? S.drift : DRIFT0);
     let bias = base * (1 + (Math.random() * 2 - 1) * 0.05);
     if ((S.have.manip || 0) > 0) {
       const k = (S.have.manip || 0) * (12 / 7);
@@ -947,7 +948,8 @@
         type: "HALVE", r, halveUp: up, freeX: true
       });
     }
-    S.drift = (S.drift != null ? S.drift : 0.0006) * PHI;
+    S.drift = (S.drift != null ? S.drift : DRIFT0) * PHI;
+    S.halveSpawned = (S.halveSpawned || 0) + 1;
     A.sfx.cap();
   }
 
@@ -2743,7 +2745,7 @@
     setTxt("h-laser", String(S.lasers || 0));
     setTxt("h-fib", String(S.ranked ? (S.nextOffer || 1) : 0));
     setTxt("h-halve", String(S.halveLeft));
-    setTxt("h-halves", String(S.halvings) + "/" + HALVE_N);
+    setTxt("h-halves", String(S.halvings || 0) + "/" + String(S.halveSpawned || 0));
     const bonus = S.level >= 2;
     $("hud").className = "hud-grid hud-4";
     const lockBtn = (id, ready) => {
