@@ -454,7 +454,7 @@
   function candyMul(tier) {
     const t = Math.max(0, Number(tier != null ? tier : S.have.candy) || 0);
     if (t <= 0) return 1;
-    return Math.pow(1.5, t);
+    return Math.pow((1 + Math.sqrt(5)) / 2, t);
   }
   function candyLabel(tier) {
     const m = candyMul(tier);
