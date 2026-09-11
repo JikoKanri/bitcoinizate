@@ -194,11 +194,24 @@
     if (opts.net) legend(CREAM, t("Net", "Net"));
   }
 
+  function runStatsUrl() {
+    try {
+      const tags = document.getElementsByTagName("script");
+      for (let i = 0; i < tags.length; i++) {
+        const s = tags[i].src || "";
+        if (/run-stats\.js/i.test(s)) return s;
+      }
+      return new URL("run-stats.js", location.href).href;
+    } catch (e) {
+      return "run-stats.js";
+    }
+  }
+
   function openRunChartTab(bag, opts) {
     const payload = JSON.stringify({ bag: bag || {}, opts: opts || emptyOpts() }).replace(/</g, "\\u003c");
     const w = window.open("", "_blank");
     if (!w) return;
-    const src = (location.origin || "") + "/choppy-bitcoin/run-stats.js";
+    const src = runStatsUrl().replace(/"/g, "");
     w.document.open();
     w.document.write("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Run chart</title>"
       + "<style>html,body{margin:0;background:#0a0a0c;color:#f3efe6;font-family:IBM Plex Mono,ui-monospace,monospace}"
@@ -208,14 +221,15 @@
       + "canvas{display:block;width:100%;background:#0a0a0c}</style></head><body>"
       + "<header><h1>CHART</h1><div class=\"chart-opts\" id=\"opts\"></div></header>"
       + "<canvas id=\"big-chart\"></canvas>"
-      + "<script>window.__CHART__=" + payload + ";</script>"
-      + "<script src=\"" + src + "\"></script>"
-      + "<script>(function(){var packed=window.__CHART__||{};var bag=packed.bag||{};var opts=packed.opts||{trades:false,btc:false,usd:false,net:false};"
-      + "var box=document.getElementById('opts');box.innerHTML=window.chartOptsHtml(opts);"
+      + "<script>window.__CHART__=" + payload + ";"
+      + "window.__bootChart=function(){var packed=window.__CHART__||{};var bag=packed.bag||{};var opts=packed.opts||{trades:false,btc:false,usd:false,net:false};"
+      + "var box=document.getElementById('opts');if(!window.chartOptsHtml||!window.paintRunChart)return;"
+      + "box.innerHTML=window.chartOptsHtml(opts);"
       + "var large=box.querySelector('[data-chart-large]');if(large)large.remove();"
       + "var canvas=document.getElementById('big-chart');"
       + "function size(){canvas.width=Math.max(320,window.innerWidth);canvas.height=Math.max(240,window.innerHeight-56);window.paintRunChart(canvas,bag,opts);}"
-      + "window.bindChartControls(box,bag,opts,canvas);window.addEventListener('resize',size);size();})();</script>"
+      + "window.bindChartControls(box,bag,opts,canvas);window.addEventListener('resize',size);size();};</script>"
+      + "<script src=\"" + src + "\" onload=\"window.__bootChart()\"></script>"
       + "</body></html>");
     w.document.close();
   }
