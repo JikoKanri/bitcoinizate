@@ -406,7 +406,7 @@
     startCash: 0, startPrice: 0, peakNet: 0, candles: 0, shownCandles: 0, buys: 0, sells: 0, swans: 0, lasers: 0,
     halvings: 0, halveLeft: HALVE_GAP, halveBull: false, halveFloor: 0, spawnedPipes: 0, halveSide: "up",
     swanBear: false, halveSpeechUntil: 0,
-    stats: null, welcomed: false, introCounted: false, speechUntil: 0, humanInput: false, ranked: true,
+    stats: null, welcomed: false, introCounted: false, speechUntil: 0, speechRank: 0, humanInput: false, ranked: true,
     jobTrack: null, jobOffer: null, jobName: "",
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
@@ -550,19 +550,31 @@
     return s;
   }
 
+  function voiceRank(kind) {
+    if (kind === "halve") return 80;
+    if (kind === "aibud") return 70;
+    if (kind === "trade") return 10;
+    if (kind === "cycle") return 20;
+    return 40;
+  }
+
   function say(line, urgent, kind) {
     if (!line) return;
     line = formatVoice(line);
-    const halve = kind === "halve";
-    const bud = kind === "aibud";
-    if (!halve && !bud && S.lifeT < S.halveSpeechUntil) return;
-    if (!halve && !bud && S.lifeT < (S.aibudSpeechUntil || 0)) return;
+    const rank = voiceRank(kind);
+    const prev = S.speechRank || 0;
+    const busy = S.lifeT < (S.speechUntil || 0);
+    if (busy && rank <= prev) return;
+    if (rank < 80 && S.lifeT < S.halveSpeechUntil) return;
+    if (rank < 70 && S.lifeT < (S.aibudSpeechUntil || 0)) return;
     S.ticker = (window.BZ && BZ.lang && BZ.lang() === "es" && kind === "ui") ? line : line;
     S.tickerT = Math.max(1.5, lineDur(line));
     S.speechUntil = S.lifeT + lineDur(spoken(line));
-    if (halve) S.halveSpeechUntil = S.speechUntil + 0.2;
-    if (bud) S.aibudSpeechUntil = S.speechUntil + 0.15;
-    A.speak(spoken(line), urgent || halve || bud);
+    S.speechRank = rank;
+    if (kind === "halve") S.halveSpeechUntil = S.speechUntil + 0.2;
+    if (kind === "aibud") S.aibudSpeechUntil = S.speechUntil + 0.15;
+    const cut = rank >= 70 || (busy && rank > prev);
+    A.speak(spoken(line), !!(urgent && rank > 10) || cut);
   }
 
   function sayEn(en, cap, urgent, kind) {
@@ -770,6 +782,7 @@
     S.drift = DRIFT0 * (1 + (Math.random() * 2 - 1));
     S.runTab = null; S.runTape = []; S.runMarks = []; S.runTrades = []; S.runCash = []; S.runBtcBag = []; S.runNet = []; S.chartFlags = { trades: false, btc: false, usd: false, net: false };
     S.speechUntil = 0;
+    S.speechRank = 0;
     const first = S.bird.x + 210;
     spawnPipe(first); spawnPipe(first + m.spacing); spawnPipe(first + m.spacing * 2);
     S.spawnX = first + m.spacing * 2;
@@ -845,7 +858,6 @@
     }
     S.waves.push({ type: type, kind: k, dir: dir, amp: amp, resid: resid, t0: S.lifeT, marked: false });
     S.power = type;
-    S.tapeLive = { kind: dir > 0 ? "peak" : "bottom", price: S.price, i: S.tape.length };
     if (k === "HALVE") S.halveBull = true;
     if (k === "SWAN") S.swanBear = true;
     syncWaveFlags();
@@ -870,16 +882,38 @@
     return 15000 * Math.max(1, S.halvings);
   }
 
+  function visTapeExtrema() {
+    const data = S.tape || [];
+    if (!data.length) return { lo: S.price, hi: S.price };
+    const bucket = 4, stepX = 5.1;
+    const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
+    const start = Math.max(0, data.length - maxFit * bucket);
+    let lo = data[start], hi = data[start];
+    for (let i = start + 1; i < data.length; i++) {
+      const v = data[i];
+      if (v < lo) lo = v;
+      if (v > hi) hi = v;
+    }
+    return { lo, hi };
+  }
+  function markQualifies(peak, price) {
+    const vis = visTapeExtrema();
+    if (peak) return price >= vis.hi;
+    return price <= vis.lo;
+  }
+
   function stampWaveMark(w) {
     if (!w || w.marked) return;
+    const peak = w.dir > 0;
     w.marked = true;
+    if (!markQualifies(peak, S.price)) return;
     if (!S.tapeMarks) S.tapeMarks = [];
     S.tapeMarks.push({
-      kind: w.dir > 0 ? "peak" : "bottom",
+      kind: peak ? "peak" : "bottom",
       price: S.price,
       i: S.tape.length
     });
-    if (S.tapeMarks.length > 36) S.tapeMarks = S.tapeMarks.slice(-36);
+    if (S.tapeMarks.length > 16) S.tapeMarks = S.tapeMarks.slice(-16);
   }
 
   function updateTapeLive(now) {
@@ -890,7 +924,12 @@
       else if (t >= 0) follow = w;
     }
     if (follow) {
-      S.tapeLive = { kind: follow.dir > 0 ? "peak" : "bottom", price: S.price, i: S.tape.length };
+      const peak = follow.dir > 0;
+      if (markQualifies(peak, S.price)) {
+        S.tapeLive = { kind: peak ? "peak" : "bottom", price: S.price, i: S.tape.length };
+      } else {
+        S.tapeLive = null;
+      }
     } else {
       S.tapeLive = null;
     }
@@ -901,12 +940,6 @@
     const i = S.tape.length;
     if (S.cycleMax == null || S.price >= S.cycleMax) { S.cycleMax = S.price; S.cycleMaxI = i; }
     if (S.cycleMin == null || S.price <= S.cycleMin) { S.cycleMin = S.price; S.cycleMinI = i; }
-    const peak = S.power === "BULL";
-    S.tapeLive = {
-      kind: peak ? "peak" : "bottom",
-      price: peak ? S.cycleMax : S.cycleMin,
-      i: peak ? S.cycleMaxI : S.cycleMinI
-    };
   }
 
   function trendBias() {
@@ -985,7 +1018,7 @@
         ? A.SWAN
         : A.SWAN.filter((l) => l !== "Cold storage lost!");
       const line = Math.random() < 0.15 ? "" : pool[(Math.random() * pool.length) | 0];
-      if (line) say(line, true);
+      if (line) say(line, true, "cycle");
       A.sfx.boom();
       applyLaser(false);
       if (S.cold > 0) { S.coldLost = (S.coldLost || 0) + S.cold; S.cold = 0; }
@@ -1031,7 +1064,7 @@
     }
     beginCycle(it.type);
     const line = drawLine(it.type === "BULL" ? A.BULL : A.BEAR, 0.15);
-    if (line) say(line, true);
+    if (line) say(line, true, "cycle");
     if (it.type === "BULL") A.sfx.wave();
     else A.sfx.hit();
   }
@@ -1104,7 +1137,7 @@
     S.buys++; S.boughtBtc = true; A.sfx.buy();
     if (!S.aiSilent) {
       const buyLine = drawLine(A.BUY, 0.3);
-      if (buyLine) say(buyLine, true);
+      if (buyLine) say(buyLine, false, "trade");
       if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
@@ -1118,7 +1151,7 @@
     if (S.power === "BEAR" || S.swanBear) S.sellsBear = (S.sellsBear || 0) + 1; A.sfx.sell();
     if (!S.aiSilent) {
       const sellLine = drawLine(A.SELL, 0.3);
-      if (sellLine) say(sellLine, true);
+      if (sellLine) say(sellLine, false, "trade");
       if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
@@ -1137,7 +1170,7 @@
     const vt = S.vt, usd = vt * S.vtPrice;
     S.cash += usd; S.vt = 0; S.sells++; A.sfx.sell();
     const sellLine = drawLine(A.SELL, 0.3);
-    if (sellLine) say(sellLine, true);
+    if (sellLine) say(sellLine, false, "trade");
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(vt, "vt"), RED, "trade");
   }
