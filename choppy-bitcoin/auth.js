@@ -102,6 +102,8 @@
     if (profile && name) {
       window.choppyUsername = name;
       window.choppySignedIn = true;
+      window.choppyUid = currentUser && currentUser.id || null;
+      window.choppyElo = profile && profile.elo != null ? Number(profile.elo) : 1000;
       if (btn) btn.classList.add("hide");
       if (tag) {
         tag.classList.remove("hide");
@@ -110,6 +112,8 @@
     } else {
       window.choppySignedIn = false;
       window.choppyUsername = "";
+      window.choppyUid = null;
+      window.choppyElo = null;
       if (btn) btn.classList.remove("hide");
       if (tag) {
         tag.classList.add("hide");
@@ -426,6 +430,52 @@
     }
   }
 
+  async function fetchEloBoard(targetId) {
+    const box = $(targetId || "site-elo") || $("ready-elo");
+    if (!box || !supabase) return;
+    try {
+      let res = await supabase.from("profiles").select("username, elo, elo_games").order("elo", { ascending: false }).limit(40);
+      if (res.error) { box.textContent = "—"; return; }
+      const rows = (res.data || []).filter((r) => (Number(r.elo_games) || 0) > 0 || (Number(r.elo) || 0) !== 1000);
+      rows.sort((a, b) => (Number(b.elo) || 0) - (Number(a.elo) || 0) || (Number(b.elo_games) || 0) - (Number(a.elo_games) || 0));
+      const top = rows.slice(0, 20);
+      if (!top.length) { box.textContent = "—"; return; }
+      box.innerHTML = top.map((row, i) => {
+        const n = row.username || "?";
+        const href = validAlias(n) ? profileHref(n) : "#";
+        const elo = Math.round(Number(row.elo) || 1000);
+        const g = Number(row.elo_games) || 0;
+        return "<div class=\"board-row\">" + (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a> <span>" + elo + "</span>"
+          + (g ? " <small>" + g + "</small>" : "") + "</div>";
+      }).join("");
+    } catch (e) {
+      box.textContent = "—";
+    }
+  }
+
+  async function submitVersusResult(seed, winnerUid, playerUids) {
+    if (!supabase || !currentUser) return null;
+    const ids = (playerUids || []).filter((id) => typeof id === "string" && id.length > 20);
+    if (!winnerUid || ids.length < 2) return null;
+    if (ids.indexOf(currentUser.id) < 0) return null;
+    try {
+      const { data, error } = await supabase.rpc("submit_versus_result", {
+        p_seed: Number(seed) || 0,
+        p_winner: winnerUid,
+        p_players: ids
+      });
+      if (error) return null;
+      let rows = data;
+      if (typeof rows === "string") try { rows = JSON.parse(rows); } catch (e) { rows = null; }
+      await loadUserProfile();
+      fetchEloBoard("ready-elo");
+      fetchEloBoard("site-elo");
+      return rows;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async function submitNewHighScore(n, meta) {
     if (!currentUser || !currentProfile || !supabase) return;
     const next = Number(n) || 0;
@@ -595,7 +645,13 @@
       return false;
     }
   };
-  window.refreshLeaderboard = fetchGlobalLeaderboard;
+  window.refreshLeaderboard = (id) => {
+    fetchGlobalLeaderboard(id);
+    fetchEloBoard(id === "ready-board" ? "ready-elo" : (id || "site-elo"));
+    if (id === "ready-board") fetchEloBoard("site-elo");
+  };
+  window.submitVersusResult = submitVersusResult;
+  window.refreshEloBoard = fetchEloBoard;
   window.profileHref = profileHref;
   window.openSignUp = function () {
     openAuth();

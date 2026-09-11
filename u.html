@@ -63,6 +63,8 @@
     <div class="card">
       <p class="k" id="k-score">High score</p>
       <p id="score">—</p>
+      <p class="k" id="k-elo">Versus ELO</p>
+      <p id="elo">—</p>
       <p><button type="button" class="stats-mini hide" id="score-stats">STATS</button></p>
       <div id="awards" class="awards"></div>
     </div>
@@ -123,6 +125,12 @@
           if (!at || at < Date.parse("2026-09-07T18:00:00.000Z")) return 0;
           return row.highscore || 0;
         })());
+        var eloEl = document.getElementById("elo");
+        if (eloEl) {
+          var games = Number(row.elo_games) || 0;
+          var elo = row.elo != null ? Math.round(Number(row.elo)) : 1000;
+          eloEl.textContent = games || (row.elo != null && Number(row.elo) !== 1000) ? String(elo) + (games ? "  (" + games + ")" : "") : "—";
+        }
         var statsBtn = document.getElementById("score-stats");
         if (row.run_stats && window.openSavedRunStats) {
           statsBtn.classList.remove("hide");
@@ -155,7 +163,13 @@
       function load(cols) {
         return sb.from("profiles").select(cols).ilike("username", raw).limit(1);
       }
-      load("id, username, highscore, last_score_at, awards, run_stats").then(function (res) {
+      load("id, username, highscore, last_score_at, awards, run_stats, elo, elo_games").then(function (res) {
+        if (res && res.error) {
+          return load("id, username, highscore, last_score_at, awards, run_stats").then(function (res2) {
+            if (!res2.data || !res2.data[0]) { fail(); return; }
+            paint(res2.data[0]);
+          });
+        }
         if (res && res.error) {
           document.getElementById("miss").textContent = es ? "No se pudo cargar el perfil." : "Could not load profile.";
           document.getElementById("miss").classList.remove("hide");

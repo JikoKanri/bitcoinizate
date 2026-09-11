@@ -107,6 +107,7 @@
     mpYouWin: "LAST ONE STANDING", mpWins: "WINS", mpDead: "ELIMINATED",
     mpNote: "Same candles. Last to die wins. Does not count for the board.",
     mpAlive: "ALIVE", mpCopy: "COPY CODE",
+    eloBoard: "VERSUS ELO", eloGuest: "Sign in to record ELO", eloUpdated: "ELO updated", eloPending: "ELO not saved",
     soundOn: "ON", soundOff: "OFF",
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
@@ -3604,8 +3605,16 @@
     return "<ul class=\"mp-list\">" + list.map((p) => {
       const you = window.ChoppyMP && p.id === window.ChoppyMP.id();
       const dead = p.alive === false;
-      return "<li class=\"" + (dead ? "out" : "") + "\">" + (p.name || "?") + (you ? " · you" : "") + (p.host ? " · host" : "") + (dead ? " · out" : "") + "</li>";
+      return "<li class=\"" + (dead ? "out" : "") + "\">" + (p.name || "?") + (you ? " · you" : "") + (p.host ? " · host" : "") + (dead ? " · out" : "") + eloBit(p) + "</li>";
     }).join("") + "</ul>";
+  }
+  function eloBit(p) {
+    const bag = S.mpElo;
+    if (Array.isArray(bag) && p.uid) {
+      const row = bag.find((r) => r.id === p.uid);
+      if (row && row.elo != null) return " · " + Math.round(row.elo);
+    }
+    return p.uid ? "" : " · guest";
   }
   function mpLobbyHtml() {
     const mp = window.ChoppyMP && window.ChoppyMP.get();
@@ -3658,6 +3667,7 @@
     const mine = window.ChoppyMP && w.id === window.ChoppyMP.id();
     const host = window.ChoppyMP && window.ChoppyMP.get().host;
     return "<p class=\"k\">" + t("versus") + "</p><h1>" + (mine ? t("mpYouWin") : (w.name || "?") + " " + t("mpWins")) + "</h1>"
+      + (S.mpEloNote ? "<p class=\"k\">" + S.mpEloNote + "</p>" : "")
       + mpRosterHtml()
       + "<div class=\"overlay-actions\">"
       + (host ? "<button class=\"cta\" id=\"mp-again\">" + t("mpStart") + "</button>" : "")
@@ -3676,9 +3686,35 @@
     S.ranked = true;
     startGame(true);
   }
+  function reportMpElo() {
+    S.mpElo = null;
+    S.mpEloNote = "";
+    const list = (window.ChoppyMP && window.ChoppyMP.players()) || [];
+    const uids = [];
+    list.forEach((p) => { if (p.uid && uids.indexOf(p.uid) < 0) uids.push(p.uid); });
+    const w = S.mpWinner || {};
+    if (!w.uid || uids.length < 2) {
+      S.mpEloNote = t("eloGuest");
+      return;
+    }
+    if (typeof window.submitVersusResult !== "function") {
+      S.mpEloNote = t("eloGuest");
+      return;
+    }
+    Promise.resolve(window.submitVersusResult(S.worldSeed, w.uid, uids)).then((rows) => {
+      if (Array.isArray(rows) && rows.length) {
+        S.mpElo = rows;
+        S.mpEloNote = t("eloUpdated");
+      } else S.mpEloNote = t("eloPending");
+      if (S.phase === "mpwin") renderOverlay();
+    }).catch(() => {
+      S.mpEloNote = t("eloPending");
+      if (S.phase === "mpwin") renderOverlay();
+    });
+  }
   function leaveMp() {
     try { if (window.ChoppyMP) window.ChoppyMP.leave(); } catch (e) {}
-    S.mp = false; S.mpOver = false; S.worldSeed = 0; S.worldRand = null; S.mpWinner = null;
+    S.mp = false; S.mpOver = false; S.worldSeed = 0; S.worldRand = null; S.mpWinner = null; S.mpElo = null; S.mpEloNote = "";
     S.dead = false;
     setPhase("ready");
   }
@@ -3699,6 +3735,7 @@
           S.dead = true;
           if (field) field.classList.remove("is-play");
         }
+        reportMpElo();
         setPhase("mpwin");
       } else if (ev === "err") {
         S.mpErr = data === "need 2" ? t("mpNeed") : String(data || "error");
@@ -3743,7 +3780,8 @@
           + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
           + tutorialBody()
           + awardListHtml(loadAwards(), "full")
-          + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
+          + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>"
+          + "<h3 class=\"k\">" + t("eloBoard") + "</h3><pre id=\"ready-elo\" class=\"board\">—</pre>";
         $("go").onclick = () => startGame(true);
         $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(true); };
         if ($("go-train")) {

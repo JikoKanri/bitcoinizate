@@ -108,7 +108,7 @@
           need.classList.remove("hide");
           return;
         }
-        return sb.from("profiles").select("id, username, highscore, run_stats, last_score_at").eq("id", uid).single();
+        return sb.from("profiles").select("id, username, highscore, run_stats, last_score_at, elo, elo_games").eq("id", uid).single();
       }).then(function (res) {
         if (!uid) return;
         var guess = "";
@@ -126,6 +126,7 @@
           var btc = sats / 1e4;
           var label = es ? "Mejor puntaje" : "High score";
           sc.innerHTML = label + " " + btc.toFixed(4) + " BTC"
+            + (profile.elo != null ? " · ELO " + Math.round(Number(profile.elo) || 1000) : "")
             + (profile.run_stats ? " <button type=\"button\" class=\"stats-mini\" id=\"dash-stats\">STATS</button>" : "");
           var db = document.getElementById("dash-stats");
           if (db && window.openSavedRunStats) db.onclick = function () { window.openSavedRunStats(profile.run_stats); };

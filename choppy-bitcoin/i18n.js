@@ -97,6 +97,10 @@
       mpNote: "Same candles. Last to die wins. Does not count for the board.",
       mpAlive: "ALIVE",
       mpCopy: "COPY CODE",
+      eloBoard: "VERSUS ELO",
+      eloGuest: "Sign in to record ELO",
+      eloUpdated: "ELO updated",
+      eloPending: "ELO not saved",
       tryAgain: "Try again",
       playAgain: "Play again",
       keepPlaying: "Keep playing",
@@ -178,6 +182,10 @@
       mpNote: "Same candles. Last to die wins. Does not count for the board.",
       mpAlive: "ALIVE",
       mpCopy: "COPY CODE",
+      eloBoard: "VERSUS ELO",
+      eloGuest: "SIGN IN TO RECORD ELO",
+      eloUpdated: "ELO UPDATED",
+      eloPending: "ELO NOT SAVED",
     },
     es: {
       brandSub: "Juegos gratis de temática bitcoin",
@@ -275,6 +283,10 @@
       mpNote: "Mismas velas. Gana el último en morir. No cuenta para el ranking.",
       mpAlive: "VIVOS",
       mpCopy: "COPIAR CÓDIGO",
+      eloBoard: "ELO VERSUS",
+      eloGuest: "Inicia sesión para guardar ELO",
+      eloUpdated: "ELO actualizado",
+      eloPending: "ELO no guardado",
       tryAgain: "Otra vez",
       playAgain: "Jugar de nuevo",
       keepPlaying: "Seguir jugando",
@@ -356,6 +368,10 @@
       mpNote: "MISMAS VELAS. GANA EL ÚLTIMO EN MORIR. NO CUENTA PARA EL RANKING.",
       mpAlive: "VIVOS",
       mpCopy: "COPIAR CÓDIGO",
+      eloBoard: "ELO VERSUS",
+      eloGuest: "INICIA SESIÓN PARA GUARDAR ELO",
+      eloUpdated: "ELO ACTUALIZADO",
+      eloPending: "ELO NO GUARDADO",
     }
   };
 

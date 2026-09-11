@@ -59,8 +59,15 @@
     if (i < 0) MP.players.push(Object.assign({ alive: true, candles: 0, lifeT: 0, last: Date.now() }, p));
     else MP.players[i] = Object.assign({}, MP.players[i], p, { last: Date.now() });
   }
-  function me() {
-    return { id: MP.id, name: MP.name, host: MP.host, alive: true };
+  function myUid() {
+    try {
+      if (window.choppyUid) return window.choppyUid;
+      const s = JSON.parse(localStorage.getItem("bitcoinizate-sb") || "null");
+      return (s && s.user && s.user.id) || null;
+    } catch (e) { return null; }
+  }
+  function ident(extra) {
+    return Object.assign({ id: MP.id, name: MP.name, host: MP.host, uid: myUid() }, extra || {});
   }
   function aliveList() { return MP.players.filter((p) => p.alive !== false); }
   function considerOver() {
@@ -149,14 +156,14 @@
       });
       setTimeout(() => {
         upsert({ id: MP.id, name: MP.name, host: MP.host, alive: true });
-        send("hello", { id: MP.id, name: MP.name, host: MP.host, alive: true });
+        send("hello", ident({ alive: true }));
         emit("roster", MP.players);
       }, 180);
       clearInterval(MP.beat);
       MP.beat = setInterval(() => {
         push({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(++MP.refN) });
-        if (MP.started) send("pulse", me());
-        else send("hello", { id: MP.id, name: MP.name, host: MP.host, alive: true });
+        if (MP.started) send("pulse", ident({ alive: true }));
+        else send("hello", ident({ alive: true }));
         const cut = Date.now() - 12000;
         MP.players.forEach((p) => {
           if (p.id !== MP.id && p.last && p.last < cut) {
@@ -186,7 +193,7 @@
     MP.players = [];
     MP.code = rid(4);
     MP.seed = 0;
-    upsert({ id: MP.id, name: MP.name, host: true, alive: true });
+    upsert(ident({ host: true, alive: true }));
     joinSocket();
     emit("lobby", MP);
     return MP.code;
@@ -199,7 +206,7 @@
     MP.started = false;
     MP.players = [];
     MP.code = c;
-    upsert({ id: MP.id, name: MP.name, host: false, alive: true });
+    upsert(ident({ host: false, alive: true }));
     joinSocket();
     emit("lobby", MP);
     return true;
@@ -211,17 +218,17 @@
     if (!MP.seed) MP.seed = 1;
     MP.started = true;
     MP.players.forEach((p) => { p.alive = true; p.lifeT = 0; });
-    send("go", { seed: MP.seed, players: MP.players.map((p) => ({ id: p.id, name: p.name })) });
+    send("go", { seed: MP.seed, players: MP.players.map((p) => ({ id: p.id, name: p.name, uid: p.uid || null })) });
     emit("go", { seed: MP.seed, players: MP.players });
   }
   function pulse(info) {
     if (!MP.started) return;
-    upsert(Object.assign({ id: MP.id, name: MP.name, alive: true }, info || {}));
-    send("pulse", Object.assign({ id: MP.id, name: MP.name, alive: true }, info || {}));
+    upsert(ident(Object.assign({ alive: true }, info || {})));
+    send("pulse", ident(Object.assign({ alive: true }, info || {})));
   }
   function dead(lifeT, candles) {
-    upsert({ id: MP.id, name: MP.name, alive: false, lifeT: lifeT || 0, candles: candles || 0 });
-    send("dead", { id: MP.id, name: MP.name, lifeT: lifeT || 0, candles: candles || 0 });
+    upsert(ident({ alive: false, lifeT: lifeT || 0, candles: candles || 0 }));
+    send("dead", ident({ alive: false, lifeT: lifeT || 0, candles: candles || 0 }));
     considerOver();
   }
   function leave() {
