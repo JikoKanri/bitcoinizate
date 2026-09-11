@@ -13,8 +13,9 @@
   const RED = "#c45c4a";
   const BTC = "#c8960a";
   const PX_MIN = 1;
-  const DRIFT0 = 0.0012;
+  const DRIFT0 = 0.0006;
   const PHI = (1 + Math.sqrt(5)) / 2;
+  const DRIFT_GROW = 1 + (PHI - 1) * 0.5;
   function clampPx(v) {
     const n = Number(v);
     if (!isFinite(n) || n < PX_MIN) return PX_MIN;
@@ -988,7 +989,7 @@
         type: "HALVE", r, halveUp: up, freeX: true
       });
     }
-    S.drift = (S.drift != null ? S.drift : DRIFT0) * PHI;
+    S.drift = (S.drift != null ? S.drift : DRIFT0) * DRIFT_GROW;
     S.halveSpawned = (S.halveSpawned || 0) + 1;
     A.sfx.cap();
   }
