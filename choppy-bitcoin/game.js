@@ -186,7 +186,7 @@
       tier = Math.max(1, Math.min(PERK_MAX[id] || 12, tier));
       const es = window.BZ && BZ.lang && BZ.lang() === "es";
       if (id === "skip") return es ? "seguir sin perk" : "keep flying, no perk";
-      if (id === "candy") return (2 ** tier) + (es ? "x ingreso de velas" : "x candle income");
+      if (id === "candy") return candyLabel(tier) + (es ? " ingreso de velas" : " candle income");
       if (id === "dca") return es ? "ingreso en btc" : "income in btc";
       if (id === "ff") return es
         ? "añade " + (FF_SPEEDS[tier - 1] || 1.5) + "x a la rotación"
@@ -451,8 +451,19 @@
     for (let i = 0; i < n; i++) S.particles.push({ x, y, vx: (Math.random() - 0.5) * 180, vy: (Math.random() - 0.5) * 180 - 20, life: 0.35 + Math.random() * 0.3, color });
   }
 
+  function candyMul(tier) {
+    const t = Math.max(0, Number(tier != null ? tier : S.have.candy) || 0);
+    if (t <= 0) return 1;
+    return Math.pow(1.5, t);
+  }
+  function candyLabel(tier) {
+    const m = candyMul(tier);
+    const s = (Math.round(m * 100) / 100).toString();
+    return s + "x";
+  }
+
   function grantUsd(n, x, y, kind) {
-    if (kind === "gain" && S.have.candy > 0) n *= 2 ** S.have.candy;
+    if (kind === "gain" && S.have.candy > 0) n *= candyMul();
     if (S.dcaOn && S.have.dca > 0 && clampPx(S.price) > 0) {
       const px = clampPx(S.price);
       const want = n / px;
