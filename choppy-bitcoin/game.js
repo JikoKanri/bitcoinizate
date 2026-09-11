@@ -2056,7 +2056,6 @@
       if (id === "aibud" && aiT < 4) return 96;
       if (id === "manip") return 90;
       if (id === "market") return 86;
-      if (id === "opsec") return 84;
       if (id === "candy") return dca ? 82 : 76;
       if (id === "job") return dca ? 80 : 64;
       if (id === "aibud" && aiT < 6) return 72;
@@ -2065,6 +2064,7 @@
       if (id === "aibud") return 22;
       if (id === "juke") return 18;
       if (id === "adopt") return 8;
+      if (id === "opsec") return 4;
       return 10;
     };
     let best = ids[0], bestS = -1;
