@@ -1008,6 +1008,7 @@
     if (!S.aiSilent) {
       const buyLine = drawLine(A.BUY, 0.3);
       if (buyLine) say(buyLine, true);
+      if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(spent, "usd"), RED, "trade");
@@ -1021,6 +1022,7 @@
     if (!S.aiSilent) {
       const sellLine = drawLine(A.SELL, 0.3);
       if (sellLine) say(sellLine, true);
+      if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     }
     pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(usd, "usd"), GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(btc, "btc"), RED, "trade");
@@ -3618,37 +3620,48 @@
     else renderOverlay();
   };
   $("buy-btc").onpointerdown = (e) => {
-    e.stopPropagation(); e.preventDefault();
+    e.stopPropagation();
     if (aiLocks().trade) return;
     buyBtc();
-    unstickTrades();
+    clearManualTradePaint();
     renderHud();
   };
   $("sell-btc").onpointerdown = (e) => {
-    e.stopPropagation(); e.preventDefault();
+    e.stopPropagation();
     if (aiLocks().trade) return;
     sellBtc();
-    unstickTrades();
+    clearManualTradePaint();
     renderHud();
   };
   function keepAiTradeLit(id) {
     return !!(S.aibudOn && S.aibudLit && ((id === "buy-btc" && S.aibudLit.buy) || (id === "sell-btc" && S.aibudLit.sell)));
   }
-  function unstickTrades() {
+  function clearManualTradePaint() {
     ["buy-btc", "sell-btc"].forEach((id) => {
       const el = $(id);
       if (!el) return;
-      el.classList.remove("on");
+      el.classList.remove("on", "press");
       if (!keepAiTradeLit(id)) el.classList.remove("ai-lit");
-      el.blur();
+      try { el.blur(); } catch (err) {}
     });
+    setTimeout(() => {
+      ["buy-btc", "sell-btc"].forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        el.classList.remove("on", "press");
+        if (!keepAiTradeLit(id)) el.classList.remove("ai-lit");
+        try { el.blur(); } catch (err) {}
+      });
+    }, 80);
   }
+  function unstickTrades() { clearManualTradePaint(); }
   const unstickTrade = (id) => {
     const el = $(id);
     if (!el) return;
     const release = () => {
-      if (!keepAiTradeLit(id)) el.classList.remove("ai-lit", "on");
-      el.blur();
+      el.classList.remove("on", "press");
+      if (!keepAiTradeLit(id)) el.classList.remove("ai-lit");
+      try { el.blur(); } catch (err) {}
     };
     el.onpointerup = release;
     el.onpointercancel = release;
