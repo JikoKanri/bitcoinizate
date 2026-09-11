@@ -204,6 +204,21 @@ body {
 .buy, .sell, .pause, .cta { font: inherit; cursor: pointer; border: 0; }
 .cta { background: #c8960a; color: #120c02; min-height: 44px; padding: 0 16px; font-weight: 700; text-transform: uppercase; }
 .play-alt { background: transparent; color: #f3efe6; border: 1px solid #c8960a; }
+.mp-chip {
+  position: absolute; top: 8px; right: 8px; z-index: 8;
+  font-size: 10px; letter-spacing: 0.08em; font-weight: 700;
+  color: #ffe7a0; background: rgba(10,10,12,0.72);
+  border: 1px solid #c8960a; padding: 3px 8px; pointer-events: none;
+}
+.mp-list { list-style: none; width: min(280px, 90%); margin: 8px auto; text-align: left; font-size: 12px; }
+.mp-list li { padding: 4px 8px; border-bottom: 1px solid #2a2a2e; }
+.mp-list li.out { color: #8a8680; text-decoration: line-through; }
+.mp-join { display: flex; gap: 8px; width: min(280px, 90%); margin: 8px auto; }
+.mp-join input {
+  flex: 1; min-height: 44px; font: inherit; text-transform: uppercase;
+  letter-spacing: 0.12em; text-align: center; background: #141416; color: #f3efe6;
+  border: 1px solid #c8960a; padding: 0 10px;
+}
 .speed-bar button:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.7); }
 .buy, .sell { flex: 1; min-height: 45px; height: 45px; font-size: 24px; font-weight: 700; white-space: nowrap; background: transparent; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
 .buy:disabled, .sell:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.65); }
