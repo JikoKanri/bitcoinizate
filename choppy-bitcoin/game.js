@@ -3540,8 +3540,8 @@
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     const k = e.key.toLowerCase();
     if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
-    else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) buyBtc(); }
-    else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) sellBtc(); }
+    else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
+    else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
     else if (k === "p") { e.preventDefault(); togglePause(); }
   });
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); togglePause(); };
@@ -3620,30 +3620,45 @@
   $("buy-btc").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (aiLocks().trade) return;
-    if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     buyBtc();
-    const el = $("buy-btc");
-    if (el) { el.classList.remove("ai-lit", "on"); el.blur(); }
+    unstickTrades();
     renderHud();
   };
   $("sell-btc").onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if (aiLocks().trade) return;
-    if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     sellBtc();
-    const el = $("sell-btc");
-    if (el) { el.classList.remove("ai-lit", "on"); el.blur(); }
+    unstickTrades();
     renderHud();
   };
+  function keepAiTradeLit(id) {
+    return !!(S.aibudOn && S.aibudLit && ((id === "buy-btc" && S.aibudLit.buy) || (id === "sell-btc" && S.aibudLit.sell)));
+  }
+  function unstickTrades() {
+    ["buy-btc", "sell-btc"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.classList.remove("on");
+      if (!keepAiTradeLit(id)) el.classList.remove("ai-lit");
+      el.blur();
+    });
+  }
   const unstickTrade = (id) => {
     const el = $(id);
     if (!el) return;
-    el.onpointerup = () => { el.blur(); if (!(S.aibudOn && S.aibudLit && ((id === "buy-btc" && S.aibudLit.buy) || (id === "sell-btc" && S.aibudLit.sell)))) el.classList.remove("ai-lit", "on"); };
-    el.onpointercancel = () => el.blur();
-    el.onpointerleave = () => el.blur();
+    const release = () => {
+      if (!keepAiTradeLit(id)) el.classList.remove("ai-lit", "on");
+      el.blur();
+    };
+    el.onpointerup = release;
+    el.onpointercancel = release;
+    el.onpointerleave = release;
+    el.onlostpointercapture = release;
   };
   unstickTrade("buy-btc");
   unstickTrade("sell-btc");
+  document.addEventListener("pointerup", unstickTrades, true);
+  document.addEventListener("pointercancel", unstickTrades, true);
   document.querySelectorAll(".spd").forEach((btn) => {
     btn.onpointerdown = (e) => {
       e.stopPropagation(); e.preventDefault();
