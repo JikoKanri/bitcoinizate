@@ -102,7 +102,18 @@
     soundOn: "ON", soundOff: "OFF",
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
-    runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE"
+    runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE",
+    playSub: "Play is ranked (0 cold, 0 multisig).",
+    trainNote: "9 cold and 999 multisig. Does not count for the board or awards.",
+    board: "Leaderboard",
+    tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
+    tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
+    tut3a: "Bull pumps price.",
+    tut3b: "Bear dumps it.",
+    tut4a: "Black swan is a black crash that dumps hard and stretches the bear.",
+    tut4b: "Halving is a fat bull. It sits at the top or just above Buy/Sell.",
+    tut5: "Cold storage saves a hit. Ten colds become one multisig life.",
+    tut6: "Laser eyes eat a bear and unlock a perk."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -3472,7 +3483,7 @@
           + "<p class=\"k\">" + t("playSub") + "</p>"
           + "<button type=\"button\" class=\"cta play-alt\" id=\"go-train\">" + t("training") + "</button>"
           + "<p class=\"k\">" + t("trainNote") + "</p>"
-          + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
+          + (window.CHOPPY_ITCH || window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
           + tutorialBody()
           + awardListHtml(loadAwards(), "full")
           + "<h3 class=\"k\">" + t("board") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>";
