@@ -858,6 +858,7 @@
     }
     S.waves.push({ type: type, kind: k, dir: dir, amp: amp, resid: resid, t0: S.lifeT, marked: false });
     S.power = type;
+    S.tapeLive = { kind: dir > 0 ? "peak" : "bottom", price: S.price, i: S.tape.length };
     if (k === "HALVE") S.halveBull = true;
     if (k === "SWAN") S.swanBear = true;
     syncWaveFlags();
@@ -882,38 +883,16 @@
     return 15000 * Math.max(1, S.halvings);
   }
 
-  function visTapeExtrema() {
-    const data = S.tape || [];
-    if (!data.length) return { lo: S.price, hi: S.price };
-    const bucket = 4, stepX = 5.1;
-    const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
-    const start = Math.max(0, data.length - maxFit * bucket);
-    let lo = data[start], hi = data[start];
-    for (let i = start + 1; i < data.length; i++) {
-      const v = data[i];
-      if (v < lo) lo = v;
-      if (v > hi) hi = v;
-    }
-    return { lo, hi };
-  }
-  function markQualifies(peak, price) {
-    const vis = visTapeExtrema();
-    if (peak) return price >= vis.hi;
-    return price <= vis.lo;
-  }
-
   function stampWaveMark(w) {
     if (!w || w.marked) return;
-    const peak = w.dir > 0;
     w.marked = true;
-    if (!markQualifies(peak, S.price)) return;
     if (!S.tapeMarks) S.tapeMarks = [];
     S.tapeMarks.push({
-      kind: peak ? "peak" : "bottom",
+      kind: w.dir > 0 ? "peak" : "bottom",
       price: S.price,
       i: S.tape.length
     });
-    if (S.tapeMarks.length > 16) S.tapeMarks = S.tapeMarks.slice(-16);
+    if (S.tapeMarks.length > 36) S.tapeMarks = S.tapeMarks.slice(-36);
   }
 
   function updateTapeLive(now) {
@@ -924,12 +903,7 @@
       else if (t >= 0) follow = w;
     }
     if (follow) {
-      const peak = follow.dir > 0;
-      if (markQualifies(peak, S.price)) {
-        S.tapeLive = { kind: peak ? "peak" : "bottom", price: S.price, i: S.tape.length };
-      } else {
-        S.tapeLive = null;
-      }
+      S.tapeLive = { kind: follow.dir > 0 ? "peak" : "bottom", price: S.price, i: S.tape.length };
     } else {
       S.tapeLive = null;
     }
@@ -940,6 +914,12 @@
     const i = S.tape.length;
     if (S.cycleMax == null || S.price >= S.cycleMax) { S.cycleMax = S.price; S.cycleMaxI = i; }
     if (S.cycleMin == null || S.price <= S.cycleMin) { S.cycleMin = S.price; S.cycleMinI = i; }
+    const peak = S.power === "BULL";
+    S.tapeLive = {
+      kind: peak ? "peak" : "bottom",
+      price: peak ? S.cycleMax : S.cycleMin,
+      i: peak ? S.cycleMaxI : S.cycleMinI
+    };
   }
 
   function trendBias() {
