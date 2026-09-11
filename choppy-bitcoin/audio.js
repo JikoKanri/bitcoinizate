@@ -964,8 +964,8 @@ w: And ev-er since then my head's been red.`),
     "Quantum conundrum!",
     "Bukele all-in ethereum",
     "Bitcoin Depravement Proposals",
-    "See you at 10k",
-    "Bearwhale spotted"
+    "Rat poison squared!",
+    "Block size wars!"
   ];
   A.BUY = [
     "Long it!",

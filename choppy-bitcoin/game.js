@@ -539,7 +539,12 @@
       if (eta > 0.08 && eta < 2.3) { soon = true; break; }
     }
     const bag = (!busy && !soon ? pool : short).concat([""]);
-    return bag[(Math.random() * bag.length) | 0];
+    let line = bag[(Math.random() * bag.length) | 0];
+    if (line === "Luke, I am your spammer" && Math.random() < 0.5) {
+      const rest = bag.filter((l) => l !== "Luke, I am your spammer");
+      line = rest[(Math.random() * rest.length) | 0] || "";
+    }
+    return line;
   }
 
   function drawLine(pool, silentP) {
