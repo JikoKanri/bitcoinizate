@@ -342,9 +342,7 @@
     const g = crashGuard();
     if (g <= 0) return 1;
     const down = dir < 0 || kind === "BEAR" || kind === "SWAN";
-    const bull = kind === "BULL" || (dir > 0 && kind !== "HALVE");
     if (down) return Math.max(0.16, 1 - 0.21 * g);
-    if (bull) return 1 + 0.19 * g;
     return 1;
   }
 
@@ -355,6 +353,10 @@
     if (kind === "HALVE") amp = 1 + (Math.random() * 0.2 - 0.1);
     else if (kind === "SWAN") amp = (0.75 + (Math.random() * 0.2 - 0.1)) * (1 - soft * 0.4) * 0.75;
     else if (kind === "BEAR") amp = (0.17 + Math.random() * 0.05) * (1 - soft * 0.45) * 0.9;
+    else if (clampPx(S.price) < 10000) {
+      const add = 2500 + Math.random() * 7500;
+      amp = add / Math.max(PX_MIN, clampPx(S.price));
+    }
     else amp = (0.17 + Math.random() * 0.05) * (1 - soft * 0.45);
     return amp;
   }
@@ -366,13 +368,17 @@
       const r = adoptSwanRange(S.have.adopt || 0);
       mag = Math.abs(r.lo + Math.random() * (r.hi - r.lo));
     } else if (kind === "BULL") {
-      const r = adoptBullRange(S.have.adopt || 0);
-      mag = r.lo + Math.random() * (r.hi - r.lo);
+      if (clampPx(S.price) < 10000) mag = amp * (1 - Math.random() * 0.15);
+      else {
+        const r = adoptBullRange(S.have.adopt || 0);
+        mag = r.lo + Math.random() * (r.hi - r.lo);
+      }
     } else {
       const r = adoptBearRange(S.have.adopt || 0);
       mag = Math.abs(r.lo + Math.random() * (r.hi - r.lo));
     }
     mag = Math.max(0.004, mag);
+    if (kind === "BULL" && clampPx(S.price) < 10000) return mag;
     if (mag > amp * 0.92) mag = amp * 0.72;
     return mag;
   }
