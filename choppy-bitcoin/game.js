@@ -92,6 +92,80 @@
     if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
     return wrap("", "#141416", "#3a3a40");
   }
+  const HEROES = [
+    { id: "btc", fill: "#F2A900", ink: "#120c02", ring: "#ffe7a0", mark: "btc" },
+    { id: "usdt", fill: "#26A17B", ink: "#ffffff", ring: "#9dffc4", mark: "usdt" },
+    { id: "eth", fill: "#627EEA", ink: "#ffffff", ring: "#c5d4ff", mark: "eth" },
+    { id: "bch", fill: "#0AC18E", ink: "#04120c", ring: "#9dffc4", mark: "bch" },
+    { id: "xrp", fill: "#23292F", ink: "#E5E5E5", ring: "#8a9098", mark: "xrp" },
+    { id: "bnb", fill: "#F3BA2F", ink: "#120c02", ring: "#ffe7a0", mark: "bnb" },
+    { id: "sol", fill: "#9945FF", ink: "#ffffff", ring: "#d4b3ff", mark: "sol" },
+    { id: "trx", fill: "#FF0013", ink: "#ffffff", ring: "#ff9b92", mark: "trx" }
+  ];
+  function heroOf(slot) { return HEROES[(slot | 0) % HEROES.length] || HEROES[0]; }
+  function myHero() {
+    const slot = (window.ChoppyMP && window.ChoppyMP.slot) ? window.ChoppyMP.slot() : (S.mpSlot || 0);
+    return heroOf(S.mp ? slot : 0);
+  }
+  function drawHeroMark(ctx, hero, r) {
+    ctx.save();
+    const ink = hero.ink;
+    ctx.fillStyle = ink;
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = Math.max(1.4, r * 0.16);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    const m = hero.mark;
+    if (m === "btc") {
+      ctx.font = "700 " + Math.round(r * 1.15) + "px Georgia, serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("₿", 0, 1);
+    } else if (m === "usdt") {
+      ctx.font = "700 " + Math.round(r * 1.05) + "px Georgia, serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("₮", 0, 1);
+    } else if (m === "eth") {
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 0.55);
+      ctx.lineTo(r * 0.38, r * 0.02);
+      ctx.lineTo(0, r * 0.18);
+      ctx.lineTo(-r * 0.38, r * 0.02);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, r * 0.22);
+      ctx.lineTo(r * 0.38, r * 0.06);
+      ctx.lineTo(0, r * 0.58);
+      ctx.lineTo(-r * 0.38, r * 0.06);
+      ctx.closePath(); ctx.globalAlpha *= 0.85; ctx.fill(); ctx.globalAlpha = 1;
+    } else if (m === "bch") {
+      ctx.font = "700 " + Math.round(r * 0.95) + "px Georgia, serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("₿", 0, 1);
+      ctx.lineWidth = Math.max(1.2, r * 0.12);
+      ctx.beginPath(); ctx.moveTo(r * 0.18, -r * 0.42); ctx.lineTo(r * 0.48, -r * 0.18); ctx.stroke();
+    } else if (m === "xrp") {
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.38, -r * 0.34); ctx.lineTo(-r * 0.08, 0); ctx.lineTo(-r * 0.38, r * 0.34);
+      ctx.moveTo(r * 0.38, -r * 0.34); ctx.lineTo(r * 0.08, 0); ctx.lineTo(r * 0.38, r * 0.34);
+      ctx.stroke();
+    } else if (m === "bnb") {
+      ctx.save(); ctx.rotate(Math.PI / 4);
+      const s = r * 0.42;
+      ctx.fillRect(-s, -s, s * 2, s * 2);
+      ctx.restore();
+    } else if (m === "sol") {
+      ctx.lineWidth = Math.max(2.2, r * 0.2);
+      ctx.beginPath(); ctx.moveTo(-r * 0.4, -r * 0.28); ctx.lineTo(r * 0.4, -r * 0.12); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-r * 0.4, 0.02); ctx.lineTo(r * 0.4, 0.02); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-r * 0.4, r * 0.16); ctx.lineTo(r * 0.4, r * 0.32); ctx.stroke();
+    } else {
+      ctx.font = "700 " + Math.round(r * 1.05) + "px Georgia, serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("T", 0, 1);
+    }
+    ctx.restore();
+  }
+
   const T_UI = {
     aiOn: "A.I. BUD ON", aiOff: "A.I. BUD OFF",
     dcaOn: "DCA ON", dcaOff: "DCA OFF",
@@ -102,11 +176,17 @@
     sound: "SOUND", jukebox: "JUKEBOX", tutorial: "TUTORIAL", feedback: "FEEDBACK",
     language: "LANGUAGE", aiLog: "A.I. BUD LOG", signIn: "SIGN IN",
     ranked: "RANKED", training: "TRAINING", versus: "VERSUS",
-    mpHost: "HOST ROOM", mpJoin: "JOIN ROOM", mpStart: "START MATCH", mpBack: "BACK",
+    mpHost: "HOST ROOM", mpJoin: "JOIN", mpStart: "START MATCH", mpBack: "BACK",
     mpWait: "WAITING FOR PLAYERS", mpNeed: "Need 2+ players", mpCode: "ROOM",
     mpYouWin: "LAST ONE STANDING", mpWins: "WINS", mpDead: "ELIMINATED",
     mpNote: "Same candles. Last to die wins. Does not count for the board.",
     mpAlive: "ALIVE", mpCopy: "COPY CODE",
+    mpReady: "I'M READY", mpUnready: "NOT READY", mpNeedReady: "Everyone must be ready",
+    mpFull: "Room is full (8)", mpRules: "MATCH OPTIONS",
+    mpCold0: "Starting cold", mpMsig0: "Starting multisig",
+    mpMix: "Power-up mix (100)", mpBull: "Bull", mpBear: "Bear", mpLaserW: "Laser", mpSwanW: "Swan",
+    mpYou: "you",
+    mpMixNeed: "Must total 100",
     eloBoard: "VERSUS ELO", eloGuest: "Sign in to record ELO", eloUpdated: "ELO updated", eloPending: "ELO not saved",
     soundOn: "ON", soundOff: "OFF",
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
@@ -406,6 +486,29 @@
   }
 
   function pickItem() {
+    if (S.mp) {
+      if (wrng() < 0.1) return "COLD";
+      const r = S.mpRules || {};
+      const w = [
+        ["BULL", Math.max(0, Number(r.bull) || 0)],
+        ["BEAR", Math.max(0, Number(r.bear) || 0)],
+        ["LASER", Math.max(0, Number(r.laser) || 0)],
+        ["SWAN", Math.max(0, Number(r.swan) || 0)]
+      ];
+      let tot = 0;
+      w.forEach((x) => { tot += x[1]; });
+      if (tot <= 0) return "BULL";
+      let x = wrng() * tot;
+      for (let i = 0; i < w.length; i++) {
+        x -= w[i][1];
+        if (x <= 0) {
+          const type = w[i][0];
+          if (type === "SWAN" && S.spawnedPipes < 7) return "BULL";
+          return type;
+        }
+      }
+      return "BULL";
+    }
     const bag = ["BULL","BULL","BULL","BULL","BULL","BULL","BULL","BULL","BEAR","BEAR","BEAR","BEAR","BEAR","LASER","LASER","COLD","COLD","COLD","SWAN","SWAN","SWAN","SWAN"];
     let type = bag[(wrng() * bag.length) | 0];
     if (type === "SWAN" && S.spawnedPipes < 7) {
@@ -436,6 +539,7 @@
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0, speechRank: 0, humanInput: false, ranked: true,
     mp: false, worldSeed: 0, worldRand: null, mpOver: false, mpErr: "", mpJoinCode: "",
+    mpRules: null, mpPlayAt: 0, mpSlot: 0, btcColdAt: 0,
     jobTrack: null, jobOffer: null, jobName: "",
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
@@ -462,7 +566,18 @@
     S.btc = (S.btc || 0) + take;
     const cash = extra * clampPx(S.price);
     if (cash > 0) S.cash += cash;
+    awardBtcColds();
     return { take, cash };
+  }
+  function awardBtcColds() {
+    if (!S.mp) return;
+    const u = Math.floor(S.btc || 0);
+    const had = S.btcColdAt || 0;
+    if (u > had) {
+      S.cold = (S.cold || 0) + (u - had);
+      S.btcColdAt = u;
+      packCold();
+    }
   }
   function clampHoldings() {
     if ((S.btc || 0) <= BTC_CAP) return;
@@ -798,6 +913,12 @@
     S.cold = S.ranked ? 0 : 9;
     S.invuln = 0;
     if (!keepWallet) S.msig = S.ranked ? 0 : 999;
+    if (S.mp) {
+      const r = S.mpRules || (window.ChoppyMP && window.ChoppyMP.rules && window.ChoppyMP.rules()) || {};
+      S.cold = r.cold | 0;
+      if (!keepWallet) S.msig = r.msig | 0;
+      S.btcColdAt = 0;
+    }
     S.power = "NONE"; S.powerT = 0;
     applyLaser(false);
     S.widthMul = S.heightMul = 1;
@@ -1196,6 +1317,7 @@
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(vt, "vt"), RED, "trade");
   }
   function togglePause() {
+    if (S.mp) return;
     if (S.phase === "perk") {
       if (S.perkPick) confirmPerk();
       return;
@@ -2027,6 +2149,7 @@
 
   function tickJobChance() {
     if ((S.have.job || 0) > 0 && S.candles > 0 && S.candles % 21 === 0) payJob();
+    if (S.mp) return;
     if ((S.have.chance || 0) > 0) {
       if (!S.chanceAt || !S.chanceAt.length) planChanceWindow(S.candles || 0);
       if (S.chanceAt && S.chanceAt.indexOf(S.candles) >= 0 && S.phase === "play") dealChance();
@@ -2059,6 +2182,7 @@
   }
 
   function tryRankedPerk(fromMarket) {
+    if (S.mp) return false;
     if (!S.ranked) return false;
     if (S.phase === "perk") return false;
     if ((S.lasers || 0) < (S.nextOffer || 1)) return false;
@@ -2073,6 +2197,7 @@
   }
 
   function openPerkOffer(why, forceUi) {
+    if (S.mp) return;
     const left = perkOpen();
     if (!left.length) return;
     rollPerks();
@@ -2396,7 +2521,7 @@
   }
 
   function startGame(ranked) {
-    if (!S.mp) { S.worldSeed = 0; S.worldRand = null; S.mpOver = false; }
+    if (!S.mp) { S.worldSeed = 0; S.worldRand = null; S.mpOver = false; S.mpPlayAt = 0; }
     S.ranked = ranked !== false;
     if (A && A.unlock) try { A.unlock(); } catch (e) {}
     if (A && A.sfx && A.sfx.start) try { A.sfx.start(); } catch (e) {}
@@ -2716,6 +2841,31 @@
     }
   }
 
+  function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser) {
+    const col = wash || (laser ? "#e8902a" : (hero && hero.fill) || BTC);
+    ctx.save();
+    ctx.globalAlpha = alpha == null ? 1 : alpha;
+    ctx.translate(x, y);
+    ctx.rotate(Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022)));
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = col; ctx.fill();
+    ctx.strokeStyle = (hero && hero.ring) || "#09090b";
+    ctx.lineWidth = 2; ctx.stroke();
+    if (hero) drawHeroMark(ctx, hero, r);
+    else {
+      ctx.fillStyle = "#09090b";
+      ctx.font = "700 " + Math.round(r) + "px sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("B", 0, 1);
+    }
+    if (laser) {
+      ctx.strokeStyle = wash || "rgba(255,150,40,0.78)"; ctx.lineWidth = 3.4;
+      ctx.beginPath(); ctx.moveTo(r - 2, -3); ctx.lineTo(S.W - x + 80, -8);
+      ctx.moveTo(r - 2, 3); ctx.lineTo(S.W - x + 80, 8); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   function draw(ctx) {
     const wash = S.power === "BULL" ? GREEN : S.power === "BEAR" ? RED : null;
     ctx.fillStyle = S.power === "BULL" ? "#052010" : S.power === "BEAR" ? "#200505" : "#0a0a0c";
@@ -2749,20 +2899,15 @@
       drawPowerIcon(ctx, it, wash);
     }
     const blink = S.invuln > 0 && Math.floor(S.invuln * 10) % 2 === 0;
-    if (!blink) {
-      const col = wash || (S.laserOn ? "#e8902a" : BTC);
-      ctx.save(); ctx.translate(S.bird.x, S.bird.y);
-      ctx.rotate(Math.max(-0.65, Math.min(0.95, S.bird.v * 0.0022)));
-      ctx.beginPath(); ctx.arc(0, 0, S.bird.r, 0, Math.PI * 2);
-      ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = "#09090b"; ctx.lineWidth = 2; ctx.stroke();
-      ctx.fillStyle = "#09090b"; ctx.font = "700 " + Math.round(S.bird.r) + "px sans-serif";
-      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("B", 0, 1);
-      if (S.laserOn) {
-        ctx.strokeStyle = wash || "rgba(255,150,40,0.78)"; ctx.lineWidth = 3.4;
-        ctx.beginPath(); ctx.moveTo(S.bird.r - 2, -3); ctx.lineTo(S.W - S.bird.x + 80, -8);
-        ctx.moveTo(S.bird.r - 2, 3); ctx.lineTo(S.W - S.bird.x + 80, 8); ctx.stroke();
-      }
-      ctx.restore();
+    if (!blink) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn);
+    if (S.mp && window.ChoppyMP) {
+      const mine = window.ChoppyMP.id();
+      (window.ChoppyMP.players() || []).forEach((p) => {
+        if (!p || p.id === mine || p.alive === false) return;
+        if (p.x == null || p.y == null) return;
+        const h = heroOf(p.slot || 0);
+        drawBirdAt(ctx, p.x, p.y, p.v || 0, S.bird.r, h, wash, 0.25, !!p.laser);
+      });
     }
     for (const pt of S.particles) {
       ctx.globalAlpha = Math.max(0, pt.life / 0.5);
@@ -2819,6 +2964,8 @@
   }
 
   function renderHud() {
+    const app = $("app");
+    if (app) app.classList.toggle("vs-on", !!(S.phase === "mplobby" || S.phase === "mpwin" || S.phase === "mpwait" || S.phase === "count" || (S.mp && S.phase === "play")));
     const clock = $("clock");
     const candles = $("h-candles");
     const hideClock = S.phase === "ready" || S.phase === "count";
@@ -2851,10 +2998,30 @@
         chip.textContent = live.length + "/" + Math.max(all.length, 1) + " " + t("mpAlive");
       }
       if (show && S.mp && S.phase === "play" && window.ChoppyMP && window.ChoppyMP.pulse) {
-        if (!S.mpPulseAt || S.lifeT - S.mpPulseAt > 1.5) {
+        if (!S.mpPulseAt || S.lifeT - S.mpPulseAt > 0.12) {
           S.mpPulseAt = S.lifeT;
-          window.ChoppyMP.pulse({ candles: S.candles, lifeT: S.lifeT, alive: true });
+          window.ChoppyMP.pulse({
+            candles: S.candles, lifeT: S.lifeT, alive: true,
+            x: S.bird.x, y: S.bird.y, v: S.bird.v,
+            laser: !!S.laserOn, power: S.power,
+            btc: S.btc, cold: S.cold, slot: S.mpSlot
+          });
         }
+      }
+    }
+    const listEl = $("mp-hud-list");
+    if (listEl) {
+      const vs = !!(S.mp && (S.phase === "play" || S.phase === "count" || S.phase === "mpwait"));
+      listEl.classList.toggle("hide", !vs);
+      if (vs && window.ChoppyMP) {
+        const mine = window.ChoppyMP.id();
+        listEl.innerHTML = (window.ChoppyMP.players() || []).map((p) => {
+          const h = heroOf(p.slot || 0);
+          const dead = p.alive === false;
+          const you = p.id === mine;
+          return "<span class=\"mp-pill" + (dead ? " out" : "") + "\"><span class=\"dot\" style=\"background:" + h.fill + "\"></span>"
+            + (p.name || "?") + (you ? " · " + t("mpYou") : "") + (dead ? " · " + t("mpDead") : "") + "</span>";
+        }).join("");
       }
     }
     const bonus = S.level >= 2;
@@ -2919,6 +3086,7 @@
       sell.classList.remove("on");
       sell.textContent = t("sellBtc");
     }
+    const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk" || S.phase === "chance";
     const pauseBtn = $("pause-btn");
     if (pauseBtn) {
       const paused = S.phase === "paused" || S.phase === "perk";
@@ -2926,9 +3094,8 @@
       pauseBtn.setAttribute("aria-label", paused ? "Play" : "Pause");
     }
     if (S.have.ff <= 0) S.speedMul = 1;
-    const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk" || S.phase === "chance";
     $("trades").classList.toggle("hide", !playing);
-    $("pause-btn").classList.toggle("hide", !playing);
+    $("pause-btn").classList.toggle("hide", !playing || !!S.mp);
     let powers = "";
     const now = S.lifeT;
     const live = liveWaves(now);
@@ -3605,7 +3772,13 @@
     return "<ul class=\"mp-list\">" + list.map((p) => {
       const you = window.ChoppyMP && p.id === window.ChoppyMP.id();
       const dead = p.alive === false;
-      return "<li class=\"" + (dead ? "out" : "") + "\">" + (p.name || "?") + (you ? " · you" : "") + (p.host ? " · host" : "") + (dead ? " · out" : "") + eloBit(p) + "</li>";
+      const h = heroOf(p.slot || 0);
+      const ready = p.ready ? " · " + t("mpReady") : "";
+      const glyphs = { btc: "₿", usdt: "₮", eth: "Ξ", bch: "₿", xrp: "X", bnb: "B", sol: "S", trx: "T" };
+      const glyph = glyphs[h.mark] || "₿";
+      return "<li class=\"" + (dead ? "out" : "") + "\"><span class=\"hero-dot\" style=\"background:" + h.fill + ";color:" + h.ink + "\">" + glyph + "</span>"
+        + (p.name || "?") + (you ? " · " + t("mpYou") : "") + (p.host ? " · host" : "")
+        + (dead ? " · " + t("mpDead") : ready) + eloBit(p) + "</li>";
     }).join("") + "</ul>";
   }
   function eloBit(p) {
@@ -3616,28 +3789,88 @@
     }
     return p.uid ? "" : " · guest";
   }
+  function mpRulesNow() {
+    return S.mpRules || (window.ChoppyMP && window.ChoppyMP.rules && window.ChoppyMP.rules()) || {
+      cold: 0, msig: 0, bull: 42, bear: 26, laser: 11, swan: 21,
+      muteTheme: false, muteSfx: false, muteVoice: false
+    };
+  }
+  function mpRulesHtml() {
+    const r = mpRulesNow();
+    const host = !!(window.ChoppyMP && window.ChoppyMP.get && window.ChoppyMP.get().host);
+    const dis = host ? "" : " disabled";
+    const sum = (Number(r.bull) || 0) + (Number(r.bear) || 0) + (Number(r.laser) || 0) + (Number(r.swan) || 0);
+    const open = S.mpRulesOpen === false ? "" : " open";
+    return "<details class=\"mp-rules\"" + open + "><summary>" + t("mpRules") + (host ? "" : " · view") + "</summary>"
+      + "<div class=\"mp-rule\"><span>" + t("mpCold0") + "</span><input type=\"number\" id=\"mp-cold\" min=\"0\" max=\"99\" value=\"" + (r.cold | 0) + "\"" + dis + "></div>"
+      + "<div class=\"mp-rule\"><span>" + t("mpMsig0") + "</span><input type=\"number\" id=\"mp-msig\" min=\"0\" max=\"99\" value=\"" + (r.msig | 0) + "\"" + dis + "></div>"
+      + "<p class=\"k mp-mix-sum" + (sum !== 100 ? " bad" : "") + "\" id=\"mp-mix-sum\">" + t("mpMix") + " · " + Math.round(sum) + (sum !== 100 ? " · " + t("mpMixNeed") : "") + "</p>"
+      + "<div class=\"mp-w\">"
+      + "<label>" + t("mpBull") + "</label><input type=\"number\" id=\"mp-w-bull\" min=\"0\" max=\"100\" value=\"" + (r.bull | 0) + "\"" + dis + ">"
+      + "<label>" + t("mpBear") + "</label><input type=\"number\" id=\"mp-w-bear\" min=\"0\" max=\"100\" value=\"" + (r.bear | 0) + "\"" + dis + ">"
+      + "<label>" + t("mpLaserW") + "</label><input type=\"number\" id=\"mp-w-laser\" min=\"0\" max=\"100\" value=\"" + (r.laser | 0) + "\"" + dis + ">"
+      + "<label>" + t("mpSwanW") + "</label><input type=\"number\" id=\"mp-w-swan\" min=\"0\" max=\"100\" value=\"" + (r.swan | 0) + "\"" + dis + ">"
+      + "</div>"
+      + "<div class=\"mute-row\" style=\"margin-top:8px\">"
+      + "<button type=\"button\" class=\"mute-tog" + (r.muteTheme ? " on" : "") + "\" id=\"mp-mute-theme\"" + (host ? "" : " disabled") + ">" + t("bullSongs") + " " + (r.muteTheme ? t("soundOff") : t("soundOn")) + "</button>"
+      + "<button type=\"button\" class=\"mute-tog" + (r.muteSfx ? " on" : "") + "\" id=\"mp-mute-sfx\"" + (host ? "" : " disabled") + ">" + t("gameFx") + " " + (r.muteSfx ? t("soundOff") : t("soundOn")) + "</button>"
+      + "<button type=\"button\" class=\"mute-tog" + (r.muteVoice ? " on" : "") + "\" id=\"mp-mute-voice\"" + (host ? "" : " disabled") + ">" + t("voices") + " " + (r.muteVoice ? t("soundOff") : t("soundOn")) + "</button>"
+      + "</div></details>";
+  }
+  function readMpRulesForm() {
+    const num = (id, d) => {
+      const el = $(id);
+      const v = el ? Number(el.value) : d;
+      return isFinite(v) ? v : d;
+    };
+    const r = mpRulesNow();
+    return {
+      cold: Math.max(0, Math.min(99, num("mp-cold", r.cold) | 0)),
+      msig: Math.max(0, Math.min(99, num("mp-msig", r.msig) | 0)),
+      bull: Math.max(0, Math.min(100, num("mp-w-bull", r.bull) | 0)),
+      bear: Math.max(0, Math.min(100, num("mp-w-bear", r.bear) | 0)),
+      laser: Math.max(0, Math.min(100, num("mp-w-laser", r.laser) | 0)),
+      swan: Math.max(0, Math.min(100, num("mp-w-swan", r.swan) | 0)),
+      muteTheme: !!(r.muteTheme),
+      muteSfx: !!(r.muteSfx),
+      muteVoice: !!(r.muteVoice)
+    };
+  }
+  function pushHostRules(extra) {
+    if (!window.ChoppyMP || !window.ChoppyMP.get().host) return;
+    const r = Object.assign(readMpRulesForm(), extra || {});
+    S.mpRules = r;
+    window.ChoppyMP.setRules(r);
+  }
   function mpLobbyHtml() {
     const mp = window.ChoppyMP && window.ChoppyMP.get();
     const code = (mp && mp.code) || "----";
     const n = ((mp && mp.players) || []).length;
     const host = !!(mp && mp.host);
+    const ready = !!(mp && mp.ready);
+    const all = !!(window.ChoppyMP && window.ChoppyMP.allReady && window.ChoppyMP.allReady());
+    const mix = mpRulesNow();
+    const mixSum = (Number(mix.bull) || 0) + (Number(mix.bear) || 0) + (Number(mix.laser) || 0) + (Number(mix.swan) || 0);
+    const canStart = all && mixSum === 100;
     const err = S.mpErr ? "<p class=\"k\">" + S.mpErr + "</p>" : "";
     if (!mp || !mp.code) {
       return "<h1>" + t("versus") + "</h1><p class=\"k\">" + t("mpNote") + "</p>"
-        + "<button class=\"cta\" id=\"mp-host\">" + t("mpHost") + "</button>"
+        + "<button class=\"cta mp-cta\" id=\"mp-host\">" + t("mpHost") + "</button>"
         + "<div class=\"mp-join\"><input id=\"mp-code\" maxlength=\"6\" placeholder=\"CODE\" value=\"" + (S.mpJoinCode || "") + "\" autocomplete=\"off\">"
         + "<button class=\"cta play-alt\" id=\"mp-join\">" + t("mpJoin") + "</button></div>"
         + err
-        + "<button class=\"cta play-alt\" id=\"mp-back\">" + t("mpBack") + "</button>";
+        + "<button class=\"cta play-alt mp-cta\" id=\"mp-back\">" + t("mpBack") + "</button>";
     }
     return "<h1>" + t("versus") + "</h1><p class=\"k\">" + t("mpCode") + " <b id=\"mp-code-lab\">" + code + "</b></p>"
-      + "<button class=\"cta play-alt\" id=\"mp-copy\">" + t("mpCopy") + "</button>"
-      + "<p class=\"k\">" + t("mpWait") + " · " + n + "</p>"
+      + "<button class=\"cta play-alt mp-cta\" id=\"mp-copy\">" + t("mpCopy") + "</button>"
+      + "<p class=\"k\">" + n + "/8 · " + t("mpWait") + "</p>"
       + mpRosterHtml()
-      + (n < 2 ? "<p class=\"k\">" + t("mpNeed") + "</p>" : "")
+      + (n < 2 ? "<p class=\"k\">" + t("mpNeed") + "</p>" : (all ? (mixSum === 100 ? "" : "<p class=\"k\">" + t("mpMixNeed") + "</p>") : "<p class=\"k\">" + t("mpNeedReady") + "</p>"))
       + err
-      + (host ? "<button class=\"cta\" id=\"mp-start\"" + (n < 2 ? " disabled" : "") + ">" + t("mpStart") + "</button>" : "")
-      + "<button class=\"cta play-alt\" id=\"mp-back\">" + t("mpBack") + "</button>";
+      + "<button class=\"cta mp-cta\" id=\"mp-ready\">" + (ready ? t("mpUnready") : t("mpReady")) + "</button>"
+      + (host ? "<button class=\"cta mp-cta\" id=\"mp-start\"" + (canStart ? "" : " disabled") + ">" + t("mpStart") + "</button>" : "")
+      + mpRulesHtml()
+      + "<button class=\"cta play-alt mp-cta\" id=\"mp-back\">" + t("mpBack") + "</button>";
   }
   function bindMpLobby() {
     if ($("mp-host")) $("mp-host").onclick = (e) => { e.stopPropagation(); S.mpErr = ""; if (window.ChoppyMP) window.ChoppyMP.host(); };
@@ -3648,7 +3881,34 @@
       S.mpErr = "";
       if (window.ChoppyMP) window.ChoppyMP.join(S.mpJoinCode);
     };
-    if ($("mp-start")) $("mp-start").onclick = (e) => { e.stopPropagation(); if (window.ChoppyMP) window.ChoppyMP.start(); };
+    if ($("mp-ready")) $("mp-ready").onclick = (e) => {
+      e.stopPropagation();
+      const mp = window.ChoppyMP && window.ChoppyMP.get();
+      if (window.ChoppyMP && window.ChoppyMP.setReady) window.ChoppyMP.setReady(!(mp && mp.ready));
+    };
+    if ($("mp-start")) $("mp-start").onclick = (e) => {
+      e.stopPropagation();
+      const r = readMpRulesForm();
+      const sum = (r.bull | 0) + (r.bear | 0) + (r.laser | 0) + (r.swan | 0);
+      if (sum !== 100) { S.mpErr = t("mpMixNeed"); renderOverlay(); return; }
+      if (window.ChoppyMP) window.ChoppyMP.start();
+    };
+    const rulesEl = overlay && overlay.querySelector && overlay.querySelector("details.mp-rules");
+    if (rulesEl) rulesEl.ontoggle = () => { S.mpRulesOpen = !!rulesEl.open; };
+    const paintMix = () => {
+      const r = readMpRulesForm();
+      const sum = (r.bull | 0) + (r.bear | 0) + (r.laser | 0) + (r.swan | 0);
+      const el = $("mp-mix-sum");
+      if (el) {
+        el.textContent = t("mpMix") + " · " + sum + (sum !== 100 ? " · " + t("mpMixNeed") : "");
+        el.classList.toggle("bad", sum !== 100);
+      }
+      const start = $("mp-start");
+      if (start) {
+        const all = window.ChoppyMP && window.ChoppyMP.allReady && window.ChoppyMP.allReady();
+        start.disabled = !all || sum !== 100;
+      }
+    };
     if ($("mp-copy")) $("mp-copy").onclick = (e) => {
       e.stopPropagation();
       const c = window.ChoppyMP && window.ChoppyMP.code();
@@ -3657,6 +3917,32 @@
     if ($("mp-back")) $("mp-back").onclick = (e) => { e.stopPropagation(); leaveMp(); };
     const inp = $("mp-code");
     if (inp) inp.onkeydown = (e) => { if (e.key === "Enter" && $("mp-join")) $("mp-join").click(); };
+    ["mp-cold", "mp-msig", "mp-w-bull", "mp-w-bear", "mp-w-laser", "mp-w-swan"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.oninput = () => { pushHostRules(); paintMix(); };
+      el.onchange = () => { pushHostRules(); paintMix(); };
+    });
+    const bindMute = (id, key) => {
+      const el = $(id);
+      if (!el) return;
+      el.onclick = (e) => {
+        e.stopPropagation();
+        const r = mpRulesNow();
+        r[key] = !r[key];
+        pushHostRules(r);
+        if (window.ChoppyMP && window.ChoppyMP.get().host) applyMpSound(r);
+      };
+    };
+    bindMute("mp-mute-theme", "muteTheme");
+    bindMute("mp-mute-sfx", "muteSfx");
+    bindMute("mp-mute-voice", "muteVoice");
+  }
+  function applyMpSound(r) {
+    if (!A) return;
+    try { if (A.setMuteTheme) A.setMuteTheme(!!r.muteTheme); } catch (e) {}
+    try { if (A.setMuteSfx) A.setMuteSfx(!!r.muteSfx); } catch (e) {}
+    try { if (A.setMuteVoice) A.setMuteVoice(!!r.muteVoice); } catch (e) {}
   }
   function mpWaitHtml() {
     return "<h1>" + t("mpDead") + "</h1><p class=\"k\">" + t("mpWait") + "</p>" + mpRosterHtml()
@@ -3670,7 +3956,7 @@
       + (S.mpEloNote ? "<p class=\"k\">" + S.mpEloNote + "</p>" : "")
       + mpRosterHtml()
       + "<div class=\"overlay-actions\">"
-      + (host ? "<button class=\"cta\" id=\"mp-again\">" + t("mpStart") + "</button>" : "")
+      + (host ? "<button class=\"cta\" id=\"mp-again\">" + t("mpReady") + "</button>" : "")
       + "<button class=\"cta play-alt\" id=\"go\">" + t("mpBack") + "</button></div>";
   }
   function openMpLobby() {
@@ -3678,13 +3964,44 @@
     S.mp = false;
     setPhase("mplobby");
   }
-  function startMpMatch(seed) {
+  function playAtFromGo(data) {
+    const now = Date.now();
+    if (data && data.sentAt && data.startAt) {
+      const delay = data.startAt - data.sentAt;
+      return now + Math.max(900, Math.min(5000, delay));
+    }
+    if (data && data.startAt) {
+      const remain = data.startAt - now;
+      if (remain > 500 && remain < 8000) return data.startAt;
+    }
+    return now + 3200;
+  }
+  function beginMpCountdown(data) {
     S.mp = true;
     S.mpOver = false;
     S.mpWinner = null;
-    S.worldSeed = seed >>> 0 || 1;
+    S.worldSeed = (data && data.seed) >>> 0 || 1;
+    S.mpRules = (data && data.rules) || mpRulesNow();
+    S.mpPlayAt = playAtFromGo(data);
+    S.mpSlot = (window.ChoppyMP && window.ChoppyMP.slot && window.ChoppyMP.slot()) || 0;
     S.ranked = true;
-    startGame(true);
+    applyMpSound(S.mpRules);
+    resetWorld(false);
+    S.dead = false;
+    S.countN = 3;
+    setPhase("count");
+  }
+  function startMpPlay() {
+    if (!S.mp || S.phase === "play") return;
+    S.dead = false;
+    S.phase = "play";
+    if (field) field.classList.add("is-play");
+    if (overlay) hideOverlay();
+    if (A && A.startMusic) kickTheme();
+    renderHud();
+  }
+  function startMpMatch(seed) {
+    beginMpCountdown({ seed: seed, startAt: Date.now() + 3200, rules: mpRulesNow() });
   }
   function reportMpElo() {
     S.mpElo = null;
@@ -3715,18 +4032,35 @@
   function leaveMp() {
     try { if (window.ChoppyMP) window.ChoppyMP.leave(); } catch (e) {}
     S.mp = false; S.mpOver = false; S.worldSeed = 0; S.worldRand = null; S.mpWinner = null; S.mpElo = null; S.mpEloNote = "";
-    S.dead = false;
+    S.mpRules = null; S.mpPlayAt = 0; S.dead = false;
+    const app = $("app");
+    if (app) app.classList.remove("vs-on");
     setPhase("ready");
   }
   function wireMp() {
     if (!window.ChoppyMP) return;
     window.ChoppyMP.setHandler((ev, data) => {
+      const typing = () => {
+        const ae = document.activeElement;
+        return !!(ae && overlay && overlay.contains(ae) && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA"));
+      };
       if (ev === "lobby" || ev === "roster") {
-        if (S.phase === "mplobby" || S.phase === "mpwait") renderOverlay();
-        else if (S.phase === "play") renderHud();
+        if (S.phase === "mplobby" || S.phase === "mpwait") {
+          if (!typing()) renderOverlay();
+        }
+        else if (S.phase === "play" || S.phase === "count") renderHud();
+      } else if (ev === "rules") {
+        S.mpRules = data || S.mpRules;
+        if (S.phase === "mplobby" && !typing()) renderOverlay();
+      } else if (ev === "reset") {
+        S.mpOver = false;
+        S.mp = false;
+        S.dead = false;
+        S.mpPlayAt = 0;
+        setPhase("mplobby");
       } else if (ev === "go") {
-        if (S.mp && S.phase === "play") return;
-        startMpMatch(data && data.seed);
+        if (S.mp && (S.phase === "play" || S.phase === "count")) return;
+        beginMpCountdown(data || {});
       } else if (ev === "over") {
         if (S.mpOver) return;
         S.mpOver = true;
@@ -3738,7 +4072,7 @@
         reportMpElo();
         setPhase("mpwin");
       } else if (ev === "err") {
-        S.mpErr = data === "need 2" ? t("mpNeed") : String(data || "error");
+        S.mpErr = data === "need 2" ? t("mpNeed") : data === "not ready" ? t("mpNeedReady") : data === "full" ? t("mpFull") : String(data || "error");
         if (S.phase === "mplobby") renderOverlay();
       }
     });
@@ -3763,6 +4097,7 @@
     if (p === "play") { hideOverlay(); return; }
     showOverlay();
     overlay.classList.toggle("dock", p === "perk" || p === "paused" || p === "chance");
+    overlay.classList.toggle("mp-ui", p === "mplobby" || p === "mpwait" || p === "mpwin");
     overlay.classList.toggle("chance-ui", p === "chance");
     overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready") && S.optPanel === "juke");
     if (p === "ready") {
@@ -3806,7 +4141,12 @@
       overlay.innerHTML = mpWinHtml();
       if ($("go")) $("go").onclick = (e) => { e.stopPropagation(); leaveMp(); };
       if ($("mp-again") && window.ChoppyMP && window.ChoppyMP.get().host) {
-        $("mp-again").onclick = (e) => { e.stopPropagation(); S.mpOver = false; window.ChoppyMP.start(); };
+        $("mp-again").onclick = (e) => {
+          e.stopPropagation();
+          S.mpOver = false;
+          if (window.ChoppyMP.resetLobby) window.ChoppyMP.resetLobby();
+          setPhase("mplobby");
+        };
       }
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
@@ -3891,15 +4231,43 @@
   }
 
   let last = performance.now(), acc = 0, hudAcc = 0;
+  function mpCatchUp() {
+    if (!S.mp || S.phase !== "play" || !S.mpPlayAt || S.dead) return;
+    const target = Math.max(0, (Date.now() - S.mpPlayAt) / 1000);
+    let guard = 0;
+    while (S.lifeT + 1 / 60 <= target && !S.dead && guard++ < 1800) step(1 / 60);
+  }
+  function mpTickClock() {
+    if (S.phase === "count" && S.mp && S.mpPlayAt) {
+      const ms = S.mpPlayAt - Date.now();
+      const n = ms > 0 ? Math.min(3, Math.max(1, Math.ceil(ms / 1000))) : 0;
+      if (n !== S.countN) { S.countN = n; try { renderOverlay(); } catch (e) {} }
+      if (ms <= 0) startMpPlay();
+    }
+    if (S.mp && S.phase === "play") mpCatchUp();
+  }
   function loop(now) {
-    const dt = Math.min(0.1, (now - last) / 1000);
-    last = now; acc += dt; hudAcc += dt;
+    mpTickClock();
+    if (S.mp && S.phase === "play") {
+      last = now;
+      acc = 0;
+    } else if (!(S.mp && S.phase === "count")) {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now; acc += dt;
+      while (acc >= 1 / 60) { step(1 / 60); acc -= 1 / 60; }
+    } else {
+      last = now;
+    }
+    hudAcc += 0.016;
     const ctx = fit();
-    while (acc >= 1 / 60) { step(1 / 60); acc -= 1 / 60; }
     draw(ctx);
     if (hudAcc > 0.12) { renderHud(); hudAcc = 0; }
     requestAnimationFrame(loop);
   }
+  setInterval(mpTickClock, 250);
+  document.addEventListener("visibilitychange", mpTickClock);
+  window.addEventListener("focus", mpTickClock);
+  window.addEventListener("pageshow", mpTickClock);
 
   canvas.addEventListener("pointerdown", (e) => {
     if (flapBlocked(e)) return;
@@ -3948,12 +4316,13 @@
     if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
     else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
     else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
-    else if (k === "p") { e.preventDefault(); togglePause(); }
+    else if (k === "p") { e.preventDefault(); if (!S.mp) togglePause(); }
   });
-  $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); togglePause(); };
+  $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); if (!S.mp) togglePause(); };
   const optBtn = $("opt-btn");
   if (optBtn) optBtn.onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
+    if (S.mp) return;
     if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
     else if (S.phase === "ready") {
       S.optBack = "ready";
@@ -3965,9 +4334,11 @@
   const authHud = $("btn-show-auth");
   if (authHud) authHud.onpointerdown = (e) => {
     e.stopPropagation();
+    if (S.mp) return;
     if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
   };
   window.pauseChoppyForAuth = function () {
+    if (S.mp) return;
     if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
   };
   const jukeHudPlay = $("juke-hud-play");
@@ -4017,7 +4388,7 @@
   const mkt = $("market-btn");
   if (mkt) mkt.onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
-    if ((S.have.market || 0) <= 0) return;
+    if ((S.have.market || 0) <= 0 || S.mp) return;
     S.optBack = S.phase === "play" ? "play" : (S.optBack || "ready");
     S.optPanel = "market";
     if (S.phase === "play") setPhase("paused");

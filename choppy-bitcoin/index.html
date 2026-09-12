@@ -25,7 +25,7 @@
   <meta name="twitter:title" content="Play Choppy Bitcoin">
   <meta name="twitter:image" content="https://bitcoinizate.com/choppy-bitcoin/og-icon.png">
   <meta name="twitter:image:alt" content="Choppy Bitcoin hero">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=mp4">
   <script src="nozoom.js"></script>
 </head>
 <body>
@@ -61,12 +61,13 @@
         <button type="button" id="opt-btn" class="opt-btn" data-i18n="options">Options</button>
       </div>
     </div>
-    <div class="speed-bar">
+    <div class="speed-bar" id="perk-bar">
       <button type="button" id="dca-btn" class="dca-tog" aria-pressed="false" disabled>DCA OFF</button>
       <button type="button" id="iabud-btn" class="dca-tog" aria-pressed="false" disabled>A.I. BUD OFF</button>
       <button type="button" id="trend-btn" disabled>TREND OFF</button>
       <button type="button" id="market-btn" class="dca-tog" disabled data-i18n="market">MARKET</button>
     </div>
+    <div id="mp-hud-list" class="mp-hud-list hide"></div>
     <div id="field" class="field">
       <canvas id="c"></canvas>
       <div id="flap-layer" aria-hidden="true"></div>
@@ -134,7 +135,7 @@
   <script src="auth.js"></script>
   <script src="run-stats.js"></script>
   <script src="audio.js"></script>
-  <script src="mp.js"></script>
-  <script src="game.js?v=mp2"></script>
+  <script src="mp.js?v=mp4"></script>
+  <script src="game.js?v=mp4"></script>
 </body>
 </html>
