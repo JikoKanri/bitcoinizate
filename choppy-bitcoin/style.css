@@ -535,9 +535,34 @@ body {
 }
 .mp-hud-list .mp-pill.out { opacity: 0.42; text-decoration: line-through; color: #8a8680; }
 .mp-hud-list .mp-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+.mp-hud-list .mp-pill.lead { border-color: #c8960a; color: #ffe7a0; }
 #app.vs-on #perk-bar,
 #app.vs-on #juke-hud,
 #app.vs-on #opt-btn,
 #app.vs-on #pause-btn { display: none !important; }
 #app.vs-on #h-laser-wrap .sub,
-#app.vs-on #h-fib { display: none !important; }
+#app.vs-on #h-fib,
+#app.vs-on #h-cold-wrap .sub,
+#app.vs-on #h-msig { display: none !important; }
+.mp-modes { display: flex; flex-direction: column; gap: 3px; margin: 6px 0 8px; }
+.mp-mode {
+  display: flex; align-items: center; gap: 6px; font-size: 11px; color: #c4c0b8;
+  min-height: 26px; cursor: pointer;
+}
+.mp-mode.on { color: #ffe7a0; }
+.mp-mode input { accent-color: #c8960a; }
+.mp-rule select {
+  min-height: 32px; background: #0a0a0c; color: #f3efe6; border: 1px solid #3a3a40;
+  font: inherit; text-align: center; min-width: 56px;
+}
+.mp-rule select:disabled { opacity: 0.55; }
+.overlay.dock.mp-spec {
+  max-height: none; padding: 8px 8px 10px; gap: 6px;
+}
+.overlay.dock.mp-spec .overlay-actions {
+  flex-direction: row; width: 100%; gap: 6px;
+}
+.overlay.dock.mp-spec .cta {
+  min-width: 0 !important; width: auto; flex: 1; min-height: 40px; font-size: 11px; padding: 0 8px;
+}
+.overlay.dock.mp-spec p { max-width: none; margin: 0; font-size: 12px; }

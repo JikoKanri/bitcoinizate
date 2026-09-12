@@ -185,8 +185,13 @@
     mpFull: "Room is full (8)", mpRules: "MATCH OPTIONS",
     mpCold0: "Starting cold", mpMsig0: "Starting multisig",
     mpMix: "Power-up mix (100)", mpBull: "Bull", mpBear: "Bear", mpLaserW: "Laser", mpSwanW: "Swan",
-    mpYou: "you",
+    mpColdW: "Cold", mpYou: "you",
     mpMixNeed: "Must total 100",
+    mpMode: "Mode", mpLast: "Last man standing", mpWhale: "Whale", mpRace: "Race",
+    mpRaceN: "Finish candle", mpBestOf: "Best of",
+    mpSpec: "Spectating", mpRematch: "REMATCH", mpQuit: "QUIT",
+    mpNext: "Next game", mpSeries: "Series", mpFinished: "FINISHED",
+    mpNote: "Same candles. Last standing, whale, or race. Does not count for the board.",
     eloBoard: "VERSUS ELO", eloGuest: "Sign in to record ELO", eloUpdated: "ELO updated", eloPending: "ELO not saved",
     soundOn: "ON", soundOff: "OFF",
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
@@ -487,13 +492,13 @@
 
   function pickItem() {
     if (S.mp) {
-      if (wrng() < 0.1) return "COLD";
       const r = S.mpRules || {};
       const w = [
         ["BULL", Math.max(0, Number(r.bull) || 0)],
         ["BEAR", Math.max(0, Number(r.bear) || 0)],
         ["LASER", Math.max(0, Number(r.laser) || 0)],
-        ["SWAN", Math.max(0, Number(r.swan) || 0)]
+        ["SWAN", Math.max(0, Number(r.swan) || 0)],
+        ["COLD", Math.max(0, Number(r.cold) || 0)]
       ];
       let tot = 0;
       w.forEach((x) => { tot += x[1]; });
@@ -539,7 +544,8 @@
     swanBear: false, halveSpeechUntil: 0,
     stats: null, welcomed: false, introCounted: false, speechUntil: 0, speechRank: 0, humanInput: false, ranked: true,
     mp: false, worldSeed: 0, worldRand: null, mpOver: false, mpErr: "", mpJoinCode: "",
-    mpRules: null, mpPlayAt: 0, mpSlot: 0, btcColdAt: 0,
+    mpRules: null, mpPlayAt: 0, mpSlot: 0, btcColdAt: 0, spectate: false, finished: false,
+    mpRoundOver: false, mpSeriesOver: false, mpSeriesWins: {}, mpGameN: 1, mpNextAt: 0, mpRematchOn: false,
     jobTrack: null, jobOffer: null, jobName: "",
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
@@ -836,9 +842,11 @@
     }
     S.lastGapY = gapY;
     S.spawnedPipes += 1;
-    const pipe = { x, gapY, gapH, green: wrng() > 0.45, scored: false, seen: false };
+    const raceN = S.mp ? ((S.mpRules && S.mpRules.mode === "race") ? (S.mpRules.raceN | 0) : 0) : 0;
+    const isFinish = !!(raceN && S.spawnedPipes === raceN);
+    const pipe = { x, gapY, gapH, green: wrng() > 0.45, scored: false, seen: false, finish: isFinish };
     S.pipes.push(pipe);
-    if (wrng() < 0.52 && !itemsOnPipe(pipe).length) {
+    if (!isFinish && wrng() < 0.52 && !itemsOnPipe(pipe).length) {
       const type = pickItem();
       const r = type === "SWAN" ? 17 : 14;
       const box = wickAxis(pipe, r);
@@ -915,8 +923,8 @@
     if (!keepWallet) S.msig = S.ranked ? 0 : 999;
     if (S.mp) {
       const r = S.mpRules || (window.ChoppyMP && window.ChoppyMP.rules && window.ChoppyMP.rules()) || {};
-      S.cold = r.cold | 0;
-      if (!keepWallet) S.msig = r.msig | 0;
+      S.cold = (r.startCold | 0) || 0;
+      if (!keepWallet) S.msig = 0;
       S.btcColdAt = 0;
     }
     S.power = "NONE"; S.powerT = 0;
@@ -1205,6 +1213,7 @@
   }
 
   function hitFatal() {
+    if (S.spectate || S.finished) return;
     if (S.invuln > 0) return;
     if (S.cold > 0) { rescue(); return; }
     if (S.msig > 0) {
@@ -1245,8 +1254,13 @@
     }
     if (field) field.classList.remove("is-play");
     if (S.mp && window.ChoppyMP) {
-      try { window.ChoppyMP.dead(S.lifeT, S.candles); } catch (e) {}
-      setPhase("mpwait");
+      try { snapshotRun(); } catch (e) {}
+      try { window.ChoppyMP.dead(S.lifeT, S.candles, { btc: S.btc }); } catch (e) {}
+      S.spectate = true;
+      if (field) field.classList.add("is-play");
+      S.phase = "play";
+      renderHud();
+      renderOverlay();
       return;
     }
     try { setPhase("over"); } catch (e) { try { renderOverlay(); } catch (err) {} }
@@ -1261,13 +1275,13 @@
   }
 
   function flap() {
-    if (S.phase !== "play" || S.dead) return;
+    if (S.phase !== "play" || S.dead || S.spectate || S.finished) return;
     const m = metrics();
     S.bird.v = m.jump || -280;
     try { if (A && A.sfx && A.sfx.jump) A.sfx.jump(); } catch (e) {}
   }
   function buyBtc() {
-    if (S.phase !== "play" || S.cash <= 0 || clampPx(S.price) <= 0) return;
+    if (S.phase !== "play" || S.cash <= 0 || clampPx(S.price) <= 0 || S.spectate || S.dead || S.finished) return;
     const px = clampPx(S.price);
     const room = btcRoom();
     if (room <= 0) return;
@@ -1287,7 +1301,7 @@
     markTrade("buy");
   }
   function sellBtc() {
-    if (S.phase !== "play" || S.btc <= 0) return;
+    if (S.phase !== "play" || S.btc <= 0 || S.spectate || S.dead || S.finished) return;
     const btc = S.btc, usd = btc * S.price;
     S.cash += usd; S.btc = 0; S.sells++;
     if (S.power === "BEAR" || S.swanBear) S.sellsBear = (S.sellsBear || 0) + 1; A.sfx.sell();
@@ -2619,22 +2633,31 @@
       return;
     }
     if (S.laserOn) { S.laserT -= dt; if (S.laserT <= 0) applyLaser(false); }
-    S.bird.v += m.gravity * dt; S.bird.y += S.bird.v * dt;
-    if (S.power === "BEAR") {
-      const k = S.swanBear ? 1 : 0.52;
-      S.bird.y += Math.sin(S.lifeT * 36) * 26 * dt * k;
-      S.bird.v += Math.sin(S.lifeT * 21) * 55 * dt * k;
-    }
-    if (S.bird.y - S.bird.r > S.H) {
-      if (S.invuln > 0) {
-        S.bird.y = Math.min(S.H - 70, S.H - S.bird.r - 8);
-        S.bird.v = metrics().jump * 0.7;
-      } else {
-        hitFatal();
-        if (S.dead) return;
+    const watching = !!(S.mp && S.spectate);
+    if (watching) {
+      const foc = mpFocusPlayer();
+      if (foc && foc.y != null) {
+        S.bird.y = foc.y;
+        S.bird.v = foc.v || 0;
       }
+    } else {
+      S.bird.v += m.gravity * dt; S.bird.y += S.bird.v * dt;
+      if (S.power === "BEAR") {
+        const k = S.swanBear ? 1 : 0.52;
+        S.bird.y += Math.sin(S.lifeT * 36) * 26 * dt * k;
+        S.bird.v += Math.sin(S.lifeT * 21) * 55 * dt * k;
+      }
+      if (S.bird.y - S.bird.r > S.H) {
+        if (S.invuln > 0) {
+          S.bird.y = Math.min(S.H - 70, S.H - S.bird.r - 8);
+          S.bird.v = metrics().jump * 0.7;
+        } else {
+          hitFatal();
+          if (S.dead && !S.spectate) return;
+        }
+      }
+      if (S.bird.y + S.bird.r < 0) { S.bird.y = -S.bird.r + 1; S.bird.v = 0; }
     }
-    if (S.bird.y + S.bird.r < 0) { S.bird.y = -S.bird.r + 1; S.bird.v = 0; }
 
     const pw = m.pipeW * S.widthMul;
     let guard = 0;
@@ -2654,13 +2677,18 @@
         tickHalve();
       }
       if (!p.scored && p.x + pw < S.bird.x) {
-        p.scored = true; S.candles++; A.sfx.coin();
-        grantUsd(100, p.x + pw * 0.5, p.gapY - 50, "gain");
-        tickJobChance();
-        if (!S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
+        p.scored = true;
+        if (p.finish) {
+          if (!watching) mpFinishRace();
+        } else {
+          S.candles++; A.sfx.coin();
+          grantUsd(100, p.x + pw * 0.5, p.gapY - 50, "gain");
+          tickJobChance();
+          if (!S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
+        }
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
-      if (inX) {
+      if (inX && !p.finish && !watching) {
         const ends = pipeEnds(p);
         if (S.bird.y - hitR < ends.top + 2 || S.bird.y + hitR > ends.bot - 2) {
           if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); grantUsd(200, p.x + pw * 0.5, S.bird.y - 66, "gain"); S.pipes.splice(i, 1); continue; }
@@ -2687,7 +2715,7 @@
         S.items.splice(j, 1); continue;
       }
       const dx = S.bird.x - it.x, dy = S.bird.y - it.y;
-      if (dx * dx + dy * dy < (hitR + it.r) * (hitR + it.r)) { collect(it); S.items.splice(j, 1); continue; }
+      if (!watching && dx * dx + dy * dy < (hitR + it.r) * (hitR + it.r)) { collect(it); S.items.splice(j, 1); continue; }
       if (it.x < -40) {
         if (it.type === "HALVE") missHalve();
         S.items.splice(j, 1);
@@ -2886,6 +2914,22 @@
       const ends = pipeEnds(p);
       const wx = pipeWx(p, pw);
       p.wx = wx;
+      if (p.finish) {
+        ctx.save();
+        const stripe = 12;
+        for (let y = 0; y < S.H; y += stripe) {
+          ctx.fillStyle = ((y / stripe) | 0) % 2 === 0 ? "#f3efe6" : "#121214";
+          ctx.fillRect(p.x, y, Math.max(10, pw * 0.42), stripe);
+        }
+        ctx.fillStyle = BTC;
+        ctx.fillRect(p.x - 3, 0, 5, S.H);
+        ctx.fillStyle = "#ffe7a0";
+        ctx.font = "700 13px \"IBM Plex Mono\", monospace";
+        ctx.textAlign = "center"; ctx.textBaseline = "top";
+        ctx.fillText(t("mpRace").toUpperCase(), p.x + pw * 0.2, 10);
+        ctx.restore();
+        continue;
+      }
       ctx.fillStyle = col; ctx.strokeStyle = edge; ctx.lineWidth = S.laserOn ? 2.4 : 1.6;
       ctx.fillRect(p.x, 0, pw, ends.top); ctx.strokeRect(p.x + 0.5, 0.5, pw - 1, Math.max(0, ends.top - 1));
       ctx.fillRect(p.x, ends.bot, pw, S.H - ends.bot); ctx.strokeRect(p.x + 0.5, ends.bot + 0.5, pw - 1, Math.max(0, S.H - ends.bot - 1));
@@ -2899,14 +2943,19 @@
       drawPowerIcon(ctx, it, wash);
     }
     const blink = S.invuln > 0 && Math.floor(S.invuln * 10) % 2 === 0;
-    if (!blink) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn);
+    const foc = S.mp ? mpFocusPlayer() : null;
+    const mineId = window.ChoppyMP && window.ChoppyMP.id ? window.ChoppyMP.id() : null;
+    const selfGhost = !!(S.mp && (S.spectate || S.dead || S.finished) && foc && foc.id !== mineId);
+    if (!blink && !selfGhost) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn);
     if (S.mp && window.ChoppyMP) {
-      const mine = window.ChoppyMP.id();
       (window.ChoppyMP.players() || []).forEach((p) => {
-        if (!p || p.id === mine || p.alive === false) return;
+        if (!p || p.id === mineId) return;
         if (p.x == null || p.y == null) return;
         const h = heroOf(p.slot || 0);
-        drawBirdAt(ctx, p.x, p.y, p.v || 0, S.bird.r, h, wash, 0.25, !!p.laser);
+        const lead = foc && p.id === foc.id;
+        const gone = p.alive === false && !p.finished;
+        if (gone && !lead) return;
+        drawBirdAt(ctx, p.x, p.y, p.v || 0, S.bird.r, h, wash, lead ? 1 : 0.25, !!p.laser);
       });
     }
     for (const pt of S.particles) {
@@ -2990,18 +3039,22 @@
     setTxt("h-halves", String(S.halvings || 0) + "/" + String(S.halveSpawned || 0));
     const chip = $("mp-chip");
     if (chip) {
-      const show = !!(S.mp && (S.phase === "play" || S.phase === "mpwait" || S.phase === "paused" || S.phase === "perk"));
+      const show = !!(S.mp && (S.phase === "play" || S.phase === "mpwait" || S.phase === "count"));
       chip.classList.toggle("hide", !show);
       if (show && window.ChoppyMP) {
         const live = window.ChoppyMP.alive() || [];
         const all = window.ChoppyMP.players() || [];
-        chip.textContent = live.length + "/" + Math.max(all.length, 1) + " " + t("mpAlive");
+        const mode = (S.mpRules && S.mpRules.mode) || "last";
+        const g = S.mpGameN || (window.ChoppyMP.gameN && window.ChoppyMP.gameN()) || 1;
+        const bo = (S.mpRules && S.mpRules.bestOf) || 1;
+        const tag = mode === "whale" ? t("mpWhale") : mode === "race" ? t("mpRace") : t("mpLast");
+        chip.textContent = live.length + "/" + Math.max(all.length, 1) + " · " + tag + (bo > 1 ? " · " + g + "/" + bo : "");
       }
-      if (show && S.mp && S.phase === "play" && window.ChoppyMP && window.ChoppyMP.pulse) {
+      if (show && S.mp && S.phase === "play" && !S.dead && !S.finished && !S.spectate && window.ChoppyMP && window.ChoppyMP.pulse) {
         if (!S.mpPulseAt || S.lifeT - S.mpPulseAt > 0.12) {
           S.mpPulseAt = S.lifeT;
           window.ChoppyMP.pulse({
-            candles: S.candles, lifeT: S.lifeT, alive: true,
+            candles: S.candles, lifeT: S.lifeT, alive: true, finished: false,
             x: S.bird.x, y: S.bird.y, v: S.bird.v,
             laser: !!S.laserOn, power: S.power,
             btc: S.btc, cold: S.cold, slot: S.mpSlot
@@ -3015,12 +3068,20 @@
       listEl.classList.toggle("hide", !vs);
       if (vs && window.ChoppyMP) {
         const mine = window.ChoppyMP.id();
+        const wins = S.mpSeriesWins || (window.ChoppyMP.wins && window.ChoppyMP.wins()) || {};
+        const foc = mpFocusPlayer();
         listEl.innerHTML = (window.ChoppyMP.players() || []).map((p) => {
           const h = heroOf(p.slot || 0);
           const dead = p.alive === false;
+          const fin = !!p.finished;
           const you = p.id === mine;
-          return "<span class=\"mp-pill" + (dead ? " out" : "") + "\"><span class=\"dot\" style=\"background:" + h.fill + "\"></span>"
-            + (p.name || "?") + (you ? " · " + t("mpYou") : "") + (dead ? " · " + t("mpDead") : "") + "</span>";
+          const lead = foc && p.id === foc.id;
+          const w = wins[p.id] != null ? wins[p.id] : 0;
+          const extra = (lead && S.mpRoundOver) ? t("mpWins") : dead ? t("mpDead") : fin ? t("mpFinished") : "";
+          return "<span class=\"mp-pill" + (dead || fin ? " out" : "") + (lead ? " lead" : "") + "\"><span class=\"dot\" style=\"background:" + h.fill + "\"></span>"
+            + (p.name || "?") + (you ? " · " + t("mpYou") : "")
+            + (S.mpRules && S.mpRules.bestOf > 1 ? " · " + w : "")
+            + (extra ? " · " + extra : "") + "</span>";
         }).join("");
       }
     }
@@ -3791,25 +3852,81 @@
   }
   function mpRulesNow() {
     return S.mpRules || (window.ChoppyMP && window.ChoppyMP.rules && window.ChoppyMP.rules()) || {
-      cold: 0, msig: 0, bull: 42, bear: 26, laser: 11, swan: 21,
+      startCold: 0, msig: 0, bull: 38, bear: 22, laser: 10, swan: 20, cold: 10,
+      mode: "last", raceN: 21, bestOf: 1,
       muteTheme: false, muteSfx: false, muteVoice: false
     };
+  }
+  function mpMixTotal(r) {
+    r = r || mpRulesNow();
+    return (r.bull | 0) + (r.bear | 0) + (r.laser | 0) + (r.swan | 0) + (r.cold | 0);
+  }
+  function mpFocusPlayer() {
+    const list = (window.ChoppyMP && window.ChoppyMP.players && window.ChoppyMP.players()) || [];
+    if (!list.length) return null;
+    if (S.mpWinner && S.mpWinner.id) {
+      const w = list.find((p) => p.id === S.mpWinner.id);
+      if (w) return w;
+    }
+    const mode = (S.mpRules && S.mpRules.mode) || "last";
+    if (mode === "whale") {
+      return list.slice().sort((a, b) => (Number(b.btc) || 0) - (Number(a.btc) || 0))[0];
+    }
+    if (mode === "race") {
+      const fin = list.filter((p) => p.finished).sort((a, b) => (Number(a.finishT) || 0) - (Number(b.finishT) || 0))[0];
+      if (fin) return fin;
+      return list.filter((p) => p.alive !== false).sort((a, b) => (Number(b.candles) || 0) - (Number(a.candles) || 0))[0] || list[0];
+    }
+    const live = list.filter((p) => p.alive !== false && !p.finished);
+    return live[0] || list[0];
+  }
+  function mpFinishRace() {
+    if (!S.mp || S.finished || S.dead) return;
+    S.finished = true;
+    try { snapshotRun(); } catch (e) {}
+    try {
+      if (window.ChoppyMP && window.ChoppyMP.finish) {
+        window.ChoppyMP.finish({
+          candles: S.candles, lifeT: S.lifeT, btc: S.btc, finishT: S.lifeT,
+          x: S.bird.x, y: S.bird.y, v: S.bird.v
+        });
+      }
+    } catch (e) {}
+    const foc = mpFocusPlayer();
+    const me = window.ChoppyMP && window.ChoppyMP.id();
+    if (foc && foc.id !== me) S.spectate = true;
+    renderHud();
+    renderOverlay();
   }
   function mpRulesHtml() {
     const r = mpRulesNow();
     const host = !!(window.ChoppyMP && window.ChoppyMP.get && window.ChoppyMP.get().host);
     const dis = host ? "" : " disabled";
-    const sum = (Number(r.bull) || 0) + (Number(r.bear) || 0) + (Number(r.laser) || 0) + (Number(r.swan) || 0);
+    const sum = mpMixTotal(r);
     const open = S.mpRulesOpen === false ? "" : " open";
+    const mode = r.mode || "last";
+    const raceHide = mode === "race" ? "" : " hide";
+    const radio = (val, lab) =>
+      "<label class=\"mp-mode" + (mode === val ? " on" : "") + "\"><input type=\"radio\" name=\"mp-mode\" value=\"" + val + "\""
+      + (mode === val ? " checked" : "") + dis + "> " + lab + "</label>";
     return "<details class=\"mp-rules\"" + open + "><summary>" + t("mpRules") + (host ? "" : " · view") + "</summary>"
-      + "<div class=\"mp-rule\"><span>" + t("mpCold0") + "</span><input type=\"number\" id=\"mp-cold\" min=\"0\" max=\"99\" value=\"" + (r.cold | 0) + "\"" + dis + "></div>"
-      + "<div class=\"mp-rule\"><span>" + t("mpMsig0") + "</span><input type=\"number\" id=\"mp-msig\" min=\"0\" max=\"99\" value=\"" + (r.msig | 0) + "\"" + dis + "></div>"
+      + "<div class=\"mp-modes\">"
+      + radio("last", t("mpLast"))
+      + radio("whale", t("mpWhale"))
+      + radio("race", t("mpRace"))
+      + "</div>"
+      + "<div class=\"mp-rule" + raceHide + "\" id=\"mp-race-row\"><span>" + t("mpRaceN") + "</span><input type=\"number\" id=\"mp-race-n\" min=\"5\" max=\"210\" value=\"" + (r.raceN | 0 || 21) + "\"" + dis + "></div>"
+      + "<div class=\"mp-rule\"><span>" + t("mpBestOf") + "</span><select id=\"mp-bestof\"" + dis + ">"
+      + [1, 3, 5, 7].map((n) => "<option value=\"" + n + "\"" + ((r.bestOf | 0) === n ? " selected" : "") + ">" + n + "</option>").join("")
+      + "</select></div>"
+      + "<div class=\"mp-rule\"><span>" + t("mpCold0") + "</span><input type=\"number\" id=\"mp-cold\" min=\"0\" max=\"99\" value=\"" + (r.startCold | 0) + "\"" + dis + "></div>"
       + "<p class=\"k mp-mix-sum" + (sum !== 100 ? " bad" : "") + "\" id=\"mp-mix-sum\">" + t("mpMix") + " · " + Math.round(sum) + (sum !== 100 ? " · " + t("mpMixNeed") : "") + "</p>"
       + "<div class=\"mp-w\">"
       + "<label>" + t("mpBull") + "</label><input type=\"number\" id=\"mp-w-bull\" min=\"0\" max=\"100\" value=\"" + (r.bull | 0) + "\"" + dis + ">"
       + "<label>" + t("mpBear") + "</label><input type=\"number\" id=\"mp-w-bear\" min=\"0\" max=\"100\" value=\"" + (r.bear | 0) + "\"" + dis + ">"
       + "<label>" + t("mpLaserW") + "</label><input type=\"number\" id=\"mp-w-laser\" min=\"0\" max=\"100\" value=\"" + (r.laser | 0) + "\"" + dis + ">"
       + "<label>" + t("mpSwanW") + "</label><input type=\"number\" id=\"mp-w-swan\" min=\"0\" max=\"100\" value=\"" + (r.swan | 0) + "\"" + dis + ">"
+      + "<label>" + t("mpColdW") + "</label><input type=\"number\" id=\"mp-w-cold\" min=\"0\" max=\"100\" value=\"" + (r.cold | 0) + "\"" + dis + ">"
       + "</div>"
       + "<div class=\"mute-row\" style=\"margin-top:8px\">"
       + "<button type=\"button\" class=\"mute-tog" + (r.muteTheme ? " on" : "") + "\" id=\"mp-mute-theme\"" + (host ? "" : " disabled") + ">" + t("bullSongs") + " " + (r.muteTheme ? t("soundOff") : t("soundOn")) + "</button>"
@@ -3824,13 +3941,22 @@
       return isFinite(v) ? v : d;
     };
     const r = mpRulesNow();
+    let mode = r.mode || "last";
+    const picked = overlay && overlay.querySelector && overlay.querySelector("input[name=\"mp-mode\"]:checked");
+    if (picked) mode = picked.value;
+    const boEl = $("mp-bestof");
+    const bestOf = boEl ? (Number(boEl.value) || 1) : (r.bestOf || 1);
     return {
-      cold: Math.max(0, Math.min(99, num("mp-cold", r.cold) | 0)),
-      msig: Math.max(0, Math.min(99, num("mp-msig", r.msig) | 0)),
+      startCold: Math.max(0, Math.min(99, num("mp-cold", r.startCold) | 0)),
+      msig: 0,
       bull: Math.max(0, Math.min(100, num("mp-w-bull", r.bull) | 0)),
       bear: Math.max(0, Math.min(100, num("mp-w-bear", r.bear) | 0)),
       laser: Math.max(0, Math.min(100, num("mp-w-laser", r.laser) | 0)),
       swan: Math.max(0, Math.min(100, num("mp-w-swan", r.swan) | 0)),
+      cold: Math.max(0, Math.min(100, num("mp-w-cold", r.cold) | 0)),
+      mode: mode === "whale" || mode === "race" ? mode : "last",
+      raceN: Math.max(5, Math.min(210, num("mp-race-n", r.raceN) | 0)),
+      bestOf: bestOf === 3 || bestOf === 5 || bestOf === 7 ? bestOf : 1,
       muteTheme: !!(r.muteTheme),
       muteSfx: !!(r.muteSfx),
       muteVoice: !!(r.muteVoice)
@@ -3850,7 +3976,7 @@
     const ready = !!(mp && mp.ready);
     const all = !!(window.ChoppyMP && window.ChoppyMP.allReady && window.ChoppyMP.allReady());
     const mix = mpRulesNow();
-    const mixSum = (Number(mix.bull) || 0) + (Number(mix.bear) || 0) + (Number(mix.laser) || 0) + (Number(mix.swan) || 0);
+    const mixSum = mpMixTotal(mix);
     const canStart = all && mixSum === 100;
     const err = S.mpErr ? "<p class=\"k\">" + S.mpErr + "</p>" : "";
     if (!mp || !mp.code) {
@@ -3889,7 +4015,7 @@
     if ($("mp-start")) $("mp-start").onclick = (e) => {
       e.stopPropagation();
       const r = readMpRulesForm();
-      const sum = (r.bull | 0) + (r.bear | 0) + (r.laser | 0) + (r.swan | 0);
+      const sum = mpMixTotal(r);
       if (sum !== 100) { S.mpErr = t("mpMixNeed"); renderOverlay(); return; }
       if (window.ChoppyMP) window.ChoppyMP.start();
     };
@@ -3897,7 +4023,7 @@
     if (rulesEl) rulesEl.ontoggle = () => { S.mpRulesOpen = !!rulesEl.open; };
     const paintMix = () => {
       const r = readMpRulesForm();
-      const sum = (r.bull | 0) + (r.bear | 0) + (r.laser | 0) + (r.swan | 0);
+      const sum = mpMixTotal(r);
       const el = $("mp-mix-sum");
       if (el) {
         el.textContent = t("mpMix") + " · " + sum + (sum !== 100 ? " · " + t("mpMixNeed") : "");
@@ -3908,6 +4034,12 @@
         const all = window.ChoppyMP && window.ChoppyMP.allReady && window.ChoppyMP.allReady();
         start.disabled = !all || sum !== 100;
       }
+      const row = $("mp-race-row");
+      if (row) row.classList.toggle("hide", r.mode !== "race");
+      overlay.querySelectorAll(".mp-mode").forEach((lab) => {
+        const inp = lab.querySelector("input");
+        lab.classList.toggle("on", !!(inp && inp.checked));
+      });
     };
     if ($("mp-copy")) $("mp-copy").onclick = (e) => {
       e.stopPropagation();
@@ -3917,11 +4049,14 @@
     if ($("mp-back")) $("mp-back").onclick = (e) => { e.stopPropagation(); leaveMp(); };
     const inp = $("mp-code");
     if (inp) inp.onkeydown = (e) => { if (e.key === "Enter" && $("mp-join")) $("mp-join").click(); };
-    ["mp-cold", "mp-msig", "mp-w-bull", "mp-w-bear", "mp-w-laser", "mp-w-swan"].forEach((id) => {
+    ["mp-cold", "mp-w-bull", "mp-w-bear", "mp-w-laser", "mp-w-swan", "mp-w-cold", "mp-race-n", "mp-bestof"].forEach((id) => {
       const el = $(id);
       if (!el) return;
       el.oninput = () => { pushHostRules(); paintMix(); };
       el.onchange = () => { pushHostRules(); paintMix(); };
+    });
+    overlay.querySelectorAll("input[name=\"mp-mode\"]").forEach((inp) => {
+      inp.onchange = () => { pushHostRules(); paintMix(); };
     });
     const bindMute = (id, key) => {
       const el = $(id);
@@ -3945,8 +4080,45 @@
     try { if (A.setMuteVoice) A.setMuteVoice(!!r.muteVoice); } catch (e) {}
   }
   function mpWaitHtml() {
-    return "<h1>" + t("mpDead") + "</h1><p class=\"k\">" + t("mpWait") + "</p>" + mpRosterHtml()
-      + "<button class=\"cta play-alt\" id=\"mp-leave\">" + t("mpBack") + "</button>";
+    return mpSpecHtml();
+  }
+  function mpSpecHtml() {
+    const foc = mpFocusPlayer() || S.mpWinner || {};
+    const mine = window.ChoppyMP && window.ChoppyMP.id();
+    const win = S.mpWinner || {};
+    const last = !!S.mpSeriesOver;
+    const left = S.mpNextAt ? Math.max(0, Math.ceil((S.mpNextAt - Date.now()) / 1000)) : 0;
+    const title = S.mpRoundOver
+      ? (win.id === mine ? t("mpYouWin") : ((win.name || foc.name || "?") + " " + t("mpWins")))
+      : (t("mpSpec") + " · " + (foc.name || ""));
+    const bo = (S.mpRules && S.mpRules.bestOf) || 1;
+    const series = bo > 1
+      ? "<p class=\"k\">" + t("mpSeries") + " " + (S.mpGameN || 1) + "/" + bo + (S.mpEloNote ? " · " + S.mpEloNote : "") + "</p>"
+      : (S.mpEloNote ? "<p class=\"k\">" + S.mpEloNote + "</p>" : "");
+    const timer = S.mpRoundOver && left
+      ? "<p class=\"k\">" + (last ? t("mpRematch") : t("mpNext")) + " · " + left + "s</p>"
+      : "";
+    return "<p class=\"k\">" + title + "</p>" + series + timer
+      + "<div class=\"overlay-actions\">"
+      + "<button type=\"button\" class=\"cta play-alt\" id=\"mp-quit\">" + t("mpQuit") + "</button>"
+      + "<button type=\"button\" class=\"cta play-alt\" id=\"mp-stats\">" + t("runStats") + "</button>"
+      + (last ? "<button type=\"button\" class=\"cta" + (S.mpRematchOn ? " on" : "") + "\" id=\"mp-rematch\">" + t("mpRematch") + "</button>" : "")
+      + "</div>";
+  }
+  function bindMpSpec() {
+    if ($("mp-quit")) $("mp-quit").onclick = (e) => { e.stopPropagation(); leaveMp(); };
+    if ($("mp-stats")) $("mp-stats").onclick = (e) => {
+      e.stopPropagation();
+      if (!S.stats) try { snapshotRun(); } catch (err) {}
+      S.runTab = "stats";
+      renderOverlay();
+    };
+    if ($("mp-rematch")) $("mp-rematch").onclick = (e) => {
+      e.stopPropagation();
+      S.mpRematchOn = !S.mpRematchOn;
+      if (window.ChoppyMP && window.ChoppyMP.setRematch) window.ChoppyMP.setRematch(S.mpRematchOn);
+      renderOverlay();
+    };
   }
   function mpWinHtml() {
     const w = S.mpWinner || {};
@@ -3979,11 +4151,20 @@
   function beginMpCountdown(data) {
     S.mp = true;
     S.mpOver = false;
+    S.mpRoundOver = false;
+    S.mpSeriesOver = false;
     S.mpWinner = null;
+    S.spectate = false;
+    S.finished = false;
+    S.mpRematchOn = false;
+    S.mpNextAt = 0;
+    S.runTab = null;
     S.worldSeed = (data && data.seed) >>> 0 || 1;
     S.mpRules = (data && data.rules) || mpRulesNow();
     S.mpPlayAt = playAtFromGo(data);
     S.mpSlot = (window.ChoppyMP && window.ChoppyMP.slot && window.ChoppyMP.slot()) || 0;
+    S.mpSeriesWins = (data && data.wins) || (window.ChoppyMP && window.ChoppyMP.wins && window.ChoppyMP.wins()) || {};
+    S.mpGameN = (data && data.gameN) || (window.ChoppyMP && window.ChoppyMP.gameN && window.ChoppyMP.gameN()) || 1;
     S.ranked = true;
     applyMpSound(S.mpRules);
     resetWorld(false);
@@ -4023,16 +4204,16 @@
         S.mpElo = rows;
         S.mpEloNote = t("eloUpdated");
       } else S.mpEloNote = t("eloPending");
-      if (S.phase === "mpwin") renderOverlay();
+      if (S.phase === "mpwin" || S.mpRoundOver) renderOverlay();
     }).catch(() => {
       S.mpEloNote = t("eloPending");
-      if (S.phase === "mpwin") renderOverlay();
+      if (S.phase === "mpwin" || S.mpRoundOver) renderOverlay();
     });
   }
   function leaveMp() {
     try { if (window.ChoppyMP) window.ChoppyMP.leave(); } catch (e) {}
-    S.mp = false; S.mpOver = false; S.worldSeed = 0; S.worldRand = null; S.mpWinner = null; S.mpElo = null; S.mpEloNote = "";
-    S.mpRules = null; S.mpPlayAt = 0; S.dead = false;
+    S.mp = false; S.mpOver = false; S.mpRoundOver = false; S.worldSeed = 0; S.worldRand = null; S.mpWinner = null; S.mpElo = null; S.mpEloNote = "";
+    S.mpRules = null; S.mpPlayAt = 0; S.dead = false; S.spectate = false; S.finished = false; S.mpNextAt = 0; S.mpRematchOn = false; S.runTab = null;
     const app = $("app");
     if (app) app.classList.remove("vs-on");
     setPhase("ready");
@@ -4048,31 +4229,55 @@
         if (S.phase === "mplobby" || S.phase === "mpwait") {
           if (!typing()) renderOverlay();
         }
-        else if (S.phase === "play" || S.phase === "count") renderHud();
+        else if (S.phase === "play" || S.phase === "count") {
+          renderHud();
+          if (S.phase === "play" && (S.spectate || S.mpRoundOver) && !S.runTab) renderOverlay();
+        }
       } else if (ev === "rules") {
         S.mpRules = data || S.mpRules;
         if (S.phase === "mplobby" && !typing()) renderOverlay();
       } else if (ev === "reset") {
         S.mpOver = false;
+        S.mpRoundOver = false;
         S.mp = false;
         S.dead = false;
+        S.spectate = false;
+        S.finished = false;
         S.mpPlayAt = 0;
+        S.mpNextAt = 0;
         setPhase("mplobby");
+      } else if (ev === "dropped") {
+        leaveMp();
       } else if (ev === "go") {
-        if (S.mp && (S.phase === "play" || S.phase === "count")) return;
+        const ids = ((data && data.players) || []).map((p) => p.id);
+        if (ids.length && window.ChoppyMP && ids.indexOf(window.ChoppyMP.id()) < 0) {
+          leaveMp();
+          return;
+        }
+        if (S.phase === "count" && S.worldSeed && data && ((data.seed >>> 0) === S.worldSeed)) return;
         beginMpCountdown(data || {});
-      } else if (ev === "over") {
-        if (S.mpOver) return;
-        S.mpOver = true;
+      } else if (ev === "lead") {
         S.mpWinner = data && data.winner;
         if (S.phase === "play") {
-          S.dead = true;
-          if (field) field.classList.remove("is-play");
+          renderHud();
+          if (S.spectate || S.mpRoundOver) renderOverlay();
         }
-        reportMpElo();
-        setPhase("mpwin");
+      } else if (ev === "over") {
+        if (S.mpRoundOver) return;
+        S.mpRoundOver = true;
+        S.mpOver = true;
+        S.mpWinner = data && data.winner;
+        S.mpSeriesWins = (data && data.wins) || S.mpSeriesWins || {};
+        S.mpGameN = (data && data.gameN) || S.mpGameN || 1;
+        S.mpSeriesOver = !!(data && data.seriesOver);
+        S.mpNextAt = Date.now() + Math.max(4000, (data && data.waitMs) || (S.mpSeriesOver ? 12000 : 8000));
+        const me = window.ChoppyMP && window.ChoppyMP.id();
+        if (S.mpWinner && me && S.mpWinner.id !== me) S.spectate = true;
+        if (S.mpSeriesOver) reportMpElo();
+        renderHud();
+        renderOverlay();
       } else if (ev === "err") {
-        S.mpErr = data === "need 2" ? t("mpNeed") : data === "not ready" ? t("mpNeedReady") : data === "full" ? t("mpFull") : String(data || "error");
+        S.mpErr = data === "need 2" ? t("mpNeed") : data === "not ready" ? t("mpNeedReady") : data === "full" ? t("mpFull") : data === "mix" ? t("mpMixNeed") : String(data || "error");
         if (S.phase === "mplobby") renderOverlay();
       }
     });
@@ -4094,7 +4299,25 @@
 
   function renderOverlay() {
     const p = S.phase;
-    if (p === "play") { hideOverlay(); return; }
+    if (p === "play") {
+      if (S.mp && (S.spectate || S.mpRoundOver || S.finished)) {
+        showOverlay();
+        overlay.classList.add("dock", "mp-spec");
+        overlay.classList.remove("mp-ui", "chance-ui", "juke-ui");
+        if (S.runTab) {
+          overlay.innerHTML = runRecapHtml();
+          bindRunRecap();
+        } else {
+          overlay.innerHTML = mpSpecHtml();
+          bindMpSpec();
+        }
+        return;
+      }
+      hideOverlay();
+      overlay.classList.remove("mp-spec", "dock");
+      return;
+    }
+    overlay.classList.remove("mp-spec");
     showOverlay();
     overlay.classList.toggle("dock", p === "perk" || p === "paused" || p === "chance");
     overlay.classList.toggle("mp-ui", p === "mplobby" || p === "mpwait" || p === "mpwin");
@@ -4135,8 +4358,8 @@
       overlay.innerHTML = mpLobbyHtml();
       bindMpLobby();
     } else if (p === "mpwait") {
-      overlay.innerHTML = mpWaitHtml();
-      if ($("mp-leave")) $("mp-leave").onclick = (e) => { e.stopPropagation(); leaveMp(); };
+      overlay.innerHTML = mpSpecHtml();
+      bindMpSpec();
     } else if (p === "mpwin") {
       overlay.innerHTML = mpWinHtml();
       if ($("go")) $("go").onclick = (e) => { e.stopPropagation(); leaveMp(); };
@@ -4232,10 +4455,10 @@
 
   let last = performance.now(), acc = 0, hudAcc = 0;
   function mpCatchUp() {
-    if (!S.mp || S.phase !== "play" || !S.mpPlayAt || S.dead) return;
+    if (!S.mp || S.phase !== "play" || !S.mpPlayAt) return;
     const target = Math.max(0, (Date.now() - S.mpPlayAt) / 1000);
     let guard = 0;
-    while (S.lifeT + 1 / 60 <= target && !S.dead && guard++ < 1800) step(1 / 60);
+    while (S.lifeT + 1 / 60 <= target && guard++ < 1800) step(1 / 60);
   }
   function mpTickClock() {
     if (S.phase === "count" && S.mp && S.mpPlayAt) {
@@ -4245,6 +4468,18 @@
       if (ms <= 0) startMpPlay();
     }
     if (S.mp && S.phase === "play") mpCatchUp();
+    if (S.mp && S.mpRoundOver && S.mpNextAt) {
+      const left = S.mpNextAt - Date.now();
+      const sec = Math.max(0, Math.ceil(left / 1000));
+      if (left <= 0) {
+        S.mpNextAt = 0;
+        const host = window.ChoppyMP && window.ChoppyMP.get && window.ChoppyMP.get().host;
+        if (host && window.ChoppyMP.nextRound) window.ChoppyMP.nextRound();
+      } else if (S.mpNextShown !== sec) {
+        S.mpNextShown = sec;
+        if (S.phase === "play" && !S.runTab) try { renderOverlay(); } catch (e) {}
+      }
+    }
   }
   function loop(now) {
     mpTickClock();
