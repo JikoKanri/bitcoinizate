@@ -936,7 +936,7 @@
     S.cycleAmp = 0;
     S.cycleMax = S.price; S.cycleMin = S.price; S.cycleMaxI = 0; S.cycleMinI = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeCash = []; S.tapeBtcBag = []; S.tapeNet = []; S.tapeLo = null; S.tapeHi = null;
-    S._tapeVis = null; S._tvN = -1;
+    S._tapeVis = null; S._tvN = -1; S._tvStart = -1; S._tapeT = 0;
     S.tapeMarks = []; S.tapeTrades = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.markAt = -99;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
@@ -2805,69 +2805,127 @@
     ctx.restore();
   }
 
+  function tapeBucket(data, i, n, prevC) {
+    const end = Math.min(n, i + 4);
+    let o = prevC != null ? prevC : data[i];
+    let h = data[i], l = data[i];
+    for (let j = i + 1; j < end; j++) {
+      const v = data[j];
+      if (v > h) h = v;
+      if (v < l) l = v;
+    }
+    return { o: o, h: h, l: l, c: data[end - 1] };
+  }
+
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
     const bucket = 4, cw = 4.75, stepX = 5.1;
-    const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
+    const maxFit = Math.max(10, (S.W * 0.78 / stepX) | 0);
     const n = data.length;
-    const nComplete = Math.floor(n / bucket);
-    const extra = n % bucket;
-    const scrolling = nComplete >= maxFit;
-    const startB = scrolling ? nComplete - maxFit : 0;
+    const extra = n - ((n / bucket) | 0) * bucket;
+    const phase = n + Math.min(1, (S.sampleAcc || 0) / 0.12);
+    const candles = phase / bucket;
+    const scrolling = candles >= maxFit;
+    const raw = scrolling ? candles - maxFit : 0;
+    const startB = raw | 0;
     const startI = startB * bucket;
-    const frac = extra + Math.min(1, (S.sampleAcc || 0) / 0.12);
-    const offsetX = scrolling ? (frac / bucket) * stepX : 0;
+    const offsetX = scrolling ? (raw - startB) * stepX : 0;
+
     let vis = S._tapeVis;
-    if (!vis || S._tvN !== n || S._tvStart !== startI) {
-      vis = [];
+    if (!vis) vis = S._tapeVis = [];
+    const want = Math.ceil((n - startI) / bucket);
+
+    if (S._tvStart !== startI || !vis.length) {
+      vis.length = 0;
+      let prevC = null;
       for (let i = startI; i < n; i += bucket) {
-        const end = Math.min(n, i + bucket);
-        let o = vis.length ? vis[vis.length - 1].c : data[i];
-        let h = data[i], l = data[i];
-        for (let j = i + 1; j < end; j++) {
-          const v = data[j];
-          if (v > h) h = v;
-          if (v < l) l = v;
-        }
-        vis.push({ o: o, h: h, l: l, c: data[end - 1] });
+        const b = tapeBucket(data, i, n, prevC);
+        vis.push(b);
+        prevC = b.c;
       }
-      S._tapeVis = vis;
-      S._tvN = n;
       S._tvStart = startI;
+      S._tvN = n;
       if (!vis.length) return;
-      let visHi = vis[0].h, visLo = vis[0].l;
-      for (const b of vis) { if (b.l < visLo) visLo = b.l; if (b.h > visHi) visHi = b.h; }
-      let lo = visLo, hi = visHi;
-      const span = Math.max(0.01, hi - lo);
-      const mid = (lo + hi) / 2;
-      const fade = Math.max(0, 1 - (n / 100));
-      const zoom = 1 + 0.5 * fade;
-      const view = span * zoom;
-      lo = mid - view / 2;
-      hi = mid + view / 2;
-      const pad = span * 0.08;
-      lo -= pad; hi += pad;
-      if (S.tapeLo == null) { S.tapeLo = lo; S.tapeHi = hi; }
-      else {
-        if (lo < S.tapeLo) S.tapeLo = lo;
-        else S.tapeLo = S.tapeLo * 0.88 + lo * 0.12;
-        if (hi > S.tapeHi) S.tapeHi = hi;
-        else S.tapeHi = S.tapeHi * 0.88 + hi * 0.12;
+      let vlo = vis[0].l, vhi = vis[0].h;
+      for (let k = 1; k < vis.length; k++) {
+        const b = vis[k];
+        if (b.l < vlo) vlo = b.l;
+        if (b.h > vhi) vhi = b.h;
       }
+      S._tvLo = vlo;
+      S._tvHi = vhi;
+    } else if (S._tvN !== n) {
+      if (vis.length > want) vis.length = want;
+      while (vis.length < want) {
+        const i = startI + vis.length * bucket;
+        vis.push(tapeBucket(data, i, n, vis.length ? vis[vis.length - 1].c : null));
+      }
+      if (vis.length) {
+        const idx = vis.length - 1;
+        const last = tapeBucket(data, startI + idx * bucket, n, idx ? vis[idx - 1].c : null);
+        vis[idx] = last;
+        if (last.l < S._tvLo) S._tvLo = last.l;
+        if (last.h > S._tvHi) S._tvHi = last.h;
+      }
+      S._tvN = n;
     }
     if (!vis.length) return;
-    const py = (v) => y1 - ((v - S.tapeLo) / Math.max(0.01, S.tapeHi - S.tapeLo)) * (y1 - y0);
+
+    const last = vis[vis.length - 1];
+    const live = extra > 0 ? S.price : last.c;
+    const lastH = live > last.h ? live : last.h;
+    const lastL = live < last.l ? live : last.l;
+    const lastC = extra > 0 ? live : last.c;
+
+    let visLo = lastL < S._tvLo ? lastL : S._tvLo;
+    let visHi = lastH > S._tvHi ? lastH : S._tvHi;
+    const span = visHi - visLo < 0.01 ? 0.01 : visHi - visLo;
+    const mid = (visLo + visHi) * 0.5;
+    const fade = n < 100 ? 1 - n * 0.01 : 0;
+    const view = span * (1 + 0.5 * fade);
+    const lo = mid - view * 0.5 - span * 0.08;
+    const hi = mid + view * 0.5 + span * 0.08;
+
+    const now = performance.now();
+    const dt = Math.min(0.05, (now - (S._tapeT || now)) * 0.001);
+    S._tapeT = now;
+    if (S.tapeLo == null) {
+      S.tapeLo = lo;
+      S.tapeHi = hi;
+    } else {
+      const a = dt > 0 ? 1 - Math.exp(-dt / 6) : 0;
+      if (lo < S.tapeLo) S.tapeLo = lo;
+      else S.tapeLo += (lo - S.tapeLo) * a;
+      if (hi > S.tapeHi) S.tapeHi = hi;
+      else S.tapeHi += (hi - S.tapeHi) * a;
+    }
+
+    const rng = S.tapeHi - S.tapeLo;
+    const inv = (y1 - y0) / (rng < 0.01 ? 0.01 : rng);
+    const py = (v) => y1 - (v - S.tapeLo) * inv;
+
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, y0 - 12, S.W, y1 - y0 + 24);
     ctx.clip();
+    const lastI = vis.length - 1;
     for (let i = 0; i < vis.length; i++) {
       const b = vis[i];
       const x = 10 + i * stepX - offsetX;
-      ctx.strokeStyle = b.c >= b.o ? up : dn; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x + cw / 2, py(b.h)); ctx.lineTo(x + cw / 2, py(b.l)); ctx.stroke();
-      ctx.fillStyle = b.c >= b.o ? up : dn;
-      ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.2, Math.abs(py(b.c) - py(b.o))));
+      if (x + cw < -4 || x > S.W + 4) continue;
+      const h = i === lastI ? lastH : b.h;
+      const l = i === lastI ? lastL : b.l;
+      const c = i === lastI ? lastC : b.c;
+      const bull = c >= b.o;
+      ctx.strokeStyle = bull ? up : dn;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + cw * 0.5, py(h));
+      ctx.lineTo(x + cw * 0.5, py(l));
+      ctx.stroke();
+      ctx.fillStyle = bull ? up : dn;
+      const yO = py(b.o), yC = py(c);
+      ctx.fillRect(x, yO < yC ? yO : yC, cw, Math.max(1.2, yO < yC ? yC - yO : yO - yC));
     }
     const marks = (S.tapeMarks || []).concat(S.tapeLive ? [S.tapeLive] : []);
     if (marks.length) {
@@ -2876,10 +2934,10 @@
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(10,10,12,0.82)";
       for (const mk of marks) {
-        const vi = Math.floor((mk.i || 0) / bucket) - startB;
+        const vi = ((mk.i || 0) / bucket | 0) - startB;
         if (vi < 0 || vi >= vis.length) continue;
         const peak = mk.kind === "peak";
-        const x = 10 + vi * stepX + cw / 2 - offsetX;
+        const x = 10 + vi * stepX + cw * 0.5 - offsetX;
         const y = py(mk.price) + (peak ? -5 : 5);
         ctx.textBaseline = peak ? "bottom" : "top";
         ctx.fillStyle = peak ? GREEN : RED;
