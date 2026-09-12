@@ -936,6 +936,7 @@
     S.cycleAmp = 0;
     S.cycleMax = S.price; S.cycleMin = S.price; S.cycleMaxI = 0; S.cycleMinI = 0;
     S.lifeT = 0; S.sampleAcc = 0; S.tape = []; S.tapeVt = []; S.tapeCash = []; S.tapeBtcBag = []; S.tapeNet = []; S.tapeLo = null; S.tapeHi = null;
+    S._tapeVis = null; S._tvN = -1;
     S.tapeMarks = []; S.tapeTrades = []; S.eventPeaks = []; S.eventBottoms = []; S.tapeLive = null;
     S.markAt = -99;
     S.cycleEnv = 0; S.cycleManip = 1; S.cycleStacks = 0;
@@ -2808,47 +2809,68 @@
     if (data.length < 2) return;
     const bucket = 4, cw = 4.75, stepX = 5.1;
     const maxFit = Math.max(10, Math.floor((S.W * 0.78) / stepX));
-    const startI = Math.max(0, data.length - maxFit * bucket);
-    const startB = Math.floor(startI / bucket);
-    const vis = [];
-    for (let i = startI; i < data.length; i += bucket) {
-      const end = Math.min(data.length, i + bucket);
-      let o = vis.length ? vis[vis.length - 1].c : data[i];
-      let h = data[i], l = data[i];
-      for (let j = i + 1; j < end; j++) {
-        const v = data[j];
-        if (v > h) h = v;
-        if (v < l) l = v;
+    const n = data.length;
+    const nComplete = Math.floor(n / bucket);
+    const extra = n % bucket;
+    const scrolling = nComplete >= maxFit;
+    const startB = scrolling ? nComplete - maxFit : 0;
+    const startI = startB * bucket;
+    const frac = extra + Math.min(1, (S.sampleAcc || 0) / 0.12);
+    const offsetX = scrolling ? (frac / bucket) * stepX : 0;
+    let vis = S._tapeVis;
+    if (!vis || S._tvN !== n || S._tvStart !== startI) {
+      vis = [];
+      for (let i = startI; i < n; i += bucket) {
+        const end = Math.min(n, i + bucket);
+        let o = vis.length ? vis[vis.length - 1].c : data[i];
+        let h = data[i], l = data[i];
+        for (let j = i + 1; j < end; j++) {
+          const v = data[j];
+          if (v > h) h = v;
+          if (v < l) l = v;
+        }
+        vis.push({ o: o, h: h, l: l, c: data[end - 1] });
       }
-      vis.push({ o: o, h: h, l: l, c: data[end - 1] });
+      S._tapeVis = vis;
+      S._tvN = n;
+      S._tvStart = startI;
+      if (!vis.length) return;
+      let visHi = vis[0].h, visLo = vis[0].l;
+      for (const b of vis) { if (b.l < visLo) visLo = b.l; if (b.h > visHi) visHi = b.h; }
+      let lo = visLo, hi = visHi;
+      const span = Math.max(0.01, hi - lo);
+      const mid = (lo + hi) / 2;
+      const fade = Math.max(0, 1 - (n / 100));
+      const zoom = 1 + 0.5 * fade;
+      const view = span * zoom;
+      lo = mid - view / 2;
+      hi = mid + view / 2;
+      const pad = span * 0.08;
+      lo -= pad; hi += pad;
+      if (S.tapeLo == null) { S.tapeLo = lo; S.tapeHi = hi; }
+      else {
+        if (lo < S.tapeLo) S.tapeLo = lo;
+        else S.tapeLo = S.tapeLo * 0.88 + lo * 0.12;
+        if (hi > S.tapeHi) S.tapeHi = hi;
+        else S.tapeHi = S.tapeHi * 0.88 + hi * 0.12;
+      }
     }
     if (!vis.length) return;
-    let visHi = vis[0].h, visLo = vis[0].l;
-    for (const b of vis) { if (b.l < visLo) visLo = b.l; if (b.h > visHi) visHi = b.h; }
-    let lo = visLo, hi = visHi;
-    const span = Math.max(0.01, hi - lo);
-    const mid = (lo + hi) / 2;
-    const fade = Math.max(0, 1 - (data.length / 100));
-    const zoom = 1 + 0.5 * fade;
-    const view = span * zoom;
-    lo = mid - view / 2;
-    hi = mid + view / 2;
-    const pad = span * 0.08;
-    lo -= pad; hi += pad;
-    if (S.tapeLo == null) { S.tapeLo = lo; S.tapeHi = hi; }
-    S.tapeLo = S.tapeLo * 0.88 + lo * 0.12;
-    S.tapeHi = S.tapeHi * 0.88 + hi * 0.12;
     const py = (v) => y1 - ((v - S.tapeLo) / Math.max(0.01, S.tapeHi - S.tapeLo)) * (y1 - y0);
-    vis.forEach((b, i) => {
-      const x = 10 + i * stepX;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, y0 - 12, S.W, y1 - y0 + 24);
+    ctx.clip();
+    for (let i = 0; i < vis.length; i++) {
+      const b = vis[i];
+      const x = 10 + i * stepX - offsetX;
       ctx.strokeStyle = b.c >= b.o ? up : dn; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x + cw / 2, py(b.h)); ctx.lineTo(x + cw / 2, py(b.l)); ctx.stroke();
       ctx.fillStyle = b.c >= b.o ? up : dn;
       ctx.fillRect(x, Math.min(py(b.o), py(b.c)), cw, Math.max(1.2, Math.abs(py(b.c) - py(b.o))));
-    });
+    }
     const marks = (S.tapeMarks || []).concat(S.tapeLive ? [S.tapeLive] : []);
     if (marks.length) {
-      ctx.save();
       ctx.font = "700 8px \"IBM Plex Mono\", monospace";
       ctx.textAlign = "center";
       ctx.lineWidth = 3;
@@ -2857,7 +2879,7 @@
         const vi = Math.floor((mk.i || 0) / bucket) - startB;
         if (vi < 0 || vi >= vis.length) continue;
         const peak = mk.kind === "peak";
-        const x = 10 + vi * stepX + cw / 2;
+        const x = 10 + vi * stepX + cw / 2 - offsetX;
         const y = py(mk.price) + (peak ? -5 : 5);
         ctx.textBaseline = peak ? "bottom" : "top";
         ctx.fillStyle = peak ? GREEN : RED;
@@ -2865,8 +2887,8 @@
         ctx.strokeText(lab, x, y);
         ctx.fillText(lab, x, y);
       }
-      ctx.restore();
     }
+    ctx.restore();
   }
 
   function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser) {
