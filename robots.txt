@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /flappy-btc/
+Disallow: /madcap-hash/
 
 User-agent: Googlebot
 Allow: /
