@@ -195,6 +195,7 @@
     eloBoard: "VERSUS ELO", eloGuest: "Sign in to record ELO", eloUpdated: "ELO updated", eloPending: "ELO not saved",
     soundOn: "ON", soundOff: "OFF",
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
+    chanceHead: "ARC", chanceAck: "GOT IT", chanceTldr: "TLDR", chanceOutcome: "OUTCOME",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
     runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE"
   };
@@ -912,7 +913,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = "";
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1333,12 +1334,17 @@
   }
   function togglePause() {
     if (S.mp) return;
+    if (S.phase === "chance") return;
     if (S.phase === "perk") {
       if (S.perkPick) confirmPerk();
       return;
     }
-    if (S.phase === "play") { S.optBack = "play"; setPhase("paused"); }
-    else if (S.phase === "paused") setPhase(S.optBack || "play");
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; S.arcHold = false; setPhase("paused"); }
+    else if (S.phase === "paused") {
+      S.optPanel = null;
+      S.arcHold = false;
+      setPhase(S.optBack || "play");
+    }
   }
 
   function markTrade(kind) {
@@ -2101,19 +2107,20 @@
     S.chanceLead = "";
     S.chanceSettled = false;
     S.arcPending = null;
+    S.arcTldr = "";
+    S.arcHold = false;
     const es0 = chanceLang();
     let body = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
     if (card.kind === "report") {
-      const before = { cash: S.cash, btc: S.btc, cold: S.cold };
-      const note = resolveChance(card, "ok");
-      S.arcPending = { cash: S.cash, btc: S.btc, cold: S.cold };
+      const before = bagSnap();
+      resolveChance(card, "ok");
+      S.arcPending = bagSnap();
+      S.arcTldr = formatArcTldr(before, S.arcPending);
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
+      S.invuln = before.invuln;
+      S.msig = before.msig;
       S.chanceSettled = true;
-      const clean = String(note || "").trim();
-      const base = String(body || "").trim();
-      const first = clean.split("\n")[0].trim();
-      const same = !clean || base.indexOf(clean) >= 0 || (first && base.indexOf(first) >= 0 && clean.length < base.length);
-      S.chanceBody = same ? base : (base + "\n\n" + clean);
+      S.chanceBody = body;
     } else {
       S.chanceBody = body;
     }
@@ -2122,44 +2129,83 @@
     renderHud();
   }
 
+  function bagSnap() {
+    return { cash: S.cash, btc: S.btc, cold: S.cold, invuln: S.invuln || 0, msig: S.msig || 0 };
+  }
+  function formatArcTldr(before, after) {
+    const es = chanceLang();
+    const bits = [];
+    const dCash = (after.cash || 0) - (before.cash || 0);
+    const dBtc = (after.btc || 0) - (before.btc || 0);
+    const dCold = (after.cold || 0) - (before.cold || 0);
+    const dMsig = (after.msig || 0) - (before.msig || 0);
+    if (Math.abs(dCash) >= 0.5) bits.push((dCash > 0 ? "+" : "−") + money(Math.abs(dCash)));
+    if (Math.abs(dBtc) >= 1e-8) bits.push((dBtc > 0 ? "+" : "−") + fmtBtcAmt(Math.abs(dBtc)) + " BTC");
+    if (dCold) bits.push((dCold > 0 ? "+" : "") + dCold + " cold");
+    if (dMsig) bits.push((dMsig > 0 ? "+" : "") + dMsig + " multisig");
+    if ((after.invuln || 0) > (before.invuln || 0) + 0.4) {
+      bits.push(es ? "unos segundos de invulnerabilidad" : "a few seconds of invuln");
+    }
+    if (!bits.length) return es ? "Sin cambio en la cartera." : "No change to your stack.";
+    return bits.join(" · ");
+  }
+  function peelArcNote(note) {
+    return String(note || "")
+      .replace(/(?:\n\s*)+[+\-−–]?\s*\$[\d.,]+[kMBT]?\.?\s*$/gi, "")
+      .replace(/(?:\n\s*)+[+\-−–]\s*[\d.,]+\s*BTC\.?\s*$/gi, "")
+      .trim();
+  }
+  function arcTldrHtml() {
+    const line = String(S.arcTldr || "").trim();
+    if (!line) return "";
+    return "<p class=\"arc-tldr\"><span class=\"arc-tldr-k\">" + t("chanceTldr") + "</span> " + line + "</p>";
+  }
+
   function commitArcBooks() {
     if (S.arcPending) {
       S.cash = S.arcPending.cash;
       S.btc = S.arcPending.btc;
       S.cold = S.arcPending.cold;
+      if (S.arcPending.invuln != null) S.invuln = S.arcPending.invuln;
+      if (S.arcPending.msig != null) S.msig = S.arcPending.msig;
       S.arcPending = null;
       clampHoldings();
     }
     try { renderHud(); } catch (e) {}
   }
+  function finishArcHold() {
+    commitArcBooks();
+    S.chanceCard = null;
+    S.chanceNote = "";
+    S.chanceBody = "";
+    S.chanceSettled = false;
+    S.arcTldr = "";
+    S.arcHold = true;
+    S.optBack = "play";
+    S.optPanel = null;
+    setPhase("paused");
+  }
 
   function pickChance(opt) {
     const card = S.chanceCard;
-    if (!card) { setPhase("play"); renderHud(); return; }
+    if (!card) { finishArcHold(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
-        commitArcBooks();
-        S.chanceCard = null;
-        S.chanceNote = "";
-        S.chanceSettled = false;
-        setPhase("play");
-        renderHud();
+        finishArcHold();
         return;
       }
-      const before = { cash: S.cash, btc: S.btc, cold: S.cold };
+      const before = bagSnap();
       S.chanceNote = resolveChance(card, opt);
-      S.arcPending = { cash: S.cash, btc: S.btc, cold: S.cold };
+      S.arcPending = bagSnap();
+      S.arcTldr = formatArcTldr(before, S.arcPending);
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
+      S.invuln = before.invuln;
+      S.msig = before.msig;
       renderOverlay();
       renderHud();
       return;
     }
-    commitArcBooks();
-    S.chanceCard = null;
-    S.chanceNote = "";
-    S.chanceSettled = false;
-    setPhase("play");
-    renderHud();
+    finishArcHold();
   }
 
   function tickJobChance() {
@@ -2528,7 +2574,7 @@
       field.classList.toggle("bull", S.power === "BULL");
       field.classList.toggle("bear", S.power === "BEAR");
       field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
-      field.classList.toggle("perk-ui", p === "perk" || p === "chance");
+      field.classList.toggle("perk-ui", p === "perk" || p === "chance" || (p === "paused" && S.arcHold));
       field.classList.toggle("is-play", p === "play");
     }
     try { renderOverlay(); } catch (e) { if (p !== "play") showOverlay(); }
@@ -3235,13 +3281,13 @@
     const playing = S.phase === "play" || S.phase === "paused" || S.phase === "perk" || S.phase === "chance";
     const pauseBtn = $("pause-btn");
     if (pauseBtn) {
-      const paused = S.phase === "paused" || S.phase === "perk";
+      const paused = S.phase === "paused" || S.phase === "perk" || !!S.arcHold;
       pauseBtn.textContent = paused ? "▶" : "||";
       pauseBtn.setAttribute("aria-label", paused ? "Play" : "Pause");
     }
     if (S.have.ff <= 0) S.speedMul = 1;
     $("trades").classList.toggle("hide", !playing);
-    $("pause-btn").classList.toggle("hide", !playing || !!S.mp);
+    $("pause-btn").classList.toggle("hide", !playing || !!S.mp || S.phase === "chance");
     let powers = "";
     const now = S.lifeT;
     const live = liveWaves(now);
@@ -4484,7 +4530,7 @@
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "chance") {
       const card = S.chanceCard;
-      if (!card) { setPhase("play"); return; }
+      if (!card) { finishArcHold(); return; }
       const es = chanceLang();
       const title = es ? (card.titleEs || card.title) : card.title;
       const body = S.chanceBody || (es ? (card.bodyEs || card.body) : card.body);
@@ -4492,15 +4538,17 @@
       const pic = "<img class=\"chance-art\" src=\"" + art + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
       let btns = "";
       if (S.chanceNote) {
+        const shown = peelArcNote(S.chanceNote) || S.chanceNote;
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + S.chanceNote + "</p><div class=\"arc-actions\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + shown + "</p>" + arcTldrHtml() + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
-        if (!btns) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p><div class=\"arc-actions\">" + btns + "</div>";
+        const ack = !btns;
+        if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p>" + (ack ? arcTldrHtml() : "") + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
@@ -4525,6 +4573,11 @@
         btn.onclick = go;
       });
     } else if (p === "paused") {
+      if (S.arcHold && !S.optPanel) {
+        hideOverlay();
+        overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui");
+        return;
+      }
       overlay.innerHTML = pauseMarkup();
       bindPauseUi();
     } else if (p === "over") {
@@ -4648,6 +4701,7 @@
     else if (S.phase === "over") replay();
     else if (S.phase === "paused" || S.optPanel) {
       S.optPanel = null;
+      S.arcHold = false;
       setPhase(S.optBack === "play" || S.phase === "paused" ? (S.optBack || "play") : "ready");
     }
   });
@@ -4673,7 +4727,7 @@
       S.optPanel = S.optPanel ? null : "menu";
       renderOverlay();
     }
-    else if (S.phase === "paused") { S.optPanel = null; setPhase(S.optBack || "play"); }
+    else if (S.phase === "paused") { S.optPanel = null; S.arcHold = false; setPhase(S.optBack || "play"); }
   };
   const authHud = $("btn-show-auth");
   if (authHud) authHud.onpointerdown = (e) => {

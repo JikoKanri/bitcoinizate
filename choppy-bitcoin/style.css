@@ -314,6 +314,26 @@ body {
   margin-right: auto;
   text-align: center;
 }
+.overlay.dock.chance-ui .arc-tldr {
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(200, 150, 10, 0.6);
+  background: rgba(200, 150, 10, 0.14);
+  color: #ffe7a0;
+  font-size: 12.4px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  text-align: left;
+  text-justify: auto;
+}
+.overlay.dock.chance-ui .arc-tldr-k {
+  display: inline-block;
+  margin-right: 8px;
+  color: #c8960a;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+}
 .overlay.dock h1 { font-size: 14px; margin: 0; }
 .overlay.dock p { font-size: 11px; margin: 0; }
 .overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
