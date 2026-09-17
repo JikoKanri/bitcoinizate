@@ -1557,6 +1557,50 @@
   function weaveCast(text) {
     return text;
   }
+  const CHANCE_TLDR = {
+    landfill: { en: "Nico is in Wales at 1:14 A.M. digging a landfill for a lost 8,000 BTC USB. He wants a real stake, not a spectator.", es: "Nico está en Gales a la 1:14 excavando un basural por un USB de 8.000 BTC. Quiere plata de verdad, no un espectador." },
+    taxbill: { en: "The quarterly tax bill did not change. You pay 10% of net worth.", es: "La boleta trimestral no cambió. Pagás el 10% del patrimonio." },
+    nicoWedding: { en: "Nico's wedding: 400 people, twelve you know, and an envelope table.", es: "La boda de Nico: 400 personas, doce que conocés, y la mesa de sobres." },
+    mexico: { en: "Lena wants five days in Tulum. You think three. Paco ate the brochure.", es: "Lena quiere cinco días en Tulum. Vos pensás tres. Paco se comió el folleto." },
+    flu: { en: "Lena has the flu. Soup, medicine, and Paco eating half of it.", es: "A Lena le dio gripe. Sopa, remedio, y Paco comiéndose la mitad." },
+    phish: { en: "A \"support\" email wants your seed phrase to \"verify\" you.", es: "Un mail de \"soporte\" pide tu seed para \"verificar\" la cuenta." },
+    crash: { en: "A scooter taps the bumper. Nobody is hurt. The bumper still wants money.", es: "Un scooter toca el paragolpes. Nadie se lastimó. El paragolpes igual cobra." },
+    wine: { en: "Friday at Marek's: wine, 12 Monkeys, A.I. debate. Nobody wins.", es: "Viernes en casa de Marek: vino, 12 Monkeys, debate de I.A. No gana nadie." },
+    casino: { en: "Nico found a casino table at 11:40 P.M. You went anyway.", es: "Nico encontró una mesa de casino a las 23:40. Fuiste igual." },
+    poker: { en: "Marek's private game. Wine, chips, late. He asks if you're playing.", es: "El póker de Marek. Vino, fichas, tarde. Pregunta si jugás." },
+    uncle: { en: "Uncle Héctor sent money. He will not say why.", es: "El tío Héctor mandó plata. No dice por qué." },
+    school: { en: "Sofi's mint-museum trip. They're short this month. Lena thinks you should help.", es: "El viaje de Sofi al museo de la Casa de Moneda. Este mes están justos. Lena cree que deberías ayudar." },
+    roof: { en: "Paco found the leak by sitting under it. The roof needs work.", es: "Paco encontró la gotera sentándose debajo. Hay que arreglar el techo." },
+    lotto: { en: "Wine with Marek, a lottery ticket, and you forgot to check the numbers.", es: "Vino con Marek, un raspa y gana, y no miraste los números." },
+    hospital: { en: "Four stitches. Lena drives. Try not to bleed on anything.", es: "Cuatro puntos. Lena maneja. Tratá de no sangrar sobre nada." },
+    startup: { en: "Nico's 47-slide app: subscriptions, A.I., and \"community ownership.\"", es: "La app de Nico, 47 diapositivas: suscripciones, I.A. y \"community ownership.\"" },
+    tow: { en: "Wrong spot. Nine minutes. The sign was very clear.", es: "Lugar equivocado. Nueve minutos. El cartel estaba muy claro." },
+    courage: { en: "Marek: maybe you're waiting for certainty with Lena.", es: "Marek: capaz estás esperando certeza con Lena." },
+    ring: { en: "Jewelry store. You know why you're there. Size is the only question.", es: "Joyería. Sabés por qué estás ahí. El tamaño es la única duda." },
+    date: { en: "A proper date. Nothing goes wrong. That feels suspicious.", es: "Una cita en forma. No pasa nada malo. Eso se siente raro." },
+    proposal: { en: "Lake, ring in the pocket, Lena. This is the moment.", es: "Lago, anillo en el bolsillo, Lena. Este es el momento." },
+    wedding: { en: "You and Lena are getting married. Most of her opinions win.", es: "Se casan con Lena. Ganan casi todas las opiniones de ella." },
+    honeymoon: { en: "No checking the portfolio. Lena took your phone. Pick a trip.", es: "Sin mirar el portfolio. Lena te sacó el teléfono. Elegí viaje." },
+    pregnancy: { en: "Two lines. You're going to be four. First bills land now.", es: "Dos rayas. Van a ser cuatro. Llegan los primeros gastos." },
+    baby: { en: "The baby is here. Everyone is tired. Paco is confused. The future is a decision.", es: "Llegó el bebé. Todos cansados. Paco no entiende. El futuro es una decisión." },
+    cousin: { en: "Nico's new token. 10× by Friday. What it does is \"not the important part.\"", es: "El token nuevo de Nico. x10 para el viernes. Qué hace \"no es lo importante.\"" },
+    speeding: { en: "Six over. Same corner. Same officer. Same bad decision.", es: "Diez de más. La misma esquina. El mismo oficial. La misma mala decisión." },
+    wallet: { en: "Wallet on bus seat 14. Cash gone. Cards still there. Partial victory.", es: "Billetera en el asiento 14. Efectivo no. Tarjetas sí. Victoria parcial." },
+    potluck: { en: "Neighborhood potluck. Paco is invited. He already ate the dish.", es: "Olla de la cuadra. Paco está invitado. Ya se comió el plato." },
+    usedcar: { en: "Nico's 2009 Fit. Timing belt by Sharpie. He says that means \"basically new.\"", es: "El Fit 2009 de Nico. Correa con Sharpie. Dice que significa \"casi nuevo.\"" },
+    tetris: { en: "Marek, a bar, a Tetris cabinet. He steps aside. Your turn.", es: "Marek, un bar, un Tetris. Se corre. Tu turno." },
+    unclemike: { en: "Fancy dinner. Uncle Mike refuses the tip line. The waiter is still standing there.", es: "Cena cara. El tío Mike no quiere propina. El mozo sigue ahí." }
+  };
+  function cardTldr(card) {
+    if (!card) return "";
+    const row = CHANCE_TLDR[card.id];
+    if (!row) return "";
+    return chanceLang() ? (row.es || row.en) : row.en;
+  }
+  function bodyIsLong(text) {
+    const s = String(text || "");
+    return s.length >= 220 || s.split(/\n+/).filter(Boolean).length >= 4;
+  }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
       title: "The Landfill", titleEs: "The Landfill",
@@ -2099,8 +2143,10 @@
     };
     const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && unlocked(c));
     const src = pool.length ? pool : CHANCE_CARDS.filter((c) => unlocked(c) && !S.chanceUsed[c.id]);
-    if (!src.length) return;
-    const card = src[(Math.random() * src.length) | 0];
+    if (!src.length && !window.__arcForce) return;
+    const forced = window.__arcForce && CHANCE_CARDS.find((c) => c.id === window.__arcForce);
+    const card = forced || (src.length ? src[(Math.random() * src.length) | 0] : null);
+    if (!card) return;
     S.chanceUsed[card.id] = true;
     S.chanceCard = card;
     S.chanceNote = "";
@@ -2146,7 +2192,6 @@
     if ((after.invuln || 0) > (before.invuln || 0) + 0.4) {
       bits.push(es ? "unos segundos de invulnerabilidad" : "a few seconds of invuln");
     }
-    if (!bits.length) return es ? "Sin cambio en la cartera." : "No change to your stack.";
     return bits.join(" · ");
   }
   function peelArcNote(note) {
@@ -2155,10 +2200,26 @@
       .replace(/(?:\n\s*)+[+\-−–]\s*[\d.,]+\s*BTC\.?\s*$/gi, "")
       .trim();
   }
-  function arcTldrHtml() {
-    const line = String(S.arcTldr || "").trim();
-    if (!line) return "";
-    return "<p class=\"arc-tldr\"><span class=\"arc-tldr-k\">" + t("chanceTldr") + "</span> " + line + "</p>";
+  function punchline(note) {
+    const s = peelArcNote(note);
+    if (!s) return "";
+    const compact = String(s).replace(/\s+/g, " ").trim();
+    const m = compact.match(/^[^.!?]+[.!?]?/);
+    let line = (m ? m[0] : compact).trim();
+    if (line.length > 148) line = line.slice(0, 145).replace(/\s+\S*$/, "") + "…";
+    return line;
+  }
+  function arcTldrHtml(story) {
+    const bits = [];
+    const s = String(story || "").trim();
+    const d = String(S.arcTldr || "").trim();
+    if (s) bits.push(s);
+    if (d && (!s || s.indexOf(d) < 0)) bits.push(d);
+    if (!bits.length) {
+      const es = chanceLang();
+      bits.push(es ? "Sin cambio en la cartera." : "No change to your stack.");
+    }
+    return "<p class=\"arc-tldr\"><span class=\"arc-tldr-k\">" + t("chanceTldr") + "</span> " + bits.join(" · ") + "</p>";
   }
 
   function commitArcBooks() {
@@ -3284,6 +3345,7 @@
       const paused = S.phase === "paused" || S.phase === "perk" || !!S.arcHold;
       pauseBtn.textContent = paused ? "▶" : "||";
       pauseBtn.setAttribute("aria-label", paused ? "Play" : "Pause");
+      pauseBtn.classList.toggle("arc-resume", !!(S.arcHold && S.phase === "paused"));
     }
     if (S.have.ff <= 0) S.speedMul = 1;
     $("trades").classList.toggle("hide", !playing);
@@ -4539,8 +4601,13 @@
       let btns = "";
       if (S.chanceNote) {
         const shown = peelArcNote(S.chanceNote) || S.chanceNote;
+        const punch = punchline(shown);
+        const longOut = shown.length > punch.length + 24;
+        const bodyHtml = longOut ? "<p class=\"arc-body\">" + shown + "</p>" : "";
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + shown + "</p>" + arcTldrHtml() + "<div class=\"arc-actions\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
+          + bodyHtml + arcTldrHtml(longOut ? "" : (punch || cardTldr(card)))
+          + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
           const lab = es ? (o.labelEs || o.label) : o.label;
@@ -4548,7 +4615,9 @@
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p>" + (ack ? arcTldrHtml() : "") + "<div class=\"arc-actions\">" + btns + "</div>";
+        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p><p class=\"arc-body\">" + body + "</p>"
+          + arcTldrHtml(cardTldr(card))
+          + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
@@ -4711,6 +4780,9 @@
     if (typing) return;
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     const k = e.key.toLowerCase();
+    if (S.arcHold || S.phase === "chance") {
+      if (e.code === "Space" || e.code === "ArrowUp" || k === "p") { e.preventDefault(); return; }
+    }
     if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
     else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
     else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
@@ -4862,6 +4934,12 @@
   });
   window.startChoppy = startGame;
   window.replayChoppy = replay;
+  window.dealChoppyArc = function (id) {
+    window.__arcForce = id || "";
+    if ((S.have.chance || 0) < 1) S.have.chance = 1;
+    if (S.phase !== "play") S.phase = "play";
+    dealChance();
+  };
   window.refreshChoppyAuth = () => {
     if (S.phase === "ready" && !S.optPanel) renderOverlay();
   };
