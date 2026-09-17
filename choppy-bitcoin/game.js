@@ -180,8 +180,8 @@
     mpWait: "WAITING FOR PLAYERS", mpNeed: "Need 2+ players", mpCode: "ROOM",
     mpYouWin: "LAST ONE STANDING", mpWins: "WINS", mpDead: "ELIMINATED",
     mpNote: "Same candles. Last to die wins. Does not count for the board.",
-    mpAlive: "ALIVE", mpCopy: "COPY CODE",
-    mpReady: "I'M READY", mpUnready: "NOT READY", mpNeedReady: "Everyone must be ready",
+    mpAlive: "ALIVE", mpCopy: "COPY CODE", mpCopied: "COPIED",
+    mpReady: "I'M READY", mpUnready: "NOT READY", mpNeedReady: "Players must be ready",
     mpFull: "Room is full (8)", mpRules: "MATCH OPTIONS",
     mpCold0: "Starting cold", mpMsig0: "Starting multisig",
     mpMix: "Power-up mix (100)", mpBull: "Bull", mpBear: "Bear", mpLaserW: "Laser", mpSwanW: "Swan",
@@ -3035,7 +3035,12 @@
         const lead = foc && p.id === foc.id;
         const gone = p.alive === false && !p.finished;
         if (gone && !lead) return;
-        drawBirdAt(ctx, p.x, p.y, p.v || 0, S.bird.r, h, wash, lead ? 1 : 0.25, !!p.laser);
+        if (p._gx == null) { p._gx = p.x; p._gy = p.y; }
+        else {
+          p._gx += (p.x - p._gx) * 0.28;
+          p._gy += (p.y - p._gy) * 0.28;
+        }
+        drawBirdAt(ctx, p._gx, p._gy, p.v || 0, S.bird.r, h, wash, lead ? 1 : 0.25, !!p.laser);
       });
     }
     for (const pt of S.particles) {
@@ -3958,7 +3963,7 @@
       return list.filter((p) => p.alive !== false).sort((a, b) => (Number(b.candles) || 0) - (Number(a.candles) || 0))[0] || list[0];
     }
     const live = list.filter((p) => p.alive !== false && !p.finished);
-    return live[0] || list[0];
+    return live.slice().sort((a, b) => (Number(b.lifeT) || 0) - (Number(a.lifeT) || 0) || (Number(b.candles) || 0) - (Number(a.candles) || 0))[0] || list[0];
   }
   function mpFinishRace() {
     if (!S.mp || S.finished || S.dead) return;
@@ -4057,7 +4062,7 @@
     const all = !!(window.ChoppyMP && window.ChoppyMP.allReady && window.ChoppyMP.allReady());
     const mix = mpRulesNow();
     const mixSum = mpMixTotal(mix);
-    const canStart = all && mixSum === 100;
+    const canStart = host && n >= 2 && all && mixSum === 100;
     const err = S.mpErr ? "<p class=\"k\">" + S.mpErr + "</p>" : "";
     if (!mp || !mp.code) {
       return "<h1>" + t("versus") + "</h1><p class=\"k\">" + t("mpNote") + "</p>"
@@ -4069,12 +4074,14 @@
     }
     return "<h1>" + t("versus") + "</h1><p class=\"k\">" + t("mpCode") + " <b id=\"mp-code-lab\">" + code + "</b></p>"
       + "<button class=\"cta play-alt mp-cta\" id=\"mp-copy\">" + t("mpCopy") + "</button>"
-      + "<p class=\"k\">" + n + "/8 · " + t("mpWait") + "</p>"
+      + "<p class=\"k\">" + n + "/8 · " + (mix.mode === "whale" ? t("mpWhale") : mix.mode === "race" ? t("mpRace") : t("mpLast"))
+      + (mix.bestOf > 1 ? " · " + t("mpBestOf") + " " + mix.bestOf : "") + "</p>"
       + mpRosterHtml()
       + (n < 2 ? "<p class=\"k\">" + t("mpNeed") + "</p>" : (all ? (mixSum === 100 ? "" : "<p class=\"k\">" + t("mpMixNeed") + "</p>") : "<p class=\"k\">" + t("mpNeedReady") + "</p>"))
       + err
-      + "<button class=\"cta mp-cta\" id=\"mp-ready\">" + (ready ? t("mpUnready") : t("mpReady")) + "</button>"
-      + (host ? "<button class=\"cta mp-cta\" id=\"mp-start\"" + (canStart ? "" : " disabled") + ">" + t("mpStart") + "</button>" : "")
+      + (host
+        ? "<button class=\"cta mp-cta\" id=\"mp-start\"" + (canStart ? "" : " disabled") + ">" + t("mpStart") + "</button>"
+        : "<button class=\"cta mp-cta\" id=\"mp-ready\">" + (ready ? t("mpUnready") : t("mpReady")) + "</button>")
       + mpRulesHtml()
       + "<button class=\"cta play-alt mp-cta\" id=\"mp-back\">" + t("mpBack") + "</button>";
   }
@@ -4097,7 +4104,11 @@
       const r = readMpRulesForm();
       const sum = mpMixTotal(r);
       if (sum !== 100) { S.mpErr = t("mpMixNeed"); renderOverlay(); return; }
-      if (window.ChoppyMP) window.ChoppyMP.start();
+      pushHostRules();
+      if (window.ChoppyMP) {
+        if (window.ChoppyMP.setReady) window.ChoppyMP.setReady(true);
+        window.ChoppyMP.start({ rules: r });
+      }
     };
     const rulesEl = overlay && overlay.querySelector && overlay.querySelector("details.mp-rules");
     if (rulesEl) rulesEl.ontoggle = () => { S.mpRulesOpen = !!rulesEl.open; };
@@ -4112,7 +4123,8 @@
       const start = $("mp-start");
       if (start) {
         const all = window.ChoppyMP && window.ChoppyMP.allReady && window.ChoppyMP.allReady();
-        start.disabled = !all || sum !== 100;
+        const n = ((window.ChoppyMP && window.ChoppyMP.players && window.ChoppyMP.players()) || []).length;
+        start.disabled = !all || sum !== 100 || n < 2;
       }
       const row = $("mp-race-row");
       if (row) row.classList.toggle("hide", r.mode !== "race");
@@ -4124,11 +4136,25 @@
     if ($("mp-copy")) $("mp-copy").onclick = (e) => {
       e.stopPropagation();
       const c = window.ChoppyMP && window.ChoppyMP.code();
-      if (c && navigator.clipboard) try { navigator.clipboard.writeText(c); } catch (err) {}
+      const btn = $("mp-copy");
+      const done = () => {
+        if (!btn) return;
+        btn.textContent = t("mpCopied");
+        setTimeout(() => { if ($("mp-copy")) $("mp-copy").textContent = t("mpCopy"); }, 1400);
+      };
+      if (c && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(c).then(done).catch(() => { try { done(); } catch (err) {} });
+      }
     };
     if ($("mp-back")) $("mp-back").onclick = (e) => { e.stopPropagation(); leaveMp(); };
     const inp = $("mp-code");
-    if (inp) inp.onkeydown = (e) => { if (e.key === "Enter" && $("mp-join")) $("mp-join").click(); };
+    if (inp) {
+      inp.oninput = () => {
+        inp.value = String(inp.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+        S.mpJoinCode = inp.value;
+      };
+      inp.onkeydown = (e) => { if (e.key === "Enter" && $("mp-join")) $("mp-join").click(); };
+    }
     ["mp-cold", "mp-w-bull", "mp-w-bear", "mp-w-laser", "mp-w-swan", "mp-w-cold", "mp-race-n", "mp-bestof"].forEach((id) => {
       const el = $(id);
       if (!el) return;
@@ -4175,8 +4201,11 @@
     const series = bo > 1
       ? "<p class=\"k\">" + t("mpSeries") + " " + (S.mpGameN || 1) + "/" + bo + (S.mpEloNote ? " · " + S.mpEloNote : "") + "</p>"
       : (S.mpEloNote ? "<p class=\"k\">" + S.mpEloNote + "</p>" : "");
+    const pool = last ? ((window.ChoppyMP && window.ChoppyMP.players && window.ChoppyMP.players()) || []).filter((p) => !p.gone) : [];
+    const votes = pool.filter((p) => p.rematch).length;
+    const voteN = pool.length;
     const timer = S.mpRoundOver && left
-      ? "<p class=\"k\">" + (last ? t("mpRematch") : t("mpNext")) + " · " + left + "s</p>"
+      ? "<p class=\"k\">" + (last ? t("mpRematch") + (voteN ? " " + votes + "/" + voteN : "") : t("mpNext")) + " · " + left + "s</p>"
       : "";
     return "<p class=\"k\">" + title + "</p>" + series + timer
       + "<div class=\"overlay-actions\">"
@@ -4245,7 +4274,7 @@
     S.mpSlot = (window.ChoppyMP && window.ChoppyMP.slot && window.ChoppyMP.slot()) || 0;
     S.mpSeriesWins = (data && data.wins) || (window.ChoppyMP && window.ChoppyMP.wins && window.ChoppyMP.wins()) || {};
     S.mpGameN = (data && data.gameN) || (window.ChoppyMP && window.ChoppyMP.gameN && window.ChoppyMP.gameN()) || 1;
-    S.ranked = true;
+    S.ranked = false;
     applyMpSound(S.mpRules);
     resetWorld(false);
     S.dead = false;

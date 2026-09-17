@@ -128,9 +128,13 @@
     } else {
       const wasDead = MP.players[i].alive === false;
       const wasFin = !!MP.players[i].finished;
+      const keepHost = MP.players[i].host;
       MP.players[i] = Object.assign({}, MP.players[i], p, { last: Date.now() });
+      if (p.host == null) MP.players[i].host = keepHost;
       if (wasDead && p.alive !== true) MP.players[i].alive = false;
       if (wasFin) MP.players[i].finished = true;
+      if (MP.roundOver && wasDead) MP.players[i].alive = false;
+      if (p.alive === true) MP.players[i].gone = false;
     }
     assignSlots();
     return true;
@@ -142,15 +146,39 @@
       return (s && s.user && s.user.id) || null;
     } catch (e) { return null; }
   }
+  function myPlayState() {
+    const me = MP.players.find((p) => p.id === MP.id) || {};
+    if (!MP.started) {
+      return { alive: true, ready: !!MP.ready, finished: false, rematch: !!MP.rematch };
+    }
+    return {
+      alive: me.alive !== false,
+      finished: !!me.finished,
+      rematch: !!MP.rematch,
+      candles: me.candles || 0,
+      lifeT: me.lifeT || 0,
+      btc: me.btc || 0,
+      x: me.x, y: me.y, v: me.v
+    };
+  }
   function ident(extra) {
     return Object.assign({
       id: MP.id, name: MP.name, host: MP.host, uid: myUid(),
-      ready: !!MP.ready, rematch: !!MP.rematch, slot: MP.slot
+      ready: !!MP.ready, rematch: !!MP.rematch, slot: MP.slot,
+      gameN: MP.started ? (MP.gameN || 1) : 0
     }, extra || {});
+  }
+  function staleGame(pl) {
+    if (!pl || !MP.started) return false;
+    if (pl.gameN == null || pl.gameN === 0) return false;
+    return (pl.gameN | 0) !== (MP.gameN | 0);
   }
   function aliveList() { return MP.players.filter((p) => p.alive !== false && !p.finished); }
   function allReady() {
-    return MP.players.length >= 2 && MP.players.every((p) => !!p.ready);
+    if (MP.players.length < 2) return false;
+    const guests = MP.players.filter((p) => !p.host);
+    const need = guests.length ? guests : MP.players;
+    return need.every((p) => !!p.ready);
   }
   function bestBy(key, fallback) {
     const list = MP.players.slice().sort((a, b) => {
@@ -164,15 +192,53 @@
     r = r || MP.rules;
     return (r.bull | 0) + (r.bear | 0) + (r.laser | 0) + (r.swan | 0) + (r.cold | 0);
   }
+  function hostPlayer() {
+    return MP.players.find((p) => p.host) || null;
+  }
+  function tryAdoptHost() {
+    if (!MP.code || !MP.players.length) return false;
+    const cur = hostPlayer();
+    if (cur) {
+      MP.host = cur.id === MP.id;
+      const me = MP.players.find((p) => p.id === MP.id);
+      if (me) me.host = MP.host;
+      return false;
+    }
+    const next = MP.players.slice().sort((a, b) => String(a.id).localeCompare(String(b.id)))[0];
+    if (!next) return false;
+    if (next.id !== MP.id) {
+      MP.host = false;
+      return false;
+    }
+    MP.host = true;
+    MP.players.forEach((p) => { p.host = p.id === MP.id; });
+    assignSlots();
+    send("host", { id: MP.id, name: MP.name });
+    emit("roster", MP.players);
+    if (MP.started && !MP.roundOver) considerOver();
+    return true;
+  }
+  function markGone(id) {
+    const p = MP.players.find((x) => x.id === id);
+    if (!p) return;
+    p.alive = false;
+    p.gone = true;
+    if (p.host) p.host = false;
+    if (p.id === MP.id) MP.host = false;
+  }
 
   function considerOver() {
     if (!MP.started || MP.roundOver) return;
     if (!MP.host) return;
-    if (MP.players.length < 2) return;
+    if (MP.rejoinAt && Date.now() - MP.rejoinAt < 800) return;
+    if (MP.players.length < 1) return;
     const mode = (MP.rules && MP.rules.mode) || "last";
     let winner = MP.roundWinner;
     let allDone = false;
-    if (mode === "whale") {
+    if (MP.players.length === 1) {
+      winner = winner || MP.players[0];
+      allDone = true;
+    } else if (mode === "whale") {
       if (MP.players.every((p) => p.alive === false)) {
         winner = winner || bestBy("btc", "lifeT");
         allDone = true;
@@ -235,18 +301,26 @@
   function handle(ev, pl) {
     if (!pl) return;
     if (ev === "hello" || ev === "pulse" || ev === "ready" || ev === "rematch") {
+      if (staleGame(pl)) return;
+      const known = MP.players.some((p) => p.id === pl.id);
+      if (!known && MP.started) {
+        if (MP.host) send("dropped", { id: pl.id });
+        return;
+      }
       if (ev === "hello" && MP.host && !MP.started) {
-        const known = MP.players.some((p) => p.id === pl.id);
         if (!known && MP.players.length >= MAX) {
           send("full", { id: pl.id });
           return;
         }
       }
-      upsert(pl);
+      const bag = Object.assign({}, pl);
+      if (MP.started) delete bag.host;
+      upsert(bag);
       emit("roster", MP.players);
       if (MP.host && !MP.started) {
         send("roster", { players: MP.players, host: MP.id, code: MP.code, rules: MP.rules });
       }
+      if (MP.host && ev === "hello") send("host", { id: MP.id, name: MP.name });
       if (ev === "rematch" && MP.host) maybeEarlyNext();
       return;
     }
@@ -255,6 +329,15 @@
         emit("err", "full");
         leave();
       }
+      return;
+    }
+    if (ev === "host") {
+      if (!pl.id) return;
+      MP.rejoinAt = 0;
+      MP.players.forEach((p) => { p.host = p.id === pl.id; });
+      MP.host = pl.id === MP.id;
+      assignSlots();
+      emit("roster", MP.players);
       return;
     }
     if (ev === "rules") {
@@ -270,6 +353,11 @@
       if (pl.rules) {
         MP.rules = copyRules(pl.rules);
         emit("rules", MP.rules);
+      }
+      if (pl.host) {
+        MP.players.forEach((p) => { p.host = p.id === pl.host; });
+        MP.host = pl.host === MP.id;
+        assignSlots();
       }
       return;
     }
@@ -292,8 +380,11 @@
       }
       MP.players.forEach((p) => {
         p.alive = true; p.lifeT = 0; p.finished = false; p.rematch = false; p.btc = 0;
+        p.candles = 0; p.x = 72; p.y = 280; p.v = 0; p._gx = 72; p._gy = 280;
       });
       assignSlots();
+      const hp = hostPlayer();
+      if (hp) MP.host = hp.id === MP.id;
       emit("go", {
         seed: MP.seed, startAt: MP.startAt, sentAt: MP.sentAt, rules: MP.rules,
         players: MP.players, gameN: MP.gameN, wins: MP.seriesWins, seriesOver: MP.seriesOver
@@ -336,6 +427,7 @@
       return;
     }
     if (ev === "finish") {
+      if (staleGame(pl)) return;
       upsert({
         id: pl.id, name: pl.name, finished: true, finishT: pl.finishT || pl.lifeT || 0,
         candles: pl.candles || 0, btc: pl.btc || 0, lifeT: pl.lifeT || 0,
@@ -346,6 +438,7 @@
       return;
     }
     if (ev === "dead") {
+      if (staleGame(pl)) return;
       upsert({
         id: pl.id, name: pl.name, alive: false, lifeT: pl.lifeT || 0,
         candles: pl.candles || 0, btc: pl.btc || 0
@@ -358,15 +451,53 @@
       if (pl.id === MP.id) emit("dropped");
       MP.players = MP.players.filter((p) => p.id !== pl.id);
       assignSlots();
+      tryAdoptHost();
       emit("roster", MP.players);
+      if (MP.started) considerOver();
       return;
     }
     if (ev === "left") {
-      MP.players = MP.players.filter((p) => p.id !== pl.id);
-      assignSlots();
-      emit("roster", MP.players);
-      if (MP.started) considerOver();
+      if (MP.started) {
+        markGone(pl.id);
+        tryAdoptHost();
+        emit("roster", MP.players);
+        considerOver();
+      } else {
+        MP.players = MP.players.filter((p) => p.id !== pl.id);
+        assignSlots();
+        tryAdoptHost();
+        emit("roster", MP.players);
+      }
     }
+  }
+
+  function pruneStale() {
+    const cut = Date.now() - 12000;
+    let changed = false;
+    if (MP.started) {
+      MP.players.forEach((p) => {
+        if (p.id === MP.id || !p.last || p.last >= cut) return;
+        if (p.alive !== false && !p.finished) {
+          p.alive = false;
+          changed = true;
+        }
+        if (p.host) {
+          p.host = false;
+          changed = true;
+        }
+        p.gone = true;
+      });
+    } else {
+      const keep = MP.players.filter((p) => p.id === MP.id || !p.last || p.last >= cut);
+      if (keep.length !== MP.players.length) {
+        MP.players = keep;
+        assignSlots();
+        changed = true;
+      }
+    }
+    if (changed) tryAdoptHost();
+    if (changed && MP.started) considerOver();
+    if (changed) emit("roster", MP.players);
   }
 
   function joinSocket() {
@@ -393,32 +524,23 @@
         join_ref: MP.joinRef
       });
       setTimeout(() => {
-        upsert({ id: MP.id, name: MP.name, host: MP.host, alive: true, ready: MP.ready });
-        send("hello", ident({ alive: true }));
-        if (MP.host) send("rules", MP.rules);
+        if (MP.started) MP.rejoinAt = Date.now();
+        const st = myPlayState();
+        upsert(Object.assign({ id: MP.id, name: MP.name, host: MP.host }, st));
+        send("hello", ident(Object.assign({}, st, MP.started ? { host: false } : {})));
+        if (MP.host && !MP.started) {
+          send("rules", MP.rules);
+          send("host", { id: MP.id, name: MP.name });
+        }
         emit("roster", MP.players);
       }, 180);
       clearInterval(MP.beat);
       MP.beat = setInterval(() => {
         push({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(++MP.refN) });
-        const me = MP.players.find((p) => p.id === MP.id);
-        if (MP.started) {
-          send("pulse", ident({
-            alive: me ? me.alive !== false : true,
-            finished: !!(me && me.finished),
-            candles: me && me.candles, lifeT: me && me.lifeT, btc: me && me.btc
-          }));
-        } else send("hello", ident({ alive: true, ready: MP.ready }));
-        const cut = Date.now() - 12000;
-        MP.players.forEach((p) => {
-          if (p.id !== MP.id && p.last && p.last < cut) {
-            if (MP.started && p.alive !== false && !p.finished) {
-              p.alive = false;
-              considerOver();
-            }
-          }
-        });
-        emit("roster", MP.players);
+        const st = myPlayState();
+        if (MP.started) send("pulse", ident(st));
+        else send("hello", ident(st));
+        pruneStale();
       }, 2000);
     };
     ws.onmessage = (e) => onMsg(e.data);
@@ -505,6 +627,7 @@
     const sentAt = Date.now();
     MP.players.forEach((p) => {
       p.alive = true; p.lifeT = 0; p.finished = false; p.rematch = false; p.btc = 0; p.candles = 0;
+      p.x = 72; p.y = 280; p.v = 0; p._gx = 72; p._gy = 280;
     });
     assignSlots();
     const payload = {
@@ -526,6 +649,10 @@
     if (!MP.host || MP.started) return;
     if (MP.players.length < 2) { emit("err", "need 2"); return; }
     if (MP.players.length > MAX) { emit("err", "full"); return; }
+    MP.ready = true;
+    const me = MP.players.find((p) => p.id === MP.id);
+    if (me) me.ready = true;
+    if (opts && opts.rules) MP.rules = copyRules(opts.rules);
     if (!(opts && opts.skipReady) && !allReady()) { emit("err", "not ready"); return; }
     if (mixSum() !== 100) { emit("err", "mix"); return; }
     if (!MP.gameN) MP.gameN = 1;
@@ -540,7 +667,10 @@
   function nextRound() {
     if (!MP.host || !MP.roundOver) return;
     const last = !!MP.seriesOver;
-    const keep = MP.players.filter((p) => last ? !!p.rematch : true);
+    const keep = MP.players.filter((p) => {
+      if (p.gone) return false;
+      return last ? !!p.rematch : true;
+    });
     if (keep.length < 2 || (last && !keep.some((p) => p.id === MP.id))) {
       resetLobby();
       return;
@@ -563,13 +693,18 @@
     MP.roundOver = false;
     MP.roundWinner = null;
     MP.ready = true;
-    MP.players.forEach((p) => { p.ready = true; p.rematch = false; });
+    MP.players.forEach((p) => { p.ready = true; p.rematch = false; p.host = p.id === MP.id; });
     launchGo();
   }
   function pulse(info) {
     if (!MP.started) return;
-    upsert(ident(Object.assign({ alive: true }, info || {})));
-    send("pulse", ident(Object.assign({}, info || {})));
+    const me = MP.players.find((p) => p.id === MP.id) || {};
+    const bag = Object.assign({
+      alive: me.alive !== false,
+      finished: !!me.finished
+    }, info || {});
+    upsert(ident(bag));
+    send("pulse", ident(bag));
   }
   function dead(lifeT, candles, extra) {
     const info = Object.assign({

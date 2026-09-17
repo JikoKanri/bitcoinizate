@@ -566,3 +566,4 @@ body {
   min-width: 0 !important; width: auto; flex: 1; min-height: 40px; font-size: 11px; padding: 0 8px;
 }
 .overlay.dock.mp-spec p { max-width: none; margin: 0; font-size: 12px; }
+.overlay.dock.mp-spec .cta.on { background: #c8960a; color: #120c02; }
