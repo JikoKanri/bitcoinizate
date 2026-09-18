@@ -1,0 +1,22 @@
+:root {
+  --bz-field: #070708;
+  --bz-app: #0a0a0c;
+  --bz-paper: #f3efe6;
+  --bz-mute: #8a8680;
+  --bz-gold: #c8960a;
+  --bz-gold-ink: #09090b;
+  --bz-line: #2a2a2e;
+  --bz-green: #4f9d6e;
+  --bz-red: #c45c4a;
+}
+html, body { background: var(--bz-field); color: var(--bz-paper); }
+#app { background: var(--bz-app); }
+.opt-check {
+  display: flex; align-items: center; gap: 10px; width: 100%; max-width: 360px;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bz-paper);
+  margin: 8px 0;
+}
+.opt-check input { width: 18px; height: 18px; accent-color: var(--bz-gold); }
+.pal-swatch { display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
+.pal-dots { display: inline-flex; gap: 4px; }
+.pal-dots i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255,255,255,0.25); }
