@@ -3232,55 +3232,60 @@
     noodle(r * 0.14, r * 0.56, down - 0.12 + kickR, r * 1.22, 2.3);
     noodle(-rx * 0.85, r * 0.08, down + 1.05 + armL, r * 1.08, 1.2);
     noodle(rx * 0.85, r * 0.04, down - 1.12 + armR, r * 1.04, 3.0);
-    noodle(-rx * 0.78, -r * 0.4, down - 0.35 + g * 0.4 + Math.sin(time * 5.6) * 0.28, r * 1.08, 4.0, red, "#ffd2c4");
-    noodle(-rx * 0.7, -r * 0.36, down - 0.72 + g * 0.35 + Math.sin(time * 5.6 + 1.3) * 0.34, r * 0.9, 5.1, red, "#ffd2c4");
     ctx.restore();
+
+    const thick = Math.max(3.2, r * 0.3);
+    const dark = wash || "#c48400";
+    const edge = wash || "#8a5a00";
+    ctx.fillStyle = dark;
+    ctx.beginPath();
+    ctx.ellipse(-thick, 0, rx, r, 0, Math.PI * 0.5, Math.PI * 1.5);
+    ctx.lineTo(0, -r);
+    ctx.ellipse(0, 0, rx, r, 0, -Math.PI * 0.5, Math.PI * 0.5, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = edge;
+    ctx.lineWidth = Math.max(1, r * 0.06);
+    ctx.stroke();
 
     ctx.beginPath();
     ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
     ctx.fillStyle = gold;
     ctx.fill();
     ctx.strokeStyle = rim;
-    ctx.lineWidth = Math.max(1.8, r * 0.12);
+    ctx.lineWidth = Math.max(1.6, r * 0.1);
     ctx.stroke();
-    ctx.fillStyle = "rgba(80,40,0,0.22)";
     ctx.beginPath();
-    ctx.ellipse(-rx * 0.62, 0, rx * 0.22, r * 0.9, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.ellipse(0, 0, rx * 0.84, r * 0.84, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(80,40,0,0.3)";
+    ctx.lineWidth = Math.max(1.3, r * 0.08);
+    ctx.stroke();
 
     ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
-    ctx.clip();
-    const bandH = Math.max(3.2, r * 0.22);
-    const bandY = -r * 0.4;
-    ctx.fillStyle = red;
-    ctx.fillRect(-rx, bandY - bandH * 0.5, rx * 2, bandH);
-    ctx.fillStyle = "rgba(0,0,0,0.18)";
-    ctx.fillRect(-rx, bandY + bandH * 0.18, rx * 2, bandH * 0.22);
-    ctx.restore();
-
+    ctx.translate(0, r * 0.28);
+    ctx.transform(0.84, 0.03, -0.14, 0.97, 0, 0);
     ctx.fillStyle = btcInk;
     ctx.strokeStyle = "rgba(255,244,214,0.35)";
     ctx.lineWidth = Math.max(1.2, r * 0.06);
     ctx.font = "700 " + Math.round(r * 1.12) + "px Georgia, serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.strokeText("₿", 0, r * 0.42);
-    ctx.fillText("₿", 0, r * 0.42);
+    ctx.strokeText("₿", 0, 0);
+    ctx.fillText("₿", 0, 0);
+    ctx.restore();
 
     const lr = r * 0.2;
-    const front = { x: rx * 0.72, y: -r * 0.28 };
-    const back = { x: rx * 0.28, y: -r * 0.36 };
+    const leftL = { x: rx * 0.32, y: -r * 0.16 };
+    const rightL = { x: rx * 0.78, y: -r * 0.22 };
     ctx.strokeStyle = ink;
-    ctx.lineWidth = Math.max(0.8, r * 0.055);
+    ctx.lineWidth = Math.max(0.8, r * 0.05);
     ctx.beginPath();
-    ctx.moveTo(back.x, back.y);
-    ctx.lineTo(-rx * 0.92, -r * 0.32);
+    ctx.moveTo(leftL.x, leftL.y);
+    ctx.lineTo(-rx * 0.95, -r * 0.18);
     ctx.stroke();
     const lens = (c, rad, shade) => {
       ctx.beginPath();
-      ctx.arc(c.x + rad * 0.12, c.y + rad * 0.1, rad, 0, Math.PI * 2);
+      ctx.arc(c.x + rad * 0.14, c.y + rad * 0.12, rad, 0, Math.PI * 2);
       ctx.fillStyle = "rgba(0,0,0,0.28)";
       ctx.fill();
       ctx.beginPath();
@@ -3295,23 +3300,41 @@
       ctx.arc(c.x - rad * 0.28, c.y - rad * 0.32, rad * 0.28, 0, Math.PI * 2);
       ctx.fill();
     };
-    lens(back, lr * 0.86, "#1a1a1e");
-    lens(front, lr, "#0a0a0c");
+    lens(rightL, lr * 0.7, "#1a1a1e");
+    lens(leftL, lr, "#0a0a0c");
     ctx.strokeStyle = ink;
-    ctx.lineWidth = Math.max(0.9, r * 0.06);
+    ctx.lineWidth = Math.max(0.9, r * 0.055);
     ctx.beginPath();
-    ctx.moveTo(back.x + lr * 0.7, back.y + lr * 0.15);
-    ctx.lineTo(front.x - lr * 0.7, front.y + lr * 0.05);
+    ctx.moveTo(leftL.x + lr * 0.72, leftL.y - lr * 0.08);
+    ctx.lineTo(rightL.x - lr * 0.55, rightL.y + lr * 0.06);
     ctx.stroke();
+
+    const bandH = Math.max(3.2, r * 0.2);
+    const bandY = -r * 0.7;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.fillStyle = red;
+    ctx.fillRect(-rx, bandY - bandH * 0.5, rx * 2, bandH);
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.fillRect(-rx, bandY + bandH * 0.18, rx * 2, bandH * 0.22);
+    ctx.restore();
+
+    ctx.save();
+    ctx.rotate(-tilt);
+    noodle(-rx * 0.92, bandY, down + 0.55 + g * 0.4 + Math.sin(time * 5.6) * 0.28, r * 1.12, 4.0, red, "#ffd2c4");
+    noodle(-rx * 0.78, bandY + r * 0.04, down + 0.95 + g * 0.35 + Math.sin(time * 5.6 + 1.3) * 0.34, r * 0.92, 5.1, red, "#ffd2c4");
+    ctx.restore();
 
     if (laser) {
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
       ctx.lineWidth = 3.4;
       ctx.beginPath();
-      ctx.moveTo(front.x + lr, front.y - 2);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), front.y - 8);
-      ctx.moveTo(back.x + lr * 0.7, back.y + 2);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), back.y + 8);
+      ctx.moveTo(leftL.x + lr, leftL.y - 2);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), leftL.y - 8);
+      ctx.moveTo(rightL.x + lr * 0.4, rightL.y + 2);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), rightL.y + 8);
       ctx.stroke();
     }
     ctx.restore();
