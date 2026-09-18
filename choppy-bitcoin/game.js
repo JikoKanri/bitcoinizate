@@ -3047,16 +3047,43 @@
     field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
   }
 
+  function powerPal(type) {
+    const simple = PALETTE_ID === "simple";
+    const paper = PALETTE_ID === "paper";
+    const light = simple || paper;
+    const flower = PALETTE_ID === "flower";
+    const sunset = PALETTE_ID === "sunset";
+    const halo = light ? "#111111" : "rgba(0,0,0,0.9)";
+    if (simple) {
+      return {
+        BULL: { fill: "#1a9a44", ring: "#04150c", ink: "#ffffff", halo: halo },
+        BEAR: { fill: "#d42a22", ring: "#1a0605", ink: "#ffffff", halo: halo },
+        LASER: { fill: "#1a0a08", ring: "#111111", ink: "#ff2a22", halo: halo },
+        COLD: { fill: "#0b8bb8", ring: "#041318", ink: "#ffffff", halo: halo },
+        SWAN: { fill: "#161616", ring: "#111111", ink: "#f3efe6", halo: halo },
+        HALVE: { fill: "#e8a808", ring: "#1a1204", ink: "#1a1204", halo: halo }
+      }[type];
+    }
+    const pal = {
+      BULL: { fill: "#1f8a4c", ring: "#9dffc4", ink: light ? "#04150c" : "#04150c", halo: halo },
+      BEAR: { fill: "#a33a32", ring: "#ff9b92", ink: "#1a0605", halo: halo },
+      LASER: { fill: "#120806", ring: "#ffe7c2", ink: "#ff2d24", halo: halo },
+      COLD: { fill: "#1788a6", ring: "#9befff", ink: light ? "#ffffff" : "#041318", halo: halo },
+      SWAN: light
+        ? { fill: "#1a1a1c", ring: "#0a0a0c", ink: "#f3efe6", halo: halo }
+        : { fill: "#f3efe6", ring: "#1a1a1c", ink: "#0a0a0c", halo: halo },
+      HALVE: { fill: "#c8960a", ring: "#ffe7a0", ink: "#1a1204", halo: halo }
+    }[type];
+    if (!pal) return null;
+    if (flower && type === "HALVE") { pal.fill = "#fff4c8"; pal.ring = "#2a0838"; pal.ink = "#2a0838"; }
+    if (sunset && type === "HALVE") { pal.fill = "#ffe9b8"; pal.ring = "#1a0808"; pal.ink = "#1a0808"; }
+    if (sunset && type === "BULL") { pal.fill = "#2a8a48"; pal.ring = "#04150c"; }
+    if (paper && type === "COLD") pal.ink = "#ffffff";
+    return pal;
+  }
   function drawPowerIcon(ctx, it, wash) {
     const r = it.r;
-    const pal = {
-      BULL: { fill: "#1f8a4c", ring: "#9dffc4", ink: "#04150c" },
-      BEAR: { fill: "#a33a32", ring: "#ff9b92", ink: "#1a0605" },
-      LASER: { fill: "#120806", ring: "#ffe7c2", ink: "#ff2d24" },
-      COLD: { fill: "#1788a6", ring: "#9befff", ink: "#041318" },
-      SWAN: { fill: "#f3efe6", ring: "#1a1a1c", ink: "#0a0a0c" },
-      HALVE: { fill: "#c8960a", ring: "#ffe7a0", ink: "#1a1204" },
-    }[it.type];
+    const pal = powerPal(it.type);
     if (!pal) return;
     const fill = wash || pal.fill;
     const ring = wash || pal.ring;
@@ -3065,7 +3092,12 @@
     ctx.translate(it.x, it.y);
     ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
     ctx.fillStyle = fill; ctx.fill();
-    ctx.strokeStyle = ring; ctx.lineWidth = 2.2; ctx.stroke();
+    ctx.strokeStyle = pal.halo || "#000";
+    ctx.lineWidth = 3.6;
+    ctx.stroke();
+    ctx.strokeStyle = ring;
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
     ctx.beginPath(); ctx.arc(-r * 0.28, -r * 0.3, r * 0.34, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(255,255,255,0.16)"; ctx.fill();
     ctx.fillStyle = ink; ctx.strokeStyle = ink; ctx.lineWidth = 1.7; ctx.lineJoin = "round"; ctx.lineCap = "round";
@@ -3699,6 +3731,15 @@
     ctx.save();
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
+    if (anim) {
+      ctx.strokeStyle = lime;
+      ctx.lineWidth = Math.max(2.2, r * 0.16);
+      const sag = Math.max(0, (v || 0) * 0.05);
+      ctx.beginPath();
+      ctx.moveTo(0, r * 0.18);
+      ctx.quadraticCurveTo(-r * 0.42, r * 1.15 + sag, Math.sin(time * 4.4) * r * 0.22, r * 2.45);
+      ctx.stroke();
+    }
     const n = anim ? 8 : 6;
     for (let i = 0; i < n; i++) {
       const a = i * Math.PI * 2 / n + 0.18 + (anim ? Math.sin(time * 3.1 + i) * 0.14 : 0);
@@ -3710,14 +3751,6 @@
       ctx.ellipse(0, -r * 0.7 * stretch, r * 0.3, r * 0.52 * stretch, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
-    }
-    if (anim) {
-      ctx.strokeStyle = lime;
-      ctx.lineWidth = Math.max(2, r * 0.14);
-      ctx.beginPath();
-      ctx.moveTo(0, r * 0.22);
-      ctx.quadraticCurveTo(-r * 0.28, r * 0.7 + Math.max(0, (v || 0) * 0.04), Math.sin(time * 5) * r * 0.12, r * 1.2);
-      ctx.stroke();
     }
     ctx.beginPath();
     ctx.arc(0, 0, r * 0.5, 0, Math.PI * 2);
@@ -3759,7 +3792,7 @@
     ctx.lineWidth = sk.style === "ink" ? 2.8 : sk.style === "flat" ? 2.2 : 2;
     ctx.beginPath();
     if (sk.style === "pixel") {
-      const s = r * 1.65;
+      const s = r * 1.15;
       if (ctx.roundRect) ctx.roundRect(-s / 2, -s / 2, s, s, 3);
       else ctx.rect(-s / 2, -s / 2, s, s);
     } else {
@@ -3790,6 +3823,14 @@
     }
   }
 
+  function heroDrawR(r, st, anim) {
+    if (st === "rocket") return r * 0.86;
+    if (st === "pencil") return r * 0.72;
+    if (st === "hippie") return r * 0.8;
+    if (st === "pixel") return r * 0.92;
+    if (anim) return r * 0.78;
+    return r;
+  }
   function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser, choppy, skinId) {
     ctx.save();
     ctx.globalAlpha = alpha == null ? 1 : alpha;
@@ -3798,23 +3839,24 @@
     const skin = skinId || HERO_SKIN;
     const st = heroSkin(skin).style;
     const now = performance.now() * 0.001;
+    const vis = heroDrawR(r, st, !!choppy);
     if (st === "rocket") {
-      drawRocketHero(ctx, r, v, now, wash, laser, x, !!choppy);
+      drawRocketHero(ctx, vis, v, now, wash, laser, x, true);
       ctx.restore();
       return;
     }
     if (st === "pencil") {
-      drawPencilHero(ctx, r, v, now, wash, laser, x, !!choppy);
+      drawPencilHero(ctx, vis, v, now, wash, laser, x, !!choppy);
       ctx.restore();
       return;
     }
     if (st === "hippie") {
-      drawFlowerHero(ctx, r, v, now, wash, laser, x, !!choppy);
+      drawFlowerHero(ctx, vis, v, now, wash, laser, x, !!choppy);
       ctx.restore();
       return;
     }
     if (choppy) {
-      drawChoppyHero(ctx, r, v, performance.now() * 0.001, wash, laser, x, skin);
+      drawChoppyHero(ctx, vis, v, now, wash, laser, x, skin);
       ctx.restore();
       return;
     }
@@ -4121,10 +4163,12 @@
     ctx.fillRect(140, 86, 14, 34);
     const t = performance.now() * 0.001;
     drawBirdAt(ctx, w * 0.5, h * 0.54, Math.sin(t * 4.2) * 90, 15, myHero(), null, 1, false, HERO_ANIM, HERO_SKIN);
-    ctx.font = "700 10px \"IBM Plex Mono\", monospace";
-    ctx.textAlign = "right";
-    ctx.textBaseline = "bottom";
-    paintHaloText(ctx, HERO_ANIM ? "3D" : "2D", w - 6, h - 5, PAL.hud || PAL.fg);
+    if (HERO_SKIN !== "midnight") {
+      ctx.font = "700 10px \"IBM Plex Mono\", monospace";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "bottom";
+      paintHaloText(ctx, HERO_ANIM ? "3D" : "2D", w - 6, h - 5, PAL.hud || PAL.fg);
+    }
   }
 
   const GAME_W = 480;
@@ -4871,6 +4915,7 @@
     }
     if (panel === "gfx") {
       const pal = currentPaletteId();
+      const canTog = pal !== "midnight";
       const swatches = Object.keys(PALETTES).map((id) => {
         const p = PALETTES[id];
         return "<button type=\"button\" class=\"cta opt-item pal-swatch" + (pal === id ? " on" : "") + "\" data-pal=\"" + id + "\">"
@@ -4878,10 +4923,10 @@
           + t(p.nameKey) + "</button>";
       }).join("");
       return "<h1>" + t("graphics") + "</h1>"
-        + "<button type=\"button\" class=\"hero-tog\" id=\"hero-tog\" aria-label=\"" + t("tapHero") + "\">"
+        + "<button type=\"button\" class=\"hero-tog" + (canTog ? "" : " locked") + "\" id=\"hero-tog\" aria-label=\"" + (canTog ? t("tapHero") : t(PALETTES.midnight.nameKey)) + "\">"
         + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"168\" height=\"120\"></canvas>"
         + "</button>"
-        + "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>"
+        + (canTog ? "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>" : "")
         + "<div class=\"pal-grid\">" + swatches + "</div>"
         + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
@@ -5002,7 +5047,7 @@
       btn.onclick = (e) => {
         e.stopPropagation();
         applyPalette(btn.getAttribute("data-pal"));
-        setHero(btn.getAttribute("data-pal"), HERO_ANIM);
+        setHero(btn.getAttribute("data-pal"), false);
         renderOverlay();
       };
     });
@@ -5011,7 +5056,9 @@
       heroTog.onpointerdown = (e) => {
         e.stopPropagation();
         e.preventDefault();
-        setHero(HERO_SKIN || currentPaletteId(), !HERO_ANIM);
+        const skin = HERO_SKIN || currentPaletteId();
+        if (skin === "midnight") return;
+        setHero(skin, !HERO_ANIM);
       };
     }
   }
