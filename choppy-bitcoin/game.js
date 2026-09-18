@@ -80,7 +80,19 @@
   };
   let PAL = PALETTES.classic;
   let PALETTE_ID = "classic";
-  let ANIM_HERO = false;
+  const HERO_SKINS = {
+    classic: { fill:"#f2a900", rim:"#ffe7a0", dark:"#c48400", edge:"#8a5a00", ink:"#1a0c06", btc:"#9a9aa2", band:"#e02420", halo:"#fff4d6", lensF:"#0a0a0c", lensB:"#1a1a1e", limb:"#1a0c06", mark:"₿", style:"coin" },
+    midnight:{ fill:"#9ec4ff", rim:"#e8f0ff", dark:"#4a6aa0", edge:"#2a4068", ink:"#041018", btc:"#e8eefc", band:"#3d6adf", halo:"#d6e8ff", lensF:"#0a1428", lensB:"#1a2848", limb:"#c5d8ff", mark:"₿", style:"moon", glow:"rgba(126,182,255,0.4)" },
+    terminal:{ fill:"#163416", rim:"#5dff6a", dark:"#0a200a", edge:"#082008", ink:"#021004", btc:"#5dff6a", band:"#3adf5a", halo:"#c8ffc4", lensF:"#021004", lensB:"#0a280a", limb:"#5dff6a", mark:"₿", style:"pixel", glow:"rgba(93,255,106,0.28)" },
+    paper:   { fill:"#f7f1e4", rim:"#1a1610", dark:"#e4d5bc", edge:"#b8aa90", ink:"#1a1610", btc:"#5a4010", band:"#b44a3a", halo:"#fff8ee", lensF:"#1a1610", lensB:"#3a3228", limb:"#1a1610", mark:"₿", style:"ink" },
+    neon:    { fill:"#ff4ad2", rim:"#ffd0f4", dark:"#a02080", edge:"#5a1060", ink:"#120414", btc:"#fff0ff", band:"#2ee6c8", halo:"#ffd0f4", lensF:"#1a0420", lensB:"#3a0850", limb:"#2ee6c8", mark:"₿", style:"glow", glow:"rgba(255,74,210,0.48)" },
+    sunset:  { fill:"#ff8a3a", rim:"#ffd0b0", dark:"#c45a40", edge:"#8a3020", ink:"#1a0808", btc:"#ffe8d4", band:"#e05050", halo:"#ffe0c8", lensF:"#2a1010", lensB:"#4a1818", limb:"#1a0808", mark:"₿", style:"sun", glow:"rgba(255,138,58,0.4)" },
+    flower:  { fill:"#ffe14a", rim:"#fff4c8", dark:"#e040a8", edge:"#c050c8", ink:"#2a0838", btc:"#6a2880", band:"#ff4aa8", halo:"#fff0a0", lensF:"#3a1050", lensB:"#5a2080", limb:"#7dff6a", mark:"₿", style:"petal", glow:"rgba(255,80,220,0.32)" },
+    simple:  { fill:"#222222", rim:"#161616", dark:"#111111", edge:"#000000", ink:"#ffffff", btc:"#f2f2f0", band:"#222222", halo:"#ffffff", lensF:"#000000", lensB:"#333333", limb:"#161616", mark:"₿", style:"flat" }
+  };
+  let HERO_SKIN = "classic";
+  let HERO_ANIM = false;
+  function heroSkin(id) { return HERO_SKINS[id] || HERO_SKINS.classic; }
   function currentPaletteId() { return PALETTE_ID; }
   function applyPalette(id) {
     if (!PALETTES[id]) id = "classic";
@@ -112,12 +124,28 @@
     }
     applyPalette(id);
   }
-  function setAnimHero(on) {
-    ANIM_HERO = !!on;
-    try { localStorage.setItem("choppy-anim-hero", ANIM_HERO ? "1" : "0"); } catch (e) {}
+  function setHero(skin, anim) {
+    HERO_SKIN = HERO_SKINS[skin] ? skin : "classic";
+    HERO_ANIM = !!anim;
+    try { localStorage.setItem("choppy-hero", HERO_SKIN + ":" + (HERO_ANIM ? "1" : "0")); } catch (e) {}
   }
-  function loadAnimHero() {
-    try { ANIM_HERO = localStorage.getItem("choppy-anim-hero") === "1"; } catch (e) { ANIM_HERO = false; }
+  function loadHero() {
+    try {
+      const raw = localStorage.getItem("choppy-hero") || "";
+      if (raw.indexOf(":") >= 0) {
+        const p = raw.split(":");
+        HERO_SKIN = HERO_SKINS[p[0]] ? p[0] : PALETTE_ID;
+        HERO_ANIM = p[1] === "1";
+        return;
+      }
+      if (localStorage.getItem("choppy-anim-hero") === "1") {
+        HERO_SKIN = "classic";
+        HERO_ANIM = true;
+        return;
+      }
+    } catch (e) {}
+    HERO_SKIN = PALETTE_ID;
+    HERO_ANIM = false;
   }
   function palRgba(hex, a) {
     let h = String(hex || "#000").replace("#", "");
@@ -127,7 +155,7 @@
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
   }
   loadPalette();
-  loadAnimHero();
+  loadHero();
   const PX_MIN = 1;
   const DRIFT0 = 0.0006;
   const PHI = (1 + Math.sqrt(5)) / 2;
@@ -320,8 +348,10 @@
     graphics: "GRAPHICS",
     palClassic: "Classic", palMidnight: "Midnight", palTerminal: "Terminal",
     palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset", palFlower: "Flower Power", palSimple: "Simple",
-    animHero: "Animated hero",
-    animHeroHint: "Gold coin with ₿, profile shades, red headband, floppy limbs.",
+    animHero: "Animated",
+    hero2d: "2D",
+    pickHero: "HERO",
+    animHeroHint: "Each look has a 2D orb and an animated Choppy. Default is that look's 2D hero.",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
     tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
     tut3a: "Bull pumps price.",
@@ -332,7 +362,7 @@
     tut6: "Laser eyes eat a bear and unlock a perk.",
     tut7: "Ranked is 0 cold and 0 multisig and counts for the board. Training is 9 cold and 999 multisig and does not. Versus does not count for ranked scores or awards.",
     tut8: "Pick a perk and the menu vanishes like an Arc card — then tap ▶. DCA, A.I. bud, Jukebox, Marketplace and Arc sit on the HUD. Speed is the 1x button between Buy and Sell.",
-    tut9: "Options → Graphics: Classic is the original look. Other palettes restyle the board. Animated hero swaps the ₿ for Choppy from the Arc cards."
+    tut9: "Options → Graphics: each look restyles the board and has its own 2D and animated hero. You can mix any hero with any look."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -3260,17 +3290,20 @@
     }
   }
 
-  function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
+  function drawChoppyHero(ctx, r, v, t, wash, laser, worldX, skinId) {
+    const sk = heroSkin(skinId || HERO_SKIN);
     const tilt = Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022));
     const g = Math.max(-1, Math.min(1, (v || 0) / 420));
     const time = t || 0;
-    const gold = wash || (laser ? "#e8902a" : "#f2a900");
-    const rim = wash || (laser ? "#ffc878" : "#ffe7a0");
-    const ink = "#1a0c06";
-    const btcInk = "#9a9aa2";
-    const red = wash || "#e02420";
-    const halo = "#fff4d6";
-    const rx = r * 0.62;
+    const gold = wash || (laser ? "#e8902a" : sk.fill);
+    const rim = wash || (laser ? "#ffc878" : sk.rim);
+    const ink = sk.ink;
+    const btcInk = sk.btc;
+    const red = wash || sk.band;
+    const halo = sk.halo;
+    const limbCol = sk.limb;
+    const flat = sk.style === "flat";
+    const rx = r * (flat ? 0.92 : 0.62);
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -3304,15 +3337,15 @@
     const kickR = Math.sin(time * 8.9 + 2.5) * 0.5 + g * 0.55;
     const armL = Math.sin(time * 7.5 + 0.4) * 0.62 + g * 0.4;
     const armR = Math.sin(time * 7.5 + 2.7) * 0.62 + g * 0.34;
-    noodle(-r * 0.12, r * 0.58, down + 0.42 + kickL, r * 1.28, 0.2);
-    noodle(r * 0.14, r * 0.56, down - 0.12 + kickR, r * 1.22, 2.3);
-    noodle(-rx * 0.85, r * 0.08, down + 1.05 + armL, r * 1.08, 1.2);
-    noodle(rx * 0.85, r * 0.04, down - 1.12 + armR, r * 1.04, 3.0);
+    noodle(-r * 0.12, r * 0.58, down + 0.42 + kickL, r * 1.28, 0.2, limbCol, halo);
+    noodle(r * 0.14, r * 0.56, down - 0.12 + kickR, r * 1.22, 2.3, limbCol, halo);
+    noodle(-rx * 0.85, r * 0.08, down + 1.05 + armL, r * 1.08, 1.2, limbCol, halo);
+    noodle(rx * 0.85, r * 0.04, down - 1.12 + armR, r * 1.04, 3.0, limbCol, halo);
     ctx.restore();
 
-    const thick = Math.max(3.2, r * 0.3);
-    const dark = wash || "#c48400";
-    const edge = wash || "#8a5a00";
+    const thick = flat ? 0 : Math.max(3.2, r * 0.3);
+    const dark = wash || sk.dark;
+    const edge = wash || sk.edge;
     ctx.fillStyle = dark;
     ctx.beginPath();
     ctx.ellipse(-thick, 0, rx, r, 0, Math.PI * 0.5, Math.PI * 1.5);
@@ -3377,8 +3410,8 @@
       ctx.arc(c.x - rad * 0.28, c.y - rad * 0.32, rad * 0.28, 0, Math.PI * 2);
       ctx.fill();
     };
-    lens(rightL, lr * 0.86, "#1a1a1e");
-    lens(leftL, lr, "#0a0a0c");
+    lens(rightL, lr * 0.86, sk.lensB);
+    lens(leftL, lr, sk.lensF);
     ctx.strokeStyle = ink;
     ctx.lineWidth = Math.max(0.9, r * 0.055);
     ctx.beginPath();
@@ -3409,6 +3442,20 @@
     ctx.restore();
 
     const bandLeft = -thick - span;
+    if (flat) {
+      if (laser) {
+        ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
+        ctx.lineWidth = 3.4;
+        ctx.beginPath();
+        ctx.moveTo(leftL.x + lr, leftL.y - 2);
+        ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), leftL.y - 8);
+        ctx.moveTo(rightL.x + lr * 0.4, rightL.y + 2);
+        ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), rightL.y + 8);
+        ctx.stroke();
+      }
+      ctx.restore();
+      return;
+    }
     const bag = ribbonBag((ctx.canvas && ctx.canvas.id) || "c");
     const cs = Math.cos(tilt), sn = Math.sin(tilt);
     const toWorld = (x, y) => ({ x: x * cs - y * sn, y: x * sn + y * cs });
@@ -3444,13 +3491,74 @@
     ctx.restore();
   }
 
-  function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser, choppy) {
+  function drawThemedOrb(ctx, r, wash, laser, worldX, skinId) {
+    const sk = heroSkin(skinId);
+    const fill = wash || (laser ? "#e8902a" : sk.fill);
+    if (sk.glow) {
+      const gg = ctx.createRadialGradient(0, 0, r * 0.15, 0, 0, r * 1.55);
+      gg.addColorStop(0, sk.glow);
+      gg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = gg;
+      ctx.beginPath(); ctx.arc(0, 0, r * 1.55, 0, Math.PI * 2); ctx.fill();
+    }
+    if (sk.style === "petal") {
+      ctx.fillStyle = wash || sk.band;
+      for (let i = 0; i < 6; i++) {
+        const a = i * Math.PI / 3 + 0.2;
+        ctx.beginPath();
+        ctx.ellipse(Math.cos(a) * r * 0.72, Math.sin(a) * r * 0.72, r * 0.4, r * 0.22, a, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = sk.rim;
+    ctx.lineWidth = sk.style === "ink" ? 2.8 : sk.style === "flat" ? 2.2 : 2;
+    ctx.beginPath();
+    if (sk.style === "pixel") {
+      const s = r * 1.65;
+      if (ctx.roundRect) ctx.roundRect(-s / 2, -s / 2, s, s, 3);
+      else ctx.rect(-s / 2, -s / 2, s, s);
+    } else {
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+    }
+    ctx.fill();
+    ctx.stroke();
+    if (sk.style === "moon") {
+      ctx.fillStyle = palRgba(sk.dark, 0.45);
+      ctx.beginPath();
+      ctx.arc(r * 0.22, -r * 0.1, r * 0.72, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = sk.btc;
+    ctx.font = "700 " + Math.round(r * 1.12) + "px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(sk.mark, 0, 1);
+    if (laser) {
+      ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
+      ctx.lineWidth = 3.4;
+      ctx.beginPath();
+      ctx.moveTo(r - 2, -3);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), -8);
+      ctx.moveTo(r - 2, 3);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), 8);
+      ctx.stroke();
+    }
+  }
+
+  function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser, choppy, skinId) {
     ctx.save();
     ctx.globalAlpha = alpha == null ? 1 : alpha;
     ctx.translate(x, y);
     ctx.rotate(Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022)));
+    const skin = skinId || HERO_SKIN;
     if (choppy) {
-      drawChoppyHero(ctx, r, v, performance.now() * 0.001, wash, laser, x);
+      drawChoppyHero(ctx, r, v, performance.now() * 0.001, wash, laser, x, skin);
+      ctx.restore();
+      return;
+    }
+    if (!S.mp || skinId) {
+      drawThemedOrb(ctx, r, wash, laser, x, skin);
       ctx.restore();
       return;
     }
@@ -3696,7 +3804,7 @@
     const foc = S.mp ? mpFocusPlayer() : null;
     const mineId = window.ChoppyMP && window.ChoppyMP.id ? window.ChoppyMP.id() : null;
     const selfGhost = !!(S.mp && (S.spectate || S.dead || S.finished) && foc && foc.id !== mineId);
-    if (!blink && !selfGhost) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn, ANIM_HERO);
+    if (!blink && !selfGhost) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn, HERO_ANIM, HERO_SKIN);
     if (S.mp && window.ChoppyMP) {
       (window.ChoppyMP.players() || []).forEach((p) => {
         if (!p || p.id === mineId) return;
@@ -3710,7 +3818,7 @@
           p._gx += (p.x - p._gx) * 0.28;
           p._gy += (p.y - p._gy) * 0.28;
         }
-        drawBirdAt(ctx, p._gx, p._gy, p.v || 0, S.bird.r, h, wash, lead ? 1 : 0.25, !!p.laser, ANIM_HERO);
+        drawBirdAt(ctx, p._gx, p._gy, p.v || 0, S.bird.r, h, wash, lead ? 1 : 0.25, !!p.laser, false);
       });
     }
     for (const pt of S.particles) {
@@ -3752,7 +3860,23 @@
     ctx.fillRect(140, 0, 14, 46);
     ctx.fillRect(140, 86, 14, 34);
     const t = performance.now() * 0.001;
-    drawBirdAt(ctx, w * 0.5, h * 0.54, Math.sin(t * 4.2) * 90, 15, myHero(), null, 1, false, ANIM_HERO);
+    drawBirdAt(ctx, w * 0.5, h * 0.54, Math.sin(t * 4.2) * 90, 15, myHero(), null, 1, false, HERO_ANIM, HERO_SKIN);
+    overlay.querySelectorAll("canvas.hero-mini").forEach((cv) => {
+      const sk = cv.getAttribute("data-skin");
+      const anim = cv.getAttribute("data-anim") === "1";
+      const d = Math.min(2, window.devicePixelRatio || 1);
+      const mw = 44, mh = 44;
+      if (cv.width !== mw * d || cv.height !== mh * d) { cv.width = mw * d; cv.height = mh * d; }
+      const c2 = cv.getContext("2d");
+      if (!c2) return;
+      c2.setTransform(d, 0, 0, d, 0, 0);
+      c2.clearRect(0, 0, mw, mh);
+      c2.fillStyle = heroSkin(sk).fill;
+      c2.globalAlpha = 0.18;
+      c2.fillRect(0, 0, mw, mh);
+      c2.globalAlpha = 1;
+      drawBirdAt(c2, mw * 0.5, mh * 0.58, anim ? Math.sin(t * 4.2) * 80 : 0, 9, myHero(), null, 1, false, anim, sk);
+    });
   }
 
   const GAME_W = 480;
@@ -4509,11 +4633,24 @@
           + "<span class=\"pal-dots\" aria-hidden=\"true\"><i style=\"background:" + p.bg + "\"></i><i style=\"background:" + p.gold + "\"></i><i style=\"background:" + p.green + "\"></i><i style=\"background:" + p.red + "\"></i></span>"
           + t(p.nameKey) + "</button>";
       }).join("");
+      const heroes = Object.keys(PALETTES).map((id) => {
+        const on2 = HERO_SKIN === id && !HERO_ANIM;
+        const onA = HERO_SKIN === id && HERO_ANIM;
+        return "<div class=\"hero-pair\">"
+          + "<span class=\"hero-pair-n\">" + t(PALETTES[id].nameKey) + "</span>"
+          + "<button type=\"button\" class=\"cta hero-cell" + (on2 ? " on" : "") + "\" data-hero=\"" + id + "\" data-anim=\"0\">"
+          + "<canvas class=\"hero-mini\" data-skin=\"" + id + "\" data-anim=\"0\" width=\"44\" height=\"44\"></canvas>"
+          + "<em>" + t("hero2d") + "</em></button>"
+          + "<button type=\"button\" class=\"cta hero-cell" + (onA ? " on" : "") + "\" data-hero=\"" + id + "\" data-anim=\"1\">"
+          + "<canvas class=\"hero-mini\" data-skin=\"" + id + "\" data-anim=\"1\" width=\"44\" height=\"44\"></canvas>"
+          + "<em>" + t("animHero") + "</em></button>"
+          + "</div>";
+      }).join("");
       return "<h1>" + t("graphics") + "</h1>"
         + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"168\" height=\"120\" aria-hidden=\"true\"></canvas>"
         + "<div class=\"pal-grid\">" + swatches + "</div>"
-        + "<button type=\"button\" class=\"cta opt-item pal-swatch" + (ANIM_HERO ? " on" : "") + "\" id=\"anim-hero\">"
-        + t("animHero") + "</button>"
+        + "<p class=\"k hero-pick-lab\">" + t("pickHero") + "</p>"
+        + "<div class=\"hero-grid\">" + heroes + "</div>"
         + "<p class=\"k\">" + t("animHeroHint") + "</p>"
         + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
@@ -4627,17 +4764,17 @@
       btn.onclick = (e) => {
         e.stopPropagation();
         applyPalette(btn.getAttribute("data-pal"));
+        setHero(btn.getAttribute("data-pal"), false);
         renderOverlay();
       };
     });
-    const ah = $("anim-hero");
-    if (ah) {
-      ah.onclick = (e) => {
+    overlay.querySelectorAll("[data-hero]").forEach((btn) => {
+      btn.onclick = (e) => {
         e.stopPropagation();
-        setAnimHero(!ANIM_HERO);
+        setHero(btn.getAttribute("data-hero"), btn.getAttribute("data-anim") === "1");
         renderOverlay();
       };
-    }
+    });
   }
 
   function mpRosterHtml() {
