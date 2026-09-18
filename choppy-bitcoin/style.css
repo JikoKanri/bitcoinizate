@@ -10,6 +10,9 @@
   --hud: #fff6d0;
   --green: #4f9d6e;
   --red: #c45c4a;
+  --bg-top: #16140e;
+  --bg-bot: #070708;
+  --bg-glow: rgba(200,150,10,0.18);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -17,7 +20,11 @@ html, body {
   height: 100dvh;
   min-height: 100dvh;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(120% 70% at 50% -12%, var(--bg-glow, transparent), transparent 58%),
+    linear-gradient(180deg, var(--bg-top, var(--bg)) 0%, var(--bg) 48%, var(--bg-bot, var(--bg)) 100%);
+  background-attachment: fixed;
   color: var(--fg);
   font-family: "IBM Plex Mono", "Courier New", monospace;
   overflow: hidden;
@@ -36,7 +43,10 @@ body {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(120% 70% at 50% -12%, var(--bg-glow, transparent), transparent 58%),
+    linear-gradient(180deg, var(--bg-top, var(--bg)) 0%, var(--bg) 48%, var(--bg-bot, var(--bg)) 100%);
   transform-origin: center center;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   overflow: hidden;
@@ -52,7 +62,7 @@ body {
   width: 100%;
 }
 .stat {
-  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
   padding: 4px 6px;
   display: flex;
   align-items: baseline;
@@ -246,20 +256,20 @@ body {
 .speed-bar button:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.7); }
 .buy, .sell { flex: 1; min-height: 45px; height: 45px; font-size: 24px; font-weight: 700; white-space: nowrap; background: transparent; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
 .buy:disabled, .sell:disabled { opacity: 0.38; pointer-events: none; filter: grayscale(0.65); }
-.buy { color: rgba(31, 138, 76, 0.75); border: 1px solid rgba(31, 138, 76, 0.75); background: rgba(31, 138, 76, 0.12); }
-.sell { color: rgba(163, 58, 50, 0.75); border: 1px solid rgba(163, 58, 50, 0.75); background: rgba(163, 58, 50, 0.12); }
+.buy { color: color-mix(in srgb, var(--green) 88%, white 0%); border: 1px solid color-mix(in srgb, var(--green) 75%, transparent); background: color-mix(in srgb, var(--green) 14%, transparent); }
+.sell { color: color-mix(in srgb, var(--red) 88%, white 0%); border: 1px solid color-mix(in srgb, var(--red) 75%, transparent); background: color-mix(in srgb, var(--red) 14%, transparent); }
 .buy, .sell { -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; appearance: none; -webkit-appearance: none; }
 .buy, .buy:hover, .buy:focus, .buy:focus-visible, .buy:active, .buy.on, .buy:focus-visible:active {
-  color: rgba(31, 138, 76, 0.75); background: rgba(31, 138, 76, 0.12); border-color: rgba(31, 138, 76, 0.75); outline: none; box-shadow: none; filter: none;
+  color: color-mix(in srgb, var(--green) 88%, white 0%); background: color-mix(in srgb, var(--green) 14%, transparent); border-color: color-mix(in srgb, var(--green) 75%, transparent); outline: none; box-shadow: none; filter: none;
 }
 .sell, .sell:hover, .sell:focus, .sell:focus-visible, .sell:active, .sell.on, .sell:focus-visible:active {
-  color: rgba(163, 58, 50, 0.75); background: rgba(163, 58, 50, 0.12); border-color: rgba(163, 58, 50, 0.75); outline: none; box-shadow: none; filter: none;
+  color: color-mix(in srgb, var(--red) 88%, white 0%); background: color-mix(in srgb, var(--red) 14%, transparent); border-color: color-mix(in srgb, var(--red) 75%, transparent); outline: none; box-shadow: none; filter: none;
 }
 .pause {
   position: absolute; right: 12px; bottom: 12px; z-index: 8;
   min-width: 45px; min-height: 45px; width: 45px; height: 45px; padding: 0;
-  background: rgba(10, 10, 12, 0.12); color: rgba(243, 239, 230, 0.75);
-  border: 1px solid rgba(243, 239, 230, 0.35);
+  background: color-mix(in srgb, var(--bg) 22%, transparent); color: color-mix(in srgb, var(--fg) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 35%, transparent);
 }
 .field.perk-ui .pause { z-index: 20; color: #fff6d8; background: var(--gold); border-color: #f0d060; box-shadow: 0 0 0 3px rgba(200,150,10,0.45); }
 .field.perk-ui .pause.arc-resume {
@@ -647,6 +657,19 @@ body {
   border-radius: 50%;
   display: block;
   border: 1px solid rgba(255,255,255,0.28);
+}
+.hero-prev {
+  width: 168px;
+  height: 120px;
+  display: block;
+  margin: 2px auto 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  image-rendering: auto;
+}
+#anim-hero.pal-swatch {
+  max-width: 280px;
+  justify-content: center;
 }
 label.anim-hero {
   display: flex;
