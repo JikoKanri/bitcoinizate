@@ -373,7 +373,8 @@ body {
 .overlay.dock h1 { font-size: 14px; margin: 0; }
 .overlay.dock p { font-size: 11px; margin: 0; }
 .overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
-.chance-art {
+.chance-art,
+video.chance-art {
   width: 184px; height: 184px; border-radius: 18px;
   object-fit: contain; border: 2px solid var(--gold);
   background: #3a3020; flex: 0 0 auto;

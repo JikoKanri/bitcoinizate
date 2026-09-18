@@ -2294,6 +2294,7 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
+  const ARC_VID = { landfill: 1, wine: 1, proposal: 1, tetris: 1, casino: 1 };
   let chanceArtBusy = false;
   function preloadChanceArt() {
     if (chanceArtBusy) return;
@@ -2310,6 +2311,20 @@
       }
     };
     kick(4);
+    Object.keys(ARC_VID).forEach((id) => {
+      const v = document.createElement("video");
+      v.muted = true;
+      v.preload = "auto";
+      v.playsInline = true;
+      v.src = "chance/" + id + ".mp4";
+    });
+  }
+  function chanceArtHtml(id) {
+    const jpg = "chance/" + id + ".jpg";
+    if (ARC_VID[id]) {
+      return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
+    }
+    return "<img class=\"chance-art\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
   }
 
   function dealChance() {
@@ -5639,8 +5654,7 @@
       const es = chanceLang();
       const title = es ? (card.titleEs || card.title) : card.title;
       const body = S.chanceBody || (es ? (card.bodyEs || card.body) : card.body);
-      const art = "chance/" + card.id + ".jpg";
-      const pic = "<img class=\"chance-art\" src=\"" + art + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
+      const pic = chanceArtHtml(card.id);
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
