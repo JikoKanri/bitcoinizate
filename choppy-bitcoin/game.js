@@ -88,8 +88,12 @@
     });
   }
   function loadPalette() {
-    let id = "classic";
-    try { id = localStorage.getItem("choppy-palette") || "classic"; } catch (e) {}
+    let id = "";
+    try { id = localStorage.getItem("choppy-palette") || ""; } catch (e) { id = ""; }
+    if (!id || !PALETTES[id]) {
+      const keys = Object.keys(PALETTES);
+      id = keys[(Math.random() * keys.length) | 0];
+    }
     applyPalette(id);
   }
   function setAnimHero(on) {
@@ -301,7 +305,7 @@
     palClassic: "Classic", palMidnight: "Midnight", palTerminal: "Terminal",
     palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset",
     animHero: "Animated hero",
-    animHeroHint: "Choppy from the Arc cards: bandana, shades, cape, tank, kicking sneakers.",
+    animHeroHint: "Gold coin, wraparound shades, stick limbs that hang with gravity.",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
     tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
     tut3a: "Bull pumps price.",
@@ -3181,217 +3185,64 @@
 
 
   function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
-    const s = r * 1.72;
-    const time = t || 0;
-    const flap = Math.max(-1, Math.min(1, (v || 0) / 420));
-    const flutter = Math.sin(time * 8.6);
-    const flutter2 = Math.sin(time * 11.8 + 0.7);
-    const kick = flap * 0.7 + Math.sin(time * 12.4) * 0.28;
-    const punch = Math.sin(time * 10.8) * s * 0.12;
-    const bob = Math.sin(time * 6.4) * s * 0.03;
-    const orange = wash || "#e44512";
-    const orangeDk = wash || "#9a1e08";
-    const orangeLt = wash || "#ff6a28";
-    const gold = "#f2a900";
-    const goldLt = "#ffe08a";
-    const skin = "#e2b17c";
-    const skinDk = "#b07a48";
+    const tilt = Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022));
+    const g = Math.max(-1, Math.min(1, (v || 0) / 420));
+    const idle = Math.sin((t || 0) * 7.2) * 0.1;
+    const sway = g * 0.5 + idle;
+    const gold = wash || (laser ? "#e8902a" : "#f2a900");
+    const rim = wash || (laser ? "#ffc878" : "#ffe7a0");
     const ink = "#120806";
-    const sock = "#fff8ee";
-    const tank = "#141416";
     ctx.save();
-    ctx.translate(s * 0.02, bob);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    ctx.fillStyle = orange;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.04, -s * 0.16);
-    ctx.bezierCurveTo(
-      -s * (0.62 + flutter * 0.1), -s * 0.02,
-      -s * (1.12 + flutter * 0.16), s * 0.2,
-      -s * (1.38 + flutter * 0.12), s * (0.68 + flutter * 0.06)
-    );
-    ctx.quadraticCurveTo(-s * (0.48 + flutter2 * 0.08), s * 0.28, -s * 0.06, s * 0.14);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 1.15;
-    ctx.stroke();
-    ctx.fillStyle = orangeDk;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.04, -s * 0.06);
-    ctx.bezierCurveTo(
-      -s * (0.48 + flutter2 * 0.1), s * 0.08,
-      -s * (0.88 + flutter * 0.1), s * 0.3,
-      -s * (1.05 + flutter * 0.08), s * 0.56
-    );
-    ctx.quadraticCurveTo(-s * 0.32, s * 0.22, -s * 0.04, s * 0.1);
-    ctx.closePath();
-    ctx.fill();
-
-    const shoe = (sx, sy, ang) => {
-      ctx.save();
-      ctx.translate(sx, sy);
-      ctx.rotate(ang);
-      ctx.fillStyle = sock;
-      ctx.beginPath();
-      ctx.ellipse(-s * 0.08, -s * 0.12, s * 0.08, s * 0.14, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = orangeLt;
-      ctx.beginPath();
-      ctx.ellipse(s * 0.04, s * 0.02, s * 0.32, s * 0.13, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = ink;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.fillStyle = sock;
-      ctx.beginPath();
-      ctx.ellipse(s * 0.26, s * 0.02, s * 0.11, s * 0.08, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = ink;
-      ctx.fillRect(-s * 0.16, s * 0.08, s * 0.38, Math.max(1.3, s * 0.05));
-      ctx.restore();
-    };
-
-    const hipX = -s * 0.04, hipY = s * 0.2;
-    const legA = { x: -s * (0.98 + kick * 0.14), y: s * (0.02 + kick * 0.2) };
-    const legB = { x: -s * (0.82 - kick * 0.1), y: s * (0.5 - kick * 0.16) };
-    ctx.strokeStyle = skinDk;
-    ctx.lineWidth = Math.max(2.6, s * 0.2);
-    ctx.beginPath();
-    ctx.moveTo(hipX, hipY);
-    ctx.quadraticCurveTo(-s * 0.46, s * 0.1, legA.x + s * 0.18, legA.y);
-    ctx.moveTo(hipX, hipY + s * 0.05);
-    ctx.quadraticCurveTo(-s * 0.38, s * 0.4, legB.x + s * 0.16, legB.y);
-    ctx.stroke();
-    shoe(legA.x, legA.y, Math.PI + 0.18 + kick * 0.35);
-    shoe(legB.x, legB.y, Math.PI - 0.28 - kick * 0.4);
-
-    ctx.fillStyle = orange;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.24, s * 0.08);
-    ctx.lineTo(s * 0.14, s * 0.06);
-    ctx.lineTo(s * 0.1, s * 0.32);
-    ctx.quadraticCurveTo(-s * 0.04, s * 0.38, -s * 0.28, s * 0.3);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = orangeDk;
-    ctx.lineWidth = 1.1;
-    ctx.stroke();
-
-    ctx.fillStyle = tank;
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.18, -s * 0.16);
-    ctx.quadraticCurveTo(s * 0.06, -s * 0.26, s * 0.2, -s * 0.12);
-    ctx.lineTo(s * 0.16, s * 0.14);
-    ctx.quadraticCurveTo(-s * 0.02, s * 0.2, -s * 0.2, s * 0.12);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 1.05;
-    ctx.stroke();
-
-    ctx.strokeStyle = skinDk;
-    ctx.lineWidth = Math.max(2.4, s * 0.17);
-    ctx.beginPath();
-    ctx.moveTo(s * 0.1, s * 0.02);
-    ctx.quadraticCurveTo(s * 0.5, s * 0.16 + punch * 0.4, s * 0.86, s * 0.22 + punch);
-    ctx.stroke();
-    const fist = (fx, fy) => {
-      ctx.fillStyle = skin;
-      ctx.strokeStyle = ink;
-      ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.arc(fx, fy, s * 0.145, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    };
-    fist(s * 0.94, s * 0.24 + punch);
-
-    const hx = s * 0.32, hy = -s * 0.34, hr = s * 0.36;
-    ctx.fillStyle = skin;
-    ctx.beginPath();
-    ctx.ellipse(hx, hy, hr * 0.9, hr, 0.14, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 1.15;
-    ctx.stroke();
-    ctx.fillStyle = skin;
-    ctx.beginPath();
-    ctx.moveTo(hx + hr * 0.62, hy - s * 0.02);
-    ctx.quadraticCurveTo(hx + hr * 1.18, hy + s * 0.05, hx + hr * 0.6, hy + s * 0.14);
-    ctx.quadraticCurveTo(hx + hr * 0.82, hy + s * 0.04, hx + hr * 0.62, hy - s * 0.02);
-    ctx.fill();
-    ctx.fillStyle = skinDk;
-    ctx.beginPath();
-    ctx.ellipse(hx - hr * 0.52, hy + s * 0.02, s * 0.08, s * 0.11, -0.35, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = gold;
-    ctx.lineWidth = Math.max(1.6, s * 0.09);
-    ctx.beginPath();
-    ctx.arc(hx - hr * 0.6, hy + s * 0.08, s * 0.1, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.fillStyle = orange;
-    ctx.beginPath();
-    ctx.ellipse(hx - s * 0.04, hy - hr * 0.28, hr * 0.98, hr * 0.52, -0.42, Math.PI * 0.95, Math.PI * 2.05);
-    ctx.ellipse(hx - s * 0.02, hy - hr * 0.1, hr * 0.68, hr * 0.3, -0.42, Math.PI * 1.95, Math.PI * 1.05, true);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(hx - hr * 0.78, hy - hr * 0.42, s * 0.09, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = orange;
-    ctx.lineWidth = Math.max(1.5, s * 0.075);
-    ctx.beginPath();
-    ctx.moveTo(hx - hr * 0.84, hy - hr * 0.32);
-    ctx.quadraticCurveTo(hx - hr * (1.28 + flutter * 0.08), hy - hr * 0.02, hx - hr * (1.4 + flutter * 0.1), hy + hr * 0.28);
-    ctx.moveTo(hx - hr * 0.72, hy - hr * 0.28);
-    ctx.quadraticCurveTo(hx - hr * (1.12 + flutter2 * 0.06), hy + hr * 0.04, hx - hr * (1.2 + flutter2 * 0.08), hy + hr * 0.32);
-    ctx.stroke();
-    ctx.fillStyle = goldLt;
-    ctx.font = "700 " + Math.max(7, Math.round(s * 0.3)) + "px \"IBM Plex Mono\", sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
     ctx.save();
-    ctx.translate(hx + s * 0.02, hy - hr * 0.4);
-    ctx.rotate(-0.42);
-    ctx.fillText("B", 0, 0);
+    ctx.rotate(-tilt);
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = Math.max(1.7, r * 0.14);
+    const limb = (ax, ay, ang, len) => {
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(ax + Math.cos(ang) * len, ay + Math.sin(ang) * len);
+      ctx.stroke();
+    };
+    const down = Math.PI / 2;
+    const leg = r * 1.18;
+    const arm = r * 0.98;
+    limb(-r * 0.22, r * 0.62, down + 0.3 + sway, leg);
+    limb(r * 0.22, r * 0.62, down - 0.28 + sway * 0.85, leg);
+    limb(-r * 0.7, r * 0.06, down + 0.95 + sway * 0.45, arm);
+    limb(r * 0.7, r * 0.02, down - 1.05 + sway * 0.4, arm);
     ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = gold;
+    ctx.fill();
+    ctx.strokeStyle = rim;
+    ctx.lineWidth = Math.max(1.8, r * 0.12);
+    ctx.stroke();
 
     ctx.fillStyle = ink;
     ctx.beginPath();
-    ctx.moveTo(hx - hr * 0.18, hy - s * 0.02);
-    ctx.quadraticCurveTo(hx + hr * 0.42, hy - s * 0.14, hx + hr * 0.92, hy + s * 0.04);
-    ctx.lineTo(hx + hr * 0.86, hy + s * 0.14);
-    ctx.quadraticCurveTo(hx + hr * 0.22, hy + s * 0.16, hx - hr * 0.2, hy + s * 0.08);
+    ctx.moveTo(-r * 0.84, -r * 0.2);
+    ctx.quadraticCurveTo(0, -r * 0.36, r * 0.84, -r * 0.2);
+    ctx.lineTo(r * 0.88, r * 0.2);
+    ctx.quadraticCurveTo(0, r * 0.32, -r * 0.88, r * 0.2);
     ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = gold;
-    ctx.lineWidth = Math.max(1.35, s * 0.075);
-    ctx.stroke();
-    ctx.fillStyle = "rgba(255,255,255,0.42)";
-    ctx.beginPath();
-    ctx.ellipse(hx + hr * 0.32, hy, s * 0.11, s * 0.03, -0.22, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = skin;
-    ctx.lineWidth = Math.max(2.6, s * 0.19);
-    ctx.beginPath();
-    ctx.moveTo(s * 0.14, -s * 0.08);
-    ctx.quadraticCurveTo(s * 0.54, -s * 0.18 - punch * 0.3, s * 0.98, -s * 0.1 - punch);
-    ctx.stroke();
-    fist(s * 1.08, -s * 0.08 - punch);
+    ctx.fillStyle = "rgba(255,255,255,0.32)";
+    ctx.fillRect(-r * 0.3, -r * 0.1, r * 0.22, r * 0.07);
+    ctx.fillRect(r * 0.1, -r * 0.08, r * 0.18, r * 0.06);
 
     if (laser) {
-      const sy = hy + s * 0.04;
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
       ctx.lineWidth = 3.4;
       ctx.beginPath();
-      ctx.moveTo(hx + hr * 0.9, sy);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : s * 12), sy - s * 0.16);
-      ctx.moveTo(hx + hr * 0.9, sy + s * 0.1);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : s * 12), sy + s * 0.22);
+      ctx.moveTo(r - 2, -3);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), -8);
+      ctx.moveTo(r - 2, 3);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), 8);
       ctx.stroke();
     }
     ctx.restore();
@@ -3427,6 +3278,33 @@
     ctx.restore();
   }
 
+  function hashU(n) {
+    n = Math.imul(n ^ (n >>> 16), 2246822519);
+    n = Math.imul(n ^ (n >>> 13), 3266489917);
+    return (n ^ (n >>> 16)) >>> 0;
+  }
+  let STAR_CACHE = null;
+  let STAR_CACHE_KEY = "";
+  function starsFor(w, h, n) {
+    const key = w + "x" + h + ":" + n;
+    if (STAR_CACHE && STAR_CACHE_KEY === key) return STAR_CACHE;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const a = hashU((i + 1) * 2654435761);
+      const b = hashU((i + 19) * 1597334677);
+      const c = hashU((i + 41) * 374761393);
+      out.push({
+        x: (a % 10007) / 10007 * w,
+        y: (b % 10009) / 10009 * h * 0.8,
+        r: 0.35 + (c % 90) / 90 * 1.7,
+        a: 0.16 + (c % 70) / 180
+      });
+    }
+    STAR_CACHE = out;
+    STAR_CACHE_KEY = key;
+    return out;
+  }
+
   function drawWorldBg(ctx, wash, w, h) {
     w = w || S.W;
     h = h || S.H;
@@ -3437,14 +3315,13 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
     const id = PALETTE_ID;
-    if (id === "midnight" || id === "classic" || id === "neon" || id === "sunset") {
-      ctx.fillStyle = palRgba(id === "sunset" ? PAL.gold : PAL.fg, id === "classic" ? 0.1 : 0.3);
-      for (let i = 0; i < 56; i++) {
-        const x = ((i * 97 + 13) * 13) % w;
-        const y = ((i * 53 + 29) * 17) % Math.max(8, (h * 0.72) | 0);
-        const rr = 0.7 + (i % 4) * 0.45;
+    if (id === "midnight" || id === "neon") {
+      const stars = starsFor(w, h, id === "midnight" ? 72 : 48);
+      for (let i = 0; i < stars.length; i++) {
+        const st = stars[i];
+        ctx.fillStyle = palRgba(PAL.fg, st.a);
         ctx.beginPath();
-        ctx.arc(x, y, rr, 0, Math.PI * 2);
+        ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -3459,6 +3336,31 @@
       ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = palRgba(PAL.gold, 0.14);
       ctx.fillRect(0, cy + 10, w, 3);
+    }
+    if (id === "midnight") {
+      const cx = w * 0.78, cy = h * 0.2, rad = Math.max(70, h * 0.16);
+      const moonR = Math.max(15, h * 0.036);
+      const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, rad);
+      glow.addColorStop(0, palRgba("#e8eefc", 0.7));
+      glow.addColorStop(0.2, palRgba(PAL.gold, 0.28));
+      glow.addColorStop(0.55, palRgba(PAL.gold, 0.08));
+      glow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#eef3ff";
+      ctx.beginPath();
+      ctx.arc(cx, cy, moonR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = palRgba("#c5d2ee", 0.55);
+      ctx.beginPath();
+      ctx.arc(cx - moonR * 0.22, cy + moonR * 0.12, moonR * 0.18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + moonR * 0.28, cy - moonR * 0.2, moonR * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + moonR * 0.08, cy + moonR * 0.32, moonR * 0.09, 0, Math.PI * 2);
+      ctx.fill();
     }
     if (id === "neon") {
       const a = ctx.createRadialGradient(w * 0.18, h * 0.12, 2, w * 0.18, h * 0.12, 170);
@@ -5134,7 +5036,7 @@
         btn.onclick = go;
       });
     } else if (p === "paused") {
-      if (S.arcHold && !S.optPanel) {
+      if (S.optPanel === "off" || (S.arcHold && !S.optPanel)) {
         hideOverlay();
         overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui");
         return;
@@ -5282,17 +5184,39 @@
     else if (k === "p") { e.preventDefault(); if (!S.mp) togglePause(); }
   });
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); if (!S.mp) togglePause(); };
+  function optionsVisible() {
+    if (S.phase === "ready") return !!(S.optPanel && S.optPanel !== "off");
+    if (S.phase === "paused") {
+      if (S.optPanel === "off") return false;
+      if (S.arcHold && !S.optPanel) return false;
+      return true;
+    }
+    return false;
+  }
+  function toggleOptions() {
+    if (S.mp) return;
+    if (S.phase === "play") {
+      S.optBack = "play";
+      S.optPanel = "menu";
+      setPhase("paused");
+      return;
+    }
+    if (S.phase === "ready") {
+      S.optBack = "ready";
+      S.optPanel = optionsVisible() ? null : "menu";
+      renderOverlay();
+      return;
+    }
+    if (S.phase === "paused") {
+      if (optionsVisible()) S.optPanel = S.arcHold ? null : "off";
+      else S.optPanel = "menu";
+      renderOverlay();
+    }
+  }
   const optBtn = $("opt-btn");
   if (optBtn) optBtn.onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
-    if (S.mp) return;
-    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
-    else if (S.phase === "ready") {
-      S.optBack = "ready";
-      S.optPanel = S.optPanel ? null : "menu";
-      renderOverlay();
-    }
-    else if (S.phase === "paused") { S.optPanel = null; S.arcHold = false; setPhase(S.optBack || "play"); }
+    toggleOptions();
   };
   const authHud = $("btn-show-auth");
   if (authHud) authHud.onpointerdown = (e) => {
