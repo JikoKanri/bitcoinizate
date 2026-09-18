@@ -3944,27 +3944,36 @@
     const bird = Math.min(17, Math.max(13, (S.H || h) * 0.021));
     const heroD = bird * 2;
     const minR = heroD * 2.5 * 0.5;
-    const slots = [
-      [0.16, 0.18], [0.84, 0.16], [0.12, 0.52],
-      [0.88, 0.48], [0.28, 0.82], [0.72, 0.78]
+    const kinds = [
+      { petals: 5, tex: "ruffle", hue: 328, sat: 92, lite: 64, alpha: 0.78, size: 1.12, squash: 0.9, skew: 0.06, tilt: -0.2, center: "gold", shift: 6, x: 0.1, y: 0.1 },
+      { petals: 13, tex: "silk", hue: 48, sat: 98, lite: 56, alpha: 0.32, size: 2.55, squash: 0.38, skew: -0.42, tilt: 0.7, center: "dark", shift: 3, x: 0.78, y: 0.06 },
+      { petals: 8, tex: "spots", hue: 158, sat: 78, lite: 54, alpha: 0.58, size: 1.55, squash: 0.68, skew: 0.28, tilt: 0.35, center: "lime", shift: 18, x: -0.04, y: 0.42 },
+      { petals: 4, tex: "glow", hue: 22, sat: 100, lite: 58, alpha: 0.28, size: 2.9, squash: 0.32, skew: 0.55, tilt: -0.9, center: "gold", shift: 14, x: 1.02, y: 0.38 },
+      { petals: 7, tex: "stripes", hue: 272, sat: 72, lite: 62, alpha: 0.7, size: 1.28, squash: 0.8, skew: -0.1, tilt: 0.15, center: "magenta", shift: 8, x: 0.22, y: 0.9 },
+      { petals: 10, tex: "vein", hue: 198, sat: 86, lite: 60, alpha: 0.46, size: 1.95, squash: 0.52, skew: 0.38, tilt: 1.1, center: "gold", shift: 22, x: 0.9, y: 0.86 },
+      { petals: 6, tex: "ragged", hue: 350, sat: 55, lite: 78, alpha: 0.84, size: 1.05, squash: 0.94, skew: 0.04, tilt: -0.05, center: "cream", shift: 4, x: 0.52, y: 0.22 },
+      { petals: 11, tex: "spots", hue: 92, sat: 68, lite: 48, alpha: 0.24, size: 2.2, squash: 0.44, skew: -0.5, tilt: 0.55, center: "dark", shift: 28, x: 0.42, y: 0.7 }
     ];
     const out = [];
-    for (let i = 0; i < slots.length; i++) {
-      const a = hashU((i + 19) * 2654435761);
-      const b = hashU((i + 41) * 1597334677);
-      const c = hashU((i + 73) * 2246822519);
-      const jx = ((a % 800) / 800 - 0.5) * 0.12;
-      const jy = ((b % 800) / 800 - 0.5) * 0.1;
+    for (let i = 0; i < kinds.length; i++) {
+      const k = kinds[i];
+      const a = hashU((i + 91) * 2654435761);
+      const b = hashU((i + 17) * 1597334677);
       out.push({
-        x: (slots[i][0] + jx) * w,
-        y: (slots[i][1] + jy) * h,
-        r: minR * (1.05 + (c % 1000) / 1000 * 1.15),
-        petals: 5 + (a % 4),
-        tilt: ((b % 1000) / 1000 - 0.5) * 1.1,
-        squash: 0.5 + (c % 520) / 520 * 0.42,
-        skew: ((a % 700) / 700 - 0.5) * 0.38,
-        hue: (i * 53 + (a % 48)) % 360,
-        alpha: 0.42 + (b % 28) / 100,
+        x: (k.x + ((a % 700) / 700 - 0.5) * 0.08) * w,
+        y: (k.y + ((b % 700) / 700 - 0.5) * 0.07) * h,
+        r: minR * k.size,
+        petals: k.petals,
+        tilt: k.tilt,
+        squash: k.squash,
+        skew: k.skew,
+        hue: k.hue,
+        sat: k.sat,
+        lite: k.lite,
+        alpha: k.alpha,
+        tex: k.tex,
+        center: k.center,
+        shift: k.shift,
         seed: a >>> 0
       });
     }
@@ -3975,67 +3984,117 @@
   function drawBgFlower(ctx, fl, t) {
     ctx.save();
     ctx.translate(fl.x, fl.y);
-    ctx.rotate(fl.tilt + Math.sin(t * 0.35 + fl.seed) * 0.07);
-    ctx.transform(1, fl.skew * 0.45, fl.skew * 0.22, fl.squash, 0, 0);
+    ctx.rotate(fl.tilt + Math.sin(t * (0.18 + (fl.seed % 9) * 0.03) + fl.seed) * (0.04 + (fl.seed % 5) * 0.012));
+    ctx.transform(1, fl.skew * 0.55, fl.skew * 0.28, fl.squash, 0, 0);
     ctx.globalAlpha = fl.alpha;
     const n = fl.petals;
     const r = fl.r;
+    const tex = fl.tex;
     for (let p = 0; p < n; p++) {
-      const twist = (((fl.seed >>> (p * 2)) & 7) / 7 - 0.5) * 0.28;
-      const stretch = 0.86 + ((fl.seed >>> (p * 3)) & 7) / 7 * 0.38;
-      const fat = 0.3 + ((fl.seed >>> p) & 3) * 0.045;
-      const pa = p * Math.PI * 2 / n + 0.1 + twist;
+      const twist = (((fl.seed >>> (p * 2)) & 15) / 15 - 0.5) * (tex === "ragged" ? 0.55 : 0.22);
+      const stretch = (tex === "glow" ? 1.05 : 0.78) + ((fl.seed >>> (p * 3)) & 7) / 7 * (tex === "ruffle" ? 0.22 : 0.45);
+      const fat = tex === "silk" ? 0.16 : tex === "glow" ? 0.42 : tex === "ruffle" ? 0.36 : 0.26 + ((fl.seed >>> p) & 3) * 0.05;
+      const pa = p * Math.PI * 2 / n + twist + (tex === "ragged" ? p * 0.07 : 0);
       ctx.save();
       ctx.rotate(pa);
       const pr = r * stretch;
       const pw = r * fat;
-      const hue = (fl.hue + p * 11) % 360;
-      const g = ctx.createRadialGradient(0, -pr * 0.18, r * 0.04, 0, -pr * 0.5, pr);
-      g.addColorStop(0, "hsla(" + hue + ",92%,86%,0.95)");
-      g.addColorStop(0.38, "hsla(" + hue + ",82%,60%,0.78)");
-      g.addColorStop(0.78, "hsla(" + ((hue + 24) % 360) + ",70%,42%,0.38)");
-      g.addColorStop(1, "hsla(" + ((hue + 40) % 360) + ",55%,28%,0.08)");
+      const hue = (fl.hue + p * fl.shift) % 360;
+      const sat = fl.sat;
+      const lite = fl.lite;
+      if (tex === "glow") ctx.globalCompositeOperation = "lighter";
+      const g = ctx.createRadialGradient(0, -pr * 0.16, r * 0.03, 0, -pr * 0.48, pr);
+      if (tex === "silk") {
+        g.addColorStop(0, "hsla(" + hue + "," + sat + "%," + Math.min(92, lite + 28) + "%,0.9)");
+        g.addColorStop(0.55, "hsla(" + hue + "," + sat + "%," + lite + "%,0.55)");
+        g.addColorStop(1, "hsla(" + hue + "," + (sat - 20) + "%," + (lite - 22) + "%,0.05)");
+      } else if (tex === "glow") {
+        g.addColorStop(0, "hsla(" + hue + ",100%,85%,0.85)");
+        g.addColorStop(0.45, "hsla(" + ((hue + 20) % 360) + ",90%,60%,0.4)");
+        g.addColorStop(1, "hsla(" + hue + ",80%,50%,0)");
+      } else {
+        g.addColorStop(0, "hsla(" + hue + "," + sat + "%," + Math.min(90, lite + 22) + "%,0.95)");
+        g.addColorStop(0.4, "hsla(" + hue + "," + sat + "%," + lite + "%,0.8)");
+        g.addColorStop(1, "hsla(" + ((hue + 30) % 360) + "," + (sat - 15) + "%," + (lite - 18) + "%,0.1)");
+      }
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.ellipse(0, -pr * 0.5, pw, pr * 0.52, twist * 0.4, 0, Math.PI * 2);
+      if (tex === "ruffle") {
+        ctx.moveTo(0, -r * 0.08);
+        for (let k = 0; k <= 8; k++) {
+          const u = k / 8;
+          const ang = -Math.PI * 0.5 + (u - 0.5) * 1.5;
+          const scallop = 1 + Math.sin(u * Math.PI * 4) * 0.12;
+          ctx.lineTo(Math.cos(ang) * pw * 1.15 * scallop, -pr * 0.12 + Math.sin(ang) * pr * 0.9 * scallop);
+        }
+        ctx.closePath();
+      } else if (tex === "ragged") {
+        ctx.moveTo(0, -r * 0.06);
+        ctx.quadraticCurveTo(-pw * 1.1, -pr * 0.35, -pw * 0.55, -pr * 0.82);
+        ctx.quadraticCurveTo(0, -pr * 1.08, pw * 0.4, -pr * 0.7);
+        ctx.quadraticCurveTo(pw * 0.95, -pr * 0.28, 0, -r * 0.06);
+      } else {
+        ctx.ellipse(0, -pr * 0.5, pw, pr * 0.52, twist * 0.35, 0, Math.PI * 2);
+      }
       ctx.fill();
-      ctx.strokeStyle = "hsla(" + hue + ",50%,96%,0.32)";
-      ctx.lineWidth = Math.max(0.8, r * 0.025);
-      ctx.beginPath();
-      ctx.moveTo(0, -r * 0.08);
-      ctx.quadraticCurveTo(pw * 0.18, -pr * 0.42, 0, -pr * 0.92);
-      ctx.stroke();
-      ctx.strokeStyle = "hsla(" + hue + ",40%,20%,0.12)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(-pw * 0.35, -pr * 0.28);
-      ctx.quadraticCurveTo(-pw * 0.1, -pr * 0.5, -pw * 0.12, -pr * 0.72);
-      ctx.stroke();
-      ctx.fillStyle = "hsla(" + hue + ",85%,94%,0.22)";
-      for (let s = 0; s < 5; s++) {
-        const sx = ((((fl.seed >>> (s + p * 3)) & 15) / 15) - 0.5) * pw * 0.7;
-        const sy = -pr * (0.22 + ((fl.seed >>> (s * 2 + p)) & 7) / 14);
+      ctx.globalCompositeOperation = "source-over";
+      if (tex === "vein" || tex === "ruffle") {
+        ctx.strokeStyle = "hsla(" + hue + ",45%,96%,0.38)";
+        ctx.lineWidth = Math.max(0.7, r * 0.022);
         ctx.beginPath();
-        ctx.ellipse(sx, sy, r * 0.045, r * 0.03, pa, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(0, -r * 0.08);
+        ctx.quadraticCurveTo(pw * 0.16, -pr * 0.4, 0, -pr * 0.9);
+        ctx.stroke();
+      }
+      if (tex === "stripes") {
+        ctx.strokeStyle = "hsla(" + ((hue + 40) % 360) + ",50%,30%,0.28)";
+        ctx.lineWidth = Math.max(1, r * 0.03);
+        for (let s = 0; s < 4; s++) {
+          const yy = -pr * (0.22 + s * 0.16);
+          ctx.beginPath();
+          ctx.ellipse(0, yy, pw * (0.7 - s * 0.1), pr * 0.05, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+      if (tex === "spots") {
+        ctx.fillStyle = "hsla(" + ((hue + 180) % 360) + ",40%,95%,0.35)";
+        const spots = 3 + (p % 3);
+        for (let s = 0; s < spots; s++) {
+          const sx = ((((fl.seed >>> (s + p * 3)) & 15) / 15) - 0.5) * pw * 0.9;
+          const sy = -pr * (0.2 + ((fl.seed >>> (s * 2 + p)) & 7) / 12);
+          ctx.beginPath();
+          ctx.ellipse(sx, sy, r * (0.04 + (s % 3) * 0.02), r * 0.03, pa, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
       ctx.restore();
     }
-    const cg = ctx.createRadialGradient(-r * 0.1, -r * 0.1, r * 0.03, 0, 0, r * 0.36);
-    cg.addColorStop(0, "rgba(255,250,210,0.95)");
-    cg.addColorStop(0.4, "rgba(255,225,74,0.88)");
-    cg.addColorStop(1, "rgba(160,48,180,0.55)");
+    const centers = {
+      gold: ["rgba(255,250,210,0.95)", "rgba(255,210,60,0.9)", "rgba(180,60,160,0.5)"],
+      dark: ["rgba(40,8,50,0.9)", "rgba(90,20,110,0.75)", "rgba(20,4,28,0.6)"],
+      lime: ["rgba(230,255,180,0.9)", "rgba(120,220,70,0.85)", "rgba(30,90,40,0.45)"],
+      magenta: ["rgba(255,200,230,0.92)", "rgba(230,70,170,0.85)", "rgba(90,20,80,0.5)"],
+      cream: ["rgba(255,255,240,0.95)", "rgba(255,240,200,0.8)", "rgba(200,160,120,0.45)"]
+    };
+    const cc = centers[fl.center] || centers.gold;
+    const cg = ctx.createRadialGradient(-r * 0.1, -r * 0.1, r * 0.02, 0, 0, r * 0.34);
+    cg.addColorStop(0, cc[0]);
+    cg.addColorStop(0.45, cc[1]);
+    cg.addColorStop(1, cc[2]);
     ctx.fillStyle = cg;
     ctx.beginPath();
-    ctx.ellipse(0, 0, r * 0.3, r * 0.24, fl.skew * 0.3, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, r * (fl.center === "dark" ? 0.22 : 0.3), r * (fl.center === "dark" ? 0.16 : 0.24), fl.skew * 0.3, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "rgba(70,16,90,0.32)";
-    for (let d = 0; d < 12; d++) {
-      const ang = d * 2.399 + (fl.seed % 7) * 0.2;
-      const rr = r * (0.05 + (d % 4) * 0.04);
-      ctx.beginPath();
-      ctx.ellipse(Math.cos(ang) * rr, Math.sin(ang) * rr * 0.68, r * 0.028, r * 0.02, ang, 0, Math.PI * 2);
-      ctx.fill();
+    if (fl.center !== "silk") {
+      ctx.fillStyle = fl.center === "dark" ? "rgba(255,220,120,0.35)" : "rgba(70,16,90,0.3)";
+      const dots = fl.center === "cream" ? 6 : 14;
+      for (let d = 0; d < dots; d++) {
+        const ang = d * 2.399 + (fl.seed % 11) * 0.17;
+        const rr = r * (0.04 + (d % 5) * 0.035);
+        ctx.beginPath();
+        ctx.ellipse(Math.cos(ang) * rr, Math.sin(ang) * rr * 0.65, r * 0.025, r * 0.018, ang, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     ctx.restore();
   }
