@@ -305,7 +305,7 @@
     palClassic: "Classic", palMidnight: "Midnight", palTerminal: "Terminal",
     palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset",
     animHero: "Animated hero",
-    animHeroHint: "Gold coin, wraparound shades, stick limbs that hang with gravity.",
+    animHeroHint: "Gold coin with ₿, profile shades, red headband, floppy limbs.",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
     tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
     tut3a: "Bull pumps price.",
@@ -3187,62 +3187,119 @@
   function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
     const tilt = Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022));
     const g = Math.max(-1, Math.min(1, (v || 0) / 420));
-    const idle = Math.sin((t || 0) * 7.2) * 0.1;
-    const sway = g * 0.5 + idle;
+    const time = t || 0;
     const gold = wash || (laser ? "#e8902a" : "#f2a900");
     const rim = wash || (laser ? "#ffc878" : "#ffe7a0");
-    const ink = "#120806";
+    const ink = "#1a0c06";
+    const red = wash || "#e02420";
+    const redDk = wash || "#9a1410";
+    const halo = "#fff4d6";
+    const rx = r * 0.8;
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
+    const noodle = (ax, ay, ang, len, phase, col, colHalo) => {
+      const sag = r * (0.22 + Math.max(0, g) * 0.42);
+      const wig = Math.sin(time * 9.6 + phase) * r * 0.16;
+      const flop = Math.sin(time * 6.3 + phase * 0.8) * r * 0.1;
+      const ex = ax + Math.cos(ang) * len + flop;
+      const ey = ay + Math.sin(ang) * len;
+      const mx = (ax + ex) * 0.5 + wig;
+      const my = (ay + ey) * 0.5 + sag;
+      const path = () => {
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.quadraticCurveTo(mx, my, ex, ey);
+        ctx.stroke();
+      };
+      ctx.strokeStyle = colHalo || halo;
+      ctx.lineWidth = Math.max(4, r * 0.32);
+      path();
+      ctx.strokeStyle = col || ink;
+      ctx.lineWidth = Math.max(2.1, r * 0.16);
+      path();
+    };
+
     ctx.save();
     ctx.rotate(-tilt);
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = Math.max(1.7, r * 0.14);
-    const limb = (ax, ay, ang, len) => {
-      ctx.beginPath();
-      ctx.moveTo(ax, ay);
-      ctx.lineTo(ax + Math.cos(ang) * len, ay + Math.sin(ang) * len);
-      ctx.stroke();
-    };
     const down = Math.PI / 2;
-    const leg = r * 1.18;
-    const arm = r * 0.98;
-    limb(-r * 0.22, r * 0.62, down + 0.3 + sway, leg);
-    limb(r * 0.22, r * 0.62, down - 0.28 + sway * 0.85, leg);
-    limb(-r * 0.7, r * 0.06, down + 0.95 + sway * 0.45, arm);
-    limb(r * 0.7, r * 0.02, down - 1.05 + sway * 0.4, arm);
+    const kickL = Math.sin(time * 8.9) * 0.5 + g * 0.7;
+    const kickR = Math.sin(time * 8.9 + 2.5) * 0.5 + g * 0.55;
+    const armL = Math.sin(time * 7.5 + 0.4) * 0.62 + g * 0.4;
+    const armR = Math.sin(time * 7.5 + 2.7) * 0.62 + g * 0.34;
+    noodle(-r * 0.16, r * 0.58, down + 0.48 + kickL, r * 1.28, 0.2);
+    noodle(r * 0.18, r * 0.56, down - 0.08 + kickR, r * 1.22, 2.3);
+    noodle(-rx * 0.62, r * 0.1, down + 1.18 + armL, r * 1.08, 1.2);
+    noodle(rx * 0.7, r * 0.02, down - 0.88 + armR, r * 1.04, 3.0);
+    noodle(-rx * 0.58, -r * 0.5, down + 0.58 + g * 0.45 + Math.sin(time * 5.6) * 0.28, r * 1.12, 4.0, red, "#ffd2c4");
+    noodle(-rx * 0.42, -r * 0.46, down + 0.92 + g * 0.38 + Math.sin(time * 5.6 + 1.3) * 0.34, r * 0.92, 5.1, red, "#ffd2c4");
     ctx.restore();
 
     ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
     ctx.fillStyle = gold;
     ctx.fill();
     ctx.strokeStyle = rim;
     ctx.lineWidth = Math.max(1.8, r * 0.12);
     ctx.stroke();
+    ctx.strokeStyle = "rgba(80,40,0,0.32)";
+    ctx.lineWidth = Math.max(2, r * 0.14);
+    ctx.beginPath();
+    ctx.ellipse(-rx * 0.12, 0, rx * 0.82, r * 0.94, 0, Math.PI * 0.55, Math.PI * 1.45);
+    ctx.stroke();
+
+    ctx.fillStyle = ink;
+    ctx.font = "700 " + Math.round(r * 1.08) + "px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("₿", -rx * 0.06, r * 0.22);
+
+    ctx.strokeStyle = red;
+    ctx.lineWidth = Math.max(3.4, r * 0.26);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx * 1.04, r * 1.04, 0, -Math.PI * 1.05, -Math.PI * 0.08);
+    ctx.stroke();
+    ctx.strokeStyle = redDk;
+    ctx.lineWidth = Math.max(1.2, r * 0.08);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx * 1.04, r * 1.04, 0, -Math.PI * 1.05, -Math.PI * 0.08);
+    ctx.stroke();
+    ctx.fillStyle = red;
+    ctx.beginPath();
+    ctx.arc(-rx * 0.7, -r * 0.52, Math.max(2.4, r * 0.16), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = halo;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
 
     ctx.fillStyle = ink;
     ctx.beginPath();
-    ctx.moveTo(-r * 0.84, -r * 0.2);
-    ctx.quadraticCurveTo(0, -r * 0.36, r * 0.84, -r * 0.2);
-    ctx.lineTo(r * 0.88, r * 0.2);
-    ctx.quadraticCurveTo(0, r * 0.32, -r * 0.88, r * 0.2);
-    ctx.closePath();
+    ctx.ellipse(rx * 0.34, -r * 0.04, r * 0.42, r * 0.28, 0.14, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,0.32)";
-    ctx.fillRect(-r * 0.3, -r * 0.1, r * 0.22, r * 0.07);
-    ctx.fillRect(r * 0.1, -r * 0.08, r * 0.18, r * 0.06);
+    ctx.strokeStyle = gold;
+    ctx.lineWidth = Math.max(1.7, r * 0.11);
+    ctx.stroke();
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = Math.max(1.9, r * 0.13);
+    ctx.beginPath();
+    ctx.moveTo(rx * 0.04, -r * 0.08);
+    ctx.lineTo(-rx * 0.72, -r * 0.16);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.beginPath();
+    ctx.ellipse(rx * 0.24, -r * 0.1, r * 0.13, r * 0.06, -0.28, 0, Math.PI * 2);
+    ctx.fill();
 
     if (laser) {
+      const sy = -r * 0.04;
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
       ctx.lineWidth = 3.4;
       ctx.beginPath();
-      ctx.moveTo(r - 2, -3);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), -8);
-      ctx.moveTo(r - 2, 3);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), 8);
+      ctx.moveTo(rx * 0.76, sy - 3);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), sy - 8);
+      ctx.moveTo(rx * 0.76, sy + 3);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), sy + 8);
       ctx.stroke();
     }
     ctx.restore();
