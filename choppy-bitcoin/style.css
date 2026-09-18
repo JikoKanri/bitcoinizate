@@ -691,3 +691,16 @@ label.anim-hero input {
   accent-color: var(--gold);
 }
 html[data-palette="paper"] .pal-dots i { border-color: rgba(26,22,16,0.25); }
+html[data-palette="simple"],
+html[data-palette="simple"] body,
+html[data-palette="simple"] #app {
+  background-image: none;
+  background-color: #f2f2f0;
+}
+html[data-palette="flower"] body,
+html[data-palette="flower"] #app {
+  background-image:
+    radial-gradient(80% 55% at 20% 10%, rgba(255,80,220,0.45), transparent 58%),
+    radial-gradient(70% 50% at 90% 80%, rgba(255,225,74,0.28), transparent 55%),
+    linear-gradient(180deg, var(--bg-top, var(--bg)) 0%, var(--bg) 48%, var(--bg-bot, var(--bg)) 100%);
+}

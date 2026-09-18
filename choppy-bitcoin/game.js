@@ -60,6 +60,22 @@
       line: "#4a2030", muted: "#c89888", surface: "#221018", border: "#6a3040",
       hud: "#ffd0b0", green: "#e8a040", red: "#e05050",
       grid: "rgba(255,138,58,0.12)", bullBg: "#181000", bearBg: "#180808"
+    },
+    flower: {
+      nameKey: "palFlower",
+      bg: "#3a1050", bgTop: "#e040a8", bgBot: "#1a0840", glow: "rgba(255,80,220,0.5)",
+      fg: "#fff4c8", gold: "#ffe14a", ink: "#2a0838",
+      line: "#6a2880", muted: "#e8a8d8", surface: "#4a1868", border: "#c050c8",
+      hud: "#fff0a0", green: "#7dff6a", red: "#ff4aa8",
+      grid: "rgba(255,80,220,0.14)", bullBg: "#143018", bearBg: "#301018"
+    },
+    simple: {
+      nameKey: "palSimple",
+      bg: "#f2f2f0", bgTop: "#f2f2f0", bgBot: "#f2f2f0", glow: "transparent",
+      fg: "#161616", gold: "#222222", ink: "#ffffff",
+      line: "#d0d0cc", muted: "#6a6a68", surface: "#ffffff", border: "#b8b8b4",
+      hud: "#161616", green: "#2a2a2a", red: "#2a2a2a",
+      grid: "rgba(22,22,22,0.06)", bullBg: "#e8e8e6", bearBg: "#e8e8e6"
     }
   };
   let PAL = PALETTES.classic;
@@ -303,7 +319,7 @@
     runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE",
     graphics: "GRAPHICS",
     palClassic: "Classic", palMidnight: "Midnight", palTerminal: "Terminal",
-    palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset",
+    palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset", palFlower: "Flower Power", palSimple: "Simple",
     animHero: "Animated hero",
     animHeroHint: "Gold coin with ₿, profile shades, red headband, floppy limbs.",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
@@ -3184,6 +3200,25 @@
   }
 
 
+  let RIBBON = { a1: Math.PI + 0.28, w1: 0, a2: Math.PI + 0.46, w2: 0, lastT: 0 };
+  function stepRibbons(v, time) {
+    let dt = time - RIBBON.lastT;
+    if (!(dt > 0) || dt > 0.08) dt = 0.016;
+    RIBBON.lastT = time;
+    const inertia = Math.max(-1.2, Math.min(1.2, -(v || 0) / 240));
+    const rest = Math.PI + 0.22;
+    const t1 = rest - inertia * 1.12 + Math.sin(time * 3.4) * 0.06;
+    const t2 = rest + 0.2 - inertia * 0.98 + Math.sin(time * 4.1 + 1.3) * 0.08;
+    const k = 14, damp = 5.5;
+    RIBBON.w1 += (k * (t1 - RIBBON.a1) - damp * RIBBON.w1) * dt;
+    RIBBON.a1 += RIBBON.w1 * dt;
+    RIBBON.w2 += (k * (t2 - RIBBON.a2) - damp * RIBBON.w2) * dt;
+    RIBBON.a2 += RIBBON.w2 * dt;
+    const lo = Math.PI * 0.52, hi = Math.PI + 1.35;
+    RIBBON.a1 = Math.max(lo, Math.min(hi, RIBBON.a1));
+    RIBBON.a2 = Math.max(lo, Math.min(hi, RIBBON.a2));
+  }
+
   function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
     const tilt = Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022));
     const g = Math.max(-1, Math.min(1, (v || 0) / 420));
@@ -3323,23 +3358,29 @@
     ctx.restore();
 
     const bandLeft = -thick - rx * Math.sqrt(Math.max(0, 1 - (bandY * bandY) / (r * r)));
-    const ribbon = (ay, phase, len) => {
-      const ang = Math.PI - tilt + 0.16 + Math.sin(time * 5.8 + phase) * 0.28 + g * 0.1;
-      const sag = r * (0.05 + Math.max(0, g) * 0.1);
-      const wig = Math.sin(time * 7.4 + phase) * r * 0.22;
+    if (!wash) stepRibbons(v, time);
+    const ribbon = (ay, worldAng, len, phase) => {
+      const ang = worldAng - tilt;
+      const sag = r * (0.04 + Math.max(0, g) * 0.08);
+      const px = -Math.sin(ang), py = Math.cos(ang);
+      const w1 = Math.sin(time * 6.4 + phase) * r * 0.32;
+      const w2 = Math.sin(time * 8.1 + phase + 1.1) * r * 0.24;
       const ex = bandLeft + Math.cos(ang) * len;
-      const ey = ay + Math.sin(ang) * len;
-      const mx = (bandLeft + ex) * 0.5 + wig;
-      const my = (ay + ey) * 0.5 + sag;
+      const ey = ay + Math.sin(ang) * len + sag;
+      const m1x = bandLeft + (ex - bandLeft) * 0.32 + px * (w1 + sag);
+      const m1y = ay + (ey - ay) * 0.32 + py * (w1 + sag);
+      const m2x = bandLeft + (ex - bandLeft) * 0.7 + px * w2;
+      const m2y = ay + (ey - ay) * 0.7 + py * w2;
       ctx.strokeStyle = red;
       ctx.lineWidth = Math.max(1.7, r * 0.13);
       ctx.beginPath();
       ctx.moveTo(bandLeft, ay);
-      ctx.quadraticCurveTo(mx, my, ex, ey);
+      ctx.quadraticCurveTo(m1x, m1y, (bandLeft + ex) * 0.5, (ay + ey) * 0.5);
+      ctx.quadraticCurveTo(m2x, m2y, ex, ey);
       ctx.stroke();
     };
-    ribbon(bandY - bandH * 0.12, 4.0, r * 1.18);
-    ribbon(bandY + bandH * 0.18, 5.2, r * 0.98);
+    ribbon(bandY - bandH * 0.12, RIBBON.a1, r * 1.22, 4.0);
+    ribbon(bandY + bandH * 0.18, RIBBON.a2, r * 1.02, 5.2);
 
     if (laser) {
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
@@ -3489,6 +3530,36 @@
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, w, h);
     }
+    if (id === "flower") {
+      const tnow = performance.now() * 0.001;
+      for (let i = 6; i >= 0; i--) {
+        const rad = 36 + i * 38 + Math.sin(tnow * 0.7 + i) * 8;
+        ctx.beginPath();
+        ctx.arc(w * 0.5 + Math.cos(tnow * 0.35) * 18, h * 0.42 + Math.sin(tnow * 0.28) * 12, rad, 0, Math.PI * 2);
+        ctx.strokeStyle = "hsla(" + ((tnow * 48 + i * 52) % 360) + ",85%,62%,0.22)";
+        ctx.lineWidth = 10;
+        ctx.stroke();
+      }
+      const cols = ["#ff4aa8", "#ffe14a", "#7dff6a", "#ff8a3a", "#c050ff", "#5ad4ff"];
+      for (let i = 0; i < 8; i++) {
+        const a = hashU((i + 3) * 2654435761);
+        const b = hashU((i + 11) * 1597334677);
+        const fx = (a % 10007) / 10007 * w;
+        const fy = (b % 10009) / 10009 * h * 0.85;
+        const fr = 7 + (a % 9);
+        ctx.fillStyle = cols[i % cols.length];
+        for (let p = 0; p < 6; p++) {
+          const pa = tnow * 0.6 + p * Math.PI / 3;
+          ctx.beginPath();
+          ctx.ellipse(fx + Math.cos(pa) * fr * 0.85, fy + Math.sin(pa) * fr * 0.85, fr * 0.55, fr * 0.32, pa, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "#ffe14a";
+        ctx.beginPath();
+        ctx.arc(fx, fy, fr * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
     if (id === "paper") {
       ctx.strokeStyle = palRgba(PAL.line, 0.7);
       ctx.lineWidth = 1;
@@ -3503,7 +3574,7 @@
       ctx.moveTo(40, 0);
       ctx.lineTo(40, h);
       ctx.stroke();
-    } else {
+    } else if (id !== "simple") {
       ctx.strokeStyle = wash ? palRgba(wash, 0.38) : PAL.grid;
       ctx.lineWidth = 1;
       const stepG = id === "terminal" ? 28 : 36;
