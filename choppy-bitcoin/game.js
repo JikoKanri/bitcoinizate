@@ -9,9 +9,91 @@
   const HALVE_N = 21;
   const HALVE_GAP = 210;
   const BTC_CAP = 21e6;
-  const GREEN = "#4f9d6e";
-  const RED = "#c45c4a";
-  const BTC = "#c8960a";
+  let GREEN = "#4f9d6e";
+  let RED = "#c45c4a";
+  let BTC = "#c8960a";
+  const PALETTES = {
+    classic: {
+      nameKey: "palClassic",
+      bg: "#0a0a0c", fg: "#f3efe6", gold: "#c8960a", ink: "#09090b",
+      line: "#2a2a2e", muted: "#8a8680", surface: "#141416", border: "#3a3a40",
+      hud: "#fff6d0", green: "#4f9d6e", red: "#c45c4a",
+      grid: "rgba(243,239,230,0.16)", bullBg: "#052010", bearBg: "#200505"
+    },
+    midnight: {
+      nameKey: "palMidnight",
+      bg: "#070b16", fg: "#dce6f5", gold: "#7eb6ff", ink: "#041018",
+      line: "#1c2740", muted: "#7a88a4", surface: "#0e1524", border: "#2a3a58",
+      hud: "#d6e8ff", green: "#3dba8c", red: "#e06a7a",
+      grid: "rgba(126,182,255,0.14)", bullBg: "#041510", bearBg: "#180810"
+    },
+    terminal: {
+      nameKey: "palTerminal",
+      bg: "#020804", fg: "#b6f5b0", gold: "#5dff6a", ink: "#021004",
+      line: "#143318", muted: "#5a8a58", surface: "#06140a", border: "#1c4a22",
+      hud: "#c8ffc4", green: "#3adf5a", red: "#ff5a4a",
+      grid: "rgba(93,255,106,0.14)", bullBg: "#032010", bearBg: "#180808"
+    },
+    paper: {
+      nameKey: "palPaper",
+      bg: "#efe6d4", fg: "#1a1610", gold: "#b07a10", ink: "#f7f1e4",
+      line: "#c8bba4", muted: "#6a6256", surface: "#f6efe2", border: "#b8aa90",
+      hud: "#5a4010", green: "#2f7a4a", red: "#b44a3a",
+      grid: "rgba(26,22,16,0.12)", bullBg: "#d8ead8", bearBg: "#ead8d4"
+    },
+    neon: {
+      nameKey: "palNeon",
+      bg: "#09040f", fg: "#f4e8ff", gold: "#ff4ad2", ink: "#120414",
+      line: "#3a1848", muted: "#a888b8", surface: "#16081c", border: "#5a2870",
+      hud: "#ffd0f4", green: "#2ee6c8", red: "#ff4a7a",
+      grid: "rgba(255,74,210,0.14)", bullBg: "#041816", bearBg: "#180410"
+    },
+    sunset: {
+      nameKey: "palSunset",
+      bg: "#160810", fg: "#ffe8d4", gold: "#ff8a3a", ink: "#1a0808",
+      line: "#4a2030", muted: "#c89888", surface: "#221018", border: "#6a3040",
+      hud: "#ffd0b0", green: "#e8a040", red: "#e05050",
+      grid: "rgba(255,138,58,0.16)", bullBg: "#181000", bearBg: "#180808"
+    }
+  };
+  let PAL = PALETTES.classic;
+  let PALETTE_ID = "classic";
+  let ANIM_HERO = false;
+  function currentPaletteId() { return PALETTE_ID; }
+  function applyPalette(id) {
+    if (!PALETTES[id]) id = "classic";
+    const p = PALETTES[id];
+    PALETTE_ID = id;
+    PAL = p;
+    GREEN = p.green;
+    RED = p.red;
+    BTC = p.gold;
+    try { localStorage.setItem("choppy-palette", id); } catch (e) {}
+    const vars = {
+      "--bg": p.bg, "--fg": p.fg, "--gold": p.gold, "--ink": p.ink,
+      "--line": p.line, "--muted": p.muted, "--surface": p.surface,
+      "--border": p.border, "--hud": p.hud, "--green": p.green, "--red": p.red
+    };
+    [document.documentElement, document.body, document.getElementById("app")].forEach((el) => {
+      if (!el) return;
+      el.setAttribute("data-palette", id);
+      Object.keys(vars).forEach((k) => el.style.setProperty(k, vars[k]));
+    });
+  }
+  function loadPalette() {
+    let id = "classic";
+    try { id = localStorage.getItem("choppy-palette") || "classic"; } catch (e) {}
+    applyPalette(id);
+  }
+  function setAnimHero(on) {
+    ANIM_HERO = !!on;
+    try { localStorage.setItem("choppy-anim-hero", ANIM_HERO ? "1" : "0"); } catch (e) {}
+  }
+  function loadAnimHero() {
+    try { ANIM_HERO = localStorage.getItem("choppy-anim-hero") === "1"; } catch (e) { ANIM_HERO = false; }
+  }
+  loadPalette();
+  loadAnimHero();
   const PX_MIN = 1;
   const DRIFT0 = 0.0006;
   const PHI = (1 + Math.sqrt(5)) / 2;
@@ -90,6 +172,8 @@
     if (kind === "laser") return wrap("<g stroke-linecap=\"butt\"><path d=\"M-11-2.4H11M-11 2.4H11\" stroke=\"#fff4e8\" stroke-width=\"3.2\"/><path d=\"M-11-2.4H11M-11 2.4H11\" stroke=\"#ff2a22\" stroke-width=\"1.8\"/></g>", "#120806", "#ffe7c2");
     if (kind === "swan") return wrap("<g fill=\"#0a0a0c\"><ellipse cx=\"1\" cy=\"3\" rx=\"5.2\" ry=\"3.4\" transform=\"rotate(-16)\"/><path d=\"M-1 1 Q-6-4 -1-7 Q2-7 3-5\" fill=\"none\" stroke=\"#0a0a0c\" stroke-width=\"1.8\"/><polygon points=\"2.4,-5.8 6.2,-5 2.4,-4.2\" fill=\"#c45c4a\"/></g>", "#f3efe6", "#1a1a1c");
     if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
+    if (kind === "rank") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#120c02\" font-family=\"IBM Plex Mono,monospace\">#1</text>", "#c8960a", "#ffe7a0");
+    if (kind === "perk") return wrap("<polygon points=\"0,-8 2.2,-2.2 8,-2.2 3.4,1.6 5.2,7.5 0,4 -5.2,7.5 -3.4,1.6 -8,-2.2 -2.2,-2.2\" fill=\"#ffe7a0\"/>", "#141416", "#c8960a");
     return wrap("", "#141416", "#3a3a40");
   }
   const HEROES = [
@@ -197,7 +281,22 @@
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
     chanceHead: "ARC", chanceAck: "GOT IT", chanceTldr: "TLDR", chanceOutcome: "OUTCOME",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
-    runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE"
+    runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE",
+    graphics: "GRAPHICS",
+    palClassic: "Classic", palMidnight: "Midnight", palTerminal: "Terminal",
+    palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset",
+    animHero: "Animated hero",
+    animHeroHint: "Choppy from the Arc cards: bandana, shades, fists, kicking sneakers.",
+    tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
+    tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
+    tut3a: "Bull pumps price.",
+    tut3b: "Bear dumps it.",
+    tut4a: "Black swan is a black crash that dumps hard and stretches the bear.",
+    tut4b: "Halving is a fat bull. It sits at the top or just above Buy/Sell.",
+    tut5: "Cold storage saves a hit. Ten colds become one multisig life.",
+    tut6: "Laser eyes eat a bear and unlock a perk.",
+    tut7: "Ranked is 0 cold and 0 multisig and counts for the board. Training is 9 cold and 999 multisig and does not. Versus does not count for ranked scores or awards.",
+    tut8: "Pick a perk and the menu vanishes like an Arc card — then tap ▶. DCA, A.I. bud, Jukebox, Marketplace and Arc sit on the HUD. Speed is the 1x button between Buy and Sell."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -215,6 +314,8 @@
       + "<p>" + badgeIco("swan") + " " + t("tut4a") + " " + badgeIco("halve") + " " + t("tut4b") + "</p>"
       + "<p>" + badgeIco("cold") + " " + t("tut5") + "</p>"
       + "<p>" + badgeIco("laser") + " " + t("tut6") + "</p>"
+      + "<p>" + badgeIco("rank") + " " + t("tut7") + "</p>"
+      + "<p>" + badgeIco("perk") + " " + t("tut8") + "</p>"
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
@@ -1353,8 +1454,7 @@
   }
   function pickPerk(kind) {
     S.perkPick = kind;
-    renderOverlay();
-    renderHud();
+    confirmPerk();
   }
 
   function confirmPerk() {
@@ -1366,7 +1466,8 @@
     S.perkResume = null;
     S.optPanel = null;
     S.optBack = "play";
-    setPhase("play");
+    S.arcHold = true;
+    setPhase("paused");
   }
 
   function grantPerk(kind) {
@@ -3056,12 +3157,136 @@
     ctx.restore();
   }
 
-  function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser) {
-    const col = wash || (laser ? "#e8902a" : (hero && hero.fill) || BTC);
+
+  function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
+    const flap = Math.max(-1, Math.min(1, (v || 0) / 420));
+    const wiggle = Math.sin((t || 0) * 10.5);
+    const wiggle2 = Math.sin((t || 0) * 13.2 + 1.1);
+    const kick = flap * 0.85 + Math.sin((t || 0) * 14) * 0.16;
+    const gold = wash || "#f2a900";
+    const rim = "#ffe7a0";
+    const band = "#e24a12";
+    const bandDark = "#9a2208";
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    const tail = (off, amp, thick, col) => {
+      const tx = -r * 0.62;
+      const ty = -r * 0.58 + off;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = Math.max(2.4, r * thick);
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.bezierCurveTo(
+        tx - r * (0.55 + amp * 0.12), ty - r * 0.08,
+        tx - r * (1.05 + amp * 0.22), ty + r * (0.18 + amp * 0.12),
+        tx - r * (1.55 + amp * 0.28), ty + r * (0.42 + amp * 0.22)
+      );
+      ctx.stroke();
+    };
+    tail(0, wiggle, 0.28, band);
+    tail(r * 0.16, wiggle2, 0.22, bandDark);
+    const shoe = (sx, sy, rot, kickAmt) => {
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(rot + kickAmt);
+      ctx.fillStyle = "#fff8ee";
+      ctx.beginPath();
+      ctx.ellipse(r * 0.3, r * 0.08, r * 0.46, r * 0.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = band;
+      ctx.beginPath();
+      ctx.ellipse(r * 0.18, 0, r * 0.4, r * 0.18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#1a0804";
+      ctx.fillRect(-r * 0.08, -r * 0.1, r * 0.14, r * 0.18);
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(r * 0.02, -r * 0.08, r * 0.1, r * 0.1);
+      ctx.restore();
+    };
+    shoe(-r * 0.28, r * 0.78, 0.22, kick * 0.55);
+    shoe(r * 0.34, r * 0.74, -0.55, -kick * 1.05);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = gold;
+    ctx.fill();
+    ctx.strokeStyle = rim;
+    ctx.lineWidth = Math.max(1.8, r * 0.12);
+    ctx.stroke();
+    ctx.fillStyle = "#120c02";
+    ctx.font = "700 " + Math.round(r * 1.08) + "px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("₿", 0, r * 0.1);
+    ctx.fillStyle = band;
+    ctx.beginPath();
+    ctx.arc(0, 0, r * 1.04, -Math.PI * 1.05, -Math.PI * 0.05);
+    ctx.arc(0, -r * 0.06, r * 0.7, -Math.PI * 0.08, -Math.PI * 0.98, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-r * 0.62, -r * 0.52, r * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = bandDark;
+    ctx.beginPath();
+    ctx.arc(-r * 0.62, -r * 0.52, r * 0.09, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = bandDark;
+    ctx.lineWidth = Math.max(1.4, r * 0.1);
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.82, -r * 0.42);
+    ctx.lineTo(-r * 1.05, -r * 0.18);
+    ctx.moveTo(-r * 0.7, -r * 0.38);
+    ctx.lineTo(-r * 0.95, -r * 0.08);
+    ctx.stroke();
+    const sy = -r * 0.06;
+    ctx.fillStyle = "#120806";
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.78, sy - r * 0.1);
+    ctx.quadraticCurveTo(0, sy - r * 0.28, r * 0.78, sy - r * 0.1);
+    ctx.lineTo(r * 0.8, sy + r * 0.22);
+    ctx.quadraticCurveTo(0, sy + r * 0.36, -r * 0.8, sy + r * 0.22);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.2)";
+    ctx.fillRect(-r * 0.46, sy - r * 0.06, r * 0.24, r * 0.09);
+    ctx.fillRect(r * 0.14, sy - r * 0.04, r * 0.2, r * 0.07);
+    const punch = Math.sin((t || 0) * 12) * r * 0.1;
+    const fist = (fx, fy) => {
+      ctx.fillStyle = gold;
+      ctx.strokeStyle = "#120c02";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(fx, fy, r * 0.24, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    };
+    fist(-r * 1.12, r * 0.26 + punch);
+    fist(r * 1.08, r * 0.06 - punch);
+    if (laser) {
+      ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
+      ctx.lineWidth = 3.4;
+      ctx.beginPath();
+      ctx.moveTo(r * 0.58, sy);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), sy - r * 0.25);
+      ctx.moveTo(r * 0.58, sy + r * 0.14);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), sy + r * 0.35);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawBirdAt(ctx, x, y, v, r, hero, wash, alpha, laser, choppy) {
     ctx.save();
     ctx.globalAlpha = alpha == null ? 1 : alpha;
     ctx.translate(x, y);
     ctx.rotate(Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022)));
+    if (choppy) {
+      drawChoppyHero(ctx, r, v, S.lifeT, wash, laser, x);
+      ctx.restore();
+      return;
+    }
+    const col = wash || (laser ? "#e8902a" : (hero && hero.fill) || BTC);
     ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
     ctx.fillStyle = col; ctx.fill();
     ctx.strokeStyle = (hero && hero.ring) || "#09090b";
@@ -3083,9 +3308,9 @@
 
   function draw(ctx) {
     const wash = S.power === "BULL" ? GREEN : S.power === "BEAR" ? RED : null;
-    ctx.fillStyle = S.power === "BULL" ? "#052010" : S.power === "BEAR" ? "#200505" : "#0a0a0c";
+    ctx.fillStyle = S.power === "BULL" ? PAL.bullBg : S.power === "BEAR" ? PAL.bearBg : PAL.bg;
     ctx.fillRect(0, 0, S.W, S.H);
-    ctx.strokeStyle = wash ? (wash === GREEN ? "rgba(79,157,110,0.38)" : "rgba(196,92,74,0.38)") : "rgba(243,239,230,0.16)";
+    ctx.strokeStyle = wash ? (wash === GREEN ? "rgba(79,157,110,0.38)" : "rgba(196,92,74,0.38)") : PAL.grid;
     ctx.lineWidth = 1;
     const stepG = 36, ox = -((S.bg * 0.5) % stepG);
     for (let x = ox; x < S.W + stepG; x += stepG) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, S.H); ctx.stroke(); }
@@ -3133,7 +3358,7 @@
     const foc = S.mp ? mpFocusPlayer() : null;
     const mineId = window.ChoppyMP && window.ChoppyMP.id ? window.ChoppyMP.id() : null;
     const selfGhost = !!(S.mp && (S.spectate || S.dead || S.finished) && foc && foc.id !== mineId);
-    if (!blink && !selfGhost) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn);
+    if (!blink && !selfGhost) drawBirdAt(ctx, S.bird.x, S.bird.y, S.bird.v, S.bird.r, myHero(), wash, 1, S.laserOn, ANIM_HERO);
     if (S.mp && window.ChoppyMP) {
       (window.ChoppyMP.players() || []).forEach((p) => {
         if (!p || p.id === mineId) return;
@@ -3915,11 +4140,26 @@
         + "<button type=\"button\" class=\"cta opt-item" + (cur === "es" ? " on" : "") + "\" data-lang=\"es\">Español</button>"
         + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
+    if (panel === "gfx") {
+      const pal = currentPaletteId();
+      const swatches = Object.keys(PALETTES).map((id) => {
+        const p = PALETTES[id];
+        return "<button type=\"button\" class=\"cta opt-item pal-swatch" + (pal === id ? " on" : "") + "\" data-pal=\"" + id + "\">"
+          + "<span class=\"pal-dots\" aria-hidden=\"true\"><i style=\"background:" + p.bg + "\"></i><i style=\"background:" + p.gold + "\"></i><i style=\"background:" + p.green + "\"></i></span>"
+          + t(p.nameKey) + "</button>";
+      }).join("");
+      return "<h1>" + t("graphics") + "</h1>"
+        + "<div class=\"pal-grid\">" + swatches + "</div>"
+        + "<label class=\"anim-hero\"><input type=\"checkbox\" id=\"anim-hero\"" + (ANIM_HERO ? " checked" : "") + "> " + t("animHero") + "</label>"
+        + "<p class=\"k\">" + t("animHeroHint") + "</p>"
+        + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+    }
     const fromPlay = S.optBack === "play" || S.phase === "paused";
     return "<h1>" + (fromPlay ? t("paused") : t("options")) + "</h1>"
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-gfx\">" + t("graphics") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
@@ -4018,6 +4258,23 @@
     if (ms) ms.onclick = (e) => { e.stopPropagation(); A.setMuteSfx(!A.muteSfx()); renderOverlay(); };
     const mv = $("mute-voice");
     if (mv) mv.onclick = (e) => { e.stopPropagation(); A.setMuteVoice(!A.muteVoice()); renderOverlay(); };
+    const optGfx = $("opt-gfx");
+    if (optGfx) optGfx.onclick = (e) => { e.stopPropagation(); S.optPanel = "gfx"; renderOverlay(); };
+    overlay.querySelectorAll("[data-pal]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        applyPalette(btn.getAttribute("data-pal"));
+        renderOverlay();
+      };
+    });
+    const ah = $("anim-hero");
+    if (ah) {
+      ah.onclick = (e) => e.stopPropagation();
+      ah.onchange = (e) => {
+        e.stopPropagation();
+        setAnimHero(ah.checked);
+      };
+    }
   }
 
   function mpRosterHtml() {
@@ -4939,6 +5196,12 @@
     if ((S.have.chance || 0) < 1) S.have.chance = 1;
     if (S.phase !== "play") S.phase = "play";
     dealChance();
+  };
+  window.offerChoppyPerk = function (ids) {
+    S.perkOffers = (ids && ids.length) ? ids.slice() : ["dca", "aibud", "skip"];
+    S.perkPick = "";
+    S.perkHint = "";
+    setPhase("perk");
   };
   window.refreshChoppyAuth = () => {
     if (S.phase === "ready" && !S.optPanel) renderOverlay();
