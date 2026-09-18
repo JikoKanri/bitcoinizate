@@ -19,7 +19,9 @@
       fg: "#f3efe6", gold: "#c8960a", ink: "#09090b",
       line: "#2a2a2e", muted: "#8a8680", surface: "#141416", border: "#3a3a40",
       hud: "#fff6d0", green: "#4f9d6e", red: "#c45c4a",
-      grid: "rgba(243,239,230,0.14)", bullBg: "#052010", bearBg: "#200505"
+      grid: "rgba(243,239,230,0.14)", bullBg: "#052010", bearBg: "#200505",
+      halo: "rgba(0,0,0,0.88)", labelUp: "#8ee0a8", labelDn: "#ff9a8c",
+      card: "#1a1a1e", cardFg: "#f3efe6", desc: "#c4c0b6"
     },
     midnight: {
       nameKey: "palMidnight",
@@ -27,7 +29,9 @@
       fg: "#dce6f5", gold: "#7eb6ff", ink: "#041018",
       line: "#1c2740", muted: "#7a88a4", surface: "#0e1524", border: "#2a3a58",
       hud: "#d6e8ff", green: "#3dba8c", red: "#e06a7a",
-      grid: "rgba(126,182,255,0.12)", bullBg: "#041820", bearBg: "#180814"
+      grid: "rgba(126,182,255,0.12)", bullBg: "#041820", bearBg: "#180814",
+      halo: "rgba(0,0,0,0.9)", labelUp: "#b8f0d0", labelDn: "#ffb4bc",
+      card: "#0e1524", cardFg: "#e8f0fc", desc: "#b4c4dc"
     },
     terminal: {
       nameKey: "palTerminal",
@@ -35,15 +39,19 @@
       fg: "#b6f5b0", gold: "#5dff6a", ink: "#021004",
       line: "#143318", muted: "#5a8a58", surface: "#06140a", border: "#1c4a22",
       hud: "#c8ffc4", green: "#3adf5a", red: "#ff5a4a",
-      grid: "rgba(93,255,106,0.1)", bullBg: "#032010", bearBg: "#180808"
+      grid: "rgba(93,255,106,0.1)", bullBg: "#032010", bearBg: "#180808",
+      halo: "rgba(0,0,0,0.92)", labelUp: "#d0ffcc", labelDn: "#ffc0b4",
+      card: "#06140a", cardFg: "#d8ffd4", desc: "#a8e0b0"
     },
     paper: {
       nameKey: "palPaper",
       bg: "#f3ead8", bgTop: "#fbf6ea", bgBot: "#e4d5bc", glow: "rgba(176,122,16,0.16)",
       fg: "#1a1610", gold: "#b07a10", ink: "#f7f1e4",
-      line: "#c8bba4", muted: "#6a6256", surface: "#f6efe2", border: "#b8aa90",
+      line: "#c8bba4", muted: "#4a443c", surface: "#f6efe2", border: "#b8aa90",
       hud: "#5a4010", green: "#2f7a4a", red: "#b44a3a",
-      grid: "rgba(26,22,16,0.1)", bullBg: "#d8ead8", bearBg: "#ead8d4"
+      grid: "rgba(26,22,16,0.1)", bullBg: "#d8ead8", bearBg: "#ead8d4",
+      halo: "rgba(255,255,255,0.92)", labelUp: "#14532d", labelDn: "#9a2218",
+      card: "#fff8ee", cardFg: "#1a1610", desc: "#4a443c"
     },
     neon: {
       nameKey: "palNeon",
@@ -51,7 +59,9 @@
       fg: "#f4e8ff", gold: "#ff4ad2", ink: "#120414",
       line: "#3a1848", muted: "#a888b8", surface: "#16081c", border: "#5a2870",
       hud: "#ffd0f4", green: "#2ee6c8", red: "#ff4a7a",
-      grid: "rgba(255,74,210,0.12)", bullBg: "#041816", bearBg: "#180410"
+      grid: "rgba(255,74,210,0.12)", bullBg: "#041816", bearBg: "#180410",
+      halo: "rgba(0,0,0,0.9)", labelUp: "#b8fff4", labelDn: "#ffc0dc",
+      card: "#16081c", cardFg: "#ffe8ff", desc: "#e0c4f0"
     },
     sunset: {
       nameKey: "palSunset",
@@ -59,7 +69,9 @@
       fg: "#ffe8d4", gold: "#ff8a3a", ink: "#1a0808",
       line: "#4a2030", muted: "#c89888", surface: "#221018", border: "#6a3040",
       hud: "#ffd0b0", green: "#e8a040", red: "#e05050",
-      grid: "rgba(255,138,58,0.12)", bullBg: "#181000", bearBg: "#180808"
+      grid: "rgba(255,138,58,0.12)", bullBg: "#181000", bearBg: "#180808",
+      halo: "rgba(0,0,0,0.92)", labelUp: "#ffe9b8", labelDn: "#ffd0c8",
+      card: "#2a1018", cardFg: "#fff0e4", desc: "#f0c8b8"
     },
     flower: {
       nameKey: "palFlower",
@@ -67,15 +79,19 @@
       fg: "#fff4c8", gold: "#ffe14a", ink: "#2a0838",
       line: "#6a2880", muted: "#e8a8d8", surface: "#4a1868", border: "#c050c8",
       hud: "#fff0a0", green: "#7dff6a", red: "#ff4aa8",
-      grid: "rgba(255,80,220,0.14)", bullBg: "#143018", bearBg: "#301018"
+      grid: "rgba(255,80,220,0.14)", bullBg: "#143018", bearBg: "#301018",
+      halo: "rgba(0,0,0,0.9)", labelUp: "#f0ffc0", labelDn: "#ffe0f8",
+      card: "#2a0840", cardFg: "#fff8d8", desc: "#f4d0ec"
     },
     simple: {
       nameKey: "palSimple",
       bg: "#f2f2f0", bgTop: "#f2f2f0", bgBot: "#f2f2f0", glow: "transparent",
       fg: "#161616", gold: "#222222", ink: "#ffffff",
-      line: "#d0d0cc", muted: "#6a6a68", surface: "#ffffff", border: "#b8b8b4",
+      line: "#d0d0cc", muted: "#3a3a38", surface: "#ffffff", border: "#b8b8b4",
       hud: "#161616", green: "#2a2a2a", red: "#2a2a2a",
-      grid: "rgba(22,22,22,0.06)", bullBg: "#e8e8e6", bearBg: "#e8e8e6"
+      grid: "rgba(22,22,22,0.06)", bullBg: "#e8e8e6", bearBg: "#e8e8e6",
+      halo: "rgba(255,255,255,0.95)", labelUp: "#111111", labelDn: "#111111",
+      card: "#ffffff", cardFg: "#161616", desc: "#3a3a38"
     }
   };
   let PAL = PALETTES.classic;
@@ -107,7 +123,8 @@
       "--bg": p.bg, "--fg": p.fg, "--gold": p.gold, "--ink": p.ink,
       "--line": p.line, "--muted": p.muted, "--surface": p.surface,
       "--border": p.border, "--hud": p.hud, "--green": p.green, "--red": p.red,
-      "--bg-top": p.bgTop || p.bg, "--bg-bot": p.bgBot || p.bg, "--bg-glow": p.glow || "transparent"
+      "--bg-top": p.bgTop || p.bg, "--bg-bot": p.bgBot || p.bg, "--bg-glow": p.glow || "transparent",
+      "--card": p.card || p.surface, "--card-fg": p.cardFg || p.fg, "--desc": p.desc || p.muted
     };
     [document.documentElement, document.body, document.getElementById("app")].forEach((el) => {
       if (!el) return;
@@ -3097,6 +3114,20 @@
     return { o: o, h: h, l: l, c: data[end - 1] };
   }
 
+  function paintHaloText(ctx, text, x, y, fill) {
+    ctx.save();
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.lineWidth = 3.6;
+    ctx.strokeStyle = "rgba(0,0,0,0.9)";
+    ctx.strokeText(text, x, y);
+    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = "rgba(255,255,255,0.88)";
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = fill;
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
     const bucket = 4, cw = 4.75, stepX = 5.1;
@@ -3220,10 +3251,8 @@
         const x = 10 + vi * stepX + cw * 0.5 - offsetX;
         const y = py(mk.price) + (peak ? -5 : 5);
         ctx.textBaseline = peak ? "bottom" : "top";
-        ctx.fillStyle = peak ? GREEN : RED;
         const lab = fmtUsd(mk.price);
-        ctx.strokeText(lab, x, y);
-        ctx.fillText(lab, x, y);
+        paintHaloText(ctx, lab, x, y, peak ? (PAL.labelUp || GREEN) : (PAL.labelDn || RED));
       }
     }
     ctx.restore();
@@ -3829,8 +3858,7 @@
     for (const f of S.floats) {
       ctx.font = "700 " + f.size + "px \"IBM Plex Mono\", monospace";
       ctx.globalAlpha = f.maxA * Math.max(0, Math.min(1, f.life / 0.28));
-      ctx.fillStyle = f.color;
-      ctx.fillText(f.text, f.x, f.y);
+      paintHaloText(ctx, f.text, f.x, f.y, f.color || PAL.fg);
     }
     ctx.globalAlpha = 1;
     if (wash) {
@@ -4323,10 +4351,8 @@
       const peak = mk.kind === "peak";
       const y = py(mk.price) + (peak ? -4 : 4);
       ctx.textBaseline = peak ? "bottom" : "top";
-      ctx.fillStyle = peak ? GREEN : RED;
       const lab = fmtUsd(mk.price);
-      ctx.strokeText(lab, x, y);
-      ctx.fillText(lab, x, y);
+      paintHaloText(ctx, lab, x, y, peak ? (PAL.labelUp || GREEN) : (PAL.labelDn || RED));
     }
     const trades = S.runTrades || [];
     ctx.font = "700 9px \"IBM Plex Mono\", monospace";
@@ -4347,10 +4373,8 @@
       ctx.closePath();
       ctx.stroke();
       ctx.fill();
-      ctx.fillStyle = buy ? GREEN : RED;
       ctx.textBaseline = buy ? "bottom" : "top";
-      ctx.strokeText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
-      ctx.fillText(buy ? "B" : "S", x, buy ? y - 9 : y + 9);
+      paintHaloText(ctx, buy ? "B" : "S", x, buy ? y - 9 : y + 9, buy ? (PAL.labelUp || GREEN) : (PAL.labelDn || RED));
     }
     ctx.restore();
     ctx.font = "700 9px \"IBM Plex Mono\", monospace";
