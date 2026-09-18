@@ -3232,8 +3232,8 @@
     noodle(r * 0.14, r * 0.56, down - 0.12 + kickR, r * 1.22, 2.3);
     noodle(-rx * 0.85, r * 0.08, down + 1.05 + armL, r * 1.08, 1.2);
     noodle(rx * 0.85, r * 0.04, down - 1.12 + armR, r * 1.04, 3.0);
-    noodle(rx * 0.78, -r * 0.4, down + 0.35 + g * 0.4 + Math.sin(time * 5.6) * 0.28, r * 1.08, 4.0, red, "#ffd2c4");
-    noodle(rx * 0.7, -r * 0.36, down + 0.72 + g * 0.35 + Math.sin(time * 5.6 + 1.3) * 0.34, r * 0.9, 5.1, red, "#ffd2c4");
+    noodle(-rx * 0.78, -r * 0.4, down - 0.35 + g * 0.4 + Math.sin(time * 5.6) * 0.28, r * 1.08, 4.0, red, "#ffd2c4");
+    noodle(-rx * 0.7, -r * 0.36, down - 0.72 + g * 0.35 + Math.sin(time * 5.6 + 1.3) * 0.34, r * 0.9, 5.1, red, "#ffd2c4");
     ctx.restore();
 
     ctx.beginPath();
@@ -3245,7 +3245,7 @@
     ctx.stroke();
     ctx.fillStyle = "rgba(80,40,0,0.22)";
     ctx.beginPath();
-    ctx.ellipse(rx * 0.62, 0, rx * 0.22, r * 0.9, 0, 0, Math.PI * 2);
+    ctx.ellipse(-rx * 0.62, 0, rx * 0.22, r * 0.9, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.save();
@@ -3266,16 +3266,16 @@
     ctx.font = "700 " + Math.round(r * 1.2) + "px Georgia, serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.strokeText("₿", r * 0.12, r * 0.16);
-    ctx.fillText("₿", r * 0.12, r * 0.16);
+    ctx.strokeText("₿", -r * 0.12, r * 0.16);
+    ctx.fillText("₿", -r * 0.12, r * 0.16);
 
-    const lx = -rx * 0.58, ly = -r * 0.02;
+    const lx = rx * 0.58, ly = -r * 0.02;
     ctx.fillStyle = ink;
     ctx.beginPath();
-    ctx.moveTo(lx - r * 0.26, ly - r * 0.15);
-    ctx.quadraticCurveTo(lx, ly - r * 0.22, lx + r * 0.24, ly - r * 0.13);
-    ctx.lineTo(lx + r * 0.28, ly + r * 0.14);
-    ctx.quadraticCurveTo(lx, ly + r * 0.22, lx - r * 0.22, ly + r * 0.16);
+    ctx.moveTo(lx + r * 0.26, ly - r * 0.15);
+    ctx.quadraticCurveTo(lx, ly - r * 0.22, lx - r * 0.24, ly - r * 0.13);
+    ctx.lineTo(lx - r * 0.28, ly + r * 0.14);
+    ctx.quadraticCurveTo(lx, ly + r * 0.22, lx + r * 0.22, ly + r * 0.16);
     ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = "#d8d8de";
@@ -3284,24 +3284,24 @@
     ctx.strokeStyle = ink;
     ctx.lineWidth = Math.max(2, r * 0.13);
     ctx.beginPath();
-    ctx.moveTo(lx + r * 0.24, ly - r * 0.02);
-    ctx.lineTo(rx * 0.72, ly - r * 0.08);
+    ctx.moveTo(lx - r * 0.24, ly - r * 0.02);
+    ctx.lineTo(-rx * 0.72, ly - r * 0.08);
     ctx.stroke();
     ctx.fillStyle = "rgba(255,255,255,0.62)";
     ctx.beginPath();
-    ctx.ellipse(lx - r * 0.06, ly - r * 0.07, r * 0.1, r * 0.045, -0.4, 0, Math.PI * 2);
+    ctx.ellipse(lx + r * 0.06, ly - r * 0.07, r * 0.1, r * 0.045, 0.4, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(lx + r * 0.08, ly - r * 0.01, r * 0.05, r * 0.025, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(lx - r * 0.08, ly - r * 0.01, r * 0.05, r * 0.025, 0.3, 0, Math.PI * 2);
     ctx.fill();
 
     if (laser) {
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
       ctx.lineWidth = 3.4;
       ctx.beginPath();
-      ctx.moveTo(rx * 0.85, ly - 3);
+      ctx.moveTo(lx + r * 0.26, ly - 3);
       ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), ly - 8);
-      ctx.moveTo(rx * 0.85, ly + 3);
+      ctx.moveTo(lx + r * 0.26, ly + 3);
       ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), ly + 8);
       ctx.stroke();
     }
