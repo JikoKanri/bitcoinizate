@@ -3200,23 +3200,64 @@
   }
 
 
-  let RIBBON = { a1: Math.PI + 0.28, w1: 0, a2: Math.PI + 0.46, w2: 0, lastT: 0 };
-  function stepRibbons(v, time) {
-    let dt = time - RIBBON.lastT;
-    if (!(dt > 0) || dt > 0.08) dt = 0.016;
-    RIBBON.lastT = time;
-    const inertia = Math.max(-1.2, Math.min(1.2, -(v || 0) / 240));
-    const rest = Math.PI + 0.22;
-    const t1 = rest - inertia * 1.12 + Math.sin(time * 3.4) * 0.06;
-    const t2 = rest + 0.2 - inertia * 0.98 + Math.sin(time * 4.1 + 1.3) * 0.08;
-    const k = 14, damp = 5.5;
-    RIBBON.w1 += (k * (t1 - RIBBON.a1) - damp * RIBBON.w1) * dt;
-    RIBBON.a1 += RIBBON.w1 * dt;
-    RIBBON.w2 += (k * (t2 - RIBBON.a2) - damp * RIBBON.w2) * dt;
-    RIBBON.a2 += RIBBON.w2 * dt;
-    const lo = Math.PI * 0.52, hi = Math.PI + 1.35;
-    RIBBON.a1 = Math.max(lo, Math.min(hi, RIBBON.a1));
-    RIBBON.a2 = Math.max(lo, Math.min(hi, RIBBON.a2));
+  const RIBBON_BAGS = Object.create(null);
+  function ribbonBag(key) {
+    return RIBBON_BAGS[key] || (RIBBON_BAGS[key] = {
+      lastT: 0,
+      init: false,
+      segs: [
+        { x: 0, y: 0, px: 0, py: 0, x2: 0, y2: 0, px2: 0, py2: 0 },
+        { x: 0, y: 0, px: 0, py: 0, x2: 0, y2: 0, px2: 0, py2: 0 }
+      ]
+    });
+  }
+  function stepCloth(bag, attaches, v, time) {
+    let dt = time - bag.lastT;
+    if (!(dt > 0) || dt > 0.05) dt = 0.016;
+    bag.lastT = time;
+    const dt2 = dt * dt;
+    const gY = 860 * dt2;
+    const trail = -(v || 0) * dt * 0.7;
+    if (!bag.init) {
+      for (let i = 0; i < 2; i++) {
+        const a = attaches[i];
+        const s = bag.segs[i];
+        s.x = a.x - a.len * 0.42;
+        s.y = a.y + a.len * 0.62;
+        s.px = s.x; s.py = s.y;
+        s.x2 = a.x - a.len * 0.82;
+        s.y2 = a.y + a.len * 1.05;
+        s.px2 = s.x2; s.py2 = s.y2;
+      }
+      bag.init = true;
+    }
+    const pull = (ax, ay, bx, by, dist) => {
+      const dx = bx - ax, dy = by - ay;
+      const d = Math.hypot(dx, dy) || 0.001;
+      const f = (d - dist) / d;
+      return { x: bx - dx * f, y: by - dy * f };
+    };
+    for (let i = 0; i < 2; i++) {
+      const a = attaches[i];
+      const s = bag.segs[i];
+      let vx = (s.x - s.px) * 0.86;
+      let vy = (s.y - s.py) * 0.86;
+      s.px = s.x; s.py = s.y;
+      s.x += vx;
+      s.y += vy + gY + trail;
+      vx = (s.x2 - s.px2) * 0.86;
+      vy = (s.y2 - s.py2) * 0.86;
+      s.px2 = s.x2; s.py2 = s.y2;
+      s.x2 += vx;
+      s.y2 += vy + gY * 1.2 + trail * 1.15;
+      const d1 = a.len * 0.5, d2 = a.len * 0.55;
+      for (let k = 0; k < 4; k++) {
+        let c = pull(a.x, a.y, s.x, s.y, d1);
+        s.x = c.x; s.y = c.y;
+        c = pull(s.x, s.y, s.x2, s.y2, d2);
+        s.x2 = c.x; s.y2 = c.y;
+      }
+    }
   }
 
   function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
@@ -3309,14 +3350,15 @@
     ctx.fillText("₿", 0, 0);
     ctx.restore();
 
-    const lr = r * 0.2;
+    const lr = r * 0.21;
     const leftL = { x: rx * 0.32, y: -r * 0.16 };
     const rightL = { x: rx * 0.78, y: -r * 0.22 };
     ctx.strokeStyle = ink;
-    ctx.lineWidth = Math.max(0.8, r * 0.05);
+    ctx.lineWidth = Math.max(1.6, r * 0.1);
     ctx.beginPath();
-    ctx.moveTo(leftL.x, leftL.y);
-    ctx.lineTo(-rx * 0.95, -r * 0.18);
+    ctx.moveTo(leftL.x - lr * 0.7, leftL.y + lr * 0.04);
+    ctx.lineTo(-rx * 0.52, leftL.y + r * 0.01);
+    ctx.quadraticCurveTo(-rx * 1.04, leftL.y + r * 0.04, -rx * 1.12, leftL.y + r * 0.26);
     ctx.stroke();
     const lens = (c, rad, shade) => {
       ctx.beginPath();
@@ -3345,42 +3387,49 @@
     ctx.stroke();
 
     const bandH = Math.max(3.2, r * 0.2);
-    const bandY = -r * 0.7;
+    const bandY = -r * 0.56;
+    const span = rx * Math.sqrt(Math.max(0, 1 - (bandY * bandY) / (r * r)));
+    const leftA = Math.atan2(bandY, -span);
+    const rightA = Math.atan2(bandY, span);
     ctx.save();
+    ctx.lineCap = "butt";
+    ctx.strokeStyle = red;
+    ctx.lineWidth = bandH;
     ctx.beginPath();
-    ctx.ellipse(-thick, 0, rx, r, 0, 0, Math.PI * 2);
-    ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.fillStyle = red;
-    ctx.fillRect(-thick - rx, bandY - bandH * 0.5, thick + rx * 2 + 2, bandH);
-    ctx.fillStyle = "rgba(0,0,0,0.18)";
-    ctx.fillRect(-thick - rx, bandY + bandH * 0.18, thick + rx * 2 + 2, bandH * 0.22);
+    ctx.ellipse(0, 0, rx * 1.02, r * 1.005, 0, leftA, rightA, false);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(-thick, 0, rx * 1.02, r * 1.005, 0, leftA, Math.PI, true);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(0,0,0,0.2)";
+    ctx.lineWidth = Math.max(1, bandH * 0.22);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx * 1.02, r * 1.005, 0, leftA, rightA, false);
+    ctx.stroke();
     ctx.restore();
 
-    const bandLeft = -thick - rx * Math.sqrt(Math.max(0, 1 - (bandY * bandY) / (r * r)));
-    if (!wash) stepRibbons(v, time);
-    const ribbon = (ay, worldAng, len, phase) => {
-      const ang = worldAng - tilt;
-      const sag = r * (0.04 + Math.max(0, g) * 0.08);
-      const px = -Math.sin(ang), py = Math.cos(ang);
-      const w1 = Math.sin(time * 6.4 + phase) * r * 0.32;
-      const w2 = Math.sin(time * 8.1 + phase + 1.1) * r * 0.24;
-      const ex = bandLeft + Math.cos(ang) * len;
-      const ey = ay + Math.sin(ang) * len + sag;
-      const m1x = bandLeft + (ex - bandLeft) * 0.32 + px * (w1 + sag);
-      const m1y = ay + (ey - ay) * 0.32 + py * (w1 + sag);
-      const m2x = bandLeft + (ex - bandLeft) * 0.7 + px * w2;
-      const m2y = ay + (ey - ay) * 0.7 + py * w2;
-      ctx.strokeStyle = red;
-      ctx.lineWidth = Math.max(1.7, r * 0.13);
+    const bandLeft = -thick - span;
+    const bag = ribbonBag((ctx.canvas && ctx.canvas.id) || "c");
+    const cs = Math.cos(tilt), sn = Math.sin(tilt);
+    const toWorld = (x, y) => ({ x: x * cs - y * sn, y: x * sn + y * cs });
+    const a0 = toWorld(bandLeft, bandY - bandH * 0.12);
+    const a1 = toWorld(bandLeft, bandY + bandH * 0.18);
+    a0.len = r * 1.18;
+    a1.len = r * 0.98;
+    stepCloth(bag, [a0, a1], v, time);
+    ctx.save();
+    ctx.rotate(-tilt);
+    ctx.strokeStyle = red;
+    ctx.lineWidth = Math.max(1.7, r * 0.13);
+    for (let i = 0; i < 2; i++) {
+      const a = i ? a1 : a0;
+      const sg = bag.segs[i];
       ctx.beginPath();
-      ctx.moveTo(bandLeft, ay);
-      ctx.quadraticCurveTo(m1x, m1y, (bandLeft + ex) * 0.5, (ay + ey) * 0.5);
-      ctx.quadraticCurveTo(m2x, m2y, ex, ey);
+      ctx.moveTo(a.x, a.y);
+      ctx.quadraticCurveTo(sg.x, sg.y, sg.x2, sg.y2);
       ctx.stroke();
-    };
-    ribbon(bandY - bandH * 0.12, RIBBON.a1, r * 1.22, 4.0);
-    ribbon(bandY + bandH * 0.18, RIBBON.a2, r * 1.02, 5.2);
+    }
+    ctx.restore();
 
     if (laser) {
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
