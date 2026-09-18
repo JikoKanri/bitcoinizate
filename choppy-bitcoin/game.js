@@ -1109,7 +1109,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1757,38 +1757,38 @@
     return text;
   }
   const CHANCE_TLDR = {
-    landfill: { en: "Nico is in Wales at 1:14 A.M. digging Docksway for a lost 8,000 BTC USB. He wants a real stake: 25% or 75% of net worth. Almost always you find nothing.", es: "Nico está en Gales a la 1:14 excavando Docksway por un USB de 8.000 BTC. Quiere 25% o 75% del patrimonio. Casi nunca aparece nada." },
-    taxbill: { en: "Quarterly tax bill. You pay 10% of net worth. The number does not change.", es: "Boleta trimestral. Pagás el 10% del patrimonio. El número no cambia." },
-    nicoWedding: { en: "Nico's wedding: 400 people, twelve you know. Envelope table: 4% generous (he hands you cold storage), 0.6% small, or skip.", es: "Boda de Nico: 400 personas, doce conocidas. Sobre: 4% generoso (te da un cold), 0,6% chico, o no dejar." },
-    mexico: { en: "Lena wants five days in Tulum. Book it for 8% of net (a few seconds of invuln) or stay home. Paco ate the brochure.", es: "Lena quiere cinco días en Tulum. Reservá por 8% del patrimonio (unos segundos de invuln) o quedate. Paco se comió el folleto." },
-    flu: { en: "Lena has the flu. Soup, medicine, Paco eats half. About $120.", es: "A Lena le da gripe. Sopa, remedio, Paco se come la mitad. Unos $120." },
-    phish: { en: "A fake support email wants your seed phrase. Open the link (−18% of net) or delete it.", es: "Un mail falso de soporte pide tu seed. Abrir el enlace (−18% del patrimonio) o borrarlo." },
+    landfill: { en: "Nico is in Wales at 1:14 A.M. digging Docksway for a lost 8,000 BTC USB. He wants a partner, not a spectator. Almost always you find nothing.", es: "Nico está en Gales a la 1:14 excavando Docksway por un USB de 8.000 BTC. Quiere un socio, no un espectador. Casi nunca aparece nada." },
+    taxbill: { en: "The quarterly tax bill did not change. You pay 10% of net worth.", es: "La boleta trimestral no cambió. Pagás el 10% del patrimonio." },
+    nicoWedding: { en: "Nico's wedding: 400 people, twelve you know, 1998 CDs. Lena says don't let him talk you into anything. A generous envelope may come back as cold storage.", es: "Boda de Nico: 400 personas, doce conocidas, CDs del 98. Lena: que no te convenza de nada. Un sobre generoso puede volver como cold storage." },
+    mexico: { en: "Lena wants five days in Tulum. You think three. Paco ate the brochure. The trip buys a few seconds of feeling untouchable.", es: "Lena quiere cinco días en Tulum. Vos pensás tres. Paco se comió el folleto. El viaje compra unos segundos de sentirte intocable." },
+    flu: { en: "Lena has the flu. Soup, medicine, Paco eats half. About $120 you will not get back.", es: "A Lena le da gripe. Sopa, remedio, Paco se come la mitad. Unos $120 que no vuelven." },
+    phish: { en: "A fake support email wants your seed phrase. The site looks convincing. Falling for it can cost about 18% of net.", es: "Un mail falso de soporte pide tu seed. El sitio se ve convincente. Caer puede costar cerca del 18% del patrimonio." },
     crash: { en: "A scooter taps the bumper. Nobody is hurt. The bumper still costs about $650.", es: "Un scooter toca el paragolpes. Nadie se lastimó. El paragolpes igual sale unos $650." },
-    wine: { en: "Friday at Marek's: wine, 12 Monkeys, A.I. debate. Keep talking (free), ice cream (−$17), or cab home (−$25).", es: "Viernes en casa de Marek: vino, 12 Monkeys, debate de I.A. Seguir (gratis), helado (−$17) o taxi (−$25)." },
-    casino: { en: "Nico found a casino table at 11:40 P.M. Bet 10%, bet 30%, or leave. The table may or may not know you.", es: "Nico encontró una mesa de casino a las 23:40. Apostá 10%, 30%, o andate. La mesa puede no conocerte." },
-    poker: { en: "Marek's private game. Buy in 8%, buy in 25%, or stay out. Chips, wine, late.", es: "El póker de Marek. Buy-in 8%, 25%, o no jugar. Fichas, vino, tarde." },
+    wine: { en: "Friday at Marek's: wine, 12 Monkeys paused, A.I. debate. You're the enthusiastic one. Neither of you wins.", es: "Viernes en casa de Marek: vino, 12 Monkeys en pausa, debate de I.A. Vos sos el entusiasta. No gana nadie." },
+    casino: { en: "Nico calls at 11:40 P.M. He found a casino table. You should ask more questions. The table may or may not know you.", es: "Nico llama a las 23:40. Encontró una mesa de casino. Deberías preguntar más. La mesa puede no conocerte." },
+    poker: { en: "Marek's private game. Not a casino. Wine, chips, late. He looks at your stack and asks if you're in.", es: "El póker de Marek. No es un casino. Vino, fichas, tarde. Mira tus fichas y pregunta si jugás." },
     uncle: { en: "Uncle Héctor sent ~7% of net as cash or sats. He will not say why.", es: "El tío Héctor mandó ~7% del patrimonio en cash o sats. No dice por qué." },
-    school: { en: "Sofi's mint-museum trip. Cover ~$300 or let her family handle it. Lena thinks you should help.", es: "Viaje de Sofi al museo de la Casa de Moneda. Cubrir ~$300 o que se arreglen. Lena cree que deberías ayudar." },
+    school: { en: "Sofi's mint-museum trip. They're short this month. Lena thinks you should help. Covering it is about $300.", es: "Viaje de Sofi al museo de la Casa de Moneda. Este mes están justos. Lena cree que deberías ayudar. Cubrirlo sale unos $300." },
     roof: { en: "Paco found the leak by sitting under it. The roof repair is about $900.", es: "Paco encontró la gotera sentándose debajo. Arreglar el techo sale unos $900." },
-    lotto: { en: "Wine with Marek, a lottery ticket, and you forgot to check. Maybe a win, maybe you lost the ticket price.", es: "Vino con Marek, un raspa y gana, y no miraste los números. Puede pagar, o perdés el ticket." },
+    lotto: { en: "Wine with Marek, a lottery ticket, and you forgot to check. Maybe a win. Maybe you lost the ticket price.", es: "Vino con Marek, un raspa y gana, y no miraste los números. Puede pagar. O perdés el ticket." },
     hospital: { en: "Four stitches. Lena drives. About $250. Try not to bleed on anything.", es: "Cuatro puntos. Lena maneja. Unos $250. Tratá de no sangrar sobre nada." },
-    startup: { en: "Nico's 47-slide app: subscriptions, A.I., community ownership. Invest 20% (might 4× or die) or pass.", es: "La app de Nico, 47 slides: suscripciones, I.A., community ownership. Invertir 20% (puede 4× o morir) o pasar." },
+    startup: { en: "Nico's 47-slide app: subscriptions, A.I., community ownership. He says the upside is massive. It might 4×. It might be a dead domain.", es: "La app de Nico, 47 slides: suscripciones, I.A., community ownership. Dice que el upside es enorme. Puede hacer 4×. O ser un dominio vencido." },
     tow: { en: "Wrong spot for nine minutes. The sign was clear. About $85.", es: "Mal estacionado nueve minutos. El cartel era claro. Unos $85." },
-    courage: { en: "Marek: maybe you're waiting for certainty with Lena. Buy the ring for 6% of net, or wait.", es: "Marek: capaz estás esperando certeza con Lena. Comprar el anillo por 6% del patrimonio, o esperar." },
-    ring: { en: "Jewelry store. You know why. Buy 8% of net, or the cheaper ring at 3%.", es: "Joyería. Sabés por qué. Comprar 8% del patrimonio, o el más barato al 3%." },
-    date: { en: "A proper date. Nothing goes wrong. Nice restaurant ~$180, keep it simple ~$60, or cancel.", es: "Una cita en forma. No pasa nada malo. Restorán ~$180, simple ~$60, o cancelar." },
-    proposal: { en: "Lake, ring in the pocket, Lena. Propose 2%, freeze, or joke-and-run 1%.", es: "Lago, anillo en el bolsillo, Lena. Proponer 2%, quedarte congelado, o chiste-y-correr 1%." },
-    wedding: { en: "You and Lena get married. Her wedding 12%, small 5%, or run away 1%.", es: "Se casan con Lena. La boda de ella 12%, chica 5%, o fugarse 1%." },
-    honeymoon: { en: "Lena took your phone. Japan 10%, Italy 6%, or Patagonia 4%. No checking the portfolio.", es: "Lena te sacó el teléfono. Japón 10%, Italia 6% o Patagonia 4%. Sin mirar el portfolio." },
+    courage: { en: "Wine at Marek's. He says maybe you're waiting for certainty with Lena. Then he presses play again.", es: "Vino en casa de Marek. Dice que capaz estás esperando certeza con Lena. Después le da play de nuevo." },
+    ring: { en: "Jewelry store. You know why you're there. The only question is how responsible you want to look.", es: "Joyería. Sabés por qué estás ahí. La única duda es cuán responsable querés parecer." },
+    date: { en: "A proper date: restaurant, walk, lake at sunset. Nothing goes wrong. That feels suspicious.", es: "Una cita en forma: restorán, caminata, lago al atardecer. No pasa nada malo. Eso se siente raro." },
+    proposal: { en: "The lake is getting dark. The ring is in your pocket. This is the moment.", es: "El lago se oscurece. El anillo está en el bolsillo. Este es el momento." },
+    wedding: { en: "You and Lena are getting married. Invitations, relatives, flowers. Most of her opinions win.", es: "Se casan con Lena. Invitaciones, parientes, flores. Ganan casi todas las opiniones de ella." },
+    honeymoon: { en: "Lena took your phone. The rule is no checking the portfolio. You immediately wonder whether looking at the total counts.", es: "Lena te sacó el teléfono. La regla es no mirar el portfolio. Enseguida te preguntás si mirar el total cuenta." },
     pregnancy: { en: "Two lines. You're going to be four. First bills: $450.", es: "Dos rayas. Van a ser cuatro. Primeros gastos: $450." },
-    baby: { en: "The baby is here. Set up 5% + a cold-storage device, keep it simple 2%, or send a finance PDF (Lena will hate that).", es: "Llegó el bebé. Armar 5% + un cold, dejarlo simple 2%, o mandar un PDF de finanzas (Lena se enoja)." },
-    cousin: { en: "Nico's new token. 10× by Friday, he says. Invest 40% of net or walk. What it does is \"not the important part.\"", es: "El token de Nico. x10 para el viernes, dice. Invertir 40% del patrimonio o irte. Qué hace \"no es lo importante.\"" },
+    baby: { en: "The baby is here. Everyone is tired. Paco is confused. Kids grow fast.", es: "Llegó el bebé. Todos cansados. Paco no entiende. Los chicos crecen rápido." },
+    cousin: { en: "Nico's new token. 10× by Friday, he says. You ask what it does. That is \"not the important part.\"", es: "El token de Nico. x10 para el viernes, dice. Preguntás qué hace. Esa \"no es la parte importante.\"" },
     speeding: { en: "Six over. Same corner. Same officer. About $75.", es: "Diez de más. La misma esquina. El mismo oficial. Unos $75." },
     wallet: { en: "Wallet on bus seat 14. Cash gone (~$40). Cards still there. Partial victory.", es: "Billetera en el asiento 14. Efectivo no (~$40). Tarjetas sí. Victoria parcial." },
-    potluck: { en: "Neighborhood potluck. Paco already ate the dish. Donate 5% of net or bring nothing.", es: "Olla de la cuadra. Paco ya se comió el plato. Donar 5% del patrimonio o no llevar nada." },
-    usedcar: { en: "Nico's 2009 Fit. Timing belt by Sharpie. Buy 12% of net (maybe a lemon) or walk.", es: "El Fit 2009 de Nico. Correa con Sharpie. Comprar 12% del patrimonio (puede ser limón) o irte." },
-    tetris: { en: "Marek, a bar, a Tetris cabinet. Put in ~$20 or watch him play.", es: "Marek, un bar, un Tetris. Meterle ~$20 o mirarlo jugar." },
-    unclemike: { en: "Fancy dinner. Uncle Mike refuses the tip line. 20% tip (~$220), no tip (~$180), or a small tip (~$195).", es: "Cena cara. El tío Mike no quiere propina. 20% (~$220), nada (~$180) o una propina chica (~$195)." }
+    potluck: { en: "Lena signed you up for a neighborhood potluck. She also signed Paco. He already ate the dish.", es: "Lena los anotó en la olla de la cuadra. También anotó a Paco. Ya se comió el plato." },
+    usedcar: { en: "Nico's 2009 Fit. The seller says new timing belt. Nico looks under the hood: Sharpie. He says that means \"basically new.\"", es: "El Fit 2009 de Nico. El vendedor dice correa nueva. Nico mira: Sharpie. Dice que significa \"casi nuevo.\"" },
+    tetris: { en: "Marek, a bar, a Tetris cabinet nobody uses. He gets unusually focused, then steps aside. Your turn.", es: "Marek, un bar, un Tetris que nadie usa. Se concentra de un modo raro y se corre. Tu turno." },
+    unclemike: { en: "Fancy dinner. Uncle Mike studies the tip line, puts the pen down, and rants about tipping culture. The waiter is still standing there.", es: "Cena cara. El tío Mike mira la línea de propina, deja la birome y se desahoga con la cultura de las tips. El mozo sigue ahí." }
   };
   function cardTldr(card) {
     if (!card) return "";
@@ -2364,6 +2364,7 @@
     S.chanceUsed[card.id] = true;
     S.chanceCard = card;
     S.chanceNote = "";
+    S.chanceReadyNote = "";
     S.chanceLead = "";
     S.chanceSettled = false;
     S.arcPending = null;
@@ -2373,7 +2374,7 @@
     let body = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
     if (card.kind === "report") {
       const before = bagSnap();
-      resolveChance(card, "ok");
+      S.chanceReadyNote = resolveChance(card, "ok");
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
@@ -2433,7 +2434,7 @@
   function arcStoryHtml(card, body) {
     const tldr = cardTldr(card);
     const text = ARC_TLDR ? (tldr || body) : body;
-    return "<p class=\"arc-body\">" + withArcDelta(text) + "</p>";
+    return "<p class=\"arc-body\">" + text + "</p>";
   }
   function arcOutcomeHtml() {
     const shown = peelArcNote(S.chanceNote) || S.chanceNote || "";
@@ -2464,6 +2465,7 @@
     commitArcBooks();
     S.chanceCard = null;
     S.chanceNote = "";
+    S.chanceReadyNote = "";
     S.chanceBody = "";
     S.chanceSettled = false;
     S.arcTldr = "";
@@ -2473,12 +2475,18 @@
     setPhase("paused");
   }
 
+  let arcClickLock = 0;
   function pickChance(opt) {
+    const now = performance.now();
+    if (now - arcClickLock < 280) return;
+    arcClickLock = now;
     const card = S.chanceCard;
     if (!card) { finishArcHold(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
-        finishArcHold();
+        S.chanceNote = S.chanceReadyNote || (chanceLang() ? "Listo." : "Done.");
+        renderOverlay();
+        renderHud();
         return;
       }
       const before = bagSnap();
@@ -5676,7 +5684,6 @@
       }
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
-        btn.onpointerdown = go;
         btn.onclick = go;
       });
     } else if (p === "perk") {
