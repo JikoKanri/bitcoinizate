@@ -46,7 +46,7 @@
     paper: {
       nameKey: "palPaper",
       bg: "#f3ead8", bgTop: "#fbf6ea", bgBot: "#e4d5bc", glow: "rgba(176,122,16,0.16)",
-      fg: "#1a1610", gold: "#b07a10", ink: "#f7f1e4",
+      fg: "#1a1610", gold: "#b07a10", ink: "#1a1610",
       line: "#c8bba4", muted: "#4a443c", surface: "#f6efe2", border: "#b8aa90",
       hud: "#5a4010", green: "#2f7a4a", red: "#b44a3a",
       grid: "rgba(26,22,16,0.1)", bullBg: "#d8ead8", bearBg: "#ead8d4",
@@ -98,12 +98,12 @@
   let PALETTE_ID = "classic";
   const HERO_SKINS = {
     classic: { fill:"#f2a900", rim:"#ffe7a0", dark:"#c48400", edge:"#8a5a00", ink:"#1a0c06", btc:"#9a9aa2", band:"#e02420", halo:"#fff4d6", lensF:"#0a0a0c", lensB:"#1a1a1e", limb:"#1a0c06", mark:"₿", style:"coin" },
-    midnight:{ fill:"#9ec4ff", rim:"#e8f0ff", dark:"#4a6aa0", edge:"#2a4068", ink:"#041018", btc:"#e8eefc", band:"#3d6adf", halo:"#d6e8ff", lensF:"#0a1428", lensB:"#1a2848", limb:"#c5d8ff", mark:"₿", style:"moon", glow:"rgba(126,182,255,0.4)" },
+    midnight:{ fill:"#9ec4ff", rim:"#e8f0ff", dark:"#4a6aa0", edge:"#2a4068", ink:"#041018", btc:"#e8eefc", band:"#3d6adf", halo:"#d6e8ff", lensF:"#0a1428", lensB:"#1a2848", limb:"#c5d8ff", mark:"₿", style:"rocket", glow:"rgba(126,182,255,0.4)" },
     terminal:{ fill:"#163416", rim:"#5dff6a", dark:"#0a200a", edge:"#082008", ink:"#021004", btc:"#5dff6a", band:"#3adf5a", halo:"#c8ffc4", lensF:"#021004", lensB:"#0a280a", limb:"#5dff6a", mark:"₿", style:"pixel", glow:"rgba(93,255,106,0.28)" },
-    paper:   { fill:"#f7f1e4", rim:"#1a1610", dark:"#e4d5bc", edge:"#b8aa90", ink:"#1a1610", btc:"#5a4010", band:"#b44a3a", halo:"#fff8ee", lensF:"#1a1610", lensB:"#3a3228", limb:"#1a1610", mark:"₿", style:"ink" },
+    paper:   { fill:"#e6c24a", rim:"#1a1610", dark:"#d4a06a", edge:"#b8aa90", ink:"#1a1610", btc:"#1a1610", band:"#e07a8a", halo:"#fff8ee", lensF:"#1a1610", lensB:"#3a3228", limb:"#1a1610", mark:"₿", style:"pencil" },
     neon:    { fill:"#ff4ad2", rim:"#ffd0f4", dark:"#a02080", edge:"#5a1060", ink:"#120414", btc:"#fff0ff", band:"#2ee6c8", halo:"#ffd0f4", lensF:"#1a0420", lensB:"#3a0850", limb:"#2ee6c8", mark:"₿", style:"glow", glow:"rgba(255,74,210,0.48)" },
     sunset:  { fill:"#ff8a3a", rim:"#ffd0b0", dark:"#c45a40", edge:"#8a3020", ink:"#1a0808", btc:"#ffe8d4", band:"#e05050", halo:"#ffe0c8", lensF:"#2a1010", lensB:"#4a1818", limb:"#1a0808", mark:"₿", style:"sun", glow:"rgba(255,138,58,0.4)" },
-    flower:  { fill:"#ffe14a", rim:"#fff4c8", dark:"#e040a8", edge:"#c050c8", ink:"#2a0838", btc:"#6a2880", band:"#ff4aa8", halo:"#fff0a0", lensF:"#3a1050", lensB:"#5a2080", limb:"#7dff6a", mark:"₿", style:"petal", glow:"rgba(255,80,220,0.32)" },
+    flower:  { fill:"#ffe14a", rim:"#fff4c8", dark:"#e040a8", edge:"#c050c8", ink:"#2a0838", btc:"#6a2880", band:"#ff4aa8", halo:"#fff0a0", lensF:"#3a1050", lensB:"#5a2080", limb:"#7dff6a", mark:"₿", style:"hippie", glow:"rgba(255,80,220,0.32)" },
     simple:  { fill:"#222222", rim:"#161616", dark:"#111111", edge:"#000000", ink:"#ffffff", btc:"#f2f2f0", band:"#222222", halo:"#ffffff", lensF:"#000000", lensB:"#333333", limb:"#161616", mark:"₿", style:"flat" }
   };
   let HERO_SKIN = "classic";
@@ -836,8 +836,8 @@
       const price = clampPx(S.price);
       const want = n / price;
       const out = creditBtc(want);
-      if (out.take > 0) pop(px, py, "+" + fmtAmt(out.take, "btc"), BTC, kind);
-      if (out.cash > 0) pop(px, py + (out.take > 0 ? 14 : 0), "+" + fmtAmt(out.cash, "usd"), GREEN, kind);
+      if (out.take > 0) pop(px, py, "+" + fmtAmt(out.take, "btc"), PAL.hud || BTC, kind);
+      if (out.cash > 0) pop(px, py + (out.take > 0 ? 14 : 0), "+" + fmtAmt(out.cash, "usd"), PAL.labelUp || GREEN, kind);
       if (out.take <= 0 && out.cash <= 0) {
         S.cash += n;
         pop(px, py, "+" + n + " usd", GREEN, kind);
@@ -3519,6 +3519,200 @@
     ctx.restore();
   }
 
+  function drawHeroLaser(ctx, x0, y0, worldX, r, wash) {
+    ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
+    ctx.lineWidth = 3.4;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0 - 2);
+    ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), y0 - 8);
+    ctx.moveTo(x0, y0 + 2);
+    ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), y0 + 8);
+    ctx.stroke();
+  }
+
+  function drawRocketHero(ctx, r, v, t, wash, laser, worldX, anim) {
+    const time = t || 0;
+    const body = wash || "#9ec4ff";
+    const dark = wash || "#3d5a90";
+    const rim = wash || "#e8f0ff";
+    ctx.save();
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    const boost = anim ? Math.max(0.5, Math.min(1.7, 0.9 - (v || 0) / 360)) : 0.55;
+    const flick = anim ? 1 + Math.sin(time * 26) * 0.2 : 1;
+    const fl = r * (0.95 * boost * flick);
+    ctx.fillStyle = wash || "#ff6a3a";
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.52, -r * 0.24);
+    ctx.quadraticCurveTo(-r * 0.72 - fl, 0, -r * 0.52, r * 0.24);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = wash || "#ffe14a";
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.48, -r * 0.14);
+    ctx.quadraticCurveTo(-r * 0.55 - fl * 0.65, 0, -r * 0.48, r * 0.14);
+    ctx.closePath();
+    ctx.fill();
+    if (anim) {
+      ctx.fillStyle = rim;
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.46, -r * 0.07);
+      ctx.quadraticCurveTo(-r * 0.38 - fl * 0.38, 0, -r * 0.46, r * 0.07);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.fillStyle = dark;
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.12, r * 0.26);
+    ctx.lineTo(-r * 0.52, r * 0.78);
+    ctx.lineTo(r * 0.1, r * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.12, -r * 0.26);
+    ctx.lineTo(-r * 0.52, -r * 0.78);
+    ctx.lineTo(r * 0.1, -r * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = body;
+    ctx.strokeStyle = rim;
+    ctx.lineWidth = Math.max(1.4, r * 0.1);
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.52, -r * 0.4);
+    ctx.lineTo(r * 0.3, -r * 0.4);
+    ctx.quadraticCurveTo(r * 1.12, 0, r * 0.3, r * 0.4);
+    ctx.lineTo(-r * 0.52, r * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    if (anim) {
+      ctx.strokeStyle = "rgba(4,16,24,0.28)";
+      ctx.lineWidth = Math.max(1, r * 0.07);
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.06, 0, r * 0.16, r * 0.34, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = wash || "#f4f8ff";
+    ctx.font = "700 " + Math.round(r * 0.92) + "px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("₿", r * 0.04, 1);
+    if (laser) drawHeroLaser(ctx, r * 0.92, 0, worldX, r, wash);
+    ctx.restore();
+  }
+
+  function drawPencilHero(ctx, r, v, t, wash, laser, worldX, anim) {
+    const time = t || 0;
+    const yellow = wash || "#e6c24a";
+    const wood = wash || "#d4a06a";
+    const ink = "#1a1610";
+    ctx.save();
+    if (anim) ctx.rotate(Math.sin(time * 6.2) * 0.05);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.fillStyle = wash || "#e07a8a";
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(-r * 1.08, -r * 0.28, r * 0.34, r * 0.56, r * 0.12);
+    else ctx.rect(-r * 1.08, -r * 0.28, r * 0.34, r * 0.56);
+    ctx.fill();
+    ctx.fillStyle = "#c8ccd0";
+    ctx.fillRect(-r * 0.78, -r * 0.3, r * 0.16, r * 0.6);
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = Math.max(1.1, r * 0.07);
+    ctx.strokeRect(-r * 0.78, -r * 0.3, r * 0.16, r * 0.6);
+    ctx.fillStyle = yellow;
+    ctx.beginPath();
+    ctx.rect(-r * 0.64, -r * 0.3, r * 1.02, r * 0.6);
+    ctx.fill();
+    ctx.stroke();
+    if (anim) {
+      ctx.strokeStyle = "rgba(26,22,16,0.2)";
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.5, -r * 0.1);
+      ctx.lineTo(r * 0.28, -r * 0.1);
+      ctx.moveTo(-r * 0.5, r * 0.1);
+      ctx.lineTo(r * 0.28, r * 0.1);
+      ctx.stroke();
+      ctx.strokeStyle = ink;
+    }
+    ctx.fillStyle = wood;
+    ctx.beginPath();
+    ctx.moveTo(r * 0.38, -r * 0.3);
+    ctx.lineTo(r * 0.95, 0);
+    ctx.lineTo(r * 0.38, r * 0.3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#2a241c";
+    ctx.beginPath();
+    ctx.moveTo(r * 0.74, -r * 0.1);
+    ctx.lineTo(r * 1.08, 0);
+    ctx.lineTo(r * 0.74, r * 0.1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = ink;
+    ctx.font = "700 " + Math.round(r * 0.7) + "px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("₿", -r * 0.12, 1);
+    if (anim) {
+      ctx.strokeStyle = "rgba(26,22,16,0.4)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(r * 1.08, 0);
+      ctx.quadraticCurveTo(r * 1.28, Math.sin(time * 9) * r * 0.14, r * 1.55, Math.sin(time * 7) * r * 0.22);
+      ctx.stroke();
+    }
+    if (laser) drawHeroLaser(ctx, r * 1.08, 0, worldX, r, wash);
+    ctx.restore();
+  }
+
+  function drawFlowerHero(ctx, r, v, t, wash, laser, worldX, anim) {
+    const time = t || 0;
+    const pink = wash || "#ff4aa8";
+    const gold = wash || "#ffe14a";
+    const lime = wash || "#7dff6a";
+    const center = wash || "#fff4c8";
+    const ink = "#2a0838";
+    ctx.save();
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    const n = anim ? 8 : 6;
+    for (let i = 0; i < n; i++) {
+      const a = i * Math.PI * 2 / n + 0.18 + (anim ? Math.sin(time * 3.1 + i) * 0.14 : 0);
+      const stretch = anim ? 1 + Math.sin(time * 4.2 + i * 0.8) * 0.14 - Math.max(-0.08, Math.min(0.18, (v || 0) / 900)) : 1;
+      ctx.save();
+      ctx.rotate(a);
+      ctx.fillStyle = i % 2 ? pink : gold;
+      ctx.beginPath();
+      ctx.ellipse(0, -r * 0.7 * stretch, r * 0.3, r * 0.52 * stretch, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    if (anim) {
+      ctx.strokeStyle = lime;
+      ctx.lineWidth = Math.max(2, r * 0.14);
+      ctx.beginPath();
+      ctx.moveTo(0, r * 0.22);
+      ctx.quadraticCurveTo(-r * 0.28, r * 0.7 + Math.max(0, (v || 0) * 0.04), Math.sin(time * 5) * r * 0.12, r * 1.2);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(0, 0, r * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = center;
+    ctx.fill();
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = Math.max(1.4, r * 0.08);
+    ctx.stroke();
+    ctx.fillStyle = "#6a2880";
+    ctx.font = "700 " + Math.round(r * 0.72) + "px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("₿", 0, 1);
+    if (laser) drawHeroLaser(ctx, r * 0.5, -2, worldX, r, wash);
+    ctx.restore();
+  }
+
   function drawThemedOrb(ctx, r, wash, laser, worldX, skinId) {
     const sk = heroSkin(skinId);
     const fill = wash || (laser ? "#e8902a" : sk.fill);
@@ -3580,6 +3774,23 @@
     ctx.translate(x, y);
     ctx.rotate(Math.max(-0.65, Math.min(0.95, (v || 0) * 0.0022)));
     const skin = skinId || HERO_SKIN;
+    const st = heroSkin(skin).style;
+    const now = performance.now() * 0.001;
+    if (st === "rocket") {
+      drawRocketHero(ctx, r, v, now, wash, laser, x, !!choppy);
+      ctx.restore();
+      return;
+    }
+    if (st === "pencil") {
+      drawPencilHero(ctx, r, v, now, wash, laser, x, !!choppy);
+      ctx.restore();
+      return;
+    }
+    if (st === "hippie") {
+      drawFlowerHero(ctx, r, v, now, wash, laser, x, !!choppy);
+      ctx.restore();
+      return;
+    }
     if (choppy) {
       drawChoppyHero(ctx, r, v, performance.now() * 0.001, wash, laser, x, skin);
       ctx.restore();

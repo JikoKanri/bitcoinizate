@@ -715,6 +715,13 @@ label.anim-hero input {
   accent-color: var(--gold);
 }
 html[data-palette="paper"] .pal-dots i { border-color: rgba(26,22,16,0.25); }
+html[data-palette="paper"] .speed-bar button.on,
+html[data-palette="paper"] .cta,
+html[data-palette="paper"] .perk-list .cta.on,
+html[data-palette="paper"] .perk-list .cta.on .perk-name,
+html[data-palette="paper"] .perk-list .cta.on .perk-desc {
+  color: #1a1610;
+}
 html[data-palette="simple"],
 html[data-palette="simple"] body,
 html[data-palette="simple"] #app {
