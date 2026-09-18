@@ -365,10 +365,9 @@
     graphics: "GRAPHICS",
     palClassic: "Classic", palMidnight: "Midnight", palTerminal: "Terminal",
     palPaper: "Paper", palNeon: "Neon", palSunset: "Sunset", palFlower: "Flower Power", palSimple: "Simple",
-    animHero: "Animated",
+    animHero: "3D",
     hero2d: "2D",
-    pickHero: "HERO",
-    animHeroHint: "Each look has a 2D orb and an animated Choppy. Default is that look's 2D hero.",
+    tapHero: "Tap the hero to switch 2D / 3D",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
     tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
     tut3a: "Bull pumps price.",
@@ -379,7 +378,7 @@
     tut6: "Laser eyes eat a bear and unlock a perk.",
     tut7: "Ranked is 0 cold and 0 multisig and counts for the board. Training is 9 cold and 999 multisig and does not. Versus does not count for ranked scores or awards.",
     tut8: "Pick a perk and the menu vanishes like an Arc card — then tap ▶. DCA, A.I. bud, Jukebox, Marketplace and Arc sit on the HUD. Speed is the 1x button between Buy and Sell.",
-    tut9: "Options → Graphics: each look restyles the board and has its own 2D and animated hero. You can mix any hero with any look."
+    tut9: "Options → Graphics: pick a look, then tap the hero in the preview to switch 2D / 3D."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -3889,22 +3888,10 @@
     ctx.fillRect(140, 86, 14, 34);
     const t = performance.now() * 0.001;
     drawBirdAt(ctx, w * 0.5, h * 0.54, Math.sin(t * 4.2) * 90, 15, myHero(), null, 1, false, HERO_ANIM, HERO_SKIN);
-    overlay.querySelectorAll("canvas.hero-mini").forEach((cv) => {
-      const sk = cv.getAttribute("data-skin");
-      const anim = cv.getAttribute("data-anim") === "1";
-      const d = Math.min(2, window.devicePixelRatio || 1);
-      const mw = 44, mh = 44;
-      if (cv.width !== mw * d || cv.height !== mh * d) { cv.width = mw * d; cv.height = mh * d; }
-      const c2 = cv.getContext("2d");
-      if (!c2) return;
-      c2.setTransform(d, 0, 0, d, 0, 0);
-      c2.clearRect(0, 0, mw, mh);
-      c2.fillStyle = heroSkin(sk).fill;
-      c2.globalAlpha = 0.18;
-      c2.fillRect(0, 0, mw, mh);
-      c2.globalAlpha = 1;
-      drawBirdAt(c2, mw * 0.5, mh * 0.58, anim ? Math.sin(t * 4.2) * 80 : 0, 9, myHero(), null, 1, false, anim, sk);
-    });
+    ctx.font = "700 10px \"IBM Plex Mono\", monospace";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+    paintHaloText(ctx, HERO_ANIM ? "3D" : "2D", w - 6, h - 5, PAL.hud || PAL.fg);
   }
 
   const GAME_W = 480;
@@ -4657,25 +4644,12 @@
           + "<span class=\"pal-dots\" aria-hidden=\"true\"><i style=\"background:" + p.bg + "\"></i><i style=\"background:" + p.gold + "\"></i><i style=\"background:" + p.green + "\"></i><i style=\"background:" + p.red + "\"></i></span>"
           + t(p.nameKey) + "</button>";
       }).join("");
-      const heroes = Object.keys(PALETTES).map((id) => {
-        const on2 = HERO_SKIN === id && !HERO_ANIM;
-        const onA = HERO_SKIN === id && HERO_ANIM;
-        return "<div class=\"hero-pair\">"
-          + "<span class=\"hero-pair-n\">" + t(PALETTES[id].nameKey) + "</span>"
-          + "<button type=\"button\" class=\"cta hero-cell" + (on2 ? " on" : "") + "\" data-hero=\"" + id + "\" data-anim=\"0\">"
-          + "<canvas class=\"hero-mini\" data-skin=\"" + id + "\" data-anim=\"0\" width=\"44\" height=\"44\"></canvas>"
-          + "<em>" + t("hero2d") + "</em></button>"
-          + "<button type=\"button\" class=\"cta hero-cell" + (onA ? " on" : "") + "\" data-hero=\"" + id + "\" data-anim=\"1\">"
-          + "<canvas class=\"hero-mini\" data-skin=\"" + id + "\" data-anim=\"1\" width=\"44\" height=\"44\"></canvas>"
-          + "<em>" + t("animHero") + "</em></button>"
-          + "</div>";
-      }).join("");
       return "<h1>" + t("graphics") + "</h1>"
-        + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"168\" height=\"120\" aria-hidden=\"true\"></canvas>"
+        + "<button type=\"button\" class=\"hero-tog\" id=\"hero-tog\" aria-label=\"" + t("tapHero") + "\">"
+        + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"168\" height=\"120\"></canvas>"
+        + "</button>"
+        + "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>"
         + "<div class=\"pal-grid\">" + swatches + "</div>"
-        + "<p class=\"k hero-pick-lab\">" + t("pickHero") + "</p>"
-        + "<div class=\"hero-grid\">" + heroes + "</div>"
-        + "<p class=\"k\">" + t("animHeroHint") + "</p>"
         + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
     const fromPlay = S.optBack === "play" || S.phase === "paused";
@@ -4788,17 +4762,18 @@
       btn.onclick = (e) => {
         e.stopPropagation();
         applyPalette(btn.getAttribute("data-pal"));
-        setHero(btn.getAttribute("data-pal"), false);
+        setHero(btn.getAttribute("data-pal"), HERO_ANIM);
         renderOverlay();
       };
     });
-    overlay.querySelectorAll("[data-hero]").forEach((btn) => {
-      btn.onclick = (e) => {
+    const heroTog = $("hero-tog") || $("hero-prev");
+    if (heroTog) {
+      heroTog.onpointerdown = (e) => {
         e.stopPropagation();
-        setHero(btn.getAttribute("data-hero"), btn.getAttribute("data-anim") === "1");
-        renderOverlay();
+        e.preventDefault();
+        setHero(HERO_SKIN || currentPaletteId(), !HERO_ANIM);
       };
-    });
+    }
   }
 
   function mpRosterHtml() {
