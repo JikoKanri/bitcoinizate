@@ -2294,7 +2294,7 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
-  const ARC_VID = { landfill: 1, wine: 1, proposal: 1, tetris: 1, casino: 1 };
+  const ARC_VID = { landfill: 1, wine: 1, proposal: 1, tetris: 1, casino: 1, mexico: 1, phish: 1, baby: 1 };
   let chanceArtBusy = false;
   function preloadChanceArt() {
     if (chanceArtBusy) return;
@@ -3483,38 +3483,40 @@
     const lr = r * 0.21;
     const leftL = { x: rx * 0.32, y: -r * 0.16 };
     const rightL = { x: rx * 0.78, y: -r * 0.22 };
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = Math.max(1.6, r * 0.1);
-    ctx.beginPath();
-    ctx.moveTo(leftL.x - lr * 0.7, leftL.y + lr * 0.04);
-    ctx.lineTo(-rx * 0.52, leftL.y + r * 0.01);
-    ctx.quadraticCurveTo(-rx * 1.04, leftL.y + r * 0.04, -rx * 1.12, leftL.y + r * 0.26);
-    ctx.stroke();
-    const lens = (c, rad, shade) => {
+    if (!flat) {
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = Math.max(1.6, r * 0.1);
       ctx.beginPath();
-      ctx.arc(c.x + rad * 0.14, c.y + rad * 0.12, rad, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(0,0,0,0.28)";
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(c.x, c.y, rad, 0, Math.PI * 2);
-      ctx.fillStyle = shade;
-      ctx.fill();
-      ctx.strokeStyle = "#111";
-      ctx.lineWidth = Math.max(1.1, r * 0.07);
+      ctx.moveTo(leftL.x - lr * 0.7, leftL.y + lr * 0.04);
+      ctx.lineTo(-rx * 0.52, leftL.y + r * 0.01);
+      ctx.quadraticCurveTo(-rx * 1.04, leftL.y + r * 0.04, -rx * 1.12, leftL.y + r * 0.26);
       ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,0.45)";
+      const lens = (c, rad, shade) => {
+        ctx.beginPath();
+        ctx.arc(c.x + rad * 0.14, c.y + rad * 0.12, rad, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0,0,0,0.28)";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, rad, 0, Math.PI * 2);
+        ctx.fillStyle = shade;
+        ctx.fill();
+        ctx.strokeStyle = "#111";
+        ctx.lineWidth = Math.max(1.1, r * 0.07);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,0.45)";
+        ctx.beginPath();
+        ctx.arc(c.x - rad * 0.28, c.y - rad * 0.32, rad * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+      };
+      lens(rightL, lr * 0.86, sk.lensB);
+      lens(leftL, lr, sk.lensF);
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = Math.max(0.9, r * 0.055);
       ctx.beginPath();
-      ctx.arc(c.x - rad * 0.28, c.y - rad * 0.32, rad * 0.28, 0, Math.PI * 2);
-      ctx.fill();
-    };
-    lens(rightL, lr * 0.86, sk.lensB);
-    lens(leftL, lr, sk.lensF);
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = Math.max(0.9, r * 0.055);
-    ctx.beginPath();
-    ctx.moveTo(leftL.x + lr * 0.72, leftL.y - lr * 0.08);
-    ctx.lineTo(rightL.x - lr * 0.55, rightL.y + lr * 0.06);
-    ctx.stroke();
+      ctx.moveTo(leftL.x + lr * 0.72, leftL.y - lr * 0.08);
+      ctx.lineTo(rightL.x - lr * 0.55, rightL.y + lr * 0.06);
+      ctx.stroke();
+    }
 
     const bandH = Math.max(3.2, r * 0.2);
     const bandY = -r * 0.56;
@@ -3544,10 +3546,10 @@
         ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
         ctx.lineWidth = 3.4;
         ctx.beginPath();
-        ctx.moveTo(leftL.x + lr, leftL.y - 2);
-        ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), leftL.y - 8);
-        ctx.moveTo(rightL.x + lr * 0.4, rightL.y + 2);
-        ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), rightL.y + 8);
+        ctx.moveTo(rx * 0.92, -r * 0.08);
+        ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), -r * 0.16);
+        ctx.moveTo(rx * 0.92, r * 0.08);
+        ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), r * 0.16);
         ctx.stroke();
       }
       ctx.restore();
