@@ -3917,6 +3917,8 @@
   }
   let STAR_CACHE = null;
   let STAR_CACHE_KEY = "";
+  let FLOWER_CACHE = null;
+  let FLOWER_CACHE_KEY = "";
   function starsFor(w, h, n) {
     const key = w + "x" + h + ":" + n;
     if (STAR_CACHE && STAR_CACHE_KEY === key) return STAR_CACHE;
@@ -3935,6 +3937,107 @@
     STAR_CACHE = out;
     STAR_CACHE_KEY = key;
     return out;
+  }
+  function flowersFor(w, h) {
+    const key = w + "x" + h;
+    if (FLOWER_CACHE && FLOWER_CACHE_KEY === key) return FLOWER_CACHE;
+    const bird = Math.min(17, Math.max(13, (S.H || h) * 0.021));
+    const heroD = bird * 2;
+    const minR = heroD * 2.5 * 0.5;
+    const slots = [
+      [0.16, 0.18], [0.84, 0.16], [0.12, 0.52],
+      [0.88, 0.48], [0.28, 0.82], [0.72, 0.78]
+    ];
+    const out = [];
+    for (let i = 0; i < slots.length; i++) {
+      const a = hashU((i + 19) * 2654435761);
+      const b = hashU((i + 41) * 1597334677);
+      const c = hashU((i + 73) * 2246822519);
+      const jx = ((a % 800) / 800 - 0.5) * 0.12;
+      const jy = ((b % 800) / 800 - 0.5) * 0.1;
+      out.push({
+        x: (slots[i][0] + jx) * w,
+        y: (slots[i][1] + jy) * h,
+        r: minR * (1.05 + (c % 1000) / 1000 * 1.15),
+        petals: 5 + (a % 4),
+        tilt: ((b % 1000) / 1000 - 0.5) * 1.1,
+        squash: 0.5 + (c % 520) / 520 * 0.42,
+        skew: ((a % 700) / 700 - 0.5) * 0.38,
+        hue: (i * 53 + (a % 48)) % 360,
+        alpha: 0.42 + (b % 28) / 100,
+        seed: a >>> 0
+      });
+    }
+    FLOWER_CACHE = out;
+    FLOWER_CACHE_KEY = key;
+    return out;
+  }
+  function drawBgFlower(ctx, fl, t) {
+    ctx.save();
+    ctx.translate(fl.x, fl.y);
+    ctx.rotate(fl.tilt + Math.sin(t * 0.35 + fl.seed) * 0.07);
+    ctx.transform(1, fl.skew * 0.45, fl.skew * 0.22, fl.squash, 0, 0);
+    ctx.globalAlpha = fl.alpha;
+    const n = fl.petals;
+    const r = fl.r;
+    for (let p = 0; p < n; p++) {
+      const twist = (((fl.seed >>> (p * 2)) & 7) / 7 - 0.5) * 0.28;
+      const stretch = 0.86 + ((fl.seed >>> (p * 3)) & 7) / 7 * 0.38;
+      const fat = 0.3 + ((fl.seed >>> p) & 3) * 0.045;
+      const pa = p * Math.PI * 2 / n + 0.1 + twist;
+      ctx.save();
+      ctx.rotate(pa);
+      const pr = r * stretch;
+      const pw = r * fat;
+      const hue = (fl.hue + p * 11) % 360;
+      const g = ctx.createRadialGradient(0, -pr * 0.18, r * 0.04, 0, -pr * 0.5, pr);
+      g.addColorStop(0, "hsla(" + hue + ",92%,86%,0.95)");
+      g.addColorStop(0.38, "hsla(" + hue + ",82%,60%,0.78)");
+      g.addColorStop(0.78, "hsla(" + ((hue + 24) % 360) + ",70%,42%,0.38)");
+      g.addColorStop(1, "hsla(" + ((hue + 40) % 360) + ",55%,28%,0.08)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(0, -pr * 0.5, pw, pr * 0.52, twist * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "hsla(" + hue + ",50%,96%,0.32)";
+      ctx.lineWidth = Math.max(0.8, r * 0.025);
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 0.08);
+      ctx.quadraticCurveTo(pw * 0.18, -pr * 0.42, 0, -pr * 0.92);
+      ctx.stroke();
+      ctx.strokeStyle = "hsla(" + hue + ",40%,20%,0.12)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-pw * 0.35, -pr * 0.28);
+      ctx.quadraticCurveTo(-pw * 0.1, -pr * 0.5, -pw * 0.12, -pr * 0.72);
+      ctx.stroke();
+      ctx.fillStyle = "hsla(" + hue + ",85%,94%,0.22)";
+      for (let s = 0; s < 5; s++) {
+        const sx = ((((fl.seed >>> (s + p * 3)) & 15) / 15) - 0.5) * pw * 0.7;
+        const sy = -pr * (0.22 + ((fl.seed >>> (s * 2 + p)) & 7) / 14);
+        ctx.beginPath();
+        ctx.ellipse(sx, sy, r * 0.045, r * 0.03, pa, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    const cg = ctx.createRadialGradient(-r * 0.1, -r * 0.1, r * 0.03, 0, 0, r * 0.36);
+    cg.addColorStop(0, "rgba(255,250,210,0.95)");
+    cg.addColorStop(0.4, "rgba(255,225,74,0.88)");
+    cg.addColorStop(1, "rgba(160,48,180,0.55)");
+    ctx.fillStyle = cg;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, r * 0.3, r * 0.24, fl.skew * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(70,16,90,0.32)";
+    for (let d = 0; d < 12; d++) {
+      const ang = d * 2.399 + (fl.seed % 7) * 0.2;
+      const rr = r * (0.05 + (d % 4) * 0.04);
+      ctx.beginPath();
+      ctx.ellipse(Math.cos(ang) * rr, Math.sin(ang) * rr * 0.68, r * 0.028, r * 0.02, ang, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   function drawWorldBg(ctx, wash, w, h) {
@@ -4021,29 +4124,12 @@
         const rad = 36 + i * 38 + Math.sin(tnow * 0.7 + i) * 8;
         ctx.beginPath();
         ctx.arc(w * 0.5 + Math.cos(tnow * 0.35) * 18, h * 0.42 + Math.sin(tnow * 0.28) * 12, rad, 0, Math.PI * 2);
-        ctx.strokeStyle = "hsla(" + ((tnow * 48 + i * 52) % 360) + ",85%,62%,0.22)";
+        ctx.strokeStyle = "hsla(" + ((tnow * 48 + i * 52) % 360) + ",85%,62%,0.14)";
         ctx.lineWidth = 10;
         ctx.stroke();
       }
-      const cols = ["#ff4aa8", "#ffe14a", "#7dff6a", "#ff8a3a", "#c050ff", "#5ad4ff"];
-      for (let i = 0; i < 8; i++) {
-        const a = hashU((i + 3) * 2654435761);
-        const b = hashU((i + 11) * 1597334677);
-        const fx = (a % 10007) / 10007 * w;
-        const fy = (b % 10009) / 10009 * h * 0.85;
-        const fr = 7 + (a % 9);
-        ctx.fillStyle = cols[i % cols.length];
-        for (let p = 0; p < 6; p++) {
-          const pa = tnow * 0.6 + p * Math.PI / 3;
-          ctx.beginPath();
-          ctx.ellipse(fx + Math.cos(pa) * fr * 0.85, fy + Math.sin(pa) * fr * 0.85, fr * 0.55, fr * 0.32, pa, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.fillStyle = "#ffe14a";
-        ctx.beginPath();
-        ctx.arc(fx, fy, fr * 0.35, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      const blooms = flowersFor(w, h);
+      for (let i = 0; i < blooms.length; i++) drawBgFlower(ctx, blooms[i], tnow);
     }
     if (id === "paper") {
       ctx.strokeStyle = palRgba(PAL.line, 0.7);
