@@ -174,6 +174,7 @@
     if (kind === "dca") return wrap("<g><path d=\"M-6 8 Q-7 3 -3 2 L-1 5 Q-4 7 -6 8Z\" fill=\"#c9a070\" stroke=\"#6a4a28\" stroke-width=\"0.8\"/><path d=\"M-3 2 L4 1 L5 4 L-1 5Z\" fill=\"#e8c49a\"/><polygon points=\"1,-6 6,-1 1,4 -4,-1\" fill=\"#c8960a\" stroke=\"#ffe7a0\" stroke-width=\"1\"/></g>", "#141416", "#3a3a40");
     if (kind === "rank") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#120c02\" font-family=\"IBM Plex Mono,monospace\">#1</text>", "#c8960a", "#ffe7a0");
     if (kind === "perk") return wrap("<polygon points=\"0,-8 2.2,-2.2 8,-2.2 3.4,1.6 5.2,7.5 0,4 -5.2,7.5 -3.4,1.6 -8,-2.2 -2.2,-2.2\" fill=\"#ffe7a0\"/>", "#141416", "#c8960a");
+    if (kind === "gfx") return wrap("<g><circle cx=\"-4.2\" cy=\"1.2\" r=\"3.4\" fill=\"#0a0a0c\"/><circle cx=\"0.4\" cy=\"-3.2\" r=\"3.4\" fill=\"#c8960a\"/><circle cx=\"4\" cy=\"2.4\" r=\"3.4\" fill=\"#4f9d6e\"/></g>", "#141416", "#c8960a");
     return wrap("", "#141416", "#3a3a40");
   }
   const HEROES = [
@@ -296,7 +297,8 @@
     tut5: "Cold storage saves a hit. Ten colds become one multisig life.",
     tut6: "Laser eyes eat a bear and unlock a perk.",
     tut7: "Ranked is 0 cold and 0 multisig and counts for the board. Training is 9 cold and 999 multisig and does not. Versus does not count for ranked scores or awards.",
-    tut8: "Pick a perk and the menu vanishes like an Arc card — then tap ▶. DCA, A.I. bud, Jukebox, Marketplace and Arc sit on the HUD. Speed is the 1x button between Buy and Sell."
+    tut8: "Pick a perk and the menu vanishes like an Arc card — then tap ▶. DCA, A.I. bud, Jukebox, Marketplace and Arc sit on the HUD. Speed is the 1x button between Buy and Sell.",
+    tut9: "Options → Graphics: Classic is the original look. Other palettes restyle the board. Animated hero swaps the ₿ for Choppy from the Arc cards."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -316,6 +318,7 @@
       + "<p>" + badgeIco("laser") + " " + t("tut6") + "</p>"
       + "<p>" + badgeIco("rank") + " " + t("tut7") + "</p>"
       + "<p>" + badgeIco("perk") + " " + t("tut8") + "</p>"
+      + "<p>" + badgeIco("gfx") + " " + t("tut9") + "</p>"
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
@@ -3159,118 +3162,165 @@
 
 
   function drawChoppyHero(ctx, r, v, t, wash, laser, worldX) {
+    const s = r * 1.28;
     const flap = Math.max(-1, Math.min(1, (v || 0) / 420));
     const wiggle = Math.sin((t || 0) * 10.5);
     const wiggle2 = Math.sin((t || 0) * 13.2 + 1.1);
     const kick = flap * 0.85 + Math.sin((t || 0) * 14) * 0.16;
-    const gold = wash || "#f2a900";
-    const rim = "#ffe7a0";
-    const band = "#e24a12";
-    const bandDark = "#9a2208";
+    const punch = Math.sin((t || 0) * 12) * s * 0.1;
+    const skin = "#d2a06c";
+    const skinDark = "#a87448";
+    const ink = "#120806";
+    const band = wash || "#e24a12";
+    const bandDark = wash || "#9a2208";
+    const tank = "#161618";
+    const sock = "#fff8ee";
+    const gold = "#f2a900";
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    const tail = (off, amp, thick, col) => {
-      const tx = -r * 0.62;
-      const ty = -r * 0.58 + off;
+    const cape = (off, amp, thick, col) => {
+      const tx = -s * 0.22;
+      const ty = -s * 0.08 + off;
       ctx.strokeStyle = col;
-      ctx.lineWidth = Math.max(2.4, r * thick);
+      ctx.lineWidth = Math.max(2.6, s * thick);
       ctx.beginPath();
       ctx.moveTo(tx, ty);
       ctx.bezierCurveTo(
-        tx - r * (0.55 + amp * 0.12), ty - r * 0.08,
-        tx - r * (1.05 + amp * 0.22), ty + r * (0.18 + amp * 0.12),
-        tx - r * (1.55 + amp * 0.28), ty + r * (0.42 + amp * 0.22)
+        tx - s * (0.55 + amp * 0.12), ty - s * 0.06,
+        tx - s * (1.05 + amp * 0.22), ty + s * (0.22 + amp * 0.12),
+        tx - s * (1.55 + amp * 0.28), ty + s * (0.48 + amp * 0.22)
       );
       ctx.stroke();
     };
-    tail(0, wiggle, 0.28, band);
-    tail(r * 0.16, wiggle2, 0.22, bandDark);
+    cape(0, wiggle, 0.36, band);
+    cape(s * 0.18, wiggle2, 0.24, bandDark);
+    ctx.strokeStyle = skinDark;
+    ctx.lineWidth = Math.max(2.2, s * 0.18);
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.1, s * 0.4);
+    ctx.lineTo(-s * 0.24, s * 0.7);
+    ctx.moveTo(s * 0.12, s * 0.38);
+    ctx.lineTo(s * 0.32, s * 0.64);
+    ctx.stroke();
     const shoe = (sx, sy, rot, kickAmt) => {
       ctx.save();
       ctx.translate(sx, sy);
       ctx.rotate(rot + kickAmt);
-      ctx.fillStyle = "#fff8ee";
+      ctx.fillStyle = sock;
       ctx.beginPath();
-      ctx.ellipse(r * 0.3, r * 0.08, r * 0.46, r * 0.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(s * 0.08, -s * 0.2, s * 0.13, s * 0.2, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = band;
       ctx.beginPath();
-      ctx.ellipse(r * 0.18, 0, r * 0.4, r * 0.18, 0, 0, Math.PI * 2);
+      ctx.ellipse(s * 0.18, 0, s * 0.4, s * 0.18, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = "#1a0804";
-      ctx.fillRect(-r * 0.08, -r * 0.1, r * 0.14, r * 0.18);
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(r * 0.02, -r * 0.08, r * 0.1, r * 0.1);
+      ctx.fillStyle = sock;
+      ctx.beginPath();
+      ctx.ellipse(s * 0.4, s * 0.02, s * 0.15, s * 0.11, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = ink;
+      ctx.fillRect(-s * 0.14, s * 0.08, s * 0.52, Math.max(1.4, s * 0.07));
       ctx.restore();
     };
-    shoe(-r * 0.28, r * 0.78, 0.22, kick * 0.55);
-    shoe(r * 0.34, r * 0.74, -0.55, -kick * 1.05);
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fillStyle = gold;
-    ctx.fill();
-    ctx.strokeStyle = rim;
-    ctx.lineWidth = Math.max(1.8, r * 0.12);
-    ctx.stroke();
-    ctx.fillStyle = "#120c02";
-    ctx.font = "700 " + Math.round(r * 1.08) + "px Georgia, serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("₿", 0, r * 0.1);
+    shoe(-s * 0.3, s * 0.82, 0.22, kick * 0.55);
+    shoe(s * 0.34, s * 0.76, -0.55, -kick * 1.05);
     ctx.fillStyle = band;
     ctx.beginPath();
-    ctx.arc(0, 0, r * 1.04, -Math.PI * 1.05, -Math.PI * 0.05);
-    ctx.arc(0, -r * 0.06, r * 0.7, -Math.PI * 0.08, -Math.PI * 0.98, true);
+    ctx.moveTo(-s * 0.34, s * 0.2);
+    ctx.lineTo(s * 0.34, s * 0.18);
+    ctx.lineTo(s * 0.3, s * 0.48);
+    ctx.quadraticCurveTo(0, s * 0.56, -s * 0.3, s * 0.5);
     ctx.closePath();
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(-r * 0.62, -r * 0.52, r * 0.22, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = bandDark;
-    ctx.beginPath();
-    ctx.arc(-r * 0.62, -r * 0.52, r * 0.09, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = bandDark;
-    ctx.lineWidth = Math.max(1.4, r * 0.1);
-    ctx.beginPath();
-    ctx.moveTo(-r * 0.82, -r * 0.42);
-    ctx.lineTo(-r * 1.05, -r * 0.18);
-    ctx.moveTo(-r * 0.7, -r * 0.38);
-    ctx.lineTo(-r * 0.95, -r * 0.08);
+    ctx.lineWidth = 1.2;
     ctx.stroke();
-    const sy = -r * 0.06;
-    ctx.fillStyle = "#120806";
+    ctx.fillStyle = tank;
     ctx.beginPath();
-    ctx.moveTo(-r * 0.78, sy - r * 0.1);
-    ctx.quadraticCurveTo(0, sy - r * 0.28, r * 0.78, sy - r * 0.1);
-    ctx.lineTo(r * 0.8, sy + r * 0.22);
-    ctx.quadraticCurveTo(0, sy + r * 0.36, -r * 0.8, sy + r * 0.22);
+    ctx.moveTo(-s * 0.34, -s * 0.04);
+    ctx.quadraticCurveTo(0, -s * 0.2, s * 0.34, -s * 0.04);
+    ctx.lineTo(s * 0.3, s * 0.28);
+    ctx.quadraticCurveTo(0, s * 0.36, -s * 0.3, s * 0.28);
     ctx.closePath();
     ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,0.2)";
-    ctx.fillRect(-r * 0.46, sy - r * 0.06, r * 0.24, r * 0.09);
-    ctx.fillRect(r * 0.14, sy - r * 0.04, r * 0.2, r * 0.07);
-    const punch = Math.sin((t || 0) * 12) * r * 0.1;
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+    ctx.strokeStyle = skinDark;
+    ctx.lineWidth = Math.max(2, s * 0.16);
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.28, s * 0.02);
+    ctx.lineTo(-s * 1.02, s * 0.24 + punch);
+    ctx.moveTo(s * 0.28, 0);
+    ctx.lineTo(s * 0.98, s * 0.04 - punch);
+    ctx.stroke();
     const fist = (fx, fy) => {
-      ctx.fillStyle = gold;
-      ctx.strokeStyle = "#120c02";
-      ctx.lineWidth = 1.2;
+      ctx.fillStyle = skin;
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 1.1;
       ctx.beginPath();
-      ctx.arc(fx, fy, r * 0.24, 0, Math.PI * 2);
+      ctx.arc(fx, fy, s * 0.2, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
     };
-    fist(-r * 1.12, r * 0.26 + punch);
-    fist(r * 1.08, r * 0.06 - punch);
+    fist(-s * 1.12, s * 0.26 + punch);
+    fist(s * 1.08, s * 0.06 - punch);
+    const hx = s * 0.1, hy = -s * 0.36, hr = s * 0.5;
+    ctx.fillStyle = skin;
+    ctx.beginPath();
+    ctx.arc(hx, hy, hr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.strokeStyle = gold;
+    ctx.lineWidth = Math.max(1.7, s * 0.11);
+    ctx.beginPath();
+    ctx.arc(hx - hr * 0.82, hy + hr * 0.18, s * 0.13, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = band;
+    ctx.beginPath();
+    ctx.arc(hx, hy, hr + 0.8, -Math.PI * 1.08, -Math.PI * 0.08);
+    ctx.arc(hx, hy - hr * 0.18, hr * 0.64, -Math.PI * 0.12, -Math.PI * 1.02, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(hx - hr * 1.02, hy - hr * 0.42, s * 0.11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = band;
+    ctx.lineWidth = Math.max(1.4, s * 0.08);
+    ctx.beginPath();
+    ctx.moveTo(hx - hr * 1.05, hy - hr * 0.32);
+    ctx.quadraticCurveTo(hx - hr * 1.45, hy - hr * 0.02, hx - hr * 1.6, hy + hr * 0.28);
+    ctx.moveTo(hx - hr * 0.92, hy - hr * 0.28);
+    ctx.quadraticCurveTo(hx - hr * 1.28, hy + hr * 0.06, hx - hr * 1.38, hy + hr * 0.36);
+    ctx.stroke();
+    ctx.fillStyle = sock;
+    ctx.font = "700 " + Math.max(6, Math.round(s * 0.4)) + "px \"IBM Plex Mono\", sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("B", hx + s * 0.02, hy - hr * 0.52);
+    const sy = hy + s * 0.02;
+    ctx.fillStyle = ink;
+    ctx.beginPath();
+    ctx.moveTo(hx - hr * 0.88, sy - s * 0.05);
+    ctx.quadraticCurveTo(hx, sy - s * 0.16, hx + hr * 0.98, sy - s * 0.02);
+    ctx.lineTo(hx + hr * 1.0, sy + s * 0.16);
+    ctx.quadraticCurveTo(hx, sy + s * 0.22, hx - hr * 0.9, sy + s * 0.14);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.fillRect(hx - s * 0.06, sy - s * 0.02, s * 0.2, s * 0.06);
+    ctx.fillRect(hx + s * 0.22, sy, s * 0.14, s * 0.05);
     if (laser) {
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
       ctx.lineWidth = 3.4;
       ctx.beginPath();
-      ctx.moveTo(r * 0.58, sy);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), sy - r * 0.25);
-      ctx.moveTo(r * 0.58, sy + r * 0.14);
-      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : r * 12), sy + r * 0.35);
+      ctx.moveTo(s * 0.5, sy);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : s * 12), sy - s * 0.2);
+      ctx.moveTo(s * 0.5, sy + s * 0.12);
+      ctx.lineTo((worldX != null ? (S.W - worldX + 80) : s * 12), sy + s * 0.28);
       ctx.stroke();
     }
     ctx.restore();
