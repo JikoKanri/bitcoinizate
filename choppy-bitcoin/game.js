@@ -3191,7 +3191,7 @@
     const gold = wash || (laser ? "#e8902a" : "#f2a900");
     const rim = wash || (laser ? "#ffc878" : "#ffe7a0");
     const ink = "#1a0c06";
-    const btcInk = "#6a6a70";
+    const btcInk = "#9a9aa2";
     const red = wash || "#e02420";
     const halo = "#fff4d6";
     const rx = r * 0.62;
@@ -3262,12 +3262,12 @@
     ctx.stroke();
 
     ctx.save();
-    ctx.translate(0, r * 0.28);
+    ctx.translate(0, r * 0.06);
     ctx.transform(0.84, 0.03, -0.14, 0.97, 0, 0);
     ctx.fillStyle = btcInk;
-    ctx.strokeStyle = "rgba(255,244,214,0.35)";
-    ctx.lineWidth = Math.max(1.2, r * 0.06);
-    ctx.font = "700 " + Math.round(r * 1.12) + "px Georgia, serif";
+    ctx.strokeStyle = "rgba(255,244,214,0.28)";
+    ctx.lineWidth = Math.max(1.1, r * 0.05);
+    ctx.font = "700 " + Math.round(r * 1.38) + "px Georgia, serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.strokeText("₿", 0, 0);
@@ -3300,7 +3300,7 @@
       ctx.arc(c.x - rad * 0.28, c.y - rad * 0.32, rad * 0.28, 0, Math.PI * 2);
       ctx.fill();
     };
-    lens(rightL, lr * 0.7, "#1a1a1e");
+    lens(rightL, lr * 0.86, "#1a1a1e");
     lens(leftL, lr, "#0a0a0c");
     ctx.strokeStyle = ink;
     ctx.lineWidth = Math.max(0.9, r * 0.055);
@@ -3313,19 +3313,33 @@
     const bandY = -r * 0.7;
     ctx.save();
     ctx.beginPath();
+    ctx.ellipse(-thick, 0, rx, r, 0, 0, Math.PI * 2);
     ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
     ctx.clip();
     ctx.fillStyle = red;
-    ctx.fillRect(-rx, bandY - bandH * 0.5, rx * 2, bandH);
+    ctx.fillRect(-thick - rx, bandY - bandH * 0.5, thick + rx * 2 + 2, bandH);
     ctx.fillStyle = "rgba(0,0,0,0.18)";
-    ctx.fillRect(-rx, bandY + bandH * 0.18, rx * 2, bandH * 0.22);
+    ctx.fillRect(-thick - rx, bandY + bandH * 0.18, thick + rx * 2 + 2, bandH * 0.22);
     ctx.restore();
 
-    ctx.save();
-    ctx.rotate(-tilt);
-    noodle(-rx * 0.92, bandY, down + 0.55 + g * 0.4 + Math.sin(time * 5.6) * 0.28, r * 1.12, 4.0, red, "#ffd2c4");
-    noodle(-rx * 0.78, bandY + r * 0.04, down + 0.95 + g * 0.35 + Math.sin(time * 5.6 + 1.3) * 0.34, r * 0.92, 5.1, red, "#ffd2c4");
-    ctx.restore();
+    const bandLeft = -thick - rx * Math.sqrt(Math.max(0, 1 - (bandY * bandY) / (r * r)));
+    const ribbon = (ay, phase, len) => {
+      const ang = Math.PI - tilt + 0.16 + Math.sin(time * 5.8 + phase) * 0.28 + g * 0.1;
+      const sag = r * (0.05 + Math.max(0, g) * 0.1);
+      const wig = Math.sin(time * 7.4 + phase) * r * 0.22;
+      const ex = bandLeft + Math.cos(ang) * len;
+      const ey = ay + Math.sin(ang) * len;
+      const mx = (bandLeft + ex) * 0.5 + wig;
+      const my = (ay + ey) * 0.5 + sag;
+      ctx.strokeStyle = red;
+      ctx.lineWidth = Math.max(1.7, r * 0.13);
+      ctx.beginPath();
+      ctx.moveTo(bandLeft, ay);
+      ctx.quadraticCurveTo(mx, my, ex, ey);
+      ctx.stroke();
+    };
+    ribbon(bandY - bandH * 0.12, 4.0, r * 1.18);
+    ribbon(bandY + bandH * 0.18, 5.2, r * 0.98);
 
     if (laser) {
       ctx.strokeStyle = wash || "rgba(255,150,40,0.78)";
