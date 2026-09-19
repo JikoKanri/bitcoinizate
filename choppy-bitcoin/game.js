@@ -1682,10 +1682,17 @@
     }
     return w * p - Math.max(0, need);
   }
-  function takeCash(n) {
+  function takeCash(n) {\n    const got = Math.min(S.cash, Math.max(0, n)); S.cash -= got; return got;\n  }\n  function takeUsdEquivalent(n) {
     const got = Math.min(S.cash, Math.max(0, n));
     S.cash -= got;
     return got;
+  }
+  function takeUsdEquivalent(n) {
+    let need=Math.max(0,Number(n)||0), paid=0;
+    const cash=Math.min(Math.max(0,S.cash||0),need); S.cash-=cash; need-=cash; paid+=cash;
+    const px=clampPx(S.price);
+    if(need>0&&px>0&&S.btc>0){const b=Math.min(S.btc,need/px);S.btc-=b;need-=b*px;paid+=b*px;}
+    return paid;
   }
   function grantWealthPct(p) {
     const n = wealthUsd() * Math.max(0, p);
@@ -1699,10 +1706,14 @@
     return takeWealthPct(p);
   }
   function cutBill(usd) {
-    const w = wealthUsd();
-    if (w <= 0) return 0;
-    const pinch = Math.max(usd, w * 0.006);
-    return takeWealthPct(Math.min(0.2, pinch / w));
+    return takeUsdEquivalent(usd);
+  }
+  function arcOptionLabel(card,o,es){
+    let lab=es?(o.labelEs||o.label):o.label;
+    const pct={ring:{a:.08,b:.03},wedding:{a:.12,b:.05,c:.01},honeymoon:{a:.10,b:.04},baby:{a:.05,b:.02},peopleAsking:{a:.03},extensionCord:{a:.04},obviously:{a:.05},protectIsland:{a:.02},citadelQuestion:{a:.08}};
+    const p=pct[card.id]&&pct[card.id][o.k];
+    if(p!=null){const cost=wealthUsd()*p;lab=lab.replace(/\s*·?\s*\d+(?:\.\d+)?%\s*(?:net worth)?/gi,"").trim()+" · "+money(cost);}
+    return lab;
   }
   function chanceLang() {
     return window.BZ && BZ.lang && BZ.lang() === "es";
@@ -6159,6 +6170,13 @@
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "chance") {
+      if (S.optPanel) {
+        overlay.classList.add("chance-options");
+        overlay.innerHTML = "<div class=\"chance-options-sheet\">" + pauseMarkup() + "</div>";
+        bindPauseUi();
+        return;
+      }
+      overlay.classList.remove("chance-options");
       const card = S.chanceCard;
       if (!card) { finishArcHold(); return; }
       const es = chanceLang();
@@ -6173,7 +6191,7 @@
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
-          const lab = es ? (o.labelEs || o.label) : o.label;
+          const lab = arcOptionLabel(card,o,es);
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
         const ack = !btns;
@@ -6355,6 +6373,7 @@
   });
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); if (!S.mp) togglePause(); };
   function optionsVisible() {
+    if (S.phase === "chance") return !!(S.optPanel && S.optPanel !== "off");
     if (S.phase === "ready") return !!(S.optPanel && S.optPanel !== "off");
     if (S.phase === "paused") {
       if (S.optPanel === "off") return false;
@@ -6365,6 +6384,11 @@
   }
   function toggleOptions() {
     if (S.mp) return;
+    if (S.phase === "chance") {
+      S.optPanel = optionsVisible() ? null : "menu";
+      renderOverlay();
+      return;
+    }
     if (S.phase === "play") {
       S.optBack = "play";
       S.optPanel = "menu";
