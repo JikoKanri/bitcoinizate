@@ -1812,7 +1812,7 @@
     uncle: { en: "Uncle Héctor sent ~7% of net as cash or sats. He will not say why.", es: "El tío Héctor mandó ~7% del patrimonio en cash o sats. No dice por qué." },
     school: { en: "Sofi's mint-museum trip. They're short this month. Lena thinks you should help. Covering it is about $300.", es: "Viaje de Sofi al museo de la Casa de Moneda. Este mes están justos. Lena cree que deberías ayudar. Cubrirlo sale unos $300." },
     roof: { en: "Paco found the leak by sitting under it. The roof repair is about $900.", es: "Paco encontró la gotera sentándose debajo. Arreglar el techo sale unos $900." },
-    lotto: { en: "Wine with Marek, a lottery ticket, and you forgot to check. Maybe a win. Maybe you lost the ticket price.", es: "Vino con Marek, un raspa y gana, y no miraste los números. Puede pagar. O perdés el ticket." },
+    lotto: { en: "Marek sets up Levitsky–Marshall, 1912. Black to move. Find Marshall’s legendary move: choose a piece and destination square.", es: "Marek arma Levitsky–Marshall, 1912. Juegan negras. Encontrá la jugada legendaria de Marshall: elegí pieza y casilla." },
     hospital: { en: "Four stitches. Lena drives. About $250. Try not to bleed on anything.", es: "Cuatro puntos. Lena maneja. Unos $250. Tratá de no sangrar sobre nada." },
     startup: { en: "Nico's 47-slide app: subscriptions, A.I., community ownership. He says the upside is massive. It might 4×. It might be a dead domain.", es: "La app de Nico, 47 slides: suscripciones, I.A., community ownership. Dice que el upside es enorme. Puede hacer 4×. O ser un dominio vencido." },
     tow: { en: "Wrong spot for nine minutes. The sign was clear. About $85.", es: "Mal estacionado nueve minutos. El cartel era claro. Unos $85." },
@@ -1931,10 +1931,10 @@
       title: "Roof", titleEs: "El techo",
       body: "Paco finds the leak in the roof before you do. He sits directly underneath it. The workers arrive. He moves. He immediately finds another place to sit.",
       bodyEs: "Paco encuentra la gotera antes que vos. Se sienta justo debajo. Llegan los de la obra. Se corre. Enseguida encuentra otro lugar donde sentarse." },
-    { id: "lotto", kind: "report", after: ["wine"],
-      title: "Lottery Ticket", titleEs: "El raspa y gana",
-      body: "You are having wine with Marek. At some point the conversation turns to probability. You buy a lottery ticket. The next morning Marek asks if you checked the numbers. You did not.",
-      bodyEs: "Estás tomando vino con Marek. En algún momento la charla vira a probabilidad. Comprás un raspa y gana. A la mañana Marek pregunta si miraste los números. No los miraste." },
+    { id: "lotto", kind: "chess", after: ["wine"],
+      title: "The Gold Coins Move", titleEs: "La jugada de las monedas de oro",
+      body: "Marek sets up a position from Levitsky–Marshall, Breslau 1912. Black to move. Marshall found a queen move so absurd that the story says spectators threw gold coins onto the board. Marek does not tell you whether the coins part is true. “Forget the legend. Find the move.” Choose the piece and destination square.",
+      bodyEs: "Marek arma una posición de Levitsky–Marshall, Breslau 1912. Juegan negras. Marshall encontró una jugada de dama tan absurda que la historia dice que los espectadores tiraron monedas de oro al tablero. Marek no te dice si esa parte es cierta. “Olvidate de la leyenda. Encontrá la jugada.” Elegí pieza y casilla." },
     { id: "hospital", kind: "report", after: ["landfill"],
       title: "Four Stitches", titleEs: "Cuatro puntos",
       body: "You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\"",
@@ -2212,10 +2212,9 @@
       return say("Paco found it first. −" + money(paid) + ".", "Paco lo encontró primero. −" + money(paid) + ".");
     }
     if (card.id === "lotto") {
-      const r = Math.random();
-      if (r < 0.04) { const n = grantWealthPct(0.35); return say("Marek reads the numbers. Not bad. +" + money(n) + ".", "Marek lee los números. Nada mal. +" + money(n) + "."); }
-      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Marek: \"Not bad.\" He meant the odds. +" + money(n) + ".", "Marek: \"Nada mal.\" Hablaba de las probas. +" + money(n) + "."); }
-      return say("You lost the ticket price. Marek was referring to the odds.", "Perdiste el ticket. Marek hablaba de las probas.");
+      if(opt==="noidea") return say("“Good,” Marek says. “That is much better than inventing a move.” He shows you 23...Qg3!! The queen can be taken three ways. Every capture loses.","");
+      if(opt==="Qg3") return say("You put the queen on g3. Marek looks at the board, then at you. “Annoying.” A beat. “Yes. Qg3.” He makes you calculate all three captures before he lets you enjoy being right.","");
+      return say("Marek studies your move without touching the board. “Plausible. Which is why Marshall did something much worse.” He slides the queen to g3. “Now try taking it.”","");
     }
     if (card.id === "hospital") {
       const paid = cutBill(250);
@@ -6183,6 +6182,17 @@
       const title = es ? (card.titleEs || card.title) : card.title;
       const body = S.chanceBody || (es ? (card.bodyEs || card.body) : card.body);
       const pic = chanceArtHtml(card.id);
+      if(card.kind==="chess"&&!S.chanceNote){
+        const files=["a","b","c","d","e","f","g","h"], ranks=["1","2","3","4","5","6","7","8"];
+        overlay.innerHTML="<h1>"+t("chanceHead")+"</h1>"+pic+"<p class=\"k\">"+title+"</p>"+arcStoryHtml(card,body)
+          +"<div class=\"chess-answer\"><select id=\"ch-piece\"><option>King</option><option selected>Queen</option><option>Rook</option><option>Bishop</option><option>Knight</option><option>Pawn</option></select>"
+          +"<select id=\"ch-file\">"+files.map(v=>"<option>"+v+"</option>").join("")+"</select>"
+          +"<select id=\"ch-rank\">"+ranks.map(v=>"<option>"+v+"</option>").join("")+"</select>"
+          +"<button class=\"cta\" id=\"ch-submit\">PLAY MOVE</button><button class=\"cta play-alt\" id=\"ch-noidea\">NO IDEA</button></div>";
+        $("ch-submit").onclick=(e)=>{e.stopPropagation();const piece=$("ch-piece").value[0],sq=$("ch-file").value+$("ch-rank").value;pickChance(piece+sq);};
+        $("ch-noidea").onclick=(e)=>{e.stopPropagation();pickChance("noidea");};
+        return;
+      }
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
