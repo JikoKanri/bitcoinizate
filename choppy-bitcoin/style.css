@@ -747,3 +747,7 @@ html[data-palette="flower"] #app {
 .bc-panel.hide{display:none}.bc-head{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-size:13px}.bc-head button{background:transparent;border:0;color:var(--fg);font-size:22px}
 .bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:9px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
 .bc-actions{display:flex;gap:7px;margin-top:10px}.bc-actions button{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 7px;background:var(--surface);color:var(--fg);font:700 10px "IBM Plex Mono",monospace}.bc-actions button:disabled{opacity:.35}.bc-actions #bc-declare{border-color:#f2a900;color:#f2a900}.bc-note{min-height:13px;margin:8px 2px 0;font-size:9px;opacity:.7}
+
+.chess-answer{display:grid;grid-template-columns:1.4fr .7fr .7fr;gap:7px;width:min(390px,94%);margin:10px auto 0}
+.chess-answer select{min-width:0;background:var(--surface);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:9px 7px;font:700 11px "IBM Plex Mono",monospace}
+.chess-answer .cta{grid-column:1/-1;margin:0}
