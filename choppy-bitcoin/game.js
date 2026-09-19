@@ -1110,7 +1110,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcArcClosed=false; S.bcDefense=null; S.bcArmySpend=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIslandMarket=false; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcArcClosed=false; S.bcDefense=null; S.bcArmySpend=0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2288,8 +2288,8 @@
     if(card.id==="timeTraveler"){S.bcBookOffer=true;return say("THE BITCOIN STATE is now available in the Marketplace for $666.","");}
     if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","");
     if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","");
-    if(card.id==="pieceWorld"){if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;S.bcIslandOffer=wealthUsd()*(.10+Math.random()*.15);return say("Trip booked. -"+money(p)+".","");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","");}
-    if(card.id==="islandInspection"){if(opt==="a"){let p=cutPct(Math.min(1,S.bcIslandOffer/Math.max(1,wealthUsd())));S.bcIsland=true;return say("You own an island. -"+money(p)+".","");}delete S.chanceUsed.islandInspection;return say("The island remains available at "+money(S.bcIslandOffer)+".","");}
+    if(card.id==="pieceWorld"){if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. -"+money(p)+".","");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","");}
+    if(card.id==="islandInspection"){if(!S.bcIslandOffer)S.bcIslandOffer=wealthUsd()*(.10+Math.random()*.15);if(opt==="a"){let price=S.bcIslandOffer;if(S.cash>=price)S.cash-=price;else{const need=price-S.cash;S.cash=0;S.btc=Math.max(0,S.btc-need/Math.max(1,S.price));}S.bcIsland=true;S.bcIslandMarket=false;return say("You own an island. -"+money(price)+".","");}S.bcIslandMarket=true;return say("You leave. The island remains in the Marketplace at exactly "+money(S.bcIslandOffer)+".","");}
     if(card.id==="paperwork")return say("Country. Island. For now.","");
     if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+money(p)+".","");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","");}
     if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","");}
@@ -5378,6 +5378,8 @@
         + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + money(cold) + "</button>"
         + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + money(laser) + "</button>"
         + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>"
+        + (S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">The Bitcoin State · $666</button>" : "")
+        + (S.bcIslandMarket&&!S.bcIsland&&S.bcIslandOffer>0 ? "<button class=\"cta\" data-buy=\"bcisland\">Island · " + money(S.bcIslandOffer) + "</button>" : "")
         + "<button class=\"cta play-alt\" id=\"help-back\">" + t("back") + "</button>";
     }
     if (panel === "feed") {
@@ -5494,9 +5496,11 @@
         e.stopPropagation();
         const kind = btn.getAttribute("data-buy");
         const mul = S.ranked ? 10 : 1;
-        const cost = (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
+        const cost = kind === "bcbook" ? 666 : kind === "bcisland" ? S.bcIslandOffer : (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
         if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
         S.cash -= cost;
+        if(kind==="bcbook"){S.bcBook=true;S.bcBookOffer=false;A.sfx.coin();renderOverlay();renderHud();return;}
+        if(kind==="bcisland"){S.bcIsland=true;S.bcIslandMarket=false;A.sfx.coin();renderOverlay();renderHud();return;}
         if (kind === "cold") { S.cold += 1; packCold(); }
         else if (kind === "laser") {
           S.lasers += 1;
