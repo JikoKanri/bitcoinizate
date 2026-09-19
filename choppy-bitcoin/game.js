@@ -2923,38 +2923,87 @@
     } catch (e) {}
   }
 
+  function defenseProfile(){
+    const delta=(S.bcArmy||0)-(S.bcWorld||20);
+    if(delta<=-30)return {waves:8,rate:.72,enemy:1.30};
+    if(delta<=-15)return {waves:7,rate:.80,enemy:1.20};
+    if(delta<=-5)return {waves:6,rate:.88,enemy:1.12};
+    if(delta<10)return {waves:6,rate:1,enemy:1};
+    if(delta<25)return {waves:5,rate:1.08,enemy:.92};
+    return {waves:4,rate:1.16,enemy:.84};
+  }
+  function defenseUpgrades(){
+    const a=S.bcArmy||0;
+    return {mob:a>=40,armor1:a>=50,cannon1:a>=60,cannon2:a>=70,armor2:a>=80,cannon3:a>=90,wall:a>=100};
+  }
   function startDefense(){
-    S.bcDefense={x:240,y:560,shots:[],enemies:[],wave:1,spawn:0,integrity:100,done:false,fire:0};
+    const p=defenseProfile(),u=defenseUpgrades();
+    S.bcDefense={x:240,shots:[],enemies:[],wave:1,waves:p.waves,spawn:.5,spawned:0,kills:0,quota:5,integrity:100,wall:u.wall?100:0,done:false,fire:0,inv:0,profile:p,up:u};
     S.phase="defense";
     if(field){field.classList.remove("is-play");field.classList.add("defense-mode");}
     hideOverlay();
   }
+  function defenseEnemy(d){
+    const r=Math.random(),w=d.wave;
+    let type="STANDARD",hp=1,v=58,damage=10,size=17;
+    if(w>=2&&r<.25){type="FAST";v=105;damage=8;size=13;}
+    else if(w>=3&&r<.47){type="HEAVY";hp=3;v=43;damage=18;size=22;}
+    else if(w>=5&&r<.62){type="ELITE";hp=2;v=82;damage=15;size=18;}
+    d.enemies.push({x:32+Math.random()*416,y:-28,hp,maxHp:hp,v:v*d.profile.enemy,damage,size,type,phase:Math.random()*6.28});
+  }
+  function finishDefense(win){
+    const d=S.bcDefense;if(!d||d.done)return;d.done=true;S.chanceMet.bcDefenseResult=win?"win":"lose";
+    S.phase="play";if(field)field.classList.remove("defense-mode");setTimeout(()=>dealChance(),120);
+  }
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done)return;
-    d.fire=Math.max(0,d.fire-dt);d.spawn-=dt;
-    const target=Math.min(8,3+d.wave);
-    if(d.spawn<=0&&d.enemies.length<target){d.spawn=Math.max(.28,1.05-d.wave*.08);d.enemies.push({x:35+Math.random()*410,y:-20,hp:1+(d.wave>4?1:0),v:55+d.wave*9});}
-    d.shots.forEach(s=>s.y-=360*dt);d.shots=d.shots.filter(s=>s.y>-20);
-    d.enemies.forEach(e=>e.y+=e.v*dt);
-    for(const e of d.enemies)for(const s of d.shots)if(!s.hit&&Math.abs(e.x-s.x)<20&&Math.abs(e.y-s.y)<24){s.hit=true;e.hp--;};
-    d.shots=d.shots.filter(s=>!s.hit);d.enemies=d.enemies.filter(e=>e.hp>0);
-    let leaks=d.enemies.filter(e=>e.y>620).length;if(leaks){d.integrity=Math.max(0,d.integrity-leaks*12);d.enemies=d.enemies.filter(e=>e.y<=620);}
-    if(d.integrity<=0){d.done=true;S.chanceMet.bcDefenseResult="lose";S.phase="play";if(field)field.classList.remove("defense-mode");dealChance();return;}
-    if(d.wave<6&&S.lifeT>0&&d.enemies.length===0&&d.spawn<.1)d.wave++;
-    if(d.wave>=6&&d.enemies.length===0&&d.spawn<.1){d.done=true;S.chanceMet.bcDefenseResult="win";S.phase="play";if(field)field.classList.remove("defense-mode");dealChance();}
+    d.fire=Math.max(0,d.fire-dt);d.inv=Math.max(0,d.inv-dt);d.spawn-=dt;
+    if(d.spawned<d.quota&&d.spawn<=0){defenseEnemy(d);d.spawned++;d.spawn=(.78+Math.random()*.42)/d.profile.rate;}
+    d.shots.forEach(s=>s.y-=s.v*dt);d.shots=d.shots.filter(s=>s.y>-25&&!s.hit);
+    d.enemies.forEach(e=>{e.phase+=dt*3;e.y+=e.v*dt;if(e.type==="FAST")e.x+=Math.sin(e.phase)*45*dt;});
+    for(const e of d.enemies)for(const s of d.shots)if(!s.hit&&Math.abs(e.x-s.x)<e.size+5&&Math.abs(e.y-s.y)<e.size+10){s.hit=true;e.hp-=s.damage;if(e.hp<=0)d.kills++;};
+    d.enemies=d.enemies.filter(e=>e.hp>0);
+    const leaks=d.enemies.filter(e=>e.y>610);d.enemies=d.enemies.filter(e=>e.y<=610);
+    for(const e of leaks){
+      if(d.wall>0){d.wall=Math.max(0,d.wall-e.damage*2);continue;}
+      if(d.inv>0)continue;
+      d.integrity=Math.max(0,d.integrity-e.damage);
+      if(d.up.armor1)d.inv=d.up.armor2?1.25:.65;
+    }
+    if(d.integrity<=0){finishDefense(false);return;}
+    if(d.spawned>=d.quota&&d.enemies.length===0){
+      if(d.wave>=d.waves){finishDefense(true);return;}
+      d.wave++;d.spawned=0;d.quota=5+Math.floor(d.wave*1.4);d.spawn=.8;
+    }
   }
   function drawDefense(ctx){
     const d=S.bcDefense;if(!d)return;
     ctx.fillStyle="#07111b";ctx.fillRect(0,0,480,640);
-    ctx.fillStyle="#102738";for(let i=0;i<16;i++)ctx.fillRect((i*67)%480,90+(i*83)%430,28,28);
-    ctx.fillStyle="#f2a900";ctx.fillRect(d.x-28,575,56,34);ctx.fillStyle="#fff";ctx.fillRect(d.x-4,552,8,30);
-    ctx.fillStyle="#ffe7a0";d.shots.forEach(s=>ctx.fillRect(s.x-3,s.y-9,6,18));
-    d.enemies.forEach(e=>{ctx.fillStyle=e.hp>1?"#d8d8d8":"#c45c4a";ctx.fillRect(e.x-18,e.y-13,36,26);ctx.fillStyle="#111";ctx.fillRect(e.x-4,e.y+13,8,8);});
-    ctx.fillStyle="#fff";ctx.font="700 14px monospace";ctx.fillText("CITADEL INTEGRITY "+d.integrity+"%",12,24);ctx.fillText("WAVE "+d.wave+"/6",12,46);ctx.fillText("ENEMIES "+d.enemies.length,350,24);
+    ctx.fillStyle="#0c1c29";for(let i=0;i<18;i++)ctx.fillRect((i*71)%480,76+(i*89)%455,30,30);
+    ctx.fillStyle="#17384b";ctx.fillRect(0,604,480,36);
+    if(d.wall>0){ctx.fillStyle="#7d858b";for(let x=0;x<480;x+=40)ctx.fillRect(x,582,34,18);}
+    if(d.inv>0&&Math.floor(d.inv*12)%2===0)ctx.globalAlpha=.35;
+    ctx.fillStyle="#f2a900";ctx.fillRect(d.x-27,552,54,35);ctx.fillStyle="#fff";ctx.fillRect(d.x-4,528,8,28);ctx.globalAlpha=1;
+    ctx.fillStyle="#ffe7a0";d.shots.forEach(s=>ctx.fillRect(s.x-3,s.y-10,6,20));
+    for(const e of d.enemies){
+      ctx.fillStyle=e.type==="FAST"?"#e9b949":e.type==="HEAVY"?"#9ca3aa":e.type==="ELITE"?"#d66be5":"#c45c4a";
+      ctx.fillRect(e.x-e.size,e.y-e.size*.7,e.size*2,e.size*1.4);
+      ctx.fillStyle="#111";ctx.fillRect(e.x-4,e.y+e.size*.7,8,7);
+      if(e.maxHp>1){ctx.fillStyle="#fff";ctx.fillRect(e.x-e.size,e.y-e.size-7,(e.size*2)*(e.hp/e.maxHp),3);}
+    }
+    ctx.fillStyle="#fff";ctx.font="700 13px monospace";ctx.fillText("CITADEL INTEGRITY "+d.integrity+"%",12,22);ctx.fillText("WAVE "+d.wave+"/"+d.waves,12,43);ctx.fillText("ENEMIES "+(d.enemies.length+Math.max(0,d.quota-d.spawned)),350,22);
+    if(d.wall>0){ctx.fillStyle="#c9cdd0";ctx.fillText("OUTER WALL "+d.wall+"%",350,43);}
+    ctx.fillStyle="#aeb7be";ctx.font="11px monospace";ctx.fillText("ARMY "+(S.bcArmy||0)+"  ·  WORLD "+(S.bcWorld||20),12,625);
   }
   function defenseInput(clientX,fire){
-    const d=S.bcDefense;if(!d)return;const r=canvas.getBoundingClientRect();d.x=Math.max(28,Math.min(452,(clientX-r.left)*480/r.width));
-    if(fire&&d.fire<=0){d.fire=.22;d.shots.push({x:d.x,y:548});}
+    const d=S.bcDefense;if(!d)return;const r=canvas.getBoundingClientRect(),speed=d.up.mob?1.2:1;
+    d.x=Math.max(28,Math.min(452,(clientX-r.left)*480/r.width));
+    if(fire&&d.fire<=0){
+      d.fire=.22/speed;const v=d.up.cannon1?486:360,damage=d.up.cannon3?2:1;
+      d.shots.push({x:d.x,y:525,v,damage});
+      if(d.up.cannon2)d.shots.push({x:d.x-11,y:530,v,damage});
+      if(d.up.cannon3)d.shots.push({x:d.x+11,y:530,v,damage},{x:d.x-20,y:535,v,damage});
+    }
   }
   function setPhase(p) {
     S.phase = p;
@@ -6226,7 +6275,7 @@
     if (typing) return;
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     const k = e.key.toLowerCase();
-    if(S.phase==="defense"){if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();defenseInput(canvas.getBoundingClientRect().left+(S.bcDefense.x/480)*canvas.getBoundingClientRect().width,true);}else if(k==="a"||e.code==="ArrowLeft"){S.bcDefense.x=Math.max(28,S.bcDefense.x-24);}else if(k==="d"||e.code==="ArrowRight"){S.bcDefense.x=Math.min(452,S.bcDefense.x+24);}return;}
+    if(S.phase==="defense"){if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();defenseInput(canvas.getBoundingClientRect().left+(S.bcDefense.x/480)*canvas.getBoundingClientRect().width,true);}else if(k==="a"||e.code==="ArrowLeft"){S.bcDefense.x=Math.max(28,S.bcDefense.x-(S.bcDefense.up.mob?29:24));}else if(k==="d"||e.code==="ArrowRight"){S.bcDefense.x=Math.min(452,S.bcDefense.x+(S.bcDefense.up.mob?29:24));}return;}
     if (S.arcHold || S.phase === "chance") {
       if (e.code === "Space" || e.code === "ArrowUp" || k === "p") { e.preventDefault(); return; }
     }
