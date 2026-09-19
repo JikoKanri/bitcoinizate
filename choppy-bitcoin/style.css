@@ -737,3 +737,6 @@ html[data-palette="flower"] #app {
     radial-gradient(70% 50% at 90% 80%, rgba(255,225,74,0.28), transparent 55%),
     linear-gradient(180deg, var(--bg-top, var(--bg)) 0%, var(--bg) 48%, var(--bg-bot, var(--bg)) 100%);
 }
+
+/* Arc illustration framing: square art with the same rounded card language. */
+.chance-art{aspect-ratio:1/1;object-fit:cover;border-radius:18px;border:2px solid var(--border);box-shadow:0 12px 34px rgba(0,0,0,.28);background:var(--surface)}
