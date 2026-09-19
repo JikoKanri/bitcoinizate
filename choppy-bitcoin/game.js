@@ -1783,13 +1783,13 @@
     ambassador:{en:"At 75 Nodes, a real ambassador visits. Before leaving: If you ever decide to do something stupid, call me first."},
     threeColors:{en:"Three military colors cover most of the world. Saint Arnald is gray. Nobody seems to know what to do with Saint Arnald."},
     ortegaCalls:{en:"Saint Arnald offers forty-two years of recognition experience. Mostly they learned what not to do."},
-    theQuestion:{en:"100 Liberty Nodes. Madame Luck says you have enough. Marek asks for the Army number, hears it, and says No way. Your call."},
+    theQuestion:{en:"100 Liberty Nodes. The project can now become a declaration. Army strength is your choice; independence does not require 100 Army."},
     declaration:{en:"You sign. Thirty-seven seconds later Saint Arnald recognizes Bitcoin Country. Marek checks his phone. Of course they did."},
-    theAnswer:{en:"The old sovereign rejects the declaration. The Bloc supports them. Marek walks in: They are mobilizing. Now you have to keep it."},
-    fourthColor:{en:"Victory. Mr Ortega & Gambette: Welcome to the problem of being a country. Madame Luck: Now build something worth defending."},
-    notYet:{en:"Defeat. The island survives; independence does not. Saint Arnald says its first declaration failed too. Madame Luck: Not yet."},
+    theAnswer:{en:"Recognition is not universal. One of the blocs responds with force. The declaration now has to survive."},
+    fourthColor:{en:"The attack fails. Bitcoin Country remains independent. Some governments begin negotiations; Saint Arnald never stopped calling it a country."},
+    notYet:{en:"The defense fails. The island, residents and project survive, but the declaration does not. You can prepare and try again later."},
     landfill: { en: "Nico is in Wales at 1:14 A.M. digging Docksway for a lost 8,000 BTC USB. He wants a partner, not a spectator. Almost always you find nothing.", es: "Nico está en Gales a la 1:14 excavando Docksway por un USB de 8.000 BTC. Quiere un socio, no un espectador. Casi nunca aparece nada." },
-    taxbill: { en: "The quarterly tax bill did not change. You pay 10% of net worth.", es: "La boleta trimestral no cambió. Pagás el 10% del patrimonio." },
+    taxbill: { en: "Your quarterly tax bill arrives. You reopen it in case the number changed. It did not. Cost: 10% of net worth.", es: "Llega la boleta trimestral. La volvés a abrir por si cambió el número. No cambió. Costo: 10% del patrimonio." },
     nicoWedding: { en: "Nico's wedding: 400 people, twelve you know, 1998 CDs. Lena says don't let him talk you into anything. A generous envelope may come back as cold storage.", es: "Boda de Nico: 400 personas, doce conocidas, CDs del 98. Lena: que no te convenza de nada. Un sobre generoso puede volver como cold storage." },
     mexico: { en: "Lena wants five days in Tulum. You think three. Paco ate the brochure. The trip buys a few seconds of feeling untouchable.", es: "Lena quiere cinco días en Tulum. Vos pensás tres. Paco se comió el folleto. El viaje compra unos segundos de sentirte intocable." },
     flu: { en: "Lena has the flu. Soup, medicine, Paco eats half. About $120 you will not get back.", es: "A Lena le da gripe. Sopa, remedio, Paco se come la mitad. Unos $120 que no vuelven." },
@@ -1815,7 +1815,7 @@
     baby: { en: "The baby is here. Everyone is tired. Paco is confused. Kids grow fast.", es: "Llegó el bebé. Todos cansados. Paco no entiende. Los chicos crecen rápido." },
     cousin: { en: "Nico's new token. 10× by Friday, he says. You ask what it does. That is \"not the important part.\"", es: "El token de Nico. x10 para el viernes, dice. Preguntás qué hace. Esa \"no es la parte importante.\"" },
     speeding: { en: "Six over. Same corner. Same officer. About $75.", es: "Diez de más. La misma esquina. El mismo oficial. Unos $75." },
-    wallet: { en: "Wallet on bus seat 14. Cash gone (~$40). Cards still there. Partial victory.", es: "Billetera en el asiento 14. Efectivo no (~$40). Tarjetas sí. Victoria parcial." },
+    wallet: { en: "You leave your wallet on the bus. Someone turns it in three stops later. The cash is gone; the cards are still there. Partial victory. About $40 lost.", es: "Dejás la billetera en el bondi. Alguien la entrega tres paradas después. Falta el efectivo; las tarjetas siguen ahí. Victoria parcial. Unos $40 perdidos." },
     potluck: { en: "Lena signed you up for a neighborhood potluck. She also signed Paco. He already ate the dish.", es: "Lena los anotó en la olla de la cuadra. También anotó a Paco. Ya se comió el plato." },
     usedcar: { en: "Nico's 2009 Fit. The seller says new timing belt. Nico looks under the hood: Sharpie. He says that means \"basically new.\"", es: "El Fit 2009 de Nico. El vendedor dice correa nueva. Nico mira: Sharpie. Dice que significa \"casi nuevo.\"" },
     tetris: { en: "Marek, a bar, a Tetris cabinet nobody uses. He gets unusually focused, then steps aside. Your turn.", es: "Marek, un bar, un Tetris que nadie usa. Se concentra de un modo raro y se corre. Tu turno." },
@@ -2019,7 +2019,7 @@
       body: "You are six miles per hour over the limit. Same corner. Same officer. Same bad decision.",
       bodyEs: "Vas diez kilómetros arriba del límite. La misma esquina. El mismo oficial. La misma mala decisión." },
     { id: "wallet", kind: "report",
-      title: "Seat 14", titleEs: "Asiento 14",
+      title: "Found It", titleEs: "La encontraron",
       body: "You leave your wallet on bus seat 14. You realize it three stops later. You call the company. Someone found it. The cash is gone. Your cards are still there. You consider this a partial victory.",
       bodyEs: "Dejás la billetera en el asiento 14 del bondi. Te das cuenta tres paradas después. Llamás. Alguien la encontró. El efectivo no está. Las tarjetas sí. Lo considerás una victoria parcial." },
     { id: "potluck", kind: "choice", after: ["landfill"],
@@ -2579,8 +2579,9 @@
     if (!card) { finishArcHold(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
-        S.chanceNote = S.chanceReadyNote || (chanceLang() ? "Listo." : "Done.");
-        renderOverlay();
+        if (S.arcPending) { S.cash=S.arcPending.cash; S.btc=S.arcPending.btc; S.cold=S.arcPending.cold; S.invuln=S.arcPending.invuln; S.msig=S.arcPending.msig; }
+        S.chanceNote=S.chanceReadyNote||"";
+        finishArcHold();
         renderHud();
         return;
       }
