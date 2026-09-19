@@ -1110,7 +1110,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIslandMarket=false; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcArcClosed=false; S.bcDefense=null; S.bcArmySpend=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIslandMarket=false; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2309,7 +2309,7 @@
     if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
     if(card.id==="theQuestion"){if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
     if(card.id==="declaration")return say("Saint Arnald recognizes Bitcoin Country in thirty-seven seconds.","");
-    if(card.id==="theAnswer"){startDefense();return say("The attack begins.","");}
+    if(card.id==="theAnswer"){S.bcDefensePending=true;return say("The declaration now has to survive.","");}
     if(card.id==="fourthColor"){S.bcIndependent=true;return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","");}
     if(card.id==="notYet"){S.bcIndependent=false;delete S.chanceMet.bcDefenseResult;delete S.chanceUsed.theQuestion;delete S.chanceUsed.declaration;delete S.chanceUsed.theAnswer;delete S.chanceUsed.notYet;return say("Not yet. KEEP PLAYING.","");}
     if (card.id === "honeymoon") {
@@ -2466,6 +2466,7 @@
     const forced = window.__arcForce && CHANCE_CARDS.find((c) => c.id === window.__arcForce);
     const card = forced || (src.length ? src[(Math.random() * src.length) | 0] : null);
     if (!card) return;
+    if(forced) window.__arcForce="";
     S.chanceUsed[card.id] = true;
     S.chanceCard = card;
     S.chanceNote = "";
@@ -2568,6 +2569,7 @@
   }
   function finishArcHold() {
     commitArcBooks();
+    const launchDefense=!!S.bcDefensePending; S.bcDefensePending=false;
     S.chanceCard = null;
     S.chanceNote = "";
     S.chanceReadyNote = "";
@@ -2578,6 +2580,7 @@
     S.optBack = "play";
     S.optPanel = null;
     setPhase("paused");
+    if(launchDefense){S.arcHold=false;S.optPanel=null;startDefense();}
   }
 
   let arcClickLock = 0;
@@ -3003,7 +3006,7 @@
   }
   function finishDefense(win){
     const d=S.bcDefense;if(!d||d.done)return;d.done=true;S.chanceMet.bcDefenseResult=win?"win":"lose";
-    S.phase="play";if(field)field.classList.remove("defense-mode");setTimeout(()=>dealChance(),120);
+    S.phase="play";if(field)field.classList.remove("defense-mode");window.__arcForce=win?"fourthColor":"notYet";setTimeout(()=>dealChance(),120);
   }
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done)return;
@@ -3061,13 +3064,13 @@
     ctx.restore();
   }
   function defenseInput(clientX,fire){
-    const d=S.bcDefense;if(!d)return;const r=canvas.getBoundingClientRect(),speed=d.up.mob?1.2:1;
+    const d=S.bcDefense;if(!d)return;const r=canvas.getBoundingClientRect();
     d.x=Math.max(28,Math.min(452,(clientX-r.left)*480/r.width));
     if(fire&&d.fire<=0){
-      d.fire=.22/speed;const v=d.up.cannon1?486:360,damage=d.up.cannon3?2:1;
+      const maxShots=d.up.cannon3?4:d.up.cannon2?2:1;
+      if(d.shots.length>=maxShots)return;
+      d.fire=.22;const v=d.up.cannon1?486:360,damage=d.up.cannon3?2:1;
       d.shots.push({x:d.x,y:525,v,damage});
-      if(d.up.cannon2)d.shots.push({x:d.x-11,y:530,v,damage});
-      if(d.up.cannon3)d.shots.push({x:d.x+11,y:530,v,damage},{x:d.x-20,y:535,v,damage});
     }
   }
   function setPhase(p) {
@@ -3139,6 +3142,7 @@
     S.particles = S.particles.filter((p) => p.life > 0);
     for (const f of S.floats) { f.y += f.vy * dt; f.life -= dt; }
     S.floats = S.floats.filter((f) => f.life > 0);
+    if(S.phase==="defense"){stepDefense(dt);return;}
     if (S.phase !== "play") return;
     if (S.invuln > 0) S.invuln -= dt;
 
@@ -6331,6 +6335,7 @@
   window.addEventListener("focus", mpTickClock);
   window.addEventListener("pageshow", mpTickClock);
 
+  canvas.addEventListener("pointermove",(e)=>{if(S.phase==="defense"&&(e.buttons||e.pointerType==="touch")){e.preventDefault();defenseInput(e.clientX,false);}});
   canvas.addEventListener("pointerdown", (e) => {
     if (flapBlocked(e)) return;
     e.preventDefault();
@@ -6562,7 +6567,7 @@
   if(bcOpen)bcOpen.addEventListener("click",()=>{const p=$("bc-panel");if(p)p.classList.remove("hide");renderBitcoinCountry();});
   if(bcClose)bcClose.addEventListener("click",()=>{const p=$("bc-panel");if(p)p.classList.add("hide");});
   if(bcArmy10)bcArmy10.addEventListener("click",()=>{buyArmy(10);renderBitcoinCountry();});
-  if(bcDeclare)bcDeclare.addEventListener("click",()=>{if((S.bcNodes||0)<100||S.bcIndependent)return;S.bcIndependent=true;S.chanceUsed.theQuestion=true;const p=$("bc-panel");if(p)p.classList.add("hide");dealChance();});
+  if(bcDeclare)bcDeclare.addEventListener("click",()=>{if((S.bcNodes||0)<100||S.bcIndependent)return;const p=$("bc-panel");if(p)p.classList.add("hide");window.__arcForce="theQuestion";if(S.phase!=="play")S.phase="play";dealChance();});
   window.startChoppy = startGame;
   window.replayChoppy = replay;
   window.dealChoppyArc = function (id) {
