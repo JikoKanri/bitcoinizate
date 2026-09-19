@@ -70,6 +70,10 @@
       <button type="button" id="market-btn" class="dca-tog" disabled data-i18n="market">MARKET</button>
     </div>
     <div id="mp-hud-list" class="mp-hud-list hide"></div>
+    <div id="bc-bar" class="bc-bar hide" aria-label="Bitcoin Country">
+      <button type="button" id="bc-open" class="bc-open">BITCOIN COUNTRY</button>
+      <span id="bc-mini">NODES 0/100 · ARMY 0 · WORLD 20</span>
+    </div>
     <div id="field" class="field">
       <canvas id="c"></canvas>
       <div id="flap-layer" aria-hidden="true"></div>
@@ -95,6 +99,22 @@
         </div>
       </div>
       <button id="pause-btn" class="pause hide" aria-label="Pause">||</button>
+      <div id="bc-panel" class="bc-panel hide">
+        <div class="bc-head"><b>BITCOIN COUNTRY</b><button type="button" id="bc-close">×</button></div>
+        <div class="bc-grid">
+          <div><span>LIBERTY NODES</span><b id="bc-nodes">0 / 100</b></div>
+          <div><span>ARMY</span><b id="bc-army">0 / 100</b></div>
+          <div><span>WORLD</span><b id="bc-world">20</b></div>
+          <div><span>CITADEL</span><b id="bc-citadel">NOT BUILT</b></div>
+          <div><span>MINE</span><b id="bc-mine">OFFLINE</b></div>
+          <div><span>STATUS</span><b id="bc-status">PROJECT</b></div>
+        </div>
+        <div class="bc-actions">
+          <button type="button" id="bc-army10">+10 ARMY · 2.5%</button>
+          <button type="button" id="bc-declare" class="hide">DECLARE INDEPENDENCE</button>
+        </div>
+        <p id="bc-note" class="bc-note"></p>
+      </div>
       <div id="overlay" class="overlay">
         <h1>Choppy Bitcoin</h1>
         <button type="button" class="cta" id="go" onclick="window.startChoppy&&window.startChoppy()">Ranked</button>
