@@ -4673,6 +4673,7 @@
   }
 
   function layoutStage() {
+    renderBitcoinCountry();
     const app = $("app");
     if (!app) return;
     app.style.transform = "none";
@@ -4688,6 +4689,19 @@
     app.style.transform = "scale(" + s + ")";
   }
 
+  function renderBitcoinCountry(){
+    const bar=$("bc-bar"),panel=$("bc-panel");if(!bar)return;
+    const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
+    bar.classList.toggle("hide",!unlocked);
+    if(!unlocked){if(panel)panel.classList.add("hide");return;}
+    setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20));
+    setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",(S.bcArmy||0)+" / 100");setTxt("bc-world",String(S.bcWorld||20));
+    setTxt("bc-citadel",S.bcCitadel?"BUILT":"NOT BUILT");setTxt("bc-mine",S.bcMine?"ONLINE":"OFFLINE");
+    setTxt("bc-status",S.bcIndependent?"INDEPENDENT":S.bcIsland?"PROJECT":"SEARCHING");
+    const ab=$("bc-army10");if(ab){ab.disabled=!S.bcArmyUnlocked||(S.bcArmy||0)>=100||S.bcIndependent;ab.textContent="+10 ARMY · "+(((Math.min(10,100-(S.bcArmy||0)))*.25).toFixed(1))+"%";}
+    const dec=$("bc-declare");if(dec){const ready=(S.bcNodes||0)>=100&&!S.bcIndependent;dec.classList.toggle("hide",!ready);}
+    setTxt("bc-note",S.bcArmyUnlocked?"Army purchases are permanent. World strength can keep rising.":"Army unlocks after the island security question.");
+  }
   function renderHud() {
     const app = $("app");
     if (app) app.classList.toggle("vs-on", !!(S.phase === "mplobby" || S.phase === "mpwin" || S.phase === "mpwait" || S.phase === "count" || (S.mp && S.phase === "play")));
@@ -6474,6 +6488,11 @@
     renderOverlay();
     renderHud();
   });
+  const bcOpen=$("bc-open"),bcClose=$("bc-close"),bcArmy10=$("bc-army10"),bcDeclare=$("bc-declare");
+  if(bcOpen)bcOpen.addEventListener("click",()=>{const p=$("bc-panel");if(p)p.classList.remove("hide");renderBitcoinCountry();});
+  if(bcClose)bcClose.addEventListener("click",()=>{const p=$("bc-panel");if(p)p.classList.add("hide");});
+  if(bcArmy10)bcArmy10.addEventListener("click",()=>{buyArmy(10);renderBitcoinCountry();});
+  if(bcDeclare)bcDeclare.addEventListener("click",()=>{if((S.bcNodes||0)<100||S.bcIndependent)return;S.bcIndependent=true;S.chanceUsed.theQuestion=true;const p=$("bc-panel");if(p)p.classList.add("hide");dealChance();});
   window.startChoppy = startGame;
   window.replayChoppy = replay;
   window.dealChoppyArc = function (id) {
