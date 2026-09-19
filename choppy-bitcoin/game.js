@@ -1062,6 +1062,7 @@
   }
 
   function tickHalve() {
+    if(S.phase==="defense"){stepDefense(dt);return;}
     if (S.phase !== "play") return;
     if (S.halveLeft > 0) S.halveLeft -= 1;
     if (S.halveLeft === 4) {
@@ -1109,7 +1110,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcArcClosed=false;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcArcClosed=false; S.bcDefense=null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2268,7 +2269,7 @@
     if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
     if(card.id==="theQuestion"){if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
     if(card.id==="declaration")return say("Saint Arnald recognizes Bitcoin Country in thirty-seven seconds.","");
-    if(card.id==="theAnswer"){let power=(S.bcArmy||0)+(S.bcCitadel?20:0),world=S.bcWorld||20;S.chanceMet.bcBattle=power>=world-5?"win":"lose";return say("Army "+(S.bcArmy||0)+" · World "+world+" · Citadel "+(S.bcCitadel?"BUILT":"NOT BUILT")+" · "+S.chanceMet.bcBattle.toUpperCase()+".","");}
+    if(card.id==="theAnswer"){startDefense();return say("The attack begins.","");}
     if(card.id==="fourthColor"){grantWealthPct(.10);return say("THE FOURTH COLOR. +10% net worth. KEEP PLAYING.","");}
     if(card.id==="notYet"){S.bcIndependent=false;delete S.chanceUsed.theQuestion;delete S.chanceUsed.declaration;delete S.chanceUsed.theAnswer;return say("Not yet. KEEP PLAYING.","");}
     if (card.id === "honeymoon") {
@@ -2922,6 +2923,39 @@
     } catch (e) {}
   }
 
+  function startDefense(){
+    S.bcDefense={x:240,y:560,shots:[],enemies:[],wave:1,spawn:0,integrity:100,done:false,fire:0};
+    S.phase="defense";
+    if(field){field.classList.remove("is-play");field.classList.add("defense-mode");}
+    hideOverlay();
+  }
+  function stepDefense(dt){
+    const d=S.bcDefense;if(!d||d.done)return;
+    d.fire=Math.max(0,d.fire-dt);d.spawn-=dt;
+    const target=Math.min(8,3+d.wave);
+    if(d.spawn<=0&&d.enemies.length<target){d.spawn=Math.max(.28,1.05-d.wave*.08);d.enemies.push({x:35+Math.random()*410,y:-20,hp:1+(d.wave>4?1:0),v:55+d.wave*9});}
+    d.shots.forEach(s=>s.y-=360*dt);d.shots=d.shots.filter(s=>s.y>-20);
+    d.enemies.forEach(e=>e.y+=e.v*dt);
+    for(const e of d.enemies)for(const s of d.shots)if(!s.hit&&Math.abs(e.x-s.x)<20&&Math.abs(e.y-s.y)<24){s.hit=true;e.hp--;};
+    d.shots=d.shots.filter(s=>!s.hit);d.enemies=d.enemies.filter(e=>e.hp>0);
+    let leaks=d.enemies.filter(e=>e.y>620).length;if(leaks){d.integrity=Math.max(0,d.integrity-leaks*12);d.enemies=d.enemies.filter(e=>e.y<=620);}
+    if(d.integrity<=0){d.done=true;S.chanceMet.bcDefenseResult="lose";S.phase="play";if(field)field.classList.remove("defense-mode");dealChance();return;}
+    if(d.wave<6&&S.lifeT>0&&d.enemies.length===0&&d.spawn<.1)d.wave++;
+    if(d.wave>=6&&d.enemies.length===0&&d.spawn<.1){d.done=true;S.chanceMet.bcDefenseResult="win";S.phase="play";if(field)field.classList.remove("defense-mode");dealChance();}
+  }
+  function drawDefense(ctx){
+    const d=S.bcDefense;if(!d)return;
+    ctx.fillStyle="#07111b";ctx.fillRect(0,0,480,640);
+    ctx.fillStyle="#102738";for(let i=0;i<16;i++)ctx.fillRect((i*67)%480,90+(i*83)%430,28,28);
+    ctx.fillStyle="#f2a900";ctx.fillRect(d.x-28,575,56,34);ctx.fillStyle="#fff";ctx.fillRect(d.x-4,552,8,30);
+    ctx.fillStyle="#ffe7a0";d.shots.forEach(s=>ctx.fillRect(s.x-3,s.y-9,6,18));
+    d.enemies.forEach(e=>{ctx.fillStyle=e.hp>1?"#d8d8d8":"#c45c4a";ctx.fillRect(e.x-18,e.y-13,36,26);ctx.fillStyle="#111";ctx.fillRect(e.x-4,e.y+13,8,8);});
+    ctx.fillStyle="#fff";ctx.font="700 14px monospace";ctx.fillText("CITADEL INTEGRITY "+d.integrity+"%",12,24);ctx.fillText("WAVE "+d.wave+"/6",12,46);ctx.fillText("ENEMIES "+d.enemies.length,350,24);
+  }
+  function defenseInput(clientX,fire){
+    const d=S.bcDefense;if(!d)return;const r=canvas.getBoundingClientRect();d.x=Math.max(28,Math.min(452,(clientX-r.left)*480/r.width));
+    if(fire&&d.fire<=0){d.fire=.22;d.shots.push({x:d.x,y:548});}
+  }
   function setPhase(p) {
     S.phase = p;
     try {
@@ -6136,7 +6170,7 @@
     }
     hudAcc += 0.016;
     const ctx = fit();
-    draw(ctx);
+    if(S.phase==="defense") drawDefense(ctx); else draw(ctx);
     paintHeroPreview();
     if (hudAcc > 0.12) { renderHud(); hudAcc = 0; }
     requestAnimationFrame(loop);
@@ -6151,6 +6185,7 @@
     e.preventDefault();
     if (A && A.unlock) try { A.unlock(); } catch (err) {}
     S.humanInput = true;
+    if(S.phase==="defense"){defenseInput(e.clientX,true);return;}
     if (S.phase === "play") flap();
   });
   const flapLayer = $("flap-layer");
@@ -6191,6 +6226,7 @@
     if (typing) return;
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     const k = e.key.toLowerCase();
+    if(S.phase==="defense"){if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();defenseInput(canvas.getBoundingClientRect().left+(S.bcDefense.x/480)*canvas.getBoundingClientRect().width,true);}else if(k==="a"||e.code==="ArrowLeft"){S.bcDefense.x=Math.max(28,S.bcDefense.x-24);}else if(k==="d"||e.code==="ArrowRight"){S.bcDefense.x=Math.min(452,S.bcDefense.x+24);}return;}
     if (S.arcHold || S.phase === "chance") {
       if (e.code === "Space" || e.code === "ArrowUp" || k === "p") { e.preventDefault(); return; }
     }
