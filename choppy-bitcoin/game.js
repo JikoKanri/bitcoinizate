@@ -5776,7 +5776,8 @@
     if ($("mp-join")) $("mp-join").onclick = (e) => {
       e.stopPropagation();
       const inp = $("mp-code");
-      S.mpJoinCode = inp ? inp.value : "";
+      S.mpJoinCode = inp ? String(inp.value||"").trim().toUpperCase() : "";
+      if(S.mpJoinCode.length<4){S.mpErr="Enter a room code";renderOverlay();return;}
       S.mpErr = "";
       if (window.ChoppyMP) window.ChoppyMP.join(S.mpJoinCode);
     };
@@ -5928,7 +5929,7 @@
   }
   function openMpLobby() {
     S.mpErr = "";
-    S.mp = false;
+    S.mp = false; S.mpRulesOpen=true; S.mpJoinCode="";
     setPhase("mplobby");
   }
   function playAtFromGo(data) {
@@ -6030,11 +6031,11 @@
         }
       } else if (ev === "rules") {
         S.mpRules = data || S.mpRules;
-        if (S.phase === "mplobby" && !typing()) renderOverlay();
+        if ((S.phase === "mplobby" || S.phase === "mpwait") && !typing()) renderOverlay();
       } else if (ev === "reset") {
         S.mpOver = false;
         S.mpRoundOver = false;
-        S.mp = false;
+        S.mp = !!(window.ChoppyMP && window.ChoppyMP.get && window.ChoppyMP.get().code);
         S.dead = false;
         S.spectate = false;
         S.finished = false;
@@ -6073,7 +6074,7 @@
         renderOverlay();
       } else if (ev === "err") {
         S.mpErr = data === "need 2" ? t("mpNeed") : data === "not ready" ? t("mpNeedReady") : data === "full" ? t("mpFull") : data === "mix" ? t("mpMixNeed") : String(data || "error");
-        if (S.phase === "mplobby") renderOverlay();
+        if (S.phase === "mplobby" || S.phase === "mpwait") renderOverlay();
       }
     });
   }
