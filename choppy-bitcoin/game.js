@@ -1711,6 +1711,7 @@
     const pct={landfill:{a:.25,b:.75},nicoWedding:{a:.04,b:.006},mexico:{a:.08},phish:{a:.18},ring:{a:.08,b:.03},wedding:{a:.12,b:.05,c:.01},honeymoon:{a:.10,b:.06,c:.04},baby:{a:.05,b:.02},peopleAsking:{a:.03},extensionCord:{a:.04},obviously:{a:.05},protectIsland:{a:.02},citadelQuestion:{a:.08}};
     const p=pct[card.id]&&pct[card.id][o.k];
     if(p!=null){const cost=wealthUsd()*p;lab=lab.replace(/\s*·?\s*\d+(?:\.\d+)?%\s*(?:net worth)?/gi,"").trim()+" · "+money(cost);}
+    if(card.id==="islandInspection"&&o.k==="a") lab=(es?"Comprar la isla":"Buy the island")+" · "+money(S.bcIslandOffer||0);
     return lab;
   }
   function chanceLang() {
@@ -1769,10 +1770,10 @@
   const CHANCE_TLDR = {
     justInCase: { en: "A temporary emergency law expands government power during economic trouble. Temporary is starting to mean years.", es: "Una ley de emergencia amplia el poder del Estado en crisis económicas. Temporal ya parece significar años." },
     nothingToHide: { en: "A digital ID starts optional and then becomes required for more services. You have nothing to hide. The question still bothers you.", es: "Un DNI digital empieza opcional y después se vuelve obligatorio para más trámites. No tenés nada que ocultar. La pregunta igual molesta." },
-    somethingBetter: { en: "On a run with a friend you say that with enough money you could build something better than a company or a charity. You do not know what yet.", es: "En una corrida con un amigo decís que con suficiente plata podrías construir algo mejor que una empresa o una ONG. Todavía no sabés qué." },
-    timeTraveler: { en: "An old Bitcoin post claims the rich will live in isolated citadels and stop trying to fix where they live. A book about that idea is for sale.", es: "Un post viejo de Bitcoin dice que los ricos van a vivir en ciudadelas y dejar de arreglar el lugar donde viven. Hay un libro a la venta sobre esa idea." },
+    somethingBetter: { en: "On a run with Marek you say that with enough money you could build something better than a company or a charity. You do not know what yet.", es: "En una corrida con Marek decís que con suficiente plata podrías construir algo mejor que una empresa o una ONG. Todavía no sabés qué." },
+    timeTraveler: { en: "An old Bitcoin post claims the rich will live in isolated citadels and stop trying to fix where they live. THE BITCOIN STATE is now available in the Marketplace for $666.", es: "Un post viejo de Bitcoin dice que los ricos van a vivir en ciudadelas y dejar de arreglar el lugar donde viven. THE BITCOIN STATE ahora está en el Marketplace a $666." },
     temporaryMeasures: { en: "Capital controls arrive for ninety days. The last temporary measures are still in force years later. Markets fall. Bitcoin does not.", es: "Llegan controles de capital por noventa días. Las medidas temporales anteriores siguen vigentes años después. Caen los mercados. Bitcoin no." },
-    citadelProblem: { en: "The book is about sovereignty. You propose building a country. A friend says no, then asks how much land you would need. A stupid idea now has a checklist.", es: "El libro habla de soberanía. Proponés construir un país. Un amigo dice que no, y después pregunta cuánta tierra haría falta. Una idea estúpida ahora tiene una lista." },
+    citadelProblem: { en: "The book is about sovereignty. You propose building a country. Marek laughs, then asks how much land you would need. A stupid idea now has a checklist.", es: "El libro habla de soberanía. Proponés construir un país. Marek se ríe, y después pregunta cuánta tierra haría falta. Una idea estúpida ahora tiene una lista." },
     pieceWorld: { en: "Your cousin finds a remote island listed as a sovereign lifestyle. It is not sovereign. You can fly out to inspect it or ignore the listing.", es: "Tu primo encuentra una isla remota vendida como estilo de vida soberano. No es soberana. Podés ir a verla o ignorar el aviso." },
     islandInspection: { en: "The island is real: trees, cliffs, open water. The asking price is a large share of your net worth. You can buy it or leave.", es: "La isla es real: árboles, acantilados, mar abierto. El precio es una parte grande del patrimonio. Podés comprarla o irte." },
     paperwork: { en: "Lawyers spend weeks turning the purchase into something that looks like a country on paper. For now it is still an island.", es: "Los abogados pasan semanas convirtiendo la compra en algo que en el papel parece un país. Por ahora sigue siendo una isla." },
@@ -1949,7 +1950,7 @@
       title: "Nine Minutes", titleEs: "Nueve minutos",
       body: "You parked in the wrong place for nine minutes. You check the sign again. It was very clear.",
       bodyEs: "Estacionaste mal durante nueve minutos. Volvés a mirar el cartel. Estaba muy claro." },
-    { id: "courage", kind: "choice", after: ["landfill","nicoWedding","mexico","flu","school","hospital","potluck","wine","justInCase","nothingToHide"],
+    { id: "courage", kind: "choice", after: ["landfill","nicoWedding","mexico","flu","school","hospital","potluck","wine","justInCase","nothingToHide","somethingBetter"],
       title: "Courage", titleEs: "Coraje",
       body: "You are at Marek's apartment. There is wine on the table and 12 Monkeys paused on the TV. You end up talking about A.I., futurism, and whether people actually know what they want. Eventually you mention Lena. Marek looks at you. \"So?\" You shrug. \"We've been together for years.\" He takes a sip. \"Maybe you're waiting for certainty.\" Then he presses play again. You keep thinking about it.",
       bodyEs: "Estás en el depto de Marek. Hay vino en la mesa y 12 Monkeys en pausa. Terminan hablando de I.A., futurismo y si la gente sabe lo que quiere. En algún momento nombrás a Lena. Marek te mira. \"¿Y?\" Te encogés de hombros. \"Hace años que estamos.\" Toma un sorbo. \"Capaz estás esperando certeza.\" Vuelve a darle play. Segís pensándolo.",
@@ -2068,12 +2069,12 @@
     { id:"justInCase", kind:"report", title:"Just in Case", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years." },
     { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you." },
     { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what." },
-    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published.", opts:[{k:"a",label:"Buy the book · $666"},{k:"b",label:"Close the browser"}] },
+    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published." },
     { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not." },
     { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist." },
     { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", opts:[{k:"a",label:"Go see the island · $1,800"},{k:"b",label:"This is insane"}] },
-    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip, title:"Island Inspection", body:"The boat reaches the island at sunrise. Pine, cliffs, two coves and open water. Marek says “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point and remember: given enough money, you could build something better. The seller's offer is now fixed.", opts:[{k:"a",label:"Buy the island"},{k:"b",label:"Walk away"}] },
-    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", body:"Lawyers redefine property for several weeks. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”" },
+    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", opts:[{k:"a",label:"Buy the island"},{k:"b",label:"Walk away"}] },
+    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”" },
     { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", opts:[{k:"a",label:"Make contact · $5,000"},{k:"b",label:"Post about it"}] },
     { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating." },
     { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", opts:[{k:"a",label:"Build a settlement · 3%"},{k:"b",label:"Not yet"}] },
@@ -2267,7 +2268,7 @@
         "Le ponés el anillo. \"Sí, Fartface.\" −" + money(paid) + ".");
     }
     if (card.id === "wedding") {
-      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;return say("You tell Lena about the thought you cannot ignore. Building something. Not a company. Not a charity. Something else.\n\nThere is a very long silence.\n\nI'll miss you, Fartface.\n\nYou leave. Paco comes with you.\n\nYou are not entirely sure whether that was his decision.\n\nFAMILY ARC CLOSED\n\nSomething else is now possible.\n\n-"+money(p)+".","");}
+      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;return say("You look at Lena.\n\nThen at the room.\n\nThe flowers.\n\nThe tables.\n\nThe relatives.\n\nThe life waiting on the other side of the ceremony.\n\nIt is a good life.\n\nThat's the problem.\n\nFor months, another thought has been getting harder to ignore.\n\nThat conversation with Marek.\n\nBuilding something.\n\nNot a company.\n\nNot a charity.\n\nSomething else.\n\nYou still don't know what.\n\nYou tell Lena.\n\nThere is a very long silence.\n\nThen she looks at you.\n\n“I'll miss you, Fartface.”\n\nYou leave.\n\nPaco comes with you.\n\nYou are not entirely sure whether that was his decision.\n\nFAMILY ARC CLOSED\n\nSomething else is now possible.\n\n−"+money(p)+".","");}
       S.familyPath=true;
       if (opt === "a") {
         const paid = cutPct(0.12);
@@ -2284,11 +2285,11 @@
         "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + money(paid) + ".");
     }
     if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","");
-    if(card.id==="timeTraveler"){if(opt==="a"){let p=cutBill(666);S.bcBook=true;return say("The book arrives. -"+money(p)+".","");}delete S.chanceUsed.timeTraveler;return say("You close the browser. For now.","");}
+    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for $666.","");}
     if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","");
     if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","");
-    if(card.id==="pieceWorld"){if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;S.bcIslandOffer=wealthUsd()*(.10+Math.random()*.15);return say("Trip booked. -"+money(p)+".","");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","");}
-    if(card.id==="islandInspection"){if(opt==="a"){let p=cutPct(Math.min(1,S.bcIslandOffer/Math.max(1,wealthUsd())));S.bcIsland=true;return say("You own an island. -"+money(p)+".","");}delete S.chanceUsed.islandInspection;return say("The island remains available at "+money(S.bcIslandOffer)+".","");}
+    if(card.id==="pieceWorld"){if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+money(p)+".","");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","");}
+    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+money(p)+".","");}return say("The island remains in the Marketplace at "+money(S.bcIslandOffer)+".","");}
     if(card.id==="paperwork")return say("Country. Island. For now.","");
     if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+money(p)+".","");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","");}
     if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","");}
@@ -2309,7 +2310,7 @@
     if(card.id==="theQuestion"){if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
     if(card.id==="declaration")return say("San Arnaldo recognizes Bitcoin Country in thirty-seven seconds.","");
     if(card.id==="theAnswer"){S.bcDefensePending=true;return say("The attack begins.","");}
-    if(card.id==="fourthColor"){S.bcIndependent=true;return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","");}
+    if(card.id==="fourthColor"){S.bcIndependent=true;try{grantAward("fourth");}catch(e){}return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","");}
     if(card.id==="notYet"){S.bcIndependent=false;delete S.chanceMet.bcDefenseResult;delete S.chanceUsed.theQuestion;delete S.chanceUsed.declaration;delete S.chanceUsed.theAnswer;delete S.chanceUsed.notYet;return say("Not yet. KEEP PLAYING.","");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
@@ -2445,6 +2446,10 @@
     const unlocked = (c) => {
       if (c.after && c.after.some((id) => !S.chanceUsed[id])) return false;
       if (c.when && !c.when()) return false;
+      if (S.familyClosed && c.id !== "wedding") {
+        const nm = ((c.title || "") + " " + (c.body || "") + " " + (c.bodyEs || "")).toLowerCase();
+        if (/\blena\b/.test(nm)) return false;
+      }
       const blob = ((c.title || "") + " " + (c.body || "") + " " + (c.bodyEs || "")).toLowerCase();
       const who = Object.keys(introOf);
       for (let i = 0; i < who.length; i++) {
@@ -2465,6 +2470,7 @@
     const forced = window.__arcForce && CHANCE_CARDS.find((c) => c.id === window.__arcForce);
     const card = forced || (src.length ? src[(Math.random() * src.length) | 0] : null);
     if (!card) return;
+    if (card.id==="islandInspection" && !(S.bcIslandOffer>0)) S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));
     S.chanceUsed[card.id] = true;
     S.chanceCard = card;
     S.chanceNote = "";
@@ -2588,9 +2594,9 @@
     if (!card) { finishArcHold(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
-        S.chanceNote = S.chanceReadyNote || (chanceLang() ? "Listo." : "Done.");
-        renderOverlay();
-        renderHud();
+        const launchDefense = card.id === "theAnswer" && S.bcDefensePending;
+        finishArcHold();
+        if (launchDefense) { S.bcDefensePending = false; startDefense(); }
         return;
       }
       const before = bagSnap();
@@ -2992,9 +2998,9 @@
   function startDefense(){
     const p=defenseProfile(),u=defenseUpgrades();
     S.bcDefense={x:240,shots:[],enemies:[],wave:1,waves:p.waves,spawn:.5,spawned:0,kills:0,quota:5,integrity:100,wall:u.wall?100:0,done:false,fire:0,inv:0,profile:p,up:u};
-    S.phase="defense";
+    S.optPanel=null;S.arcHold=false;
     if(field){field.classList.remove("is-play");field.classList.add("defense-mode");}
-    hideOverlay();
+    setPhase("defense");
   }
   function defenseEnemy(d){
     const r=Math.random(),w=d.wave;
@@ -3017,7 +3023,7 @@
     d.fire=Math.max(0,d.fire-dt);d.inv=Math.max(0,d.inv-dt);d.spawn-=dt;
     if(d.spawned<d.quota&&d.spawn<=0){defenseEnemy(d);d.spawned++;d.spawn=(.78+Math.random()*.42)/d.profile.rate;}
     d.shots.forEach(s=>s.y-=s.v*dt);d.shots=d.shots.filter(s=>s.y>-25&&!s.hit);
-    d.enemies.forEach(e=>{e.phase+=dt*3;e.y+=e.v*dt;if(e.type==="FAST")e.x+=Math.sin(e.phase)*45*dt;});
+    d.enemies.forEach(e=>{e.phase+=dt*3;e.y+=e.v*dt;if(e.type==="FAST")e.x=Math.max(22,Math.min(S.W-22,e.x+Math.sin(e.phase)*45*dt));});
     for(const e of d.enemies)for(const s of d.shots)if(!s.hit&&Math.abs(e.x-s.x)<e.size+5&&Math.abs(e.y-s.y)<e.size+10){s.hit=true;e.hp-=s.damage;if(e.hp<=0)d.kills++;};
     d.enemies=d.enemies.filter(e=>e.hp>0);
     const leaks=d.enemies.filter(e=>e.y>610);d.enemies=d.enemies.filter(e=>e.y<=610);
@@ -3094,6 +3100,7 @@
       field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
       field.classList.toggle("perk-ui", p === "perk" || p === "chance" || (p === "paused" && S.arcHold));
       field.classList.toggle("is-play", p === "play");
+      field.classList.toggle("defense-mode", p === "defense");
     }
     try { renderOverlay(); } catch (e) { if (p !== "play") showOverlay(); }
     try { renderHud(); } catch (e) {}
@@ -4752,7 +4759,7 @@
     setTxt("bc-status",S.bcIndependent?"INDEPENDENT":S.bcIsland?"PROJECT":"SEARCHING");
     const ab=$("bc-army10");if(ab){ab.disabled=!S.bcArmyUnlocked||(S.bcArmy||0)>=100||S.bcIndependent;ab.textContent="+10 ARMY · "+(((Math.min(10,100-(S.bcArmy||0)))*.25).toFixed(1))+"%";}
     const dec=$("bc-declare");if(dec){const ready=(S.bcNodes||0)>=100&&!S.bcIndependent;dec.classList.toggle("hide",!ready);}
-    setTxt("bc-note",S.bcArmyUnlocked?"Army purchases are permanent. World strength can keep rising.":"Army unlocks after the island security question.");
+    setTxt("bc-note",S.bcIndependent?"Independent. Keep playing.":S.bcArmyUnlocked?"Army purchases are permanent. World strength can keep rising.":"Army unlocks after the island security question.");
   }
   function renderHud() {
     try { renderBitcoinCountry(); } catch (e) {}
@@ -5204,8 +5211,15 @@
     { id: "nocoiner", name: "Nocoiner", nameEs: "Nocoiner", why: "Never bought BTC in that run.", whyEs: "Nunca compró BTC en esa partida." },
     { id: "greedy", name: "Greedy Miner", nameEs: "Minero greedy", why: "Ate 0 halvings.", whyEs: "Comió 0 halvings." },
     { id: "opsec", name: "Opsec Warrior", nameEs: "Guerrero opsec", why: "Lost 0 cold storage.", whyEs: "No perdió cold storage." },
-    { id: "paper", name: "Paper Hands", nameEs: "Manos de papel", why: "Sold BTC in a bear market.", whyEs: "Vendió BTC en un bear market." }
+    { id: "paper", name: "Paper Hands", nameEs: "Manos de papel", why: "Sold BTC in a bear market.", whyEs: "Vendió BTC en un bear market." },
+    { id: "fourth", name: "The Fourth Color", nameEs: "El cuarto color", why: "Bitcoin Country survived the attack.", whyEs: "Bitcoin Country sobrevivió el ataque." }
   ];
+  function grantAward(id) {
+    if (!id) return;
+    const map = loadAwards();
+    map[id] = true;
+    saveAwards(map);
+  }
   function awardName(a) {
     return (window.BZ && BZ.lang && BZ.lang() === "es") ? (a.nameEs || a.name) : a.name;
   }
@@ -5385,9 +5399,10 @@
     if (panel === "market") {
       const mul = S.ranked ? 10 : 1;
       const cold = 1200 * mul, laser = 1800 * mul, msig = 9000 * mul;
-      const book = S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">The Bitcoin State · $666</button>" : "";
+      const book = S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">THE BITCOIN STATE · $666</button>" : "";
+      const island = S.bcIslandOffer&&!S.bcIsland&&S.chanceMet&&S.chanceMet.islandTrip ? "<button class=\"cta\" data-buy=\"bcisland\">The Island · "+money(S.bcIslandOffer)+"</button>" : "";
       return "<h1>" + t("market") + "</h1>"
-        + "<p class=\"k\">" + money(S.cash) + "</p>" + book
+        + "<p class=\"k\">" + money(S.cash) + "</p>" + book + island
         + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + money(cold) + "</button>"
         + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + money(laser) + "</button>"
         + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>"
@@ -5518,6 +5533,12 @@
         if(kind==="bcbook"){
           if(wealthUsd()<666){say("You cannot cover the $666 yet.",false);renderOverlay();return;}
           takeUsdEquivalent(666);S.bcBook=true;A.sfx.coin();renderOverlay();renderHud();return;
+        }
+        if(kind==="bcisland"){
+          const cost=S.bcIslandOffer||0;
+          if(!cost||S.bcIsland){renderOverlay();return;}
+          if(wealthUsd()<cost){say("You cannot cover "+money(cost)+" yet.",false);renderOverlay();return;}
+          takeUsdEquivalent(cost);S.bcIsland=true;A.sfx.coin();renderOverlay();renderHud();return;
         }
         const cost = (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
         if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
