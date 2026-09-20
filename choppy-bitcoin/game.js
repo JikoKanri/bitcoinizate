@@ -1766,68 +1766,68 @@
     return text;
   }
   const CHANCE_TLDR = {
-    justInCase:{en:"A temporary emergency law expands government powers during economic instability. You read the definition twice. It seems to include most years."},
-    nothingToHide:{en:"An optional digital ID makes airports faster, then becomes required for more services. You have nothing to hide. The question still bothers you."},
-    somethingBetter:{en:"Running a wooded coastal trail with Marek, you say that given enough money you could build something better. Not a company. Not a charity. You do not yet know what."},
-    timeTraveler:{en:"An old Bitcoin forum post claims to be from the future: rich holders live in isolated Citadels. What bothers you is that they stopped trying to fix the places they lived in. THE BITCOIN STATE — $666."},
-    temporaryMeasures:{en:"Capital controls arrive for ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not."},
-    citadelProblem:{en:"The book uses sovereignty 186 times. Running with Marek, you propose a country. No way. Twenty minutes later he asks how much land you need. A stupid idea now has a checklist."},
-    pieceWorld:{en:"Nico finds an isolated island listing with two coves, a bad dock, and a UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY. It is not sovereign. You check. Three times."},
-    islandInspection:{en:"The island is beautiful: pine, cliffs, coves, open water. Marek says No way and means it positively. The seller offer is fixed at 10–25% of your net worth at inspection."},
-    paperwork:{en:"Lawyers redefine property for weeks. Nico signs in the wrong place. Paco eats the corner of the final document. Country, Nico says. Still an island. For now."},
-    nobodyKnows:{en:"No citizens. No recognition. An old contact gives you one name: MADAME LUCK. Marek says No way. Nico says he knows her. Of course he does."},
-    theOg:{en:"Madame Luck joins seventeen minutes late, asks very good questions, then says she will tell some people. Your phone starts vibrating. LIBERTY NODES UNLOCKED."},
-    peopleAsking:{en:"At 10 Liberty Nodes, developers, miners and families ask to move in. Nico makes a spreadsheet. Marek finds the problem: We do not have houses."},
-    extensionCord:{en:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. WHO WAS MINING?"},
-    obviously:{en:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal says only: CHEAP POWER. WE MINE. YOU GET BITCOIN."},
-    principality:{en:"Mr Ortega & Gambette, Foreign Minister of San Arnaldo, wants relations. San Arnaldo has a flag, anthem, website and 614 claimed citizens."},
-    stateVisit:{en:"San Arnaldo has a coastal town, hills, and a government building that may or may not have been a restaurant three months ago. They want Bitcoin infrastructure. You want friends."},
-    firstBloc:{en:"Seven countries form the Bloc: trade, energy, currency coordination, defense, joint exercises. Every speaker uses the word stability."},
-    protectIsland:{en:"Someone steals a boat. Your current security system is one camera and Paco. Paco was asleep."},
-    placeNow:{en:"At 50 Nodes, coffee shops, a bakery, a bar and a newspaper appear. Its first editorial criticizes you. Nico says you have made it: you have opposition."},
-    citadelQuestion:{en:"Marek brings plans for walls, protected power and a hardened center. Citadel. A wall can keep people out. It can also keep people safe."},
-    rearmament:{en:"The Bloc announces more ships, aircraft and bases. A rival group does the same. Nobody appears to be improving global security."},
-    anOffer:{en:"A private group offers +35% net worth for everything. Madame Luck asks one question: Why did you build it?"},
-    ambassador:{en:"At 75 Nodes, a real ambassador visits. Before leaving: If you ever decide to do something stupid, call me first."},
-    threeColors:{en:"Three military colors cover most of the world. San Arnaldo is gray. Nobody seems to know what to do with San Arnaldo."},
-    ortegaCalls:{en:"San Arnaldo offers forty-two years of recognition experience. Mostly they learned what not to do."},
-    theQuestion:{en:"100 Liberty Nodes. The project can now become a declaration. Army strength is your choice; independence does not require 100 Army."},
-    declaration:{en:"You sign. Thirty-seven seconds later San Arnaldo recognizes Bitcoin Country. Marek checks his phone. Of course they did."},
-    theAnswer:{en:"Recognition is not universal. One of the blocs responds with force. The declaration now has to survive."},
-    fourthColor:{en:"The attack fails. Bitcoin Country remains independent. Some governments begin negotiations; San Arnaldo never stopped calling it a country."},
-    notYet:{en:"The defense fails. The island, residents and project survive, but the declaration does not. You can prepare and try again later."},
-    landfill: { en: "Nico is in Wales at 1:14 A.M. digging Docksway for a lost 8,000 BTC USB. He wants a partner, not a spectator. Almost always you find nothing.", es: "Nico está en Gales a la 1:14 excavando Docksway por un USB de 8.000 BTC. Quiere un socio, no un espectador. Casi nunca aparece nada." },
-    taxbill: { en: "Your quarterly tax bill arrives. You reopen it in case the number changed. It did not. Cost: 10% of net worth.", es: "Llega la boleta trimestral. La volvés a abrir por si cambió el número. No cambió. Costo: 10% del patrimonio." },
-    nicoWedding: { en: "Nico's wedding: 400 people, twelve you know, 1998 CDs. Lena says don't let him talk you into anything. A generous envelope may come back as cold storage.", es: "Boda de Nico: 400 personas, doce conocidas, CDs del 98. Lena: que no te convenza de nada. Un sobre generoso puede volver como cold storage." },
-    mexico: { en: "Lena wants five days in Tulum. You think three. Paco ate the brochure. The trip buys a few seconds of feeling untouchable.", es: "Lena quiere cinco días en Tulum. Vos pensás tres. Paco se comió el folleto. El viaje compra unos segundos de sentirte intocable." },
-    flu: { en: "Lena has the flu. Soup, medicine, Paco eats half. About $120 you will not get back.", es: "A Lena le da gripe. Sopa, remedio, Paco se come la mitad. Unos $120 que no vuelven." },
-    phish: { en: "A fake support email wants your seed phrase. The site looks convincing. Falling for it can cost about 18% of net.", es: "Un mail falso de soporte pide tu seed. El sitio se ve convincente. Caer puede costar cerca del 18% del patrimonio." },
-    crash: { en: "A scooter taps the bumper. Nobody is hurt. The bumper still costs about $650.", es: "Un scooter toca el paragolpes. Nadie se lastimó. El paragolpes igual sale unos $650." },
-    wine: { en: "Friday at Marek's: wine, 12 Monkeys paused, A.I. debate. You're the enthusiastic one. Neither of you wins.", es: "Viernes en casa de Marek: vino, 12 Monkeys en pausa, debate de I.A. Vos sos el entusiasta. No gana nadie." },
-    casino: { en: "Nico calls at 11:40 P.M. He found a casino table. You should ask more questions. The table may or may not know you.", es: "Nico llama a las 23:40. Encontró una mesa de casino. Deberías preguntar más. La mesa puede no conocerte." },
-    poker: { en: "Marek's private game. Not a casino. Wine, chips, late. He looks at your stack and asks if you're in.", es: "El póker de Marek. No es un casino. Vino, fichas, tarde. Mira tus fichas y pregunta si jugás." },
-    uncle: { en: "Uncle Héctor sent ~7% of net as cash or sats. He will not say why.", es: "El tío Héctor mandó ~7% del patrimonio en cash o sats. No dice por qué." },
-    school: { en: "Sofi's mint-museum trip. They're short this month. Lena thinks you should help. Covering it is about $300.", es: "Viaje de Sofi al museo de la Casa de Moneda. Este mes están justos. Lena cree que deberías ayudar. Cubrirlo sale unos $300." },
-    roof: { en: "Paco found the leak by sitting under it. The roof repair is about $900.", es: "Paco encontró la gotera sentándose debajo. Arreglar el techo sale unos $900." },
-    lotto: { en: "Wine with Marek, a lottery ticket, and you forgot to check. Maybe a win. Maybe you lost the ticket price.", es: "Vino con Marek, un raspa y gana, y no miraste los números. Puede pagar. O perdés el ticket." },
-    hospital: { en: "Four stitches. Lena drives. About $250. Try not to bleed on anything.", es: "Cuatro puntos. Lena maneja. Unos $250. Tratá de no sangrar sobre nada." },
-    startup: { en: "Nico's 47-slide app: subscriptions, A.I., community ownership. He says the upside is massive. It might 4×. It might be a dead domain.", es: "La app de Nico, 47 slides: suscripciones, I.A., community ownership. Dice que el upside es enorme. Puede hacer 4×. O ser un dominio vencido." },
-    tow: { en: "Wrong spot for nine minutes. The sign was clear. About $85.", es: "Mal estacionado nueve minutos. El cartel era claro. Unos $85." },
-    courage: { en: "Wine at Marek's. He says maybe you're waiting for certainty with Lena. Then he presses play again.", es: "Vino en casa de Marek. Dice que capaz estás esperando certeza con Lena. Después le da play de nuevo." },
-    ring: { en: "Jewelry store. You know why you're there. The only question is how responsible you want to look.", es: "Joyería. Sabés por qué estás ahí. La única duda es cuán responsable querés parecer." },
-    date: { en: "A proper date: restaurant, walk, lake at sunset. Nothing goes wrong. That feels suspicious.", es: "Una cita en forma: restorán, caminata, lago al atardecer. No pasa nada malo. Eso se siente raro." },
-    proposal: { en: "The lake is getting dark. The ring is in your pocket. This is the moment.", es: "El lago se oscurece. El anillo está en el bolsillo. Este es el momento." },
-    wedding: { en: "You and Lena are getting married. Invitations, relatives, flowers. Most of her opinions win.", es: "Se casan con Lena. Invitaciones, parientes, flores. Ganan casi todas las opiniones de ella." },
-    honeymoon: { en: "Lena took your phone. The rule is no checking the portfolio. You immediately wonder whether looking at the total counts.", es: "Lena te sacó el teléfono. La regla es no mirar el portfolio. Enseguida te preguntás si mirar el total cuenta." },
-    pregnancy: { en: "Two lines. You're going to be four. First bills: $450.", es: "Dos rayas. Van a ser cuatro. Primeros gastos: $450." },
-    baby: { en: "The baby is here. Everyone is tired. Paco is confused. Kids grow fast.", es: "Llegó el bebé. Todos cansados. Paco no entiende. Los chicos crecen rápido." },
-    cousin: { en: "Nico's new token. 10× by Friday, he says. You ask what it does. That is \"not the important part.\"", es: "El token de Nico. x10 para el viernes, dice. Preguntás qué hace. Esa \"no es la parte importante.\"" },
-    speeding: { en: "Six over. Same corner. Same officer. About $75.", es: "Diez de más. La misma esquina. El mismo oficial. Unos $75." },
-    wallet: { en: "You leave your wallet on the bus. Someone turns it in three stops later. The cash is gone; the cards are still there. Partial victory. About $40 lost.", es: "Dejás la billetera en el bondi. Alguien la entrega tres paradas después. Falta el efectivo; las tarjetas siguen ahí. Victoria parcial. Unos $40 perdidos." },
-    potluck: { en: "Lena signed you up for a neighborhood potluck. She also signed Paco. He already ate the dish.", es: "Lena los anotó en la olla de la cuadra. También anotó a Paco. Ya se comió el plato." },
-    usedcar: { en: "Nico's 2009 Fit. The seller says new timing belt. Nico looks under the hood: Sharpie. He says that means \"basically new.\"", es: "El Fit 2009 de Nico. El vendedor dice correa nueva. Nico mira: Sharpie. Dice que significa \"casi nuevo.\"" },
-    tetris: { en: "Marek, a bar, a Tetris cabinet nobody uses. He gets unusually focused, then steps aside. Your turn.", es: "Marek, un bar, un Tetris que nadie usa. Se concentra de un modo raro y se corre. Tu turno." },
-    unclemike: { en: "Fancy dinner. Uncle Mike studies the tip line, puts the pen down, and rants about tipping culture. The waiter is still standing there.", es: "Cena cara. El tío Mike mira la línea de propina, deja la birome y se desahoga con la cultura de las tips. El mozo sigue ahí." }
+    justInCase: { en: "A temporary emergency law expands government power during economic trouble. Temporary is starting to mean years.", es: "Una ley de emergencia amplia el poder del Estado en crisis económicas. Temporal ya parece significar años." },
+    nothingToHide: { en: "A digital ID starts optional and then becomes required for more services. You have nothing to hide. The question still bothers you.", es: "Un DNI digital empieza opcional y después se vuelve obligatorio para más trámites. No tenés nada que ocultar. La pregunta igual molesta." },
+    somethingBetter: { en: "On a run with a friend you say that with enough money you could build something better than a company or a charity. You do not know what yet.", es: "En una corrida con un amigo decís que con suficiente plata podrías construir algo mejor que una empresa o una ONG. Todavía no sabés qué." },
+    timeTraveler: { en: "An old Bitcoin post claims the rich will live in isolated citadels and stop trying to fix where they live. A book about that idea is for sale.", es: "Un post viejo de Bitcoin dice que los ricos van a vivir en ciudadelas y dejar de arreglar el lugar donde viven. Hay un libro a la venta sobre esa idea." },
+    temporaryMeasures: { en: "Capital controls arrive for ninety days. The last temporary measures are still in force years later. Markets fall. Bitcoin does not.", es: "Llegan controles de capital por noventa días. Las medidas temporales anteriores siguen vigentes años después. Caen los mercados. Bitcoin no." },
+    citadelProblem: { en: "The book is about sovereignty. You propose building a country. A friend says no, then asks how much land you would need. A stupid idea now has a checklist.", es: "El libro habla de soberanía. Proponés construir un país. Un amigo dice que no, y después pregunta cuánta tierra haría falta. Una idea estúpida ahora tiene una lista." },
+    pieceWorld: { en: "Your cousin finds a remote island listed as a sovereign lifestyle. It is not sovereign. You can fly out to inspect it or ignore the listing.", es: "Tu primo encuentra una isla remota vendida como estilo de vida soberano. No es soberana. Podés ir a verla o ignorar el aviso." },
+    islandInspection: { en: "The island is real: trees, cliffs, open water. The asking price is a large share of your net worth. You can buy it or leave.", es: "La isla es real: árboles, acantilados, mar abierto. El precio es una parte grande del patrimonio. Podés comprarla o irte." },
+    paperwork: { en: "Lawyers spend weeks turning the purchase into something that looks like a country on paper. For now it is still an island.", es: "Los abogados pasan semanas convirtiendo la compra en algo que en el papel parece un país. Por ahora sigue siendo una isla." },
+    nobodyKnows: { en: "Nobody lives there. Nobody recognizes it. An old contact offers one introduction that might change that. It is expensive.", es: "Nadie vive ahí. Nadie lo reconoce. Un contacto viejo ofrece una presentación que podría cambiar eso. Sale caro." },
+    theOg: { en: "The introduction works. People start asking questions. Liberty Nodes are now something you can collect.", es: "La presentación funciona. Empiezan a llegar preguntas. Los Liberty Nodes ahora son algo que podés juntar." },
+    peopleAsking: { en: "Enough people want to move in. There is interest. There are no houses.", es: "Ya hay gente que quiere mudarse. Hay interés. No hay casas." },
+    extensionCord: { en: "The settlement uses more power than it has. One night the island goes dark. Someone was mining.", es: "El asentamiento usa más energía de la que tiene. Una noche la isla se queda a oscuras. Alguien estaba minando." },
+    obviously: { en: "The grid is stable. Your cousin wants a Bitcoin mine on the cheap power. You can fund it or wait.", es: "La red ya es estable. Tu primo quiere una mina de Bitcoin con la energía barata. Podés financiarla o esperar." },
+    principality: { en: "A tiny unrecognized state wants diplomatic contact. They have a flag, an anthem, and a website.", es: "Un mini-Estado no reconocido quiere contacto diplomático. Tienen bandera, himno y sitio web." },
+    stateVisit: { en: "You visit that tiny state. They want Bitcoin infrastructure. You want friends who might one day recognize you.", es: "Visitás ese mini-Estado. Ellos quieren infraestructura Bitcoin. Vos querés amigos que algún día puedan reconocerte." },
+    firstBloc: { en: "Several countries form a bloc for trade, energy, money, and defense. They keep using the word stability. World military strength rises.", es: "Varios países arman un bloque de comercio, energía, dinero y defensa. Repiten la palabra estabilidad. Sube la fuerza militar mundial." },
+    protectIsland: { en: "Someone steals a boat. Security is basically one camera and a dog. You can start an army, hire private guards, or do nothing.", es: "Alguien se roba un bote. La seguridad es básicamente una cámara y un perro. Podés armar un ejército, contratar privados, o no hacer nada." },
+    placeNow: { en: "The settlement starts to look like a town: shops, a bar, even a newspaper that criticizes you. Liberty Nodes tick up.", es: "El asentamiento empieza a parecer un pueblo: negocios, un bar, hasta un diario que te critica. Suben los Liberty Nodes." },
+    citadelQuestion: { en: "A friend draws walls, protected power, and a hardened center. A citadel can keep people out. It can also keep people safe.", es: "Un amigo dibuja muros, energía protegida y un centro reforzado. Una ciudadela puede dejar gente afuera. También puede cuidar a la que está adentro." },
+    rearmament: { en: "The bloc announces more ships and bases. A rival group does the same. Global security is not improving.", es: "El bloque anuncia más barcos y bases. Un grupo rival hace lo mismo. La seguridad global no mejora." },
+    anOffer: { en: "A private group offers a large premium for the whole project. Selling it would close the Bitcoin Country arc. Refusing it adds support.", es: "Un grupo privado ofrece una prima grande por todo el proyecto. Venderlo cierra el arco de Bitcoin Country. Rechazarlo suma apoyo." },
+    ambassador: { en: "A real ambassador visits. Before leaving, they say: if you ever do something stupid, call them first.", es: "Visita un embajador de verdad. Antes de irse dice: si alguna vez hacés algo estúpido, llamalos primero." },
+    threeColors: { en: "Three military alliances now cover most of the map. A few gray spots remain. World military strength rises again.", es: "Tres alianzas militares cubren casi todo el mapa. Quedan algunas manchas grises. La fuerza militar mundial vuelve a subir." },
+    ortegaCalls: { en: "The tiny state offers years of recognition experience. Mostly they learned what not to do. A serious visit can add Liberty Nodes.", es: "El mini-Estado ofrece años de experiencia en reconocimiento. Sobre todo aprendieron qué no hacer. Una visita seria puede sumar Liberty Nodes." },
+    theQuestion: { en: "You have enough Liberty Nodes to declare independence. The army is optional. Declaring is not reversible in the moment.", es: "Tenés suficientes Liberty Nodes para declarar independencia. El ejército es opcional. Declarar no se revierte en el momento." },
+    declaration: { en: "You declare independence. A tiny state recognizes Bitcoin Country almost immediately. Most of the world does not.", es: "Declarás independencia. Un mini-Estado reconoce Bitcoin Country casi al instante. El resto del mundo no." },
+    theAnswer: { en: "Recognition is not universal. One military bloc answers with force. The declaration now has to survive an attack.", es: "El reconocimiento no es universal. Un bloque militar responde con fuerza. La declaración ahora tiene que sobrevivir un ataque." },
+    fourthColor: { en: "The attack fails. Bitcoin Country stays independent. Some governments start talking. Keep playing.", es: "El ataque falla. Bitcoin Country sigue independiente. Algunos gobiernos empiezan a hablar. Seguí jugando." },
+    notYet: { en: "The defense fails. The island and the people remain, but independence does not. You can prepare and try again.", es: "La defensa falla. La isla y la gente siguen, la independencia no. Podés prepararte y volver a intentar." },
+    landfill: { en: "Your cousin wants money to dig a landfill for a lost Bitcoin USB. He wants a real partner. You almost never find anything.", es: "Tu primo quiere plata para excavar un basural por un USB de Bitcoin perdido. Quiere un socio de verdad. Casi nunca aparece nada." },
+    taxbill: { en: "The quarterly tax bill did not change. You pay 10% of net worth.", es: "La boleta trimestral no cambió. Pagás el 10% del patrimonio." },
+    nicoWedding: { en: "Your cousin is getting married. You have to leave an envelope. A generous gift may come back later as cold storage.", es: "Tu primo se casa. Hay que dejar un sobre. Un regalo generoso puede volver después como cold storage." },
+    mexico: { en: "Your partner wants a short beach trip. Paying for it buys a few seconds of invulnerability.", es: "Tu pareja quiere unos días de playa. Pagarlo compra unos segundos de invulnerabilidad." },
+    flu: { en: "Your partner is sick. Medicine and soup cost about $120 you will not get back.", es: "Tu pareja está enferma. Remedio y sopa salen unos $120 que no vuelven." },
+    phish: { en: "A fake support email wants your Bitcoin seed phrase. Falling for it can cost about 18% of net worth.", es: "Un mail falso de soporte pide tu seed de Bitcoin. Caer puede costar cerca del 18% del patrimonio." },
+    crash: { en: "A small crash. Nobody is hurt. The bumper still costs about $650.", es: "Un choque chico. Nadie se lastimó. El paragolpes igual sale unos $650." },
+    wine: { en: "A quiet night with a friend: wine, an old movie, and a long argument about the future.", es: "Una noche tranquila con un amigo: vino, una película vieja y un debate largo sobre el futuro." },
+    casino: { en: "Your cousin found a late-night casino table and wants you there. The table may or may not be fair.", es: "Tu primo encontró una mesa de casino a la noche y te quiere ahí. La mesa puede no ser justa." },
+    poker: { en: "A private poker game at a friend's place. Not a casino. You decide whether to buy in.", es: "Un póker privado en lo de un amigo. No es un casino. Decidís si entrar." },
+    uncle: { en: "An uncle sent about 7% of your net worth as cash or bitcoin. He will not say why.", es: "Un tío mandó cerca del 7% del patrimonio en cash o bitcoin. No dice por qué." },
+    school: { en: "A kid in the family needs help paying for a school trip. Covering it is about $300.", es: "Un chico de la familia necesita ayuda para un viaje del colegio. Cubrirlo sale unos $300." },
+    roof: { en: "The roof is leaking. The repair is about $900.", es: "El techo gotea. El arreglo sale unos $900." },
+    lotto: { en: "You bought a lottery ticket and forgot to check it. It might pay. It might just be the ticket price gone.", es: "Compraste un raspa y gana y no miraste. Puede pagar. O solo perdés el precio del ticket." },
+    hospital: { en: "A few stitches. About $250.", es: "Unos puntos. Unos $250." },
+    startup: { en: "Your cousin wants investment in an app that might multiply or die. Passing costs nothing.", es: "Tu primo quiere inversión para una app que puede multiplicar o morir. Pasar no cuesta nada." },
+    tow: { en: "Parked in the wrong spot. The sign was clear. About $85.", es: "Mal estacionado. El cartel era claro. Unos $85." },
+    courage: { en: "A friend thinks you are stalling on a decision about your partner. The night stays quiet either way.", es: "Un amigo cree que estás dilatando una decisión con tu pareja. La noche sigue igual de todas formas." },
+    ring: { en: "You are in a jewelry store to buy an engagement ring. The only question is how much to spend.", es: "Estás en una joyería para comprar un anillo de compromiso. La única duda es cuánto gastar." },
+    date: { en: "A proper night out with your partner. Nothing goes wrong. You still pick how much to spend.", es: "Una noche en forma con tu pareja. No pasa nada malo. Igual elegís cuánto gastar." },
+    proposal: { en: "You have the ring. This is the moment to propose, freeze, or dodge it.", es: "Tenés el anillo. Este es el momento de proponer, quedarte trabado, o zafar." },
+    wedding: { en: "You are getting married. The remaining question is the size of the wedding.", es: "Te casás. Lo que queda es el tamaño de la boda." },
+    honeymoon: { en: "Your partner took your phone. The rule is no checking the portfolio. You still pick a trip.", es: "Tu pareja te sacó el teléfono. La regla es no mirar el portfolio. Igual elegís el viaje." },
+    pregnancy: { en: "A pregnancy test is positive. First bills come to $450.", es: "El test de embarazo da positivo. Los primeros gastos son $450." },
+    baby: { en: "The baby is here. Everyone is tired. You decide how to set up money for a child who will grow fast.", es: "Llegó el bebé. Todos cansados. Decidís cómo armar la plata para un hijo que va a crecer rápido." },
+    cousin: { en: "Your cousin wants a huge bet on a new token. He cannot explain what it does.", es: "Tu primo quiere una apuesta enorme a un token nuevo. No puede explicar qué hace." },
+    speeding: { en: "A speeding ticket. Same road as last time. About $75.", es: "Una multa por velocidad. La misma calle de siempre. Unos $75." },
+    wallet: { en: "You lose a wallet. The cards come back. The cash does not. About $40 gone.", es: "Perdés una billetera. Vuelven las tarjetas. El efectivo no. Unos $40 menos." },
+    potluck: { en: "There is a neighborhood potluck. You can donate a share of net worth or bring nothing.", es: "Hay una olla popular en la cuadra. Podés donar una parte del patrimonio o no llevar nada." },
+    usedcar: { en: "Your cousin wants you to buy a used car. The repair history looks unofficial. You can buy it or walk away.", es: "Tu primo quiere que le compres un auto usado. El historial de arreglos se ve poco serio. Podés comprarlo o irte." },
+    tetris: { en: "A friend finds an old arcade cabinet and wants you to put money in. You can play or just watch.", es: "Un amigo encuentra un arcade viejo y quiere que le metas fichas. Podés jugar o solo mirar." },
+    unclemike: { en: "A fancy dinner. An uncle refuses the expected tip. The waiter is still waiting. You decide what to leave.", es: "Una cena cara. Un tío no quiere dejar la propina esperada. El mozo sigue ahí. Decidís qué dejar." }
   };
   function cardTldr(card) {
     if (!card) return "";
@@ -5490,13 +5490,20 @@
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-feed\">" + t("feedback") + "</button>"
       + "</div>"
-      + "<button class=\"cta\" id=\"go\">" + (fromPlay ? t("resume") : t("back")) + "</button>";
+      + (fromPlay ? "" : "<button class=\"cta\" id=\"opt-close\">" + t("back") + "</button>");
   }
   function bindPauseUi() {
     const go = $("go");
     if (go) go.onclick = () => {
       S.optPanel = null;
       if (S.optBack === "ready") { S.phase = "ready"; renderOverlay(); }
+      else setPhase(S.optBack || "play");
+    };
+    const optClose = $("opt-close");
+    if (optClose) optClose.onclick = (e) => {
+      e.stopPropagation();
+      S.optPanel = null;
+      if (S.optBack === "ready" || S.phase === "ready") { S.phase = "ready"; renderOverlay(); }
       else setPhase(S.optBack || "play");
     };
     const helpBack = $("help-back");
