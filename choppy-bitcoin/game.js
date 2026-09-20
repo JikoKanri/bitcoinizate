@@ -2071,7 +2071,7 @@
     { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you." },
     { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what." },
     { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published.", opts:[{k:"a",label:"Buy the book · $666"},{k:"b",label:"Close the browser"}] },
-    { id:"temporaryMeasures", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"Temporary Measures", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not." },
+    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not." },
     { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist." },
     { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", opts:[{k:"a",label:"Go see the island · $1,800"},{k:"b",label:"This is insane"}] },
     { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip, title:"Island Inspection", body:"The boat reaches the island at sunrise. Pine, cliffs, two coves and open water. Marek says “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point and remember: given enough money, you could build something better. The seller's offer is now fixed.", opts:[{k:"a",label:"Buy the island"},{k:"b",label:"Walk away"}] },
@@ -3003,8 +3003,12 @@
     d.enemies.push({x:32+Math.random()*416,y:-28,hp,maxHp:hp,v:v*d.profile.enemy,damage,size,type,phase:Math.random()*6.28});
   }
   function finishDefense(win){
-    const d=S.bcDefense;if(!d||d.done)return;d.done=true;S.chanceMet.bcDefenseResult=win?"win":"lose";
-    S.phase="play";if(field)field.classList.remove("defense-mode");setTimeout(()=>dealChance(),120);
+    const d=S.bcDefense;if(!d||d.done)return;
+    d.done=true;S.chanceMet.bcDefenseResult=win?"win":"lose";
+    S.phase="play";
+    if(field){field.classList.remove("defense-mode");field.classList.add("is-play");}
+    window.__arcForce=win?"fourthColor":"notYet";
+    setTimeout(()=>{dealChance();window.__arcForce="";},120);
   }
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done)return;
@@ -3140,7 +3144,7 @@
     S.particles = S.particles.filter((p) => p.life > 0);
     for (const f of S.floats) { f.y += f.vy * dt; f.life -= dt; }
     S.floats = S.floats.filter((f) => f.life > 0);
-    if (S.phase !== "play") return;
+    if (S.phase === "defense") { stepDefense(dt); return; }\n    if (S.phase !== "play") return;
     if (S.invuln > 0) S.invuln -= dt;
 
     let speed = m.speed * scrollMul();
@@ -6366,7 +6370,7 @@
     if (typing) return;
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     const k = e.key.toLowerCase();
-    if(S.phase==="defense"){if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();defenseInput(canvas.getBoundingClientRect().left+(S.bcDefense.x/480)*canvas.getBoundingClientRect().width,true);}else if(k==="a"||e.code==="ArrowLeft"){S.bcDefense.x=Math.max(28,S.bcDefense.x-(S.bcDefense.up.mob?24:20));}else if(k==="d"||e.code==="ArrowRight"){S.bcDefense.x=Math.min(452,S.bcDefense.x+(S.bcDefense.up.mob?29:24));}return;}
+    if(S.phase==="defense"){if(e.code==="Space"||e.code==="ArrowUp"){e.preventDefault();defenseInput(canvas.getBoundingClientRect().left+(S.bcDefense.x/480)*canvas.getBoundingClientRect().width,true);}else if(k==="a"||e.code==="ArrowLeft"){S.bcDefense.x=Math.max(28,S.bcDefense.x-(S.bcDefense.up.mob?24:20));}else if(k==="d"||e.code==="ArrowRight"){S.bcDefense.x=Math.min(452,S.bcDefense.x+(S.bcDefense.up.mob?24:20));}return;}
     if (S.arcHold || S.phase === "chance") {
       if (e.code === "Space" || e.code === "ArrowUp" || k === "p") { e.preventDefault(); return; }
     }
