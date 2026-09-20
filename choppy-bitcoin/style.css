@@ -755,3 +755,36 @@ html[data-palette="flower"] #app {
 .bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:9px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
 .bc-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.bc-actions button{flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:9px 7px;background:var(--surface);color:var(--fg);font:700 10px "IBM Plex Mono",monospace}.bc-actions button:disabled{opacity:.35}.bc-actions #bc-declare{border-color:#f2a900;color:#f2a900}.bc-actions #bc-form-army{border-color:#4f9d6e;color:#8fd4a8}.bc-note{min-height:13px;margin:8px 2px 0;font-size:9px;opacity:.7;white-space:normal;line-height:1.35}
 .field.defense-mode #flap-layer{display:none;pointer-events:none}
+.def-pad{position:absolute;inset:0;z-index:24;pointer-events:none}
+.def-pad.hide{display:none}
+.def-fire{
+  position:absolute;left:50%;right:0;top:0;bottom:0;
+  pointer-events:auto;touch-action:none;
+  background:linear-gradient(90deg, transparent 0%, rgba(242,169,0,.05) 100%);
+}
+.def-stick{
+  position:absolute;left:14px;bottom:16px;width:128px;height:128px;
+  pointer-events:auto;touch-action:none;z-index:26;
+}
+.def-stick-well{
+  position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 38%, rgba(50,48,44,.55), rgba(10,10,12,.82));
+  border:3px solid rgba(242,169,0,.55);
+  box-shadow:inset 0 8px 16px rgba(0,0,0,.45), 0 4px 14px rgba(0,0,0,.4);
+}
+.def-stick-cross{
+  position:absolute;left:50%;top:50%;width:78px;height:78px;transform:translate(-50%,-50%);
+  background:
+    linear-gradient(rgba(243,239,230,.22), rgba(243,239,230,.22)) center/10px 78px no-repeat,
+    linear-gradient(rgba(243,239,230,.22), rgba(243,239,230,.22)) center/78px 10px no-repeat;
+  pointer-events:none;opacity:.7;
+}
+.def-knob{
+  position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #f2d56a, #c8960a 46%, #6a4a08);
+  border:2px solid rgba(255,246,208,.7);
+  box-shadow:0 6px 10px rgba(0,0,0,.45), inset 0 2px 4px rgba(255,255,255,.35);
+  pointer-events:none;
+  will-change:transform;
+}

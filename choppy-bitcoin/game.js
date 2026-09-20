@@ -3117,12 +3117,27 @@
     const d=S.bcDefense;if(!d||d.done)return;
     d.done=true;S.chanceMet.bcDefenseResult=win?"win":"lose";
     S.defHeld={u:0,d:0,l:0,r:0,f:0};S.defPtr=null;
-    if(win){S.bcIndependent=true;S.bcVictory=true;}
-    else {S.bcIndependent=false;S.bcVictory=false;}
-    if(field){field.classList.remove("defense-mode");field.classList.add("is-play");}
-    window.__arcForce=win?"fourthColor":"notYet";
-    S.phase="play";
-    setTimeout(()=>{dealChance();window.__arcForce="";},80);
+    const pad=$("def-pad");if(pad)pad.classList.add("hide");
+    if(field)field.classList.remove("defense-mode");
+    if(win){
+      S.bcIndependent=true;S.bcVictory=true;
+      if(field)field.classList.add("is-play");
+      window.__arcForce="fourthColor";
+      S.phase="play";
+      setTimeout(()=>{dealChance();window.__arcForce="";},80);
+      return;
+    }
+    S.bcIndependent=false;S.bcVictory=false;S.bcArcClosed=true;
+    if(S.dead)return;
+    S.dead=true;
+    try{applyLaser(false);}catch(e){}
+    S.power="NONE";S.powerT=0;
+    S.ticker=chanceLang()?"Bitcoin Country cayó.":"Bitcoin Country fell.";
+    try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
+    try{if(A&&A.speak)A.speak(formatVoice(S.ticker),true);}catch(e){}
+    if(!S.mp){try{S.best=saveBest(scoreSats());}catch(e){}try{snapshotRun();}catch(e){}}
+    if(field)field.classList.remove("is-play");
+    try{setPhase("over");}catch(e){try{renderOverlay();}catch(err){}}
   }
   function hitBase(d,dmg){
     if(d.wall>0){d.wall=Math.max(0,d.wall-dmg*2);return;}
@@ -3150,9 +3165,9 @@
     let dir=-1;
     const h=S.defHeld||{};
     if(h.u)dir=0;else if(h.r)dir=1;else if(h.d)dir=2;else if(h.l)dir=3;
-    if(dir<0&&S.defPtr){
-      const dx=S.defPtr.x-p.x,dy=S.defPtr.y-p.y;
-      if(dx*dx+dy*dy>100)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0);
+    if(dir<0&&S.defStick){
+      const dx=S.defStick.x,dy=S.defStick.y;
+      if(dx*dx+dy*dy>0.12)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0);
     }
     const pspd=d.up.mob?86:72;
     moveTank(d,p,dir,pspd,dt);
@@ -3262,16 +3277,9 @@
     ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
-    paintHaloText(ctx,"WASD / arrows move · tap+drag · space fire",S.W/2,S.H-12,palRgba(PAL.fg,.8));
     ctx.restore();
   }
-  function defenseInput(clientX,clientY,fire){
-    const d=S.bcDefense;if(!d||d.done)return;
-    const r=canvas.getBoundingClientRect();
-    const x=(clientX-r.left)*S.W/r.width,y=(clientY-r.top)*S.H/r.height;
-    S.defPtr={x,y};
-    if(fire)fireTank(d,d.player);
-  }
+  function defenseInput(){}
   function setPhase(p) {
     S.phase = p;
     try {
@@ -3288,6 +3296,8 @@
       field.classList.toggle("is-play", p === "play");
       field.classList.toggle("defense-mode", p === "defense");
     }
+    const pad=$("def-pad");if(pad)pad.classList.toggle("hide", p!=="defense");
+    if(p!=="defense"){S.defPtr=null;if(S.defHeld)S.defHeld={u:0,d:0,l:0,r:0,f:0};}
     try { renderOverlay(); } catch (e) { if (p !== "play") showOverlay(); }
     try { renderHud(); } catch (e) {}
   }
@@ -6578,15 +6588,9 @@
     e.preventDefault();
     if (A && A.unlock) try { A.unlock(); } catch (err) {}
     S.humanInput = true;
-    if(S.phase==="defense"){try{canvas.setPointerCapture(e.pointerId);}catch(err){} defenseInput(e.clientX,e.clientY,true);return;}
+    if(S.phase==="defense")return;
     if (S.phase === "play") flap();
   });
-  canvas.addEventListener("pointermove",(e)=>{
-    if(S.phase!=="defense"||!(e.buttons||e.pointerType==="touch"))return;
-    e.preventDefault();defenseInput(e.clientX,e.clientY,false);
-  });
-  canvas.addEventListener("pointerup",()=>{ if(S.phase==="defense") S.defPtr=null; });
-  canvas.addEventListener("pointercancel",()=>{ if(S.phase==="defense") S.defPtr=null; });
   const flapLayer = $("flap-layer");
   function bindFlap(el) {
     if (!el) return;
@@ -6843,6 +6847,54 @@
     dealChance();
     window.__arcForce="";
   });
+  (function bindDefensePad(){
+    const stick=$("def-stick"), knob=$("def-knob"), fire=$("def-fire");
+    if(!stick||!fire)return;
+    const fireIds=new Set();
+    function held(){return S.defHeld||(S.defHeld={u:0,d:0,l:0,r:0,f:0});}
+    function resetStick(){
+      S.defStick=null;
+      const h=held();h.u=h.d=h.l=h.r=0;
+      if(knob)knob.style.transform="translate(0px,0px)";
+    }
+    function applyStick(cx,cy){
+      const r=stick.getBoundingClientRect();
+      let dx=cx-(r.left+r.width/2), dy=cy-(r.top+r.height/2);
+      const max=r.width*0.32, len=Math.hypot(dx,dy)||1;
+      if(len>max){dx*=max/len;dy*=max/len;}
+      if(knob)knob.style.transform="translate("+dx+"px,"+dy+"px)";
+      const nx=dx/max, ny=dy/max;
+      S.defStick={x:nx,y:ny};
+      const h=held();h.u=h.d=h.l=h.r=0;
+      if(nx*nx+ny*ny<0.08)return;
+      if(Math.abs(nx)>Math.abs(ny)) h[nx>0?"r":"l"]=1;
+      else h[ny>0?"d":"u"]=1;
+    }
+    stick.addEventListener("pointerdown",(e)=>{
+      e.preventDefault();e.stopPropagation();
+      try{stick.setPointerCapture(e.pointerId);}catch(err){}
+      applyStick(e.clientX,e.clientY);
+    });
+    stick.addEventListener("pointermove",(e)=>{
+      if(!(e.buttons||e.pointerType==="touch"))return;
+      e.preventDefault();applyStick(e.clientX,e.clientY);
+    });
+    stick.addEventListener("pointerup",resetStick);
+    stick.addEventListener("pointercancel",resetStick);
+    fire.addEventListener("pointerdown",(e)=>{
+      e.preventDefault();e.stopPropagation();
+      try{fire.setPointerCapture(e.pointerId);}catch(err){}
+      fireIds.add(e.pointerId);
+      held().f=1;
+      if(S.bcDefense)fireTank(S.bcDefense,S.bcDefense.player);
+    });
+    function endFire(e){
+      fireIds.delete(e.pointerId);
+      if(!fireIds.size)held().f=0;
+    }
+    fire.addEventListener("pointerup",endFire);
+    fire.addEventListener("pointercancel",endFire);
+  })();
   window.startChoppy = startGame;
   window.replayChoppy = replay;
   window.dealChoppyArc = function (id) {
