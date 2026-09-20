@@ -1532,6 +1532,7 @@
     if (S.mp) return;
     if (S.phase === "chance") return;
     if (S.phase === "perk") {
+      if (S.optPanel) { S.optPanel = null; renderOverlay(); return; }
       if (S.perkPick) confirmPerk();
       return;
     }
@@ -1825,7 +1826,7 @@
     speeding: { en: "A speeding ticket. Same road as last time. About $75.", es: "Una multa por velocidad. La misma calle de siempre. Unos $75." },
     wallet: { en: "You lose a wallet. The cards come back. The cash does not. About $40 gone.", es: "Perdés una billetera. Vuelven las tarjetas. El efectivo no. Unos $40 menos." },
     potluck: { en: "There is a neighborhood potluck. You can donate a share of net worth or bring nothing.", es: "Hay una olla popular en la cuadra. Podés donar una parte del patrimonio o no llevar nada." },
-    usedcar: { en: "Your cousin wants you to buy a used car. The repair history looks unofficial. You can buy it or walk away.", es: "Tu primo quiere que le compres un auto usado. El historial de arreglos se ve poco serio. Podés comprarlo o irte." },
+    usedcar: { en: "Your cousin found a used car and wants you in on the deal. The repair history looks unofficial. You can buy it or walk away.", es: "Tu primo te acerca un auto usado. El historial de arreglos se ve poco serio. Podés comprarlo o irte." },
     tetris: { en: "A friend finds an old arcade cabinet and wants you to put money in. You can play or just watch.", es: "Un amigo encuentra un arcade viejo y quiere que le metas fichas. Podés jugar o solo mirar." },
     unclemike: { en: "A fancy dinner. An uncle refuses the expected tip. The waiter is still waiting. You decide what to leave.", es: "Una cena cara. Un tío no quiere dejar la propina esperada. El mozo sigue ahí. Decidís qué dejar." }
   };
@@ -5478,7 +5479,7 @@
         + "<div class=\"pal-grid\">" + swatches + "</div>"
         + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
-    const fromPlay = S.optBack === "play" || S.phase === "paused";
+    const fromPlay = S.phase === "paused" && (S.optBack === "play" || !S.optBack);
     return "<h1>" + (fromPlay ? t("paused") : t("options")) + "</h1>"
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
@@ -5503,6 +5504,7 @@
     if (optClose) optClose.onclick = (e) => {
       e.stopPropagation();
       S.optPanel = null;
+      if (S.phase === "chance" || S.phase === "perk") { renderOverlay(); return; }
       if (S.optBack === "ready" || S.phase === "ready") { S.phase = "ready"; renderOverlay(); }
       else setPhase(S.optBack || "play");
     };
@@ -6145,7 +6147,7 @@
     overlay.classList.toggle("dock", p === "perk" || p === "paused" || p === "chance");
     overlay.classList.toggle("mp-ui", p === "mplobby" || p === "mpwait" || p === "mpwin");
     overlay.classList.toggle("chance-ui", p === "chance");
-    overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready") && S.optPanel === "juke");
+    overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready" || p === "perk" || p === "chance") && S.optPanel === "juke");
     if (p === "ready") {
       if (S.optPanel) {
         overlay.innerHTML = pauseMarkup();
@@ -6232,6 +6234,13 @@
         btn.onclick = go;
       });
     } else if (p === "perk") {
+      if (S.optPanel) {
+        overlay.classList.add("chance-options");
+        overlay.innerHTML = "<div class=\"chance-options-sheet\">" + pauseMarkup() + "</div>";
+        bindPauseUi();
+        return;
+      }
+      overlay.classList.remove("chance-options");
       if (!S.perkOffers || !S.perkOffers.length) { setPhase("play"); return; }
       const chosen = S.perkPick;
       const btns = S.perkOffers.map((id) => {
@@ -6405,6 +6414,7 @@
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); if (!S.mp) togglePause(); };
   function optionsVisible() {
     if (S.phase === "chance") return !!(S.optPanel && S.optPanel !== "off");
+    if (S.phase === "perk") return !!(S.optPanel && S.optPanel !== "off");
     if (S.phase === "ready") return !!(S.optPanel && S.optPanel !== "off");
     if (S.phase === "paused") {
       if (S.optPanel === "off") return false;
@@ -6416,7 +6426,8 @@
   function toggleOptions() {
     if (S.mp) return;
     if (S.phase === "defense") return;
-    if (S.phase === "chance") {
+    if (S.phase === "chance" || S.phase === "perk") {
+      S.optBack = S.phase;
       S.optPanel = optionsVisible() ? null : "menu";
       renderOverlay();
       return;
