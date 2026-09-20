@@ -1682,16 +1682,14 @@
     }
     return w * p - Math.max(0, need);
   }
-  function takeCash(n) {\n    const got = Math.min(S.cash, Math.max(0, n)); S.cash -= got; return got;\n  }\n  function takeUsdEquivalent(n) {
-    const got = Math.min(S.cash, Math.max(0, n));
-    S.cash -= got;
-    return got;
+  function takeCash(n) {
+    const got = Math.min(S.cash, Math.max(0, n)); S.cash -= got; return got;
   }
   function takeUsdEquivalent(n) {
     let need=Math.max(0,Number(n)||0), paid=0;
     const cash=Math.min(Math.max(0,S.cash||0),need); S.cash-=cash; need-=cash; paid+=cash;
     const px=clampPx(S.price);
-    if(need>0&&px>0&&S.btc>0){const b=Math.min(S.btc,need/px);S.btc-=b;need-=b*px;paid+=b*px;}
+    if(need>0&&px>0&&S.btc>0){const btc=Math.min(S.btc,need/px);S.btc-=btc;need-=btc*px;paid+=btc*px;}
     return paid;
   }
   function grantWealthPct(p) {
@@ -2591,8 +2589,10 @@
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
         if (S.arcPending) { S.cash=S.arcPending.cash; S.btc=S.arcPending.btc; S.cold=S.arcPending.cold; S.invuln=S.arcPending.invuln; S.msig=S.arcPending.msig; }
+        const launchDefense=card.id==="theAnswer"&&S.bcDefensePending;
         S.chanceNote=S.chanceReadyNote||"";
         finishArcHold();
+        if(launchDefense){S.bcDefensePending=false;startDefense();}
         renderHud();
         return;
       }
@@ -3066,13 +3066,16 @@
     ctx.restore();
   }
   function defenseInput(clientX,fire){
-    const d=S.bcDefense;if(!d)return;const r=canvas.getBoundingClientRect(),speed=d.up.mob?1.2:1;
-    d.x=Math.max(28,Math.min(452,(clientX-r.left)*480/r.width));
+    const d=S.bcDefense;if(!d||d.done)return;
+    const r=canvas.getBoundingClientRect();
+    d.x=Math.max(28,Math.min(452,(clientX-r.left)*S.W/r.width));
     if(fire&&d.fire<=0){
-      d.fire=.22/speed;const v=d.up.cannon1?486:360,damage=d.up.cannon3?2:1;
-      d.shots.push({x:d.x,y:525,v,damage});
-      if(d.up.cannon2)d.shots.push({x:d.x-11,y:530,v,damage});
-      if(d.up.cannon3)d.shots.push({x:d.x+11,y:530,v,damage},{x:d.x-20,y:535,v,damage});
+      const cap=d.up.cannon3?4:d.up.cannon2?2:1;
+      const room=Math.max(0,cap-d.shots.length);if(!room)return;
+      d.fire=.22;
+      const v=d.up.cannon1?486:360,damage=d.up.cannon3?2:1;
+      const offsets=cap===1?[0]:cap===2?[-8,8]:[-18,-6,6,18];
+      for(let i=0;i<Math.min(room,offsets.length);i++)d.shots.push({x:d.x+offsets[i],y:525,v,damage});
     }
   }
   function setPhase(p) {
@@ -5378,8 +5381,9 @@
     if (panel === "market") {
       const mul = S.ranked ? 10 : 1;
       const cold = 1200 * mul, laser = 1800 * mul, msig = 9000 * mul;
+      const book = S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">The Bitcoin State · $666</button>" : "";
       return "<h1>" + t("market") + "</h1>"
-        + "<p class=\"k\">" + money(S.cash) + "</p>"
+        + "<p class=\"k\">" + money(S.cash) + "</p>" + book
         + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + money(cold) + "</button>"
         + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + money(laser) + "</button>"
         + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>"
@@ -5499,6 +5503,10 @@
         e.stopPropagation();
         const kind = btn.getAttribute("data-buy");
         const mul = S.ranked ? 10 : 1;
+        if(kind==="bcbook"){
+          if(wealthUsd()<666){say("You cannot cover the $666 yet.",false);renderOverlay();return;}
+          takeUsdEquivalent(666);S.bcBook=true;A.sfx.coin();renderOverlay();renderHud();return;
+        }
         const cost = (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
         if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
         S.cash -= cost;
