@@ -1062,7 +1062,6 @@
   }
 
   function tickHalve() {
-    if(S.phase==="defense"){stepDefense(dt);return;}
     if (S.phase !== "play") return;
     if (S.halveLeft > 0) S.halveLeft -= 1;
     if (S.halveLeft === 4) {
@@ -2588,11 +2587,8 @@
     if (!card) { finishArcHold(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
-        if (S.arcPending) { S.cash=S.arcPending.cash; S.btc=S.arcPending.btc; S.cold=S.arcPending.cold; S.invuln=S.arcPending.invuln; S.msig=S.arcPending.msig; }
-        const launchDefense=card.id==="theAnswer"&&S.bcDefensePending;
-        S.chanceNote=S.chanceReadyNote||"";
-        finishArcHold();
-        if(launchDefense){S.bcDefensePending=false;startDefense();}
+        S.chanceNote = S.chanceReadyNote || (chanceLang() ? "Listo." : "Done.");
+        renderOverlay();
         renderHud();
         return;
       }
@@ -2607,7 +2603,12 @@
       renderHud();
       return;
     }
+    const launchDefense = card.id === "theAnswer" && S.bcDefensePending;
     finishArcHold();
+    if (launchDefense) {
+      S.bcDefensePending = false;
+      startDefense();
+    }
   }
 
   function tickJobChance() {
@@ -3147,7 +3148,8 @@
     S.particles = S.particles.filter((p) => p.life > 0);
     for (const f of S.floats) { f.y += f.vy * dt; f.life -= dt; }
     S.floats = S.floats.filter((f) => f.life > 0);
-    if (S.phase === "defense") { stepDefense(dt); return; }\n    if (S.phase !== "play") return;
+    if (S.phase === "defense") { stepDefense(dt); return; }
+    if (S.phase !== "play") return;
     if (S.invuln > 0) S.invuln -= dt;
 
     let speed = m.speed * scrollMul();
@@ -4752,6 +4754,7 @@
     setTxt("bc-note",S.bcArmyUnlocked?"Army purchases are permanent. World strength can keep rising.":"Army unlocks after the island security question.");
   }
   function renderHud() {
+    try { renderBitcoinCountry(); } catch (e) {}
     const app = $("app");
     if (app) app.classList.toggle("vs-on", !!(S.phase === "mplobby" || S.phase === "mpwin" || S.phase === "mpwait" || S.phase === "count" || (S.mp && S.phase === "play")));
     const clock = $("clock");
@@ -6107,6 +6110,11 @@
 
   function renderOverlay() {
     const p = S.phase;
+    if (p === "defense") {
+      hideOverlay();
+      overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui", "mp-spec");
+      return;
+    }
     if (p === "play") {
       if (S.mp && (S.spectate || S.mpRoundOver || S.finished)) {
         showOverlay();
@@ -6400,6 +6408,7 @@
   }
   function toggleOptions() {
     if (S.mp) return;
+    if (S.phase === "defense") return;
     if (S.phase === "chance") {
       S.optPanel = optionsVisible() ? null : "menu";
       renderOverlay();
