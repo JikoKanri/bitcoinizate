@@ -1706,12 +1706,79 @@
   function cutBill(usd) {
     return takeUsdEquivalent(usd);
   }
-  function arcOptionLabel(card,o,es){
-    let lab=es?(o.labelEs||o.label):o.label;
-    const pct={landfill:{a:.25,b:.75},nicoWedding:{a:.04,b:.006},mexico:{a:.08},phish:{a:.18},ring:{a:.08,b:.03},wedding:{a:.12,b:.05,c:.01},honeymoon:{a:.10,b:.06,c:.04},baby:{a:.05,b:.02},peopleAsking:{a:.03},extensionCord:{a:.04},obviously:{a:.05},protectIsland:{a:.02},citadelQuestion:{a:.08}};
-    const p=pct[card.id]&&pct[card.id][o.k];
-    if(p!=null){const cost=wealthUsd()*p;lab=lab.replace(/\s*·?\s*\d+(?:\.\d+)?%\s*(?:net worth)?/gi,"").trim()+" · "+money(cost);}
-    if(card.id==="islandInspection"&&o.k==="a") lab=(es?"Comprar la isla":"Buy the island")+" · "+money(S.bcIslandOffer||0);
+  function payPlan(usdNeed) {
+    const need = Math.max(0, Number(usdNeed) || 0);
+    const cash = Math.max(0, S.cash || 0);
+    const px = clampPx(S.price);
+    const btc = Math.max(0, S.btc || 0);
+    const btcUsd = btc * px;
+    if (need <= 0.0001) return { cash: 0, btc: 0 };
+    if (cash + 1e-6 >= need) return { cash: need, btc: 0 };
+    if (btcUsd + 1e-6 >= need) return { cash: 0, btc: px > 0 ? need / px : 0 };
+    return { cash: cash, btc: px > 0 ? Math.min(btc, Math.max(0, need - cash) / px) : 0 };
+  }
+  function formatPayCost(usdNeed) {
+    const p = payPlan(usdNeed);
+    const bits = [];
+    if (p.cash > 0.49) bits.push(money(p.cash));
+    if (p.btc > 1e-8) bits.push(fmtBtcAmt(p.btc) + " BTC");
+    if (!bits.length) bits.push(money(usdNeed));
+    return bits.join(" + ");
+  }
+  function formatSlicePct(p) {
+    const cash = Math.max(0, (S.cash || 0) * p);
+    const btc = Math.max(0, (S.btc || 0) * p);
+    const bits = [];
+    if (cash > 0.49) bits.push(money(cash));
+    if (btc > 1e-8) bits.push(fmtBtcAmt(btc) + " BTC");
+    if (!bits.length) bits.push(money(wealthUsd() * p));
+    return bits.join(" + ");
+  }
+  function formatBagDelta(before, after) {
+    const dCash = (after.cash || 0) - (before.cash || 0);
+    const dBtc = (after.btc || 0) - (before.btc || 0);
+    const bits = [];
+    if (Math.abs(dCash) > 0.49) bits.push(money(Math.abs(dCash)));
+    if (Math.abs(dBtc) > 1e-8) bits.push(fmtBtcAmt(Math.abs(dBtc)) + " BTC");
+    return bits.join(" + ");
+  }
+  function arcCostUsd(card, k) {
+    const pct = {
+      landfill: { a: .25, b: .75 }, nicoWedding: { a: .04, b: .006 }, mexico: { a: .08 },
+      phish: { a: .18 }, casino: { a: .1, b: .3 }, poker: { a: .08, b: .25 }, startup: { a: .2 },
+      courage: { a: .06 }, ring: { a: .08, b: .03 }, proposal: { a: .02, c: .01 },
+      wedding: { a: .12, b: .05, c: .01 }, honeymoon: { a: .1, b: .06, c: .04 },
+      baby: { a: .05, b: .02 }, cousin: { a: .4 }, potluck: { a: .05 }, usedcar: { a: .12 },
+      peopleAsking: { a: .03 }, extensionCord: { a: .04 }, obviously: { a: .05 },
+      protectIsland: { a: .02 }, citadelQuestion: { a: .08 }
+    };
+    if (pct[card.id] && pct[card.id][k] != null) return wealthUsd() * pct[card.id][k];
+    const bill = {
+      pieceWorld: { a: 1800 }, nobodyKnows: { a: 5000 }, stateVisit: { a: 15000, b: 5000 },
+      protectIsland: { b: 50000 }, ortegaCalls: { a: 25000 }, school: { a: 300 },
+      date: { a: 180, b: 60 }, wine: { b: 17, c: 25 }, tetris: { a: 20 },
+      unclemike: { a: 220, b: 180, c: 195 }
+    };
+    if (card.id === "islandInspection" && k === "a") return S.bcIslandOffer || 0;
+    if (bill[card.id] && bill[card.id][k] != null) return bill[card.id][k];
+    return null;
+  }
+  function arcOptionLabel(card, o, es) {
+    let lab = es ? (o.labelEs || o.label) : o.label;
+    lab = lab.replace(/\s*·\s*\d+(?:\.\d+)?%\s*(?:of net worth|del patrimonio)?/gi, "");
+    lab = lab.replace(/\s+\d+(?:\.\d+)?%\s+of net worth/gi, "");
+    lab = lab.replace(/\s+\d+(?:\.\d+)?%\s+del patrimonio/gi, "");
+    lab = lab.replace(/\s*·\s*\$[\d,]+(?:\.\d+)?/g, "");
+    lab = lab.replace(/\s+\d+(?:\.\d+)?%\s*$/g, "");
+    lab = lab.replace(/\s+·\s*$/g, "").trim();
+    if (card.id === "landfill" && (o.k === "a" || o.k === "b")) {
+      return lab + " · " + formatSlicePct(o.k === "b" ? 0.75 : 0.25);
+    }
+    if (card.id === "anOffer" && o.k === "a") {
+      return lab + " · +" + formatPayCost(wealthUsd() * 0.35);
+    }
+    const usd = arcCostUsd(card, o.k);
+    if (usd != null && usd > 0) return lab + " · " + formatPayCost(usd);
     return lab;
   }
   function chanceLang() {
@@ -1775,7 +1842,7 @@
     temporaryMeasures: { en: "Capital controls arrive for ninety days. The last temporary measures are still in force years later. Markets fall. Bitcoin does not.", es: "Llegan controles de capital por noventa días. Las medidas temporales anteriores siguen vigentes años después. Caen los mercados. Bitcoin no." },
     citadelProblem: { en: "The book is about sovereignty. You propose building a country. Marek laughs, then asks how much land you would need. A stupid idea now has a checklist.", es: "El libro habla de soberanía. Proponés construir un país. Marek se ríe, y después pregunta cuánta tierra haría falta. Una idea estúpida ahora tiene una lista." },
     pieceWorld: { en: "Your cousin finds a remote island listed as a sovereign lifestyle. It is not sovereign. You can fly out to inspect it or ignore the listing.", es: "Tu primo encuentra una isla remota vendida como estilo de vida soberano. No es soberana. Podés ir a verla o ignorar el aviso." },
-    islandInspection: { en: "The island is real: trees, cliffs, open water. The asking price is a large share of your net worth. You can buy it or leave.", es: "La isla es real: árboles, acantilados, mar abierto. El precio es una parte grande del patrimonio. Podés comprarla o irte." },
+    islandInspection: { en: "The island is real: trees, cliffs, open water. The asking price is now fixed. You can buy it or leave.", es: "La isla es real: árboles, acantilados, mar abierto. El precio ya está fijo. Podés comprarla o irte." },
     paperwork: { en: "Lawyers spend weeks turning the purchase into something that looks like a country on paper. For now it is still an island.", es: "Los abogados pasan semanas convirtiendo la compra en algo que en el papel parece un país. Por ahora sigue siendo una isla." },
     nobodyKnows: { en: "Nobody lives there. Nobody recognizes it. An old contact offers one introduction that might change that. It is expensive.", es: "Nadie vive ahí. Nadie lo reconoce. Un contacto viejo ofrece una presentación que podría cambiar eso. Sale caro." },
     theOg: { en: "The introduction works. People start asking questions. Liberty Nodes are now something you can collect.", es: "La presentación funciona. Empiezan a llegar preguntas. Los Liberty Nodes ahora son algo que podés juntar." },
@@ -1799,16 +1866,16 @@
     fourthColor: { en: "The attack fails. Bitcoin Country stays independent. Some governments start talking. Keep playing.", es: "El ataque falla. Bitcoin Country sigue independiente. Algunos gobiernos empiezan a hablar. Seguí jugando." },
     notYet: { en: "The defense fails. The island and the people remain, but independence does not. You can prepare and try again.", es: "La defensa falla. La isla y la gente siguen, la independencia no. Podés prepararte y volver a intentar." },
     landfill: { en: "Your cousin wants money to dig a landfill for a lost Bitcoin USB. He wants a real partner. You almost never find anything.", es: "Tu primo quiere plata para excavar un basural por un USB de Bitcoin perdido. Quiere un socio de verdad. Casi nunca aparece nada." },
-    taxbill: { en: "The quarterly tax bill did not change. You pay 10% of net worth.", es: "La boleta trimestral no cambió. Pagás el 10% del patrimonio." },
+    taxbill: { en: "The quarterly tax bill did not change.", es: "La boleta trimestral no cambió." },
     nicoWedding: { en: "Your cousin is getting married. You have to leave an envelope. A generous gift may come back later as cold storage.", es: "Tu primo se casa. Hay que dejar un sobre. Un regalo generoso puede volver después como cold storage." },
     mexico: { en: "Your partner wants a short beach trip. Paying for it buys a few seconds of invulnerability.", es: "Tu pareja quiere unos días de playa. Pagarlo compra unos segundos de invulnerabilidad." },
     flu: { en: "Your partner is sick. Medicine and soup cost about $120 you will not get back.", es: "Tu pareja está enferma. Remedio y sopa salen unos $120 que no vuelven." },
-    phish: { en: "A fake support email wants your Bitcoin seed phrase. Falling for it can cost about 18% of net worth.", es: "Un mail falso de soporte pide tu seed de Bitcoin. Caer puede costar cerca del 18% del patrimonio." },
+    phish: { en: "A fake support email wants your Bitcoin seed phrase.", es: "Un mail falso de soporte pide tu seed de Bitcoin." },
     crash: { en: "A small crash. Nobody is hurt. The bumper still costs about $650.", es: "Un choque chico. Nadie se lastimó. El paragolpes igual sale unos $650." },
     wine: { en: "A quiet night with a friend: wine, an old movie, and a long argument about the future.", es: "Una noche tranquila con un amigo: vino, una película vieja y un debate largo sobre el futuro." },
     casino: { en: "Your cousin found a late-night casino table and wants you there. The table may or may not be fair.", es: "Tu primo encontró una mesa de casino a la noche y te quiere ahí. La mesa puede no ser justa." },
     poker: { en: "A private poker game at a friend's place. Not a casino. You decide whether to buy in.", es: "Un póker privado en lo de un amigo. No es un casino. Decidís si entrar." },
-    uncle: { en: "An uncle sent about 7% of your net worth as cash or bitcoin. He will not say why.", es: "Un tío mandó cerca del 7% del patrimonio en cash o bitcoin. No dice por qué." },
+    uncle: { en: "An uncle wired money with no explanation. He will not say why.", es: "Un tío giró plata sin explicación. No dice por qué." },
     school: { en: "A kid in the family needs help paying for a school trip. Covering it is about $300.", es: "Un chico de la familia necesita ayuda para un viaje del colegio. Cubrirlo sale unos $300." },
     roof: { en: "The roof is leaking. The repair is about $900.", es: "El techo gotea. El arreglo sale unos $900." },
     lotto: { en: "You bought a lottery ticket and forgot to check it. It might pay. It might just be the ticket price gone.", es: "Compraste un raspa y gana y no miraste. Puede pagar. O solo perdés el precio del ticket." },
@@ -1826,7 +1893,7 @@
     cousin: { en: "Your cousin wants a huge bet on a new token. He cannot explain what it does.", es: "Tu primo quiere una apuesta enorme a un token nuevo. No puede explicar qué hace." },
     speeding: { en: "A speeding ticket. Same road as last time. About $75.", es: "Una multa por velocidad. La misma calle de siempre. Unos $75." },
     wallet: { en: "You lose a wallet. The cards come back. The cash does not. About $40 gone.", es: "Perdés una billetera. Vuelven las tarjetas. El efectivo no. Unos $40 menos." },
-    potluck: { en: "There is a neighborhood potluck. You can donate a share of net worth or bring nothing.", es: "Hay una olla popular en la cuadra. Podés donar una parte del patrimonio o no llevar nada." },
+    potluck: { en: "There is a neighborhood potluck. You can donate or bring nothing.", es: "Hay una olla popular en la cuadra. Podés donar o no llevar nada." },
     usedcar: { en: "Your cousin found a used car and wants you in on the deal. The repair history looks unofficial. You can buy it or walk away.", es: "Tu primo te acerca un auto usado. El historial de arreglos se ve poco serio. Podés comprarlo o irte." },
     tetris: { en: "A friend finds an old arcade cabinet and wants you to put money in. You can play or just watch.", es: "Un amigo encuentra un arcade viejo y quiere que le metas fichas. Podés jugar o solo mirar." },
     unclemike: { en: "A fancy dinner. An uncle refuses the expected tip. The waiter is still waiting. You decide what to leave.", es: "Una cena cara. Un tío no quiere dejar la propina esperada. El mozo sigue ahí. Decidís qué dejar." }
@@ -2487,12 +2554,29 @@
       S.chanceReadyNote = resolveChance(card, "ok");
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
+      const gift = formatBagDelta(before, S.arcPending);
+      if (card.id === "uncle" && gift) {
+        body = es0
+          ? body.replace("Te giró plata.", "Te giró " + gift + ".")
+          : body.replace("some money", gift);
+      }
+      if (card.id === "taxbill" && gift) {
+        body = es0
+          ? body.replace("No cambió.", "No cambió. Son " + gift + ".")
+          : body.replace("It has not.", "It has not. It is " + gift + ".");
+      }
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       S.invuln = before.invuln;
       S.msig = before.msig;
       S.chanceSettled = true;
       S.chanceBody = body;
     } else {
+      if (card.id === "anOffer") {
+        const offer = formatPayCost(wealthUsd() * 1.35);
+        body = es0
+          ? body.replace("por 35% más que tu patrimonio actual", "por " + offer)
+          : body.replace("for 35% more than your current net worth", "for " + offer);
+      }
       S.chanceBody = body;
     }
     try { A.speak("Arc"); } catch (e) {}
