@@ -123,6 +123,8 @@
     const cta = $("cta-signup");
     if (cta) cta.classList.toggle("hide", !!(profile && name));
     fetchGlobalLeaderboard();
+    fetchIndepBoard();
+    fetchEloBoard("site-elo");
     if (typeof window.refreshChoppyAuth === "function") window.refreshChoppyAuth();
   }
 
@@ -412,7 +414,9 @@
         const n = row.username || "?";
         const href = validAlias(n) ? profileHref(n) : "#";
         const has = row.run_stats ? "1" : "";
+        const clock = row.score_time != null ? fmtClock(row.score_time) : "";
         return "<div class=\"board-row\">" + (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a> <span>" + fmtScoreBtc(seasonScore(row)) + "</span>"
+          + (clock ? " <small>" + clock + "</small>" : "")
           + (has ? " <button type=\"button\" class=\"stats-mini\" data-run=\"" + i + "\">STATS</button>" : "")
           + "</div>";
       }).join("");
@@ -428,6 +432,50 @@
     } catch (e) {
       box.textContent = "—";
     }
+  }
+
+  function fmtClock(t) {
+    const s = Math.max(0, Math.floor(Number(t) || 0));
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }
+
+  async function fetchIndepBoard(targetId) {
+    const box = $(targetId || "site-indep") || $("ready-indep");
+    if (!box || !supabase) return;
+    try {
+      const res = await supabase.from("profiles").select("username, indep_s, indep_at").limit(80);
+      if (res.error) { box.textContent = "—"; return; }
+      const season = Date.parse(BOARD_SEASON);
+      let rows = (res.data || []).filter((row) => {
+        const t = Number(row.indep_s);
+        if (!(t > 0)) return false;
+        const at = row.indep_at ? Date.parse(row.indep_at) : 0;
+        return at && at >= season;
+      });
+      rows.sort((a, b) => Number(a.indep_s) - Number(b.indep_s) || Date.parse(a.indep_at) - Date.parse(b.indep_at));
+      rows = rows.slice(0, 20);
+      if (!rows.length) { box.textContent = "—"; return; }
+      box.innerHTML = rows.map((row, i) => {
+        const n = row.username || "?";
+        const href = validAlias(n) ? profileHref(n) : "#";
+        return "<div class=\"board-row\">" + (i + 1) + ". <a class=\"user-link\" href=\"" + href + "\" target=\"_blank\" rel=\"noopener\">@" + n + "</a> <span>" + fmtClock(row.indep_s) + "</span></div>";
+      }).join("");
+    } catch (e) {
+      box.textContent = "—";
+    }
+  }
+
+  async function submitIndependence(life, candles) {
+    if (!currentUser || !supabase) return;
+    const t = Number(life) || 0;
+    const c = Math.round(Number(candles) || 0);
+    if (t < 12 || c < 3) return;
+    try {
+      const { error } = await supabase.rpc("submit_independence", { p_life: t, p_candles: c });
+      if (error) return;
+      fetchIndepBoard("ready-indep");
+      fetchIndepBoard("site-indep");
+    } catch (e) {}
   }
 
   async function fetchEloBoard(targetId) {
@@ -647,9 +695,12 @@
   };
   window.refreshLeaderboard = (id) => {
     fetchGlobalLeaderboard(id);
+    fetchIndepBoard(id === "ready-board" ? "ready-indep" : "site-indep");
+    if (id === "ready-board") fetchIndepBoard("site-indep");
     fetchEloBoard(id === "ready-board" ? "ready-elo" : (id || "site-elo"));
     if (id === "ready-board") fetchEloBoard("site-elo");
   };
+  window.submitIndependence = submitIndependence;
   window.submitVersusResult = submitVersusResult;
   window.refreshEloBoard = fetchEloBoard;
   window.profileHref = profileHref;
