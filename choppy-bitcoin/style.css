@@ -824,3 +824,69 @@ html[data-palette="flower"] #app {
   pointer-events:none;
   will-change:transform;
 }
+[data-palette="sunset"] #clock,
+[data-palette="sunset"] #h-candles {
+  color: #fff8f2;
+  background: rgba(20, 6, 8, 0.88);
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-shadow: none;
+}
+[data-palette="sunset"] .caption {
+  color: #fff8f2;
+  background: rgba(20, 6, 8, 0.92);
+  border-color: rgba(255, 220, 190, 0.5);
+  text-shadow: none;
+}
+[data-palette="sunset"] .banner,
+[data-palette="sunset"] .banner.top {
+  color: #fff1e4;
+  background: rgba(20, 6, 8, 0.92);
+  border-color: rgba(255, 220, 190, 0.45);
+}
+[data-palette="sunset"] #status-powers { color: #ffe7c4; }
+[data-palette="sunset"] #status-job { color: #d8f6ff; }
+[data-palette="sunset"] #now-playing {
+  color: #fff8f2;
+  background: rgba(20, 6, 8, 0.86);
+  padding: 3px 6px;
+  text-shadow: none;
+}
+[data-palette="sunset"] .lyric-stage {
+  background: rgba(20, 6, 8, 0.82);
+  border-color: rgba(255, 220, 190, 0.4);
+}
+[data-palette="sunset"] .lyric-title { color: #ffd7b0; }
+[data-palette="sunset"] .lyric-side { color: #f0d2c4; }
+[data-palette="sunset"] .lyric-now,
+[data-palette="sunset"] .lyric-now .w.on { color: #fffaf4; }
+[data-palette="sunset"] .lyric-now .w { color: #f0d0c0; }
+[data-palette="sunset"] .lyric-now .w.hot { color: #ffd27a; }
+[data-palette="sunset"] .buy,
+[data-palette="sunset"] .buy:hover,
+[data-palette="sunset"] .buy:focus,
+[data-palette="sunset"] .buy:focus-visible,
+[data-palette="sunset"] .buy:active,
+[data-palette="sunset"] .buy.on {
+  color: #f4ffe9;
+  background: rgba(8, 36, 14, 0.92);
+  border: 1px solid #c6f5b0;
+}
+[data-palette="sunset"] .sell,
+[data-palette="sunset"] .sell:hover,
+[data-palette="sunset"] .sell:focus,
+[data-palette="sunset"] .sell:focus-visible,
+[data-palette="sunset"] .sell:active,
+[data-palette="sunset"] .sell.on {
+  color: #fff6f2;
+  background: rgba(52, 10, 10, 0.92);
+  border: 1px solid #ffc0b6;
+}
+[data-palette="sunset"] #spd-2.dock-spd,
+[data-palette="sunset"] #spd-2.dock-spd.on,
+[data-palette="sunset"] #spd-2.dock-spd:disabled {
+  color: #1a0808;
+  background: #ffe3bf;
+  border-color: #fff6e8;
+}

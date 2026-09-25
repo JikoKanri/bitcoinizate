@@ -65,12 +65,12 @@
     },
     sunset: {
       nameKey: "palSunset",
-      bg: "#2a1018", bgTop: "#c45a40", bgBot: "#12080c", glow: "rgba(255,138,58,0.48)",
-      fg: "#ffe8d4", gold: "#ff8a3a", ink: "#1a0808",
-      line: "#4a2030", muted: "#c89888", surface: "#221018", border: "#6a3040",
-      hud: "#ffd0b0", green: "#e8a040", red: "#e05050",
+      bg: "#2a1018", bgTop: "#4a1c16", bgBot: "#12080c", glow: "rgba(255,138,58,0.42)",
+      fg: "#fff6ee", gold: "#ffb15a", ink: "#1a0808",
+      line: "#4a2030", muted: "#f0c8b8", surface: "#221018", border: "#6a3040",
+      hud: "#fff6ec", green: "#e8a040", red: "#ff7a72",
       grid: "rgba(255,138,58,0.12)", bullBg: "#181000", bearBg: "#180808",
-      halo: "rgba(0,0,0,0.92)", labelUp: "#ffe9b8", labelDn: "#ffd0c8",
+      halo: "rgba(0,0,0,0.92)", labelUp: "#fff8ea", labelDn: "#ffd4cc",
       card: "#2a1018", cardFg: "#fff0e4", desc: "#f0c8b8"
     },
     flower: {
@@ -376,7 +376,7 @@
     testArc: "Candles per arc",
     testArcSet: "Set",
     testArcHint: "0 = default. Default is one random card inside every 21 candles.",
-    testArcNext: "Next arc on candle",
+    testArcNext: "Next arc in {n} candles · passed {now}",
     testMoney: "Add money",
     testAdd: "Add",
     testQueued: "Applies when the run starts. Sticks for this session.",
@@ -757,7 +757,7 @@
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
     offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
     optPanel: null, optBack: "ready",
-    testArcEvery: 0, testPerkSeed: {}, testPerkPick: "dca", testCashOnce: 0, testBtcOnce: 0, testCur: "usd", testCheat: false,
+    testArcEvery: 0, testArcNext: 0, testPerkSeed: {}, testPerkPick: "dca", testCashOnce: 0, testBtcOnce: 0, testCur: "usd", testCheat: false,
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0, halveSpawned: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
     aibudOn: false, aibudLit: {}, iaLog: [], iaProfit: 0, aibudSpeechUntil: 0, aiAcc: 0,
@@ -1663,13 +1663,6 @@
   }
 
   function planChanceWindow(from) {
-    const every = S.testArcEvery | 0;
-    if (every > 0) {
-      const at = (from || 0) + every;
-      S.chanceAt = [at];
-      S.chanceUntil = at;
-      return;
-    }
     const t = S.have.chance || 0;
     if (t <= 0) { S.chanceAt = []; S.chanceUntil = 0; return; }
     const start = from + 1;
@@ -2731,7 +2724,17 @@
     if(S.bcOg&&!S.bcArcClosed&&(S.candles||0)>0&&(S.candles||0)%21===0&&S.bcNodeTick!==(S.candles||0)){S.bcNodeTick=S.candles||0;S.bcNodes=Math.min(100,(S.bcNodes||0)+(S.bcSettlement?2:1));if(S.bcMine)creditBtc(.01);say("Liberty Nodes "+S.bcNodes+"/100",false,"ui");}
     if ((S.have.job || 0) > 0 && S.candles > 0 && S.candles % 21 === 0) payJob();
     if (S.mp) return;
-    if ((S.have.chance || 0) > 0 || (S.testArcEvery | 0) > 0) {
+    const every = S.testArcEvery | 0;
+    if (every > 0) {
+      if (!(S.testArcNext > 0)) S.testArcNext = (S.candles || 0) + every;
+      if ((S.candles || 0) >= S.testArcNext && S.phase === "play") {
+        const phase = S.phase;
+        dealChance();
+        S.testArcNext = (S.candles || 0) + (S.phase !== phase ? every : 1);
+      }
+      return;
+    }
+    if ((S.have.chance || 0) > 0) {
       if (!S.chanceAt || !S.chanceAt.length) planChanceWindow(S.candles || 0);
       if (S.chanceAt && S.chanceAt.indexOf(S.candles) >= 0 && S.phase === "play") dealChance();
       if (S.chanceUntil && S.candles >= S.chanceUntil) planChanceWindow(S.candles);
@@ -3564,7 +3567,7 @@
           S.candles++; A.sfx.coin();
           grantUsd(100, p.x + pw * 0.5, p.gapY - 50, "gain");
           tickJobChance();
-          if (!S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
+          if (S.phase === "play" && !S.ranked && S.candles > 0 && S.candles % 10 === 0) openPerkOffer();
         }
       }
       const inX = S.bird.x + hitR > p.x + 2 && S.bird.x - hitR < p.x + pw - 2;
@@ -3732,15 +3735,23 @@
     ctx.save();
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
-    ctx.lineWidth = 3.6;
-    ctx.strokeStyle = "rgba(0,0,0,0.9)";
+    const sun = PALETTE_ID === "sunset";
+    ctx.lineWidth = sun ? 6 : 3.6;
+    ctx.strokeStyle = sun ? "#140604" : "rgba(0,0,0,0.9)";
     ctx.strokeText(text, x, y);
-    ctx.lineWidth = 1.4;
-    ctx.strokeStyle = "rgba(255,255,255,0.88)";
-    ctx.strokeText(text, x, y);
-    ctx.fillStyle = fill;
+    if (!sun) {
+      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = "rgba(255,255,255,0.88)";
+      ctx.strokeText(text, x, y);
+    }
+    ctx.fillStyle = sun ? sunsetInk(fill) : fill;
     ctx.fillText(text, x, y);
     ctx.restore();
+  }
+  function sunsetInk(fill) {
+    const f = String(fill || "").toLowerCase();
+    const down = f === String(PAL.labelDn || "").toLowerCase() || f === String(RED || "").toLowerCase() || f === String(PAL.red || "").toLowerCase();
+    return down ? "#ffd0c8" : "#fff8ef";
   }
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
@@ -5728,7 +5739,7 @@
       if (n > 0) cheated = true;
     });
     if ((S.testArcEvery | 0) > 0) {
-      planChanceWindow(S.candles || 0);
+      S.testArcNext = (S.candles || 0) + (S.testArcEvery | 0);
       cheated = true;
     }
     if (S.testCashOnce > 0) { S.cash += S.testCashOnce; S.testCashOnce = 0; cheated = true; }
@@ -5752,9 +5763,14 @@
     if (!isFinite(v) || v < 0) v = 0;
     if (v > 999) v = 999;
     S.testArcEvery = v;
-    if (v > 0) S.testCheat = true;
+    if (v > 0) {
+      S.testCheat = true;
+      S.testArcNext = (S.candles || 0) + v;
+      return;
+    }
+    S.testArcNext = 0;
     if (!testInRun()) return;
-    if (v > 0 || (S.have.chance || 0) > 0) planChanceWindow(S.candles || 0);
+    if ((S.have.chance || 0) > 0) planChanceWindow(S.candles || 0);
     else { S.chanceAt = []; S.chanceUntil = 0; }
   }
   function testAddMoney(amount, cur) {
@@ -5785,9 +5801,11 @@
   function testArcStatus() {
     const n = S.testArcEvery | 0;
     if (n <= 0) return t("testArcHint");
-    if (!testInRun()) return t("testArcNext") + " " + n + ". " + t("testQueued");
-    const at = (S.chanceAt && S.chanceAt.length) ? S.chanceAt.slice().sort((a, b) => a - b)[0] : ((S.candles || 0) + n);
-    return t("testArcNext") + " " + at + " · " + t("testNow") + " " + (S.candles || 0);
+    const left = testInRun()
+      ? Math.max(0, (S.testArcNext || ((S.candles || 0) + n)) - (S.candles || 0))
+      : n;
+    const line = t("testArcNext").replace("{n}", String(left)).replace("{now}", String(S.candles || 0));
+    return testInRun() ? line : line + " " + t("testQueued");
   }
   function testMoneyStatus() {
     if (testInRun()) return money(S.cash) + " · " + fmtBtc(S.btc);
@@ -5813,7 +5831,7 @@
       + "<input id=\"test-arc-n\" type=\"number\" min=\"0\" max=\"999\" inputmode=\"numeric\" value=\"" + arcVal + "\">"
       + "<button type=\"button\" class=\"cta\" id=\"test-arc-set\">" + t("testArcSet") + "</button>"
       + "</div>"
-      + "<p class=\"k\">" + testArcStatus() + "</p>"
+      + "<p class=\"k\" id=\"test-arc-status\">" + testArcStatus() + "</p>"
       + "<p class=\"test-lab\">" + t("testMoney") + "</p>"
       + "<div class=\"test-row\">"
       + "<input id=\"test-money\" type=\"number\" min=\"0\" step=\"any\" inputmode=\"decimal\" value=\"" + moneyVal + "\">"
@@ -6067,12 +6085,14 @@
       renderOverlay();
     };
     const testArcSet = $("test-arc-set");
-    if (testArcSet) testArcSet.onclick = (e) => {
-      e.stopPropagation();
-      const inp = $("test-arc-n");
-      testSetArcEvery(inp ? inp.value : 0);
-      renderOverlay();
+    const testArcInp = $("test-arc-n");
+    const pushArc = () => {
+      testSetArcEvery(testArcInp ? testArcInp.value : 0);
+      const st = $("test-arc-status");
+      if (st) st.textContent = testArcStatus();
     };
+    if (testArcInp) testArcInp.oninput = (e) => { e.stopPropagation(); pushArc(); };
+    if (testArcSet) testArcSet.onclick = (e) => { e.stopPropagation(); pushArc(); };
     const testAdd = $("test-add");
     if (testAdd) testAdd.onclick = (e) => {
       e.stopPropagation();
