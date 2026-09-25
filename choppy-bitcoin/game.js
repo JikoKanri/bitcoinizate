@@ -1124,7 +1124,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.familyClosed=false; S.familyPath=false; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcReactions=null; S.bcRepliesDone=false;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1772,7 +1772,8 @@
       pieceWorld: { a: 1800 }, nobodyKnows: { a: 5000 }, stateVisit: { a: 15000, b: 5000 },
       protectIsland: { b: 50000 }, ortegaCalls: { a: 25000 }, school: { a: 300 },
       date: { a: 180, b: 60 }, wine: { b: 17, c: 25 }, tetris: { a: 20 },
-      unclemike: { a: 220, b: 180, c: 195 }
+      unclemike: { a: 220, b: 180, c: 195 },
+      blocReplies: { a: 40000 }
     };
     if (card.id === "islandInspection" && k === "a") return S.bcIslandOffer || 0;
     if (bill[card.id] && bill[card.id][k] != null) return bill[card.id][k];
@@ -1866,20 +1867,20 @@
     obviously: { en: "The grid is stable. Your cousin wants a Bitcoin mine on the cheap power. You can fund it or wait.", es: "La red ya es estable. Tu primo quiere una mina de Bitcoin con la energía barata. Podés financiarla o esperar." },
     principality: { en: "A tiny unrecognized state wants diplomatic contact. They have a flag, an anthem, and a website.", es: "Un mini-Estado no reconocido quiere contacto diplomático. Tienen bandera, himno y sitio web." },
     stateVisit: { en: "You visit that tiny state. They want Bitcoin infrastructure. You want friends who might one day recognize you.", es: "Visitás ese mini-Estado. Ellos quieren infraestructura Bitcoin. Vos querés amigos que algún día puedan reconocerte." },
-    firstBloc: { en: "Several countries form a bloc for trade, energy, money, and defense. They keep using the word stability. World military strength rises.", es: "Varios países arman un bloque de comercio, energía, dinero y defensa. Repiten la palabra estabilidad. Sube la fuerza militar mundial." },
+    firstBloc: { en: "Chancellor Ivo Voss forms the Meridian Stability Pact: Valden, Osterbruck, Lior, Maren, Holt, the Sable Coast, and Dun. Stability means permission. World military strength rises.", es: "El canciller Ivo Voss forma el Pacto de Estabilidad Meridiano: Valden, Osterbruck, Lior, Maren, Holt, la Costa Sable y Dun. Estabilidad quiere decir permiso. Sube la fuerza militar mundial." },
     protectIsland: { en: "Someone steals a boat. Security is basically one camera and a dog. You can start an army, hire private guards, or do nothing.", es: "Alguien se roba un bote. La seguridad es básicamente una cámara y un perro. Podés armar un ejército, contratar privados, o no hacer nada." },
     placeNow: { en: "The settlement starts to look like a town: shops, a bar, even a newspaper that criticizes you. Liberty Nodes tick up.", es: "El asentamiento empieza a parecer un pueblo: negocios, un bar, hasta un diario que te critica. Suben los Liberty Nodes." },
     citadelQuestion: { en: "A friend draws walls, protected power, and a hardened center. A citadel can keep people out. It can also keep people safe.", es: "Un amigo dibuja muros, energía protegida y un centro reforzado. Una ciudadela puede dejar gente afuera. También puede cuidar a la que está adentro." },
-    rearmament: { en: "The bloc announces more ships and bases. A rival group does the same. Global security is not improving.", es: "El bloque anuncia más barcos y bases. Un grupo rival hace lo mismo. La seguridad global no mejora." },
+    rearmament: { en: "Marshal Amina Kade answers with the Red Ledger Compact: Karth, Vire, the Collective Coast, Namm, and Solenne. Purity, posters, police. Both blocs lay keels.", es: "La mariscal Amina Kade responde con el Compacto del Libro Rojo: Karth, Vire, la Costa Colectiva, Namm y Solenne. Pureza, afiches, policía. Los dos bloques ponen quillas." },
     anOffer: { en: "A private group offers a large premium for the whole project. Selling it would close the Bitcoin Country arc. Refusing it adds support.", es: "Un grupo privado ofrece una prima grande por todo el proyecto. Venderlo cierra el arco de Bitcoin Country. Rechazarlo suma apoyo." },
     ambassador: { en: "A real ambassador visits. Before leaving, they say: if you ever do something stupid, call them first.", es: "Visita un embajador de verdad. Antes de irse dice: si alguna vez hacés algo estúpido, llamalos primero." },
-    threeColors: { en: "Three military alliances now cover most of the map. A few gray spots remain. World military strength rises again.", es: "Tres alianzas militares cubren casi todo el mapa. Quedan algunas manchas grises. La fuerza militar mundial vuelve a subir." },
+    threeColors: { en: "High Warden Soren Pell closes the map with the Crown Lattice: Ashen, Bryn March, the Isle Keels, Vesper, and Orth. Blood, parades, contempt. Three tyrannies, one ocean.", es: "El Alto Guardián Soren Pell cierra el mapa con la Celosía de la Corona: Ashen, Bryn March, las Quillas, Vesper y Orth. Sangre, desfiles, desprecio. Tres tiranías, un océano." },
     ortegaCalls: { en: "The tiny state offers years of recognition experience. Mostly they learned what not to do. A serious visit can add Liberty Nodes.", es: "El mini-Estado ofrece años de experiencia en reconocimiento. Sobre todo aprendieron qué no hacer. Una visita seria puede sumar Liberty Nodes." },
     theQuestion: { en: "You have enough Liberty Nodes to declare independence. The army is optional. Declaring is not reversible in the moment.", es: "Tenés suficientes Liberty Nodes para declarar independencia. El ejército es opcional. Declarar no se revierte en el momento." },
     declaration: { en: "You declare independence. A tiny state recognizes Bitcoin Country almost immediately. Most of the world does not.", es: "Declarás independencia. Un mini-Estado reconoce Bitcoin Country casi al instante. El resto del mundo no." },
-    theAnswer: { en: "Recognition is not universal. One military bloc answers with force. The declaration now has to survive an attack.", es: "El reconocimiento no es universal. Un bloque militar responde con fuerza. La declaración ahora tiene que sobrevivir un ataque." },
-    fourthColor: { en: "The attack fails. Bitcoin Country stays independent. Some governments start talking. Keep playing.", es: "El ataque falla. Bitcoin Country sigue independiente. Algunos gobiernos empiezan a hablar. Seguí jugando." },
-    notYet: { en: "The defense fails. The island and the people remain, but independence does not. You can prepare and try again.", es: "La defensa falla. La isla y la gente siguen, la independencia no. Podés prepararte y volver a intentar." },
+    theAnswer: { en: "The three blocs have already answered. This card no longer starts the war.", es: "Los tres bloques ya respondieron. Esta carta ya no empieza la guerra." },
+    fourthColor: { en: "All three blocs attacked. All three failed. Bitcoin Country stays independent. Keep playing.", es: "Los tres bloques atacaron. Los tres fallaron. Bitcoin Country sigue independiente. Seguí jugando." },
+    notYet: { en: "A lost battle ends the run. Independence is not retried.", es: "Una batalla perdida termina la partida. La independencia no se reintenta." },
     landfill: { en: "Your cousin wants money to dig a landfill for a lost Bitcoin USB. He wants a real partner. You almost never find anything.", es: "Tu primo quiere plata para excavar un basural por un USB de Bitcoin perdido. Quiere un socio de verdad. Casi nunca aparece nada." },
     taxbill: { en: "The quarterly tax bill did not change.", es: "La boleta trimestral no cambió." },
     nicoWedding: { en: "Your cousin is getting married. You have to leave an envelope. A generous gift may come back later as cold storage.", es: "Tu primo se casa. Hay que dejar un sobre. Un regalo generoso puede volver después como cold storage." },
@@ -1915,6 +1916,7 @@
   };
   function cardTldr(card) {
     if (!card) return "";
+    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph") return warTldr(card.id);
     const row = CHANCE_TLDR[card.id];
     if (!row) return "";
     return chanceLang() ? (row.es || row.en) : row.en;
@@ -2164,20 +2166,23 @@
     { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", opts:[{k:"a",label:"Build the mine · 5%"},{k:"b",label:"Not yet"}] },
     { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations." },
     { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", body:"San Arnaldo has a coastal town, hills, and a government building that may have been a restaurant three months ago. They want Bitcoin infrastructure. You want friends.", opts:[{k:"a",label:"Build a node · $15,000"},{k:"b",label:"Help a little · $5,000"},{k:"c",label:"Just visit"}] },
-    { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", body:"Seven countries announce a political and economic bloc covering trade, energy, currency coordination, defense and joint exercises. Every speaker uses the word stability." },
+    { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", titleEs:"El primer bloque", body:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is short. The annexes are not.\n\nValden, Osterbruck, Lior, Maren, Holt, the Sable Coast, and the River Republic of Dun. Trade, energy, a shared payments rail, and a defense clause nobody reads out loud.\n\nChancellor Ivo Voss chairs the first session. He does not raise his voice. He thanks the cameras for their patience and says instability is a kind of violence. Then he lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, uncooperative newspapers.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.", bodyEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es corto. Los anexos no.\n\nValden, Osterbruck, Lior, Maren, Holt, la Costa Sable y la República Fluvial de Dun. Comercio, energía, un riel de pagos común y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. No alza la voz. Agradece a las cámaras por la paciencia y dice que la inestabilidad es una forma de violencia. Después enumera lo que ahora necesita permiso: transferencias grandes, cuentas en el exterior, puertos no autorizados, diarios poco cooperativos.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
     { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", body:"Someone steals a boat. Your current security system is one camera and Paco. Paco was asleep.", opts:[{k:"a",label:"Build a defense force · 2%"},{k:"b",label:"Hire private security · $50,000"},{k:"c",label:"Give Paco a vest"}] },
     { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", body:"Coffee shops appear. Then a bakery. Then a bar. Then a newspaper. Its first editorial criticizes you. Nico is delighted. “You made it. You have opposition.”" },
     { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", body:"Marek brings plans for protected power, walls and a hardened center. “Citadel.” A wall can keep people out. It can also keep people safe.", opts:[{k:"a",label:"Build it · 8%"},{k:"b",label:"Not now"}] },
-    { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", body:"The Bloc announces more ships, aircraft and bases. A rival group announces the same thing. Nobody appears to be improving global security." },
+    { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", titleEs:"Rearme", body:"The Pact launches a new frigate program and calls it maintenance.\n\nAcross the water, five states answer with a different kind of order. Karth, Vire, the Collective Coast, Namm, and Solenne sign the Red Ledger Compact in a hall with the lights too bright. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, then the person who decides which shortages are patriotic.\n\nThe Ledger does not talk about stability. It talks about purity. Hoarding is treason. Private mines are unfinished revolutions. Posters go up before the bread does. Police notebooks get thicker. The speeches are beautiful. The queues are not.\n\nBoth blocs lay keels. Neither calls it an arms race.", bodyEs:"El Pacto bota un programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua, cinco Estados responden con otro tipo de orden. Karth, Vire, la Costa Colectiva, Namm y Solenne firman el Compacto del Libro Rojo en un salón con las luces demasiado fuertes. La mariscal Amina Kade lee el preámbulo ella misma. Fue oficial de muelle, después fiscal, después la persona que decide qué escasez es patriótica.\n\nEl Libro no habla de estabilidad. Habla de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los afiches llegan antes que el pan. Los cuadernos de la policía se ponen más gruesos. Los discursos son hermosos. Las filas no.\n\nLos dos bloques ponen quillas. Ninguno lo llama carrera armamentista." },
     { id:"anOffer", kind:"choice", after:["rearmament"], title:"An Offer", body:"A private group offers to buy everything for 35% more than your current net worth. Madame Luck asks one question: “Why did you build it?”", opts:[{k:"a",label:"Sell"},{k:"b",label:"Bitcoin Country is not for sale"}] },
     { id:"ambassador", kind:"report", after:["anOffer"], when:()=>!S.bcArcClosed&&S.bcNodes>=75, title:"The Ambassador", body:"A real ambassador visits. Before leaving, she says: “If you ever decide this is more than a project, call me first.”" },
-    { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", body:"Three military blocs now dominate the map. Commentators call it a stable balance. The map has fewer colors than it used to." },
+    { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", titleEs:"Tres colores", body:"A third color closes the map.\n\nThe Crown Lattice is older than the press releases. The Crown of Ashen, Bryn March, the Isle Keels, Vesper, and Orth have shared blood rites, harbor law, and a habit of calling their neighbors unfinished. High Warden Soren Pell walks at the front of the procession and does not wave. He believes borders are inherited, not argued, and that a people who will not kneel are a clerical error.\n\nWhere the Pact files a form and the Ledger prints a poster, the Lattice holds a parade and then a silence. Dissent is not debated. It is omitted. The gray spots on the map, including a small island that has been buying generators, are now described as unassigned.\n\nThree tyrannies. Three philosophies. One ocean.", bodyEs:"Un tercer color cierra el mapa.\n\nLa Celosía de la Corona es más vieja que los comunicados. La Corona de Ashen, Bryn March, las Quillas de la Isla, Vesper y Orth comparten ritos de sangre, derecho de puerto y la costumbre de llamar inconclusos a los vecinos. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Cree que las fronteras se heredan, no se discuten, y que un pueblo que no se arrodilla es un error de archivo.\n\nDonde el Pacto presenta un formulario y el Libro imprime un afiche, la Celosía hace un desfile y después un silencio. La disidencia no se debate. Se omite. Las manchas grises del mapa, incluida una isla chica que viene comprando generadores, ahora figuran como sin asignar.\n\nTres tiranías. Tres filosofías. Un océano." },
     { id:"ortegaCalls", kind:"choice", after:["threeColors"], title:"Mr Ortega & Gambette Calls", body:"Mr Ortega & Gambette calls with ninety-three pages of advice about recognition, treaties, fisheries and ceremonial precedence.", opts:[{k:"a",label:"Take the full package · $25,000"},{k:"b",label:"Take the useful pages"},{k:"c",label:"Decline politely"}] },
     { id:"theQuestion", kind:"choice", after:["ortegaCalls"], when:()=>S.bcNodes>=100&&!S.bcIndependent&&!S.bcVictory, title:"The Question", body:"The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the last unchecked line. Independence.", opts:[{k:"a",label:"Declare independence"},{k:"b",label:"Not yet"}] },
     { id:"declaration", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent, title:"Declaration", body:"You declare independence. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Mr Ortega & Gambette sends a thumbs-up and a 14-page attachment." },
-    { id:"theAnswer", kind:"report", after:["declaration"], when:()=>!!S.bcIndependent&&!S.chanceMet.bcDefenseResult, title:"The Answer", body:"Recognition is not universal. One of the blocs gives you an answer of its own. The attack begins." },
-    { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>S.chanceMet.bcDefenseResult==="win", title:"A Fourth Color", body:"It is over. The attack failed. The island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain. Bitcoin Country is independent. ACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING." },
-    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>S.chanceMet.bcDefenseResult==="lose", title:"Not Yet", body:"The defense fails. Bitcoin Country does not disappear. The declaration does. The island keeps its residents, homes, businesses and Bitcoin. Independence can wait. KEEP PLAYING." }  ];
+    { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The blocs have already answered." },
+    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration." },
+    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
+    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
+    { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
+    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends." }  ];
   function resolveChance(card, opt) {
     const es = chanceLang();
     const say = (en, esTxt) => (es ? esTxt : en);
@@ -2391,9 +2396,16 @@
     if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
     if(card.id==="theQuestion"){if(S.bcVictory){return say("Bitcoin Country is already independent.","");}if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
     if(card.id==="declaration")return say("San Arnaldo recognizes Bitcoin Country in thirty-seven seconds.","");
-    if(card.id==="theAnswer"){S.bcDefensePending=true;return say("The attack begins.","");}
-    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{grantAward("fourth");}catch(e){}return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","");}
-    if(card.id==="notYet"){S.bcIndependent=false;delete S.chanceMet.bcDefenseResult;delete S.chanceUsed.theQuestion;delete S.chanceUsed.declaration;delete S.chanceUsed.theAnswer;delete S.chanceUsed.notYet;return say("Not yet. KEEP PLAYING.","");}
+    if(card.id==="theAnswer"){return say("The blocs already answered.","");}
+    if(card.id==="blocReplies"){
+      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+money(p)+".","La carta se pone más cálida. Las flotas no. −"+money(p)+".");}
+      if(opt==="b")return say("You refuse. The fleets were never waiting on your answer.","Rechazás. Las flotas no estaban esperando tu respuesta.");
+      return say("The statements are in. The ships are already moving.","Los comunicados llegaron. Los barcos ya se mueven.");
+    }
+    if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
+    if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
+    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{grantAward("fourth");}catch(e){}return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO.");}
+    if(card.id==="notYet"){return say("Not yet.","");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
       const paid = cutPct(map[opt] || 0.04);
@@ -2506,11 +2518,154 @@
     });
   }
   function chanceArtHtml(id) {
-    const jpg="chance/"+id+(BC_ART[id]?".svg":".jpg");
+    const artId = id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "blocTriumph" ? "fourthColor" : id;
+    const jpg="chance/"+artId+(BC_ART[artId]?".svg":".jpg");
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
     return "<img class=\"chance-art\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
+  }
+
+  const WAR_BLOCS = [
+    { key:"pact", en:"Meridian Stability Pact", es:"Pacto de Estabilidad Meridiano", short:"PACT", shortEs:"PACTO", leader:"Chancellor Ivo Voss", leaderEs:"el canciller Ivo Voss" },
+    { key:"ledger", en:"Red Ledger Compact", es:"Compacto del Libro Rojo", short:"LEDGER", shortEs:"LIBRO", leader:"Marshal Amina Kade", leaderEs:"la mariscal Amina Kade" },
+    { key:"lattice", en:"Crown Lattice", es:"Celosía de la Corona", short:"LATTICE", shortEs:"CORONA", leader:"High Warden Soren Pell", leaderEs:"el Alto Guardián Soren Pell" }
+  ];
+  function warBloc(i){ return WAR_BLOCS[Math.max(0, Math.min(2, i|0))]; }
+  function rollBlocReactions(){
+    const keys=["accept","reject","time","money"];
+    for(let i=keys.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=keys[i]; keys[i]=keys[j]; keys[j]=t; }
+    S.bcReactions={ pact:keys[0], ledger:keys[1], lattice:keys[2] };
+  }
+  function blocReplyIsReport(){
+    const r=S.bcReactions||{};
+    return r.pact!=="money" && r.ledger!=="money" && r.lattice!=="money";
+  }
+  function reactionLine(bloc, kind, es){
+    const name=es?bloc.es:bloc.en, who=es?bloc.leaderEs:bloc.leader;
+    if(kind==="accept") return es
+      ? name+" manda una nota fría de reconocimiento. "+who+" lo llama una cortesía provisional. El agregado que la trae no se sienta."
+      : name+" sends a cold note of recognition. "+who+" calls it a provisional courtesy. The attaché who delivers it does not sit down.";
+    if(kind==="reject") return es
+      ? name+" rechaza la declaración en una oración. "+who+" agrega una segunda sobre consecuencias."
+      : name+" rejects the declaration in one sentence. "+who+" adds a second sentence about consequences.";
+    if(kind==="time") return es
+      ? name+" pide tiempo para preparar un comunicado. "+who+" se refiere a tiempo para contar barcos."
+      : name+" asks for time to prepare a statement. "+who+" means time to count ships.";
+    return es
+      ? name+" ofrece reconocimiento político a cambio de un aporte a la estabilidad regional. "+who+" pone una cifra y no lo llama soborno."
+      : name+" offers political recognition in exchange for a contribution to regional stability. "+who+" names a figure and does not call it a bribe.";
+  }
+  function repliesText(){
+    const es=chanceLang();
+    const r=S.bcReactions||{pact:"reject",ledger:"time",lattice:"accept"};
+    const lines=WAR_BLOCS.map((b)=>reactionLine(b, r[b.key], es));
+    const tail=es
+      ? "Nada de eso importa al final de la semana. Los reconocimientos son notas al pie. Las demoras son calendarios de carga. La plata, si la pagás, compra una carta más linda. Los tres bloques igual arman la flota."
+      : "None of it matters by the end of the week. The recognitions are footnotes. The delays are loading schedules. The money, if you pay it, buys a nicer letter. All three blocs still arm.";
+    return lines.join("\n\n")+ "\n\n"+tail;
+  }
+  function assaultText(){
+    const es=chanceLang();
+    const n=(S.bcBattlesWon||0);
+    const b=warBloc((n/3)|0);
+    const within=(n%3)+1;
+    const name=es?b.es:b.en, who=es?b.leaderEs:b.leader;
+    return es
+      ? "Batalla "+(n+1)+" de 9. "+name+" abre fuego. Esta es la batalla "+within+" de 3 contra ellos.\n\n"+who+" ya escribió el comunicado. No negocia bajo fuego.\n\nLa isla tiene que aguantar."
+      : "Battle "+(n+1)+" of 9. The "+name+" opens fire. This is battle "+within+" of 3 against them.\n\n"+who+" has already written the communiqué. There is no negotiation under fire.\n\nThe island has to hold.";
+  }
+  function triumphText(){
+    const es=chanceLang();
+    const won=S.bcBattlesWon||0;
+    const b=warBloc(((won-1)/3)|0);
+    const name=es?b.es:b.en, who=es?b.leaderEs:b.leader;
+    let tail;
+    if(won>=9) tail=es
+      ? "No queda una flota que pueda pagar el combustible. La radio queda lo bastante quieta como para oír la panadería."
+      : "No fleet is left that can spare the fuel. The radio goes quiet enough to hear the bakery.";
+    else if(won>=6) tail=es
+      ? "La Celosía todavía no acepta el color nuevo en el mapa. Van a atacar dentro de 210 velas."
+      : "The Lattice has not accepted the new color on the map. They will attack within 210 candles.";
+    else tail=es
+      ? "El Libro y la Celosía siguen alistando barcos. Uno de los dos va a atacar dentro de 210 velas."
+      : "The Ledger and the Lattice are still fitting out ships. One of them will attack within 210 candles.";
+    return es
+      ? name+" está derrotado. Tres batallas. Tres desembarcos fallidos. "+who+" va a llamarlo una pausa. No es una pausa.\n\n"+tail
+      : "The "+name+" is beaten. Three battles. Three failed landings. "+who+" will call it a pause. It is not a pause.\n\n"+tail;
+  }
+  function warTldr(id){
+    const es=chanceLang();
+    if(id==="blocReplies") return es
+      ? "Cada bloque responde distinto. Igual los tres van a atacar."
+      : "Each bloc answers differently. All three still attack.";
+    if(id==="blocAssault") return es
+      ? "Empieza una batalla de la guerra de independencia. Son 9 en total, 3 por bloque."
+      : "An independence battle begins. Nine in total, three against each bloc.";
+    if(id==="blocTriumph") return es
+      ? "Ese bloque cayó. Si queda alguno, va a atacar dentro de 210 velas."
+      : "That bloc has fallen. If another remains, it attacks within 210 candles.";
+    return "";
+  }
+  function applyWarCard(card){
+    if(!card) return null;
+    if(card.id==="blocReplies"){
+      const report=blocReplyIsReport();
+      card.kind=report?"report":"choice";
+      card.opts=report?[]:[
+        {k:"a", label:"Pay for recognition", labelEs:"Pagar el reconocimiento"},
+        {k:"b", label:"Refuse", labelEs:"Rechazar"}
+      ];
+      return repliesText();
+    }
+    if(card.id==="blocAssault") return assaultText();
+    if(card.id==="blocTriumph") return triumphText();
+    return null;
+  }
+  function scheduleAssault(max){
+    const cap=Math.max(8, max|0);
+    const wait=cap<=40 ? (8+((Math.random()*32)|0)) : (24+((Math.random()*(cap-24))|0));
+    S.bcAssaultAt=(S.candles||0)+wait;
+  }
+  function dueAssault(){
+    if(!(S.bcAssaultAt>0)) return false;
+    if((S.candles||0)<S.bcAssaultAt) return false;
+    if(S.phase!=="play" || S.bcVictory) return false;
+    if(S.bcDefense && !S.bcDefense.done) return false;
+    const phase=S.phase;
+    window.__arcForce="blocAssault";
+    try{ dealChance(); } finally { window.__arcForce=""; }
+    if(S.phase!==phase){ S.bcAssaultAt=0; return true; }
+    return false;
+  }
+  function chainArc(id){
+    window.__arcForce=id;
+    S.phase="play";
+    setTimeout(()=>{ try{ dealChance(); } finally { window.__arcForce=""; } }, 80);
+  }
+  function closeArc(card){
+    const id=card&&card.id;
+    const launch=(id==="theAnswer"||id==="blocAssault")&&S.bcDefensePending;
+    const chainReplies=id==="declaration"&&!!S.bcIndependent&&!S.bcRepliesDone;
+    const afterTriumph=id==="blocTriumph";
+    const afterReplies=id==="blocReplies";
+    finishArcHold();
+    if(launch){
+      S.bcDefensePending=false;
+      startDefense();
+      return;
+    }
+    if(chainReplies){
+      rollBlocReactions();
+      S.bcRepliesDone=true;
+      chainArc("blocReplies");
+      return;
+    }
+    if(afterTriumph && (S.bcBattlesWon||0)>=9){
+      chainArc("fourthColor");
+      return;
+    }
+    if(afterTriumph || afterReplies) scheduleAssault(210);
   }
 
   function dealChance() {
@@ -2563,7 +2718,8 @@
     S.arcTldr = "";
     S.arcHold = false;
     const es0 = chanceLang();
-    let body = weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
+    const warBody = applyWarCard(card);
+    let body = warBody != null ? warBody : weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
     if (card.kind === "report") {
       const before = bagSnap();
       S.chanceReadyNote = resolveChance(card, "ok");
@@ -2594,7 +2750,9 @@
       }
       S.chanceBody = body;
     }
-    try { A.speak("Arc"); } catch (e) {}
+    const cue = (card.id === "blocAssault" || card.id === "theAnswer") ? "war" : ((card.id === "blocTriumph" || card.id === "fourthColor") ? "triumph" : "");
+    if (cue) { try { if (A.playCue) A.playCue(cue); } catch (e) {} }
+    else { try { A.speak("Arc"); } catch (e) {} }
     setPhase("chance");
     renderHud();
   }
@@ -2696,9 +2854,7 @@
     if (!card) { finishArcHold(); return; }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
-        const launchDefense = card.id === "theAnswer" && S.bcDefensePending;
-        finishArcHold();
-        if (launchDefense) { S.bcDefensePending = false; startDefense(); }
+        closeArc(card);
         return;
       }
       const before = bagSnap();
@@ -2712,18 +2868,14 @@
       renderHud();
       return;
     }
-    const launchDefense = card.id === "theAnswer" && S.bcDefensePending;
-    finishArcHold();
-    if (launchDefense) {
-      S.bcDefensePending = false;
-      startDefense();
-    }
+    closeArc(card);
   }
 
   function tickJobChance() {
     if(S.bcOg&&!S.bcArcClosed&&(S.candles||0)>0&&(S.candles||0)%21===0&&S.bcNodeTick!==(S.candles||0)){S.bcNodeTick=S.candles||0;S.bcNodes=Math.min(100,(S.bcNodes||0)+(S.bcSettlement?2:1));if(S.bcMine)creditBtc(.01);say("Liberty Nodes "+S.bcNodes+"/100",false,"ui");}
     if ((S.have.job || 0) > 0 && S.candles > 0 && S.candles % 21 === 0) payJob();
     if (S.mp) return;
+    if (dueAssault()) return;
     const every = S.testArcEvery | 0;
     if (every > 0) {
       if (!(S.testArcNext > 0)) S.testArcNext = (S.candles || 0) + every;
@@ -3116,7 +3268,8 @@
   const BC_TS=16,BC_C=30,BC_R=40;
   function bcAt(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
   function bcSet(m,x,y,t){if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;}
-  function makeIslandMap(fort){
+  function makeIslandMap(level, fort){
+    level=level|0;
     const m=new Uint8Array(BC_C*BC_R);m.fill(3);
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       const dx=(x-14.5)/12,dy=(y-20)/17.2,e=dx*dx+dy*dy;
@@ -3125,24 +3278,50 @@
     for(let y=16;y<22;y++)for(let x=11;x<19;x++){
       const dx=(x-14.5)/4,dy=(y-18.5)/2.6;if(dx*dx+dy*dy<1)bcSet(m,x,y,3);
     }
-    for(let y=7;y<=32;y+=4)for(let x=6;x<=23;x++){
-      if(x%5===0)continue;if(bcAt(m,x,y)!==3)bcSet(m,x,y,1);
+    const lanes=[[6,7],[14,15],[22,23]];
+    const laneSet={};
+    lanes.forEach(([a,b])=>{laneSet[a]=1;laneSet[b]=1;});
+    const recipe=[
+      {streets:[18,19],gates:[[0,12],[1,15],[2,13]]},
+      {streets:[],gates:[[0,12],[0,22],[1,14],[1,24],[2,13],[2,23]]},
+      {streets:[14,15],gates:[[0,20],[1,11],[2,24],[1,26]]},
+      {streets:[22,23],gates:[[0,12],[0,18],[1,13],[1,20],[2,12],[2,21]]},
+      {streets:[14,15,26,27],gates:[[0,20],[2,18],[1,12]]},
+      {streets:[],gates:[[0,11],[0,18],[0,25],[1,12],[1,19],[1,26],[2,11],[2,18],[2,25]]},
+      {streets:[16,17],gates:[[0,12],[0,24],[1,14],[2,13],[2,22]],fort:1},
+      {streets:[12,13],gates:[[0,16],[0,24],[1,11],[1,20],[1,27],[2,15],[2,23]],fort:1},
+      {streets:[],gates:[[0,11],[0,17],[0,24],[1,12],[1,18],[1,25],[2,11],[2,17],[2,24]],fort:1}
+    ][Math.max(0,Math.min(8,level))];
+    const street={};
+    (recipe.streets||[]).forEach((y)=>{street[y]=1;});
+    street[8]=1;street[9]=1;street[27]=1;street[28]=1;
+    for(let y=8;y<=32;y++)for(let x=6;x<=23;x++){
+      if(laneSet[x]||street[y])bcSet(m,x,y,6);
     }
-    for(let x=6;x<=24;x+=5)for(let y=7;y<=33;y++){
-      if(y%5===2)continue;if(bcAt(m,x,y)!==3)bcSet(m,x,y,1);
+    for(let y=30;y<=32;y++)for(let x=8;x<=21;x++)bcSet(m,x,y,6);
+    (recipe.gates||[]).forEach(([li,y])=>{
+      if(y<11||y>26||street[y])return;
+      const pair=lanes[li];if(!pair)return;
+      bcSet(m,pair[0],y,1);bcSet(m,pair[1],y,1);
+    });
+    const rocks=[[8,12],[21,12],[9,16],[20,16],[8,20],[21,20],[10,24],[19,24],[8,11],[21,11],[10,18],[19,18],[9,26],[20,26],[11,21],[18,14]];
+    const rockN=4+((level*5)/8|0);
+    for(let i=0;i<rocks.length&&i<rockN;i++){
+      const x=rocks[i][0],y=rocks[i][1];
+      if(laneSet[x]||street[y]||y>=29)continue;
+      if(bcAt(m,x,y)===3)continue;
+      bcSet(m,x,y,2);
     }
-    [[8,10],[21,10],[8,26],[21,26],[14,14],[15,14],[7,18],[22,18]].forEach(([x,y])=>{if(bcAt(m,x,y)!==3)bcSet(m,x,y,2);});
-    [[10,9],[19,9],[9,20],[20,20],[12,7],[17,7],[8,30],[21,30],[11,24],[18,24]].forEach(([x,y])=>{if(bcAt(m,x,y)!==3&&bcAt(m,x,y)!==2)bcSet(m,x,y,4);});
-    for(let x=13;x<=16;x++)for(let y=5;y<=7;y++)if(bcAt(m,x,y)!==3)bcSet(m,x,y,6);
-    for(let x=5;x<=8;x++)for(let y=5;y<=7;y++)if(bcAt(m,x,y)!==3)bcSet(m,x,y,6);
-    for(let x=21;x<=24;x++)for(let y=5;y<=7;y++)if(bcAt(m,x,y)!==3)bcSet(m,x,y,6);
-    for(let x=13;x<=16;x++)for(let y=30;y<=32;y++)bcSet(m,x,y,6);
+    [[10,10],[19,10],[9,21],[20,21],[11,25],[18,29]].forEach(([x,y])=>{
+      if(!laneSet[x]&&!street[y]&&bcAt(m,x,y)===6)bcSet(m,x,y,4);
+    });
+    const wall=!!(fort||recipe.fort);
     for(let x=12;x<=17;x++){bcSet(m,x,33,1);bcSet(m,x,36,1);}
     for(let y=33;y<=36;y++){bcSet(m,12,y,1);bcSet(m,17,y,1);}
     bcSet(m,14,33,6);bcSet(m,15,33,6);
     bcSet(m,14,34,5);bcSet(m,15,34,5);bcSet(m,14,35,5);bcSet(m,15,35,5);
-    if(fort){
-      for(let x=11;x<=18;x++){bcSet(m,x,32,1);bcSet(m,x,37,1);}
+    if(wall){
+      for(let x=11;x<=18;x++)bcSet(m,x,32,1);
       for(let y=32;y<=37;y++){bcSet(m,11,y,1);bcSet(m,18,y,1);}
       bcSet(m,14,32,6);bcSet(m,15,32,6);
     }
@@ -3150,7 +3329,7 @@
   }
   function bcTileHp(t){return t===1?2:t===2?1:t===5?99:0;}
   function tankBlocked(d,x,y,sz,ignore){
-    const hw=sz*.46;
+    const hw=sz*.40;
     const x0=Math.floor((x-hw)/BC_TS),x1=Math.floor((x+hw)/BC_TS);
     const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
     for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
@@ -3164,14 +3343,15 @@
     }
     return false;
   }
-  function snapTank(t,dir){
-    const g=8;
+  function snapTank(t,dir,d){
+    const ox=t.x,oy=t.y,g=8;
     if(dir===0||dir===2)t.x=Math.round(t.x/g)*g;else t.y=Math.round(t.y/g)*g;
+    if(d&&tankBlocked(d,t.x,t.y,t.sz,t)){t.x=ox;t.y=oy;}
     t.dir=dir;
   }
   function moveTank(d,t,dir,spd,dt){
     if(dir<0)return;
-    if(t.dir!==dir)snapTank(t,dir);
+    if(t.dir!==dir)snapTank(t,dir,d);
     const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
     const nx=Math.max(t.sz,Math.min(S.W-t.sz,t.x+vx*dt));
     const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
@@ -3199,31 +3379,69 @@
     }
     return true;
   }
+  function laneMate(tx){
+    const pairs=[[6,7],[14,15],[22,23]];
+    for(const [a,b] of pairs){if(tx===a)return b;if(tx===b)return a;}
+    return -1;
+  }
+  function placeTank(d,x,y,sz){
+    for(let dy=0;dy<=80;dy+=8){
+      for(const dx of [0,16,-16,32,-32]){
+        const nx=x+dx,ny=y+dy;
+        if(nx<24||ny<24||nx>S.W-24||ny>S.H-24)continue;
+        if(!tankBlocked(d,nx,ny,sz,null))return {x:nx,y:ny};
+      }
+    }
+    return {x:x,y:y};
+  }
   function startDefense(){
-    const p=defenseProfile(),u=defenseUpgrades();
-    const map=makeIslandMap(!!u.wall);
+    const level=Math.max(0,Math.min(8,S.bcBattlesWon|0));
+    const bloc=(level/3)|0;
+    const u=defenseUpgrades();
+    const map=makeIslandMap(level,!!u.wall);
     const hp=new Uint8Array(map.length);
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
     S.defHeld={u:0,d:0,l:0,r:0,f:0};S.defPtr=null;
+    const quota=4+((level/2)|0);
+    const delta=(S.bcArmy||0)-(S.bcWorld||20);
+    const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
     S.bcDefense={
-      map,hp,player:{x:240,y:500,dir:0,hp:1,sz:13,fire:0},
-      shots:[],enemies:[],wave:1,waves:p.waves,spawn:.4,spawned:0,kills:0,quota:5,
-      integrity:100,wall:u.wall?100:0,done:false,inv:0,profile:p,up:u,t:0,
-      spawns:[{x:112,y:96},{x:240,y:88},{x:368,y:96}]
+      map,hp,player:{x:240,y:488,dir:0,hp:1,sz:13,fire:0},
+      shots:[],enemies:[],wave:1,waves:2,spawn:.35,spawned:0,kills:0,quota,
+      integrity:100,wall:u.wall?100:0,done:false,inv:0,
+      profile:{rate:(.95+bloc*.06)*pressure,enemy:(.92+level*.025)*pressure},
+      up:u,t:0,level,bloc,spawnI:0,
+      home:{x:240,y:488},
+      spawns:[{x:112,y:136},{x:240,y:136},{x:368,y:136}]
     };
     S.optPanel=null;S.arcHold=false;
     if(field){field.classList.remove("is-play");field.classList.add("defense-mode");}
     setPhase("defense");
   }
   function defenseEnemy(d){
-    const r=Math.random(),w=d.wave;
-    let type="STANDARD",hp=1,spd=58,bspd=160,dmg=1,leak=10;
-    if(w>=2&&r<.25){type="FAST";spd=96;bspd=200;leak=8;}
-    else if(w>=3&&r<.47){type="HEAVY";hp=3;spd=40;bspd=150;dmg=2;leak=18;}
-    else if(w>=5&&r<.62){type="ELITE";hp=2;spd=72;bspd=220;dmg=1;leak=15;}
-    spd*=d.profile.enemy;
-    const sp=d.spawns[(Math.random()*d.spawns.length)|0];
-    d.enemies.push({x:sp.x,y:sp.y,dir:2,hp,maxHp:hp,sz:13,spd,bspd,dmg,leak,type,fire:.4,think:.1});
+    const r=Math.random(),bloc=d.bloc|0;
+    let type="STANDARD",hp=1,spd=62,bspd=168,dmg=1,leak=10;
+    const heavy=bloc===0,fast=bloc===1;
+    if(heavy){
+      if(r<.46){type="HEAVY";hp=3;spd=42;bspd=150;dmg=2;leak=18;}
+      else if(r<.72){type="STANDARD";}
+      else if(r<.88){type="FAST";spd=96;bspd=200;leak=8;}
+      else {type="ELITE";hp=2;spd=74;bspd=210;leak=14;}
+    }else if(fast){
+      if(r<.5){type="FAST";spd=100;bspd=210;leak=8;}
+      else if(r<.74){type="STANDARD";}
+      else if(r<.9){type="ELITE";hp=2;spd=76;bspd=220;leak=14;}
+      else {type="HEAVY";hp=3;spd=40;bspd=148;dmg=2;leak=18;}
+    }else{
+      if(r<.44){type="ELITE";hp=2;spd=78;bspd=226;leak=15;}
+      else if(r<.7){type="STANDARD";}
+      else if(r<.86){type="FAST";spd=94;bspd=200;leak=8;}
+      else {type="HEAVY";hp=3;spd=40;bspd=150;dmg=2;leak=18;}
+    }
+    spd*=d.profile.enemy||1;
+    const sp=d.spawns[d.spawnI%d.spawns.length];d.spawnI++;
+    const at=placeTank(d,sp.x,sp.y,13);
+    d.enemies.push({x:at.x,y:at.y,dir:2,hp,maxHp:hp,sz:13,spd,bspd,dmg,leak,type,fire:.25,think:.05});
   }
   function finishDefense(win){
     const d=S.bcDefense;if(!d||d.done)return;
@@ -3231,14 +3449,24 @@
     S.defHeld={u:0,d:0,l:0,r:0,f:0};S.defPtr=null;
     const pad=$("def-pad");if(pad)pad.classList.add("hide");
     if(field)field.classList.remove("defense-mode");
+    S.bcDefense=null;
     if(win){
-      S.bcIndependent=true;S.bcVictory=true;
+      S.bcBattlesWon=(S.bcBattlesWon||0)+1;
+      const won=S.bcBattlesWon;
+      if(won>=9){S.bcIndependent=true;S.bcVictory=true;}
       if(field)field.classList.add("is-play");
-      window.__arcForce="fourthColor";
-      S.phase="play";
-      setTimeout(()=>{dealChance();window.__arcForce="";},80);
+      if(won%3===0){
+        window.__arcForce="blocTriumph";
+        S.phase="play";
+        setTimeout(()=>{try{dealChance();}finally{window.__arcForce="";}},80);
+        return;
+      }
+      scheduleAssault(40);
+      try{if(A&&A.releaseCue)A.releaseCue();}catch(e){}
+      try{setPhase("play");}catch(e){}
       return;
     }
+    S.bcAssaultAt=0;
     S.bcIndependent=false;S.bcVictory=false;S.bcArcClosed=true;
     if(S.dead)return;
     S.dead=true;
@@ -3287,15 +3515,35 @@
     for(const e of d.enemies){
       e.fire=Math.max(0,e.fire-dt);e.think-=dt;
       if(e.think<=0){
-        e.think=.28+Math.random()*.5;
+        e.think=.22+Math.random()*.28;
         if(los(d,e,p.x,p.y)){e.dir=Math.abs(e.x-p.x)>Math.abs(e.y-p.y)?(p.x>e.x?1:3):(p.y>e.y?2:0);e.want=true;}
         else if(los(d,e,240,552)){e.dir=Math.abs(e.x-240)>Math.abs(e.y-552)?(240>e.x?1:3):(552>e.y?2:0);e.want=true;}
-        else if(Math.random()<.32)e.dir=(Math.random()*4)|0;
-        else if(Math.random()<.2)e.want=true;
+        else if(Math.random()<.15)e.dir=(Math.random()*4)|0;
+        else e.dir=e.y<500?2:(240>e.x?1:3);
       }
       const ox=e.x,oy=e.y;
       moveTank(d,e,e.dir,e.spd,dt);
-      if(Math.abs(e.x-ox)<.2&&Math.abs(e.y-oy)<.2)e.dir=(e.dir+1+(Math.random()*2)|0)%4;
+      if(Math.abs(e.x-ox)<.25&&Math.abs(e.y-oy)<.25){
+        const dx=e.dir===1?1:e.dir===3?-1:0,dy=e.dir===2?1:e.dir===0?-1:0;
+        const tx=Math.floor((e.x+dx*10)/BC_TS),ty=Math.floor((e.y+dy*10)/BC_TS);
+        const k=bcAt(d.map,tx,ty);
+        let friend=false;
+        for(const o of d.enemies){
+          if(o===e||o.hp<=0)continue;
+          const vx=o.x-e.x,vy=o.y-e.y;
+          if(dx&&Math.sign(vx)===dx&&Math.abs(vx)<26&&Math.abs(vy)<16)friend=true;
+          if(dy&&Math.sign(vy)===dy&&Math.abs(vy)<26&&Math.abs(vx)<16)friend=true;
+        }
+        if(k===1||k===5||(k===2&&(e.dmg||1)>=2))e.want=true;
+        else if(!friend){
+          const order=e.x<220?[1,2,0,3]:e.x>260?[3,2,0,1]:[2,1,3,0];
+          for(const nd of order){
+            const sx=nd===1?8:nd===3?-8:0,sy=nd===2?8:nd===0?-8:0;
+            if(!tankBlocked(d,e.x+sx,e.y+sy,e.sz,e)){e.dir=nd;break;}
+          }
+          e.want=k===1||k===2;
+        }
+      }
       if(e.want){fireTank(d,e);e.want=false;}
     }
     for(const s of d.shots){
@@ -3303,7 +3551,10 @@
       s.x+=s.dx*s.v*dt;s.y+=s.dy*s.v*dt;
       if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
       const tx=Math.floor(s.x/BC_TS),ty=Math.floor(s.y/BC_TS);
-      if(smashTile(d,tx,ty,s.damage)){s.hit=true;continue;}
+      let hit=smashTile(d,tx,ty,s.damage);
+      const mate=laneMate(tx);
+      if(mate>=0&&bcAt(d.map,mate,ty)===1){smashTile(d,mate,ty,s.damage);hit=true;}
+      if(hit){s.hit=true;continue;}
       const targets=s.mine?d.enemies:[p];
       for(const t of targets){
         if(!t||t.hp<=0)continue;
@@ -3313,7 +3564,8 @@
             t.hp=1;
             if(d.inv<=0){
               hitBase(d,12);
-              t.x=240;t.y=500;t.dir=0;
+              const home=d.home||{x:240,y:488};
+              t.x=home.x;t.y=home.y;t.dir=0;
             }
           } else if(t.hp<=0)d.kills++;
           break;
@@ -3330,7 +3582,7 @@
     if(d.integrity<=0){finishDefense(false);return;}
     if(d.spawned>=d.quota&&d.enemies.length===0){
       if(d.wave>=d.waves){finishDefense(true);return;}
-      d.wave++;d.spawned=0;d.quota=5+Math.floor(d.wave*1.4);d.spawn=.7;
+      d.wave++;d.spawned=0;d.quota=(4+((d.level/2)|0))+1;d.spawn=.55;
     }
   }
   function drawTank(ctx,t,col,mark){
@@ -3382,10 +3634,13 @@
       ctx.fillStyle="rgba(20,80,36,.9)";ctx.fillRect(px+7,py+8,2,8);
     }
     ctx.textBaseline="alphabetic";ctx.textAlign="left";ctx.font='700 12px "IBM Plex Mono",monospace';
+    const bnames=chanceLang()?["PACTO","LIBRO","CORONA"]:["PACT","LEDGER","LATTICE"];
+    const bname=bnames[d.bloc|0]||bnames[0];
     paintHaloText(ctx,"CITADEL "+d.integrity+"%",12,21,d.integrity<35?RED:PAL.fg);
-    paintHaloText(ctx,"WAVE "+d.wave+"/"+d.waves,12,41,PAL.fg);
+    paintHaloText(ctx,bname+" "+((d.level%3)+1)+"/3",12,41,PAL.fg);
     ctx.textAlign="right";paintHaloText(ctx,"ENEMIES "+(d.enemies.length+Math.max(0,d.quota-d.spawned)),S.W-12,21,PAL.fg);
-    if(d.wall>0)paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,41,BTC);
+    paintHaloText(ctx,"WAR "+((S.bcBattlesWon||0)+1)+"/9",S.W-12,41,PAL.fg);
+    if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,61,BTC);}
     ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
@@ -3396,7 +3651,10 @@
     S.phase = p;
     try {
       if (A) {
-        if (p === "play") kickTheme();
+        if (p === "play") {
+          try { if (A.releaseCue) A.releaseCue(); } catch (e) {}
+          kickTheme();
+        }
         else if (A.stopMusic) A.stopMusic();
       }
     } catch (e) {}
@@ -5071,7 +5329,8 @@
     const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
     bar.classList.toggle("hide",!unlocked);
     if(!unlocked){if(panel)panel.classList.add("hide");return;}
-    setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20));
+    const warBit=S.bcVictory?" · WAR 9/9":(S.bcRepliesDone?" · WAR "+(S.bcBattlesWon||0)+"/9":"");
+    setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20)+warBit);
     setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",(S.bcArmy||0)+" / 100");setTxt("bc-world",String(S.bcWorld||20));
     setTxt("bc-citadel",S.bcCitadel?"BUILT":"NOT BUILT");setTxt("bc-mine",S.bcMine?"ONLINE":"OFFLINE");
     setTxt("bc-status",S.bcVictory?"INDEPENDENT":S.bcIndependent?"DECLARED":S.bcIsland?"PROJECT":"SEARCHING");

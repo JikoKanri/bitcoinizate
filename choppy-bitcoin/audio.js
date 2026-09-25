@@ -138,6 +138,37 @@
   };
   A.stopMusic = () => { if (musicInterval != null) { clearInterval(musicInterval); musicInterval = null; } };
   A.musicOn = () => musicInterval != null;
+  A.playCue = (kind) => {
+    try { if (A.unlock) A.unlock(); } catch (e) {}
+    if (!A._cueHeld) {
+      A._resumeJuke = !!(A.jukePlaying && A.jukePlaying());
+      if (A._resumeJuke && A.jukePause) {
+        try { A.jukePause(); } catch (e) {}
+      }
+    }
+    A._cueHeld = true;
+    A.stopMusic();
+    const war = kind !== "triumph";
+    const notes = war
+      ? [[220, 0.22], [196, 0.22], [175, 0.28], [156, 0.34], [131, 0.4], [98, 0.28], [131, 0.22], [156, 0.36], [87, 0.3], [110, 0.24], [131, 0.46], [98, 0.7]]
+      : [[392, 0.14], [494, 0.14], [587, 0.16], [784, 0.36], [659, 0.14], [784, 0.18], [988, 0.28], [784, 0.16], [880, 0.2], [1174, 0.62]];
+    let at = 0;
+    notes.forEach((n, i) => {
+      beep(n[0], Math.max(0.08, n[1] - 0.02), war ? "sawtooth" : "triangle", war ? 0.07 : 0.055, null, at, "theme");
+      if (war && i % 2 === 0) beep(52, 0.14, "square", 0.045, 36, at, "theme");
+      if (!war && i === notes.length - 1) beep(n[0] / 2, 0.4, "triangle", 0.04, null, at, "theme");
+      at += n[1];
+    });
+  };
+  A.releaseCue = () => {
+    if (!A._cueHeld && !A._resumeJuke) return;
+    const resume = !!A._resumeJuke;
+    A._cueHeld = false;
+    A._resumeJuke = false;
+    if (resume && A.jukeResume) {
+      try { A.jukeResume(); } catch (e) {}
+    }
+  };
   const BEAR = [98, 110, 87, 110, 73, 87, 65, 73];
   const BULL = [329, 392, 523, 659, 523, 659, 783, 1046];
   const IDLE = [146, 220, 293, 220, 164, 246, 329, 246];
