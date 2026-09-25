@@ -325,7 +325,31 @@ body {
   filter: none !important;
   mix-blend-mode: normal !important;
 }
-.overlay.dock.chance-ui h1 { text-align: left; }
+.overlay.dock.chance-ui h1 { text-align: left; padding-right: 72px; }
+.overlay.dock.chance-ui .arc-tldr-tog {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 24;
+  min-height: 22px;
+  min-width: 52px;
+  padding: 2px 8px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.overlay.dock.chance-ui .arc-tldr-tog.on {
+  background: var(--gold);
+  color: #120c02;
+}
 .overlay.dock.chance-ui p.k { text-decoration: underline; color: var(--fg); }
 .overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; color: var(--fg); }
 .overlay.dock.chance-ui .arc-body {

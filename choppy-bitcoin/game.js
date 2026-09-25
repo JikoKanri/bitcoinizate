@@ -2487,13 +2487,13 @@
       v.muted = true;
       v.preload = "auto";
       v.playsInline = true;
-      v.src = "chance/" + id + ".mp4";
+      v.src = "chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "");
     });
   }
   function chanceArtHtml(id) {
     const jpg="chance/"+id+(BC_ART[id]?".svg":".jpg");
     if (ARC_VID[id]) {
-      return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
+      return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
     return "<img class=\"chance-art\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
   }
@@ -2624,6 +2624,9 @@
     if (!d) return s;
     if (s && s.indexOf(d) >= 0) return s;
     return s ? s + "\n" + d : d;
+  }
+  function arcTldrBtn() {
+    return "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\">" + t("chanceTldr") + "</button>";
   }
   function arcStoryHtml(card, body) {
     const tldr = cardTldr(card);
@@ -5794,7 +5797,6 @@
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-gfx\">" + t("graphics") + "</button>"
-      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-arc\">" + t("arcCards") + " · " + (ARC_TLDR ? t("arcTldrOn") : t("arcFullOn")) + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
@@ -5913,12 +5915,6 @@
     if (mv) mv.onclick = (e) => { e.stopPropagation(); A.setMuteVoice(!A.muteVoice()); renderOverlay(); };
     const optGfx = $("opt-gfx");
     if (optGfx) optGfx.onclick = (e) => { e.stopPropagation(); S.optPanel = "gfx"; renderOverlay(); };
-    const optArc = $("opt-arc");
-    if (optArc) optArc.onclick = (e) => {
-      e.stopPropagation();
-      setArcTldr(!ARC_TLDR);
-      renderOverlay();
-    };
     overlay.querySelectorAll("[data-pal]").forEach((btn) => {
       btn.onclick = (e) => {
         e.stopPropagation();
@@ -6530,7 +6526,7 @@
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
+        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
           + arcOutcomeHtml()
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
@@ -6540,10 +6536,17 @@
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
+        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
           + arcStoryHtml(card, body)
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
+      const tog = $("arc-tldr-tog");
+      if (tog) tog.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setArcTldr(!ARC_TLDR);
+        renderOverlay();
+      };
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
         const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
         btn.onclick = go;
