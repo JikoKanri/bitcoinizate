@@ -350,6 +350,8 @@
     language: "LANGUAGE", aiLog: "A.I. BUD LOG", signIn: "SIGN IN",
     ranked: "RANKED", training: "TRAINING", versus: "VERSUS",
     comingSoon: "COMING SOON",
+    mpAlpha: "ALPHA",
+    mpAlphaNote: "Alpha. Testers welcome. Send feedback to",
     donateTitle: "Donations",
     donateBody: "Donations keep the game going. 70% of every donation is distributed as leaderboard prizes.",
     boardBtc: "Most BTC",
@@ -1955,7 +1957,7 @@
     theAnswer: { en: "The blocs have already answered.", es: "Los bloques ya contestaron." },
     fourthColor: { en: "All three blocs attacked and failed. The island is still standing, and Bitcoin Country is independent.", es: "Los tres bloques atacaron y fallaron. La isla sigue en pie, y Bitcoin Country es independiente." },
     notYet: { en: "The defense fails. The run ends.", es: "La defensa falla. La partida termina." },
-    landfill: { en: "At 1:14 a.m. Nico wants a partner to dig for a USB that supposedly held 8,000 BTC. Lena is already awake.", es: "A la 1:14 Nico quiere un socio para excavar un USB que supuestamente tenía 8.000 BTC. Lena ya está despierta." },
+    landfill: { en: "At 1:14 a.m. Nico wants a partner to dig for a USB that supposedly held 8,000 BTC.", es: "A la 1:14 a.m. Nico quiere un socio para excavar un USB que supuestamente tenía 8.000 BTC." },
     taxbill: { en: "The quarterly tax bill arrives. You open it twice. The number has not changed. It is {gift}.", es: "Llega la boleta trimestral. La abrís dos veces. El número no cambió. Son {gift}." },
     nicoWedding: { en: "Nico is getting married. You barely know the room. Lena asks you not to let him talk you into anything.", es: "Nico se casa. Casi no conocés a nadie en el salón. Lena te pide que no lo dejes convencerte de nada." },
     mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere unos días en Tulum, y quiere quedarse más de lo que vos querés. Paco se come uno de los folletos." },
@@ -2021,11 +2023,12 @@
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
       title: "The Landfill", titleEs: "The Landfill",
-      body: "At 1:14 a.m., Nico sends a voice message. The photo is dark: a truck, and a shovel leaning against the hood. He is in Wales, he says, and he has permission to dig Docksway, where a USB holding 8,000 BTC was supposedly lost in 2009. He wants a partner, not a spectator.\n\nFrom the other side of the bed, Lena opens one eye. If you put money into a treasure hunt at one in the morning, she says, she is calling you Fartface the next time you are about to come.\n\nYou look at the photo again. The shovel does look surprisingly convincing.",
-      bodyEs: "A la 1:14, Nico manda un audio. La foto está oscura: un camión, y una pala apoyada en el capó. Está en Gales, dice, y consiguió permiso para excavar Docksway, donde en 2009 se habría perdido un USB con 8.000 BTC. Quiere un socio, no un espectador.\n\nDel otro lado de la cama, Lena abre un ojo. Si metés plata en una búsqueda del tesoro a la una de la mañana, dice, la próxima vez que estés por acabar te va a decir Fartface.\n\nVolvés a mirar la foto. La pala se ve, sorprendentemente, convincente.",
+      body: "At 1:14 a.m., Nico sends a voice message. The photo is dark: a truck, and a shovel leaning against the hood.\n\n\"I'm in Wales,\" he says. \"They let me dig Docksway. A USB with 8,000 BTC was supposedly lost there in 2009. I want a partner, not a spectator.\"\n\nFrom the other side of the bed, Lena opens one eye. \"If you put money into a treasure hunt at 1:14 a.m., the next time you're about to come I'm calling you Fartface.\"\n\nYou look at the photo again. The shovel does look surprisingly convincing.",
+      bodyEs: "A la 1:14 a.m., Nico manda un audio. La foto está oscura: un camión, y una pala apoyada en el capó.\n\n\"Estoy en Gales\", dice. \"Me dejaron excavar Docksway. Ahí se habría perdido en 2009 un USB con 8.000 BTC. Quiero un socio, no un espectador.\"\n\nDel otro lado de la cama, Lena abre un ojo. \"Si metés plata en una búsqueda del tesoro a la 1:14 a.m., la próxima vez que estés por acabar te voy a decir Cara de pedo.\"\n\nVolvés a mirar la foto. La pala se ve, sorprendentemente, convincente.",
       opts: [
-        { k: "a", label: "Put in 25% of net worth", labelEs: "Put in 25% of net worth" },
-        { k: "b", label: "Put in 75% of net worth", labelEs: "Put in 75% of net worth" }
+        { k: "a", label: "Put in 25% of net worth", labelEs: "Poner el 25% del patrimonio" },
+        { k: "b", label: "Put in 75% of net worth", labelEs: "Poner el 75% del patrimonio" },
+        { k: "c", label: "Don't participate", labelEs: "No participar" }
       ] },
     { id: "taxbill", kind: "report",
       title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
@@ -2289,6 +2292,8 @@
     const es = chanceLang();
     const say = (en, esTxt) => (es && esTxt ? esTxt : en);
     if (card.id === "landfill") {
+      if (opt === "c") return say("You stay in bed. Nico can dig Docksway without you.",
+        "Te quedás en la cama. Nico puede excavar Docksway sin vos.");
       const pct = opt === "b" ? 0.75 : 0.25;
       const cashCut = (S.cash || 0) * pct;
       const btcCut = (S.btc || 0) * pct;
@@ -4065,12 +4070,12 @@
     const halo = light ? "#111111" : "rgba(0,0,0,0.9)";
     if (simple) {
       return {
-        BULL: { fill: "#1a9a44", ring: "#04150c", ink: "#ffffff", halo: halo },
-        BEAR: { fill: "#d42a22", ring: "#1a0605", ink: "#ffffff", halo: halo },
-        LASER: { fill: "#1a0a08", ring: "#111111", ink: "#ff2a22", halo: halo },
-        COLD: { fill: "#0b8bb8", ring: "#041318", ink: "#ffffff", halo: halo },
-        SWAN: { fill: "#161616", ring: "#111111", ink: "#f3efe6", halo: halo },
-        HALVE: { fill: "#e8a808", ring: "#1a1204", ink: "#1a1204", halo: halo }
+        BULL: { fill: "#0c8a34", ring: "#ffffff", ink: "#ffffff", halo: "#063018" },
+        BEAR: { fill: "#e10600", ring: "#ffffff", ink: "#ffffff", halo: "#4a0000" },
+        LASER: { fill: "#1a0a08", ring: "#ffffff", ink: "#ff2a22", halo: "#111111" },
+        COLD: { fill: "#0878a8", ring: "#ffffff", ink: "#ffffff", halo: "#042028" },
+        SWAN: { fill: "#111111", ring: "#ffffff", ink: "#ffffff", halo: "#000000" },
+        HALVE: { fill: "#e8a808", ring: "#111111", ink: "#1a1204", halo: "#111111" }
       }[type];
     }
     const pal = {
@@ -4089,6 +4094,11 @@
     if (sunset && type === "BULL") { pal.fill = "#2a8a48"; pal.ring = "#04150c"; }
     if (paper && type === "COLD") pal.ink = "#ffffff";
     return pal;
+  }
+  function powerWash() {
+    if (S.power === "BULL") return PALETTE_ID === "simple" ? "#128a38" : GREEN;
+    if (S.power === "BEAR") return PALETTE_ID === "simple" ? (S.swanBear ? "#0a0a0a" : "#d01212") : RED;
+    return null;
   }
   function drawPowerIcon(ctx, it, wash) {
     const r = it.r;
@@ -4158,7 +4168,7 @@
       ctx.beginPath(); ctx.ellipse(r * 0.06, r * 0.2, r * 0.4, r * 0.26, -0.28, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.moveTo(-r * 0.02, r * 0.06); ctx.quadraticCurveTo(-r * 0.42, -r * 0.32, -r * 0.04, -r * 0.5); ctx.quadraticCurveTo(r * 0.16, -r * 0.52, r * 0.22, -r * 0.38);
       ctx.strokeStyle = ink; ctx.lineWidth = 2.3; ctx.stroke();
-      ctx.fillStyle = wash ? ink : RED;
+      ctx.fillStyle = wash ? ink : (PALETTE_ID === "simple" ? "#ff3b30" : RED);
       ctx.beginPath(); ctx.moveTo(r * 0.18, -r * 0.42); ctx.lineTo(r * 0.46, -r * 0.36); ctx.lineTo(r * 0.18, -r * 0.3); ctx.fill();
     }
     ctx.restore();
@@ -5392,24 +5402,23 @@
         ctx.stroke();
       }
     }
-    if (S.power === "BULL") {
-      ctx.fillStyle = palRgba(PAL.green, 0.16);
-      ctx.fillRect(0, 0, w, h);
-    } else if (S.power === "BEAR") {
-      ctx.fillStyle = palRgba(PAL.red, 0.16);
+    if (S.power === "BULL" || S.power === "BEAR") {
+      const tint = wash || (S.power === "BULL" ? PAL.green : PAL.red);
+      const a = PALETTE_ID === "simple" ? (S.swanBear ? 0.16 : 0.1) : 0.16;
+      ctx.fillStyle = palRgba(tint, a);
       ctx.fillRect(0, 0, w, h);
     }
   }
 
   function draw(ctx) {
-    const wash = S.power === "BULL" ? GREEN : S.power === "BEAR" ? RED : null;
+    const wash = powerWash();
     drawWorldBg(ctx, wash);
     drawTape(ctx, S.tape, S.H * 0.196, S.H * 0.804, palRgba(GREEN, 0.58), palRgba(RED, 0.58));
 
     const m = metrics();
     const pw = pipePw();
     const endingFlash = S.power === "BULL" && S.powerT < 1.15 && Math.floor(S.powerT * 9) % 2 === 0;
-    const edge = wash || (S.laserOn ? "#e8902a" : palRgba(PAL.fg, 0.85));
+    const edge = (PALETTE_ID === "simple" && wash) ? "#ffffff" : (wash || (S.laserOn ? "#e8902a" : palRgba(PAL.fg, 0.85)));
     for (const p of S.pipes) {
       const col = endingFlash ? RED : wash || (p.green ? GREEN : RED);
       const ends = pipeEnds(p);
@@ -5478,7 +5487,8 @@
     }
     ctx.globalAlpha = 1;
     if (wash) {
-      ctx.fillStyle = palRgba(wash, 0.22);
+      const a = PALETTE_ID === "simple" ? (S.swanBear ? 0.2 : 0.14) : 0.22;
+      ctx.fillStyle = palRgba(wash, a);
       ctx.fillRect(0, 0, S.W, S.H);
     }
     ctx.fillStyle = wash || BTC; ctx.fillRect(0, S.H - 3, S.W, 3);
@@ -6853,7 +6863,7 @@
     const canStart = host && n >= 2 && all && mixSum === 100;
     const err = S.mpErr ? "<p class=\"k\">" + S.mpErr + "</p>" : "";
     if (!mp || !mp.code) {
-      return "<h1>" + t("versus") + "</h1><p class=\"k\">" + t("mpNote") + "</p>"
+      return "<h1>" + t("versus") + " · " + t("mpAlpha") + "</h1><p class=\"k\">" + t("mpAlphaNote") + " <a href=\"mailto:versus@bitcoinizate.com\">versus@bitcoinizate.com</a></p><p class=\"k\">" + t("mpNote") + "</p>"
         + "<button class=\"cta mp-cta\" id=\"mp-host\">" + t("mpHost") + "</button>"
         + "<div class=\"mp-join\"><input id=\"mp-code\" maxlength=\"6\" placeholder=\"CODE\" value=\"" + (S.mpJoinCode || "") + "\" autocomplete=\"off\">"
         + "<button class=\"cta play-alt\" id=\"mp-join\">" + t("mpJoin") + "</button></div>"
@@ -7236,8 +7246,8 @@
           + "<p class=\"k\">" + t("playSub") + "</p>"
           + "<button type=\"button\" class=\"cta play-alt\" id=\"go-train\">" + t("training") + "</button>"
           + "<p class=\"k\">" + t("trainNote") + "</p>"
-          + "<div class=\"soon-wrap\"><button type=\"button\" class=\"cta play-alt is-soon\" id=\"go-mp\" disabled>" + t("versus") + "</button><span class=\"soon-tag\">" + t("comingSoon") + "</span></div>"
-          + "<p class=\"k soon-note\">" + t("mpNote") + "</p>"
+          + "<button type=\"button\" class=\"cta play-alt\" id=\"go-mp\">" + t("versus") + "<small class=\"alpha-tag\">" + t("mpAlpha") + "</small></button>"
+          + "<p class=\"k\">" + t("mpAlphaNote") + " <a href=\"mailto:versus@bitcoinizate.com\">versus@bitcoinizate.com</a></p>"
           + (window.choppySignedIn ? "" : "<button type=\"button\" class=\"cta play-alt\" id=\"overlay-auth\">" + t("signIn") + "</button>")
           + tutorialBody()
           + awardListHtml(loadAwards(), "full")
@@ -7250,6 +7260,11 @@
         if ($("go-train")) {
           $("go-train").onclick = () => startGame(false);
           $("go-train").onpointerdown = (e) => { e.stopPropagation(); startGame(false); };
+        }
+        const mpGo = $("go-mp");
+        if (mpGo) {
+          mpGo.onclick = () => openMpLobby();
+          mpGo.onpointerdown = (e) => { e.stopPropagation(); openMpLobby(); };
         }
         const oa = $("overlay-auth");
         if (oa) oa.onclick = (e) => { e.stopPropagation(); if (window.openAuth) window.openAuth(); };

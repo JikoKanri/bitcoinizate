@@ -10,8 +10,18 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/choppy-bitcoin/style.css">
   <style>
+    html, body {
+      height: auto;
+      min-height: 100%;
+      overflow: auto;
+      overflow-x: hidden;
+      display: block;
+      touch-action: pan-y;
+      overscroll-behavior: auto;
+      -webkit-overflow-scrolling: touch;
+    }
     body { margin: 0; background: #0d0d0d; color: #f3efe6; font-family: "IBM Plex Mono", ui-monospace, monospace; }
-    main { width: min(640px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+    main { width: min(640px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 96px; }
     h1 { color: #F2A900; font-size: 22px; }
     p { line-height: 1.55; color: #d4d0c8; }
     a { color: #F2A900; }
@@ -35,6 +45,6 @@
     <p data-i18n-html="privacyB6">Questions: <a href="mailto:hello@bitcoinizate.com">hello@bitcoinizate.com</a></p>
     <p><a href="/">Bitcoinizate</a></p>
   </main>
-  <script src="/i18n.js?v=mp65"></script>
+  <script src="/i18n.js?v=mp67"></script>
 </body>
 </html>
