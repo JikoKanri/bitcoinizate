@@ -1881,7 +1881,7 @@
     theAnswer: { en: "The three blocs have already answered. This card no longer starts the war.", es: "Los tres bloques ya respondieron. Esta carta ya no empieza la guerra." },
     fourthColor: { en: "All three blocs attacked. All three failed. Bitcoin Country stays independent. Keep playing.", es: "Los tres bloques atacaron. Los tres fallaron. Bitcoin Country sigue independiente. Seguí jugando." },
     notYet: { en: "A lost battle ends the run. Independence is not retried.", es: "Una batalla perdida termina la partida. La independencia no se reintenta." },
-    landfill: { en: "Your cousin wants money to dig a landfill for a lost Bitcoin USB. He wants a real partner. You almost never find anything.", es: "Tu primo quiere plata para excavar un basural por un USB de Bitcoin perdido. Quiere un socio de verdad. Casi nunca aparece nada." },
+    landfill: { en: "Your cousin wants money to dig a landfill for a lost Bitcoin USB. He wants a real partner. You almost never find anything.", es: "Tu primo quiere dinero para buscar en un vertedero una memoria USB perdida con bitcoins. Quiere un socio de verdad, aunque es muy poco probable que encuentren algo." },
     taxbill: { en: "The quarterly tax bill did not change.", es: "La boleta trimestral no cambió." },
     nicoWedding: { en: "Your cousin is getting married. You have to leave an envelope. A generous gift may come back later as cold storage.", es: "Tu primo se casa. Hay que dejar un sobre. Un regalo generoso puede volver después como cold storage." },
     mexico: { en: "Your partner wants a short beach trip. Paying for it buys a few seconds of invulnerability.", es: "Tu pareja quiere unos días de playa. Pagarlo compra unos segundos de invulnerabilidad." },
@@ -1929,10 +1929,10 @@
     { id: "landfill", kind: "choice",
       title: "The Landfill", titleEs: "The Landfill",
       body: "At 1:14 AM, your cousin Nico sends a voice message.\n\nA dark photo. A truck. A shovel leaning against the hood.\n\n“I'm in Wales. I got permission to dig Docksway.”\n\nIn 2009, a USB drive containing 8,000 BTC was supposedly lost there.\n\n“I need a partner, Choppy” he writes. “Not a spectator.”\n\nFrom the other side of the bed, Lena opens one eye.\n\n—If you invest in a gross treasure hunt at 1 A.M., I'm calling you Fartface next time you're about to come.\n\nYou look at the photo again.\n\nThe shovel does look surprisingly convincing.",
-      bodyEs: "At 1:14 AM, your cousin Nico sends a voice message.\n\nA dark photo. A truck. A shovel leaning against the hood.\n\n“I'm in Wales. I got permission to dig Docksway.”\n\nIn 2009, a USB drive containing 8,000 BTC was supposedly lost there.\n\n“I need a partner, Choppy” he writes. “Not a spectator.”\n\nFrom the other side of the bed, Lena opens one eye.\n\n—If you invest in a gross treasure hunt at 1 A.M., I'm calling you Fartface next time you're about to come.\n\nYou look at the photo again.\n\nThe shovel does look surprisingly convincing.",
+      bodyEs: "A la 1:14 a. m., tu primo Nico te envía un mensaje de voz.\n\nUna foto oscura. Un camión. Una pala apoyada contra el capó.\n\n—Estoy en Gales. Me autorizaron a excavar en Docksway.\n\nEn 2009, supuestamente se perdió allí una memoria USB con 8,000 BTC.\n\n—Necesito un socio, Choppy —escribe—. No un espectador.\n\nDesde el otro lado de la cama, Lena abre un ojo.\n\n—Si inviertes en esa asquerosa búsqueda del tesoro a la una de la mañana, volveré a llamarte Fartface justo cuando estés a punto de terminar.\n\nMiras la foto otra vez.\n\nLa pala resulta sorprendentemente convincente.",
       opts: [
-        { k: "a", label: "Put in 25% of net worth", labelEs: "Put in 25% of net worth" },
-        { k: "b", label: "Put in 75% of net worth", labelEs: "Put in 75% of net worth" }
+        { k: "a", label: "Put in 25% of net worth", labelEs: "Invertir el 25% del patrimonio" },
+        { k: "b", label: "Put in 75% of net worth", labelEs: "Invertir el 75% del patrimonio" }
       ] },
     { id: "taxbill", kind: "report",
       title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
