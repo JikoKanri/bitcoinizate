@@ -498,6 +498,18 @@ video.chance-art {
 .help-ico svg { display: block; }
 .opt-menu { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 280px; }
 .opt-item { min-height: 30px; }
+.overlay.test-ui { max-height: none; }
+.overlay.dock.test-ui { max-height: 92%; overflow-y: auto; }
+.test-box { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.test-lab { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-top: 4px; }
+.test-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.test-row select, .test-row input {
+  flex: 1 1 120px; min-width: 0; min-height: 36px;
+  background: #0e0e10; color: var(--fg); border: 1px solid var(--gold);
+  font: inherit; font-size: 13px; padding: 0 8px; border-radius: 0;
+}
+.test-row select { flex: 1 1 88px; }
+.overlay .test-row .cta { min-width: 76px; min-height: 36px; flex: 0 0 auto; }
 .dca-tog.ai-lit, .buy.ai-lit, .sell.ai-lit, #trend-btn.ai-lit,
 .buy.ai-lit:hover, .buy.ai-lit:focus, .buy.ai-lit:active, .buy.ai-lit.on,
 .sell.ai-lit:hover, .sell.ai-lit:focus, .sell.ai-lit:active, .sell.ai-lit.on {

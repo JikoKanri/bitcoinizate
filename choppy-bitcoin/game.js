@@ -370,6 +370,19 @@
     bullSongs: "BULL/BEAR SONGS", gameFx: "GAME FX", voices: "VOICES",
     chanceHead: "ARC", chanceAck: "GOT IT", chanceTldr: "TLDR", chanceOutcome: "OUTCOME",
     arcCards: "ARC CARDS", arcTldrOn: "TLDR", arcFullOn: "FULL TEXT",
+    testing: "Testing",
+    testPerk: "Perk",
+    testGrant: "Grant",
+    testArc: "Candles per arc",
+    testArcSet: "Set",
+    testArcHint: "0 = default. Default is one random card inside every 21 candles.",
+    testArcNext: "Next arc on candle",
+    testMoney: "Add money",
+    testAdd: "Add",
+    testQueued: "Applies when the run starts. Sticks for this session.",
+    testBoard: "This run will not count for the board.",
+    testMaxed: "Maxed",
+    testNow: "Now",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
     runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE",
     graphics: "GRAPHICS",
@@ -559,6 +572,7 @@
     } catch (e) { return 0; }
   }
   function saveBest(n) {
+    if (!S.ranked || S.testCheat) return S.best || 0;
     if (!S.ranked) return S.best || 0;
     let s = { scores: { choppy: 0 } };
     try { s = Object.assign({ scores: { choppy: 0 } }, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
@@ -743,6 +757,7 @@
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
     offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
     optPanel: null, optBack: "ready",
+    testArcEvery: 0, testPerkSeed: {}, testPerkPick: "dca", testCashOnce: 0, testBtcOnce: 0, testCur: "usd", testCheat: false,
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0, halveSpawned: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
     aibudOn: false, aibudLit: {}, iaLog: [], iaProfit: 0, aibudSpeechUntil: 0, aiAcc: 0,
@@ -1648,6 +1663,13 @@
   }
 
   function planChanceWindow(from) {
+    const every = S.testArcEvery | 0;
+    if (every > 0) {
+      const at = (from || 0) + every;
+      S.chanceAt = [at];
+      S.chanceUntil = at;
+      return;
+    }
     const t = S.have.chance || 0;
     if (t <= 0) { S.chanceAt = []; S.chanceUntil = 0; return; }
     const start = from + 1;
@@ -2709,7 +2731,7 @@
     if(S.bcOg&&!S.bcArcClosed&&(S.candles||0)>0&&(S.candles||0)%21===0&&S.bcNodeTick!==(S.candles||0)){S.bcNodeTick=S.candles||0;S.bcNodes=Math.min(100,(S.bcNodes||0)+(S.bcSettlement?2:1));if(S.bcMine)creditBtc(.01);say("Liberty Nodes "+S.bcNodes+"/100",false,"ui");}
     if ((S.have.job || 0) > 0 && S.candles > 0 && S.candles % 21 === 0) payJob();
     if (S.mp) return;
-    if ((S.have.chance || 0) > 0) {
+    if ((S.have.chance || 0) > 0 || (S.testArcEvery | 0) > 0) {
       if (!S.chanceAt || !S.chanceAt.length) planChanceWindow(S.candles || 0);
       if (S.chanceAt && S.chanceAt.indexOf(S.candles) >= 0 && S.phase === "play") dealChance();
       if (S.chanceUntil && S.candles >= S.chanceUntil) planChanceWindow(S.candles);
@@ -3406,6 +3428,7 @@
       } catch (e) {}
     }
     resetWorld(false);
+    applyTestLoadout();
     S.dead = false;
     S.phase = "play";
     if (field) field.classList.add("is-play");
@@ -3425,6 +3448,7 @@
   function replay() {
     A.cancelSpeech();
     resetWorld(false);
+    applyTestLoadout();
     setPhase("play");
   }
 
@@ -5688,6 +5712,122 @@
     if (S.phase === "paused") renderOverlay();
   };
 
+  function testInRun() {
+    return S.phase === "paused" || S.phase === "perk" || S.phase === "chance" || S.phase === "play";
+  }
+  function testSeedOf(id) {
+    return (S.testPerkSeed && S.testPerkSeed[id]) || 0;
+  }
+  function applyTestLoadout() {
+    S.testCheat = false;
+    let cheated = false;
+    const seed = S.testPerkSeed || {};
+    Object.keys(seed).forEach((k) => {
+      const n = seed[k] | 0;
+      for (let i = 0; i < n; i++) grantPerk(k);
+      if (n > 0) cheated = true;
+    });
+    if ((S.testArcEvery | 0) > 0) {
+      planChanceWindow(S.candles || 0);
+      cheated = true;
+    }
+    if (S.testCashOnce > 0) { S.cash += S.testCashOnce; S.testCashOnce = 0; cheated = true; }
+    if (S.testBtcOnce > 0) { creditBtc(S.testBtcOnce); S.testBtcOnce = 0; cheated = true; }
+    if (cheated) S.testCheat = true;
+  }
+  function testGrantPerk(kind) {
+    if (!kind || !PERK_MAX[kind]) return;
+    const cap = PERK_MAX[kind];
+    const cur = testInRun() ? (S.have[kind] || 0) : testSeedOf(kind);
+    if (cur >= cap) return;
+    if (!S.testPerkSeed) S.testPerkSeed = {};
+    S.testPerkSeed[kind] = testSeedOf(kind) + 1;
+    S.testPerkPick = kind;
+    S.testCheat = true;
+    if (testInRun()) grantPerk(kind);
+    try { renderHud(); } catch (e) {}
+  }
+  function testSetArcEvery(n) {
+    let v = Math.floor(Number(n));
+    if (!isFinite(v) || v < 0) v = 0;
+    if (v > 999) v = 999;
+    S.testArcEvery = v;
+    if (v > 0) S.testCheat = true;
+    if (!testInRun()) return;
+    if (v > 0 || (S.have.chance || 0) > 0) planChanceWindow(S.candles || 0);
+    else { S.chanceAt = []; S.chanceUntil = 0; }
+  }
+  function testAddMoney(amount, cur) {
+    const n = Math.max(0, Number(amount) || 0);
+    if (!(n > 0)) return;
+    S.testCur = cur === "btc" ? "btc" : "usd";
+    S.testCheat = true;
+    if (!testInRun()) {
+      if (S.testCur === "btc") S.testBtcOnce = (S.testBtcOnce || 0) + n;
+      else S.testCashOnce = (S.testCashOnce || 0) + n;
+      return;
+    }
+    if (S.testCur === "btc") creditBtc(n);
+    else S.cash += n;
+    try { renderHud(); } catch (e) {}
+  }
+  function testPerkOptionsHtml() {
+    const pick = S.testPerkPick || "dca";
+    const es = window.BZ && BZ.lang && BZ.lang() === "es";
+    const pack = es ? PERK_NAME_ES : PERK_NAME;
+    return Object.keys(PERK_MAX).map((id) => {
+      const cap = PERK_MAX[id];
+      const have = testInRun() ? (S.have[id] || 0) : testSeedOf(id);
+      const name = pack[id] || id;
+      return "<option value=\"" + id + "\"" + (id === pick ? " selected" : "") + ">" + name + " · " + have + "/" + cap + "</option>";
+    }).join("");
+  }
+  function testArcStatus() {
+    const n = S.testArcEvery | 0;
+    if (n <= 0) return t("testArcHint");
+    if (!testInRun()) return t("testArcNext") + " " + n + ". " + t("testQueued");
+    const at = (S.chanceAt && S.chanceAt.length) ? S.chanceAt.slice().sort((a, b) => a - b)[0] : ((S.candles || 0) + n);
+    return t("testArcNext") + " " + at + " · " + t("testNow") + " " + (S.candles || 0);
+  }
+  function testMoneyStatus() {
+    if (testInRun()) return money(S.cash) + " · " + fmtBtc(S.btc);
+    const bits = [];
+    if (S.testCashOnce > 0) bits.push(money(S.testCashOnce));
+    if (S.testBtcOnce > 0) bits.push(fmtBtc(S.testBtcOnce));
+    if (!bits.length) return "—";
+    return bits.join(" · ") + " · " + t("testQueued");
+  }
+  function testMarkup() {
+    const arcVal = S.testArcEvery > 0 ? S.testArcEvery : 0;
+    const moneyVal = S.testCur === "btc" ? "0.1" : "10000";
+    const note = (S.testCheat || (S.testArcEvery | 0) > 0 || S.testCashOnce > 0 || S.testBtcOnce > 0 || Object.keys(S.testPerkSeed || {}).some((k) => testSeedOf(k) > 0))
+      ? "<p class=\"k\">" + t("testBoard") + "</p>" : "";
+    return "<h1>" + t("testing") + "</h1><div class=\"test-box\">"
+      + "<p class=\"test-lab\">" + t("testPerk") + "</p>"
+      + "<div class=\"test-row\">"
+      + "<select id=\"test-perk\">" + testPerkOptionsHtml() + "</select>"
+      + "<button type=\"button\" class=\"cta\" id=\"test-grant\">" + t("testGrant") + "</button>"
+      + "</div>"
+      + "<p class=\"test-lab\">" + t("testArc") + "</p>"
+      + "<div class=\"test-row\">"
+      + "<input id=\"test-arc-n\" type=\"number\" min=\"0\" max=\"999\" inputmode=\"numeric\" value=\"" + arcVal + "\">"
+      + "<button type=\"button\" class=\"cta\" id=\"test-arc-set\">" + t("testArcSet") + "</button>"
+      + "</div>"
+      + "<p class=\"k\">" + testArcStatus() + "</p>"
+      + "<p class=\"test-lab\">" + t("testMoney") + "</p>"
+      + "<div class=\"test-row\">"
+      + "<input id=\"test-money\" type=\"number\" min=\"0\" step=\"any\" inputmode=\"decimal\" value=\"" + moneyVal + "\">"
+      + "<select id=\"test-cur\">"
+      + "<option value=\"usd\"" + (S.testCur === "btc" ? "" : " selected") + ">USD</option>"
+      + "<option value=\"btc\"" + (S.testCur === "btc" ? " selected" : "") + ">BTC</option>"
+      + "</select>"
+      + "<button type=\"button\" class=\"cta\" id=\"test-add\">" + t("testAdd") + "</button>"
+      + "</div>"
+      + "<p class=\"k\">" + testMoneyStatus() + "</p>"
+      + note
+      + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+  }
+
   function pauseMarkup() {
     const panel = S.optPanel || "";
     if (panel === "help") {
@@ -5791,12 +5931,14 @@
         + "<div class=\"pal-grid\">" + swatches + "</div>"
         + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
     }
+    if (panel === "test") return testMarkup();
     const fromPlay = S.phase === "paused" && (S.optBack === "play" || !S.optBack);
     return "<h1>" + (fromPlay ? t("paused") : t("options")) + "</h1>"
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-gfx\">" + t("graphics") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-test\">" + t("testing") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
@@ -5915,6 +6057,34 @@
     if (mv) mv.onclick = (e) => { e.stopPropagation(); A.setMuteVoice(!A.muteVoice()); renderOverlay(); };
     const optGfx = $("opt-gfx");
     if (optGfx) optGfx.onclick = (e) => { e.stopPropagation(); S.optPanel = "gfx"; renderOverlay(); };
+    const optTest = $("opt-test");
+    if (optTest) optTest.onclick = (e) => { e.stopPropagation(); S.optPanel = "test"; renderOverlay(); };
+    const testGrant = $("test-grant");
+    if (testGrant) testGrant.onclick = (e) => {
+      e.stopPropagation();
+      const sel = $("test-perk");
+      testGrantPerk(sel ? sel.value : S.testPerkPick);
+      renderOverlay();
+    };
+    const testArcSet = $("test-arc-set");
+    if (testArcSet) testArcSet.onclick = (e) => {
+      e.stopPropagation();
+      const inp = $("test-arc-n");
+      testSetArcEvery(inp ? inp.value : 0);
+      renderOverlay();
+    };
+    const testAdd = $("test-add");
+    if (testAdd) testAdd.onclick = (e) => {
+      e.stopPropagation();
+      const inp = $("test-money");
+      const cur = $("test-cur");
+      testAddMoney(inp ? inp.value : 0, cur ? cur.value : "usd");
+      renderOverlay();
+    };
+    const testPerkSel = $("test-perk");
+    if (testPerkSel) testPerkSel.onchange = (e) => { e.stopPropagation(); S.testPerkPick = testPerkSel.value; };
+    const testCur = $("test-cur");
+    if (testCur) testCur.onchange = (e) => { e.stopPropagation(); S.testCur = testCur.value; renderOverlay(); };
     overlay.querySelectorAll("[data-pal]").forEach((btn) => {
       btn.onclick = (e) => {
         e.stopPropagation();
@@ -6459,6 +6629,7 @@
     overlay.classList.toggle("mp-ui", p === "mplobby" || p === "mpwait" || p === "mpwin");
     overlay.classList.toggle("chance-ui", p === "chance");
     overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready" || p === "perk" || p === "chance") && S.optPanel === "juke");
+    overlay.classList.toggle("test-ui", S.optPanel === "test");
     if (p === "ready") {
       if (S.optPanel) {
         overlay.innerHTML = pauseMarkup();
