@@ -1964,7 +1964,7 @@
     flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
     phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
     crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
-    wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "El viernes en lo de Marek hay vino y 12 Monkeys en pausa. La charla deriva a la I.A., como siempre. Ninguno gana." },
+    wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde. Encontró una mesa en un casino y ya decidió que el juego es interesante." },
     poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a un póker de madrugada con gente que conoce. No es un casino. Asiente cuando decís que jugás." },
     uncle: { en: "Uncle Héctor wires you {gift} and refuses to say why.", es: "El tío Héctor te gira {gift} y se niega a decir por qué." },
@@ -2068,13 +2068,13 @@
       body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
       bodyEs: "Un repartidor en scooter choca tu automóvil a muy baja velocidad. Nadie resulta herido de gravedad. El repartidor se disculpa seis veces; tú, dos. Nadie sabe por qué te disculpaste." },
     { id: "wine", kind: "choice", after: ["landfill"],
-      title: "Wine", titleEs: "Wine",
+      title: "Wine", titleEs: "Vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins.",
-      bodyEs: "Es viernes a la noche en lo de Marek. Hay una botella de vino, la cena a medias y 12 Monkeys en pausa. Así suelen pasar el tiempo: vino, películas viejas y una charla que se alarga más de lo planeado. Esta noche, como siempre, termina en una discusión sobre la I.A. y el futuro. Vos sos el entusiasta. Marek sabe más, y confía menos en la gente. Ninguno gana.",
+      bodyEs: "Es viernes por la noche en casa de Marek. Hay una botella de vino, la cena a medio terminar y 12 Monkeys en pausa. Así suelen pasar el tiempo: vino, películas antiguas y una conversación que siempre se alarga más de lo previsto. Esta vez, como de costumbre, terminan discutiendo sobre la IA y el futuro. Tú eres el entusiasta; Marek sabe más, pero confía menos en la gente. Ninguno convence al otro.",
       opts: [
-        { k: "a", label: "Keep talking", labelEs: "Keep talking" },
-        { k: "b", label: "Get ice cream", labelEs: "Get ice cream" },
-        { k: "c", label: "Cab home", labelEs: "Cab home" }
+        { k: "a", label: "Keep talking", labelEs: "Seguir conversando" },
+        { k: "b", label: "Get ice cream", labelEs: "Comprar helado" },
+        { k: "c", label: "Cab home", labelEs: "Tomar un taxi a casa" }
       ] },
     { id: "casino", kind: "choice", after: ["landfill"],
       title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
