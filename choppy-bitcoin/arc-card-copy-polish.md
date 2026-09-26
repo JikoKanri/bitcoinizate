@@ -25,6 +25,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `8af8dc35f95965a9701bec346e34d9c295fd26b2`
   - Pull request: #9
 
+- [x] `timeTraveler` — “El viajero del tiempo”
+  - Mission relation: introduces the citadel concept, sovereignty, and THE BITCOIN STATE, which turn the earlier idea into the conceptual foundation for Bitcoin Country.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; $666 price, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `0ee3f86a09d5b93e623ef3bbf6a1a690a1a0dfe5`
+  - Pull request: #9
+
 ## Next priority
 
-- `timeTraveler`
+- `temporaryMeasures`
