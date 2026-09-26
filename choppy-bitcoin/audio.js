@@ -135,6 +135,16 @@
       beep(55, 0.48, "square", 0.16, 18, 0.02);
       beep(38, 0.55, "sawtooth", 0.12, 16, 0.04);
     },
+    warShot: () => beep(640, 0.05, "square", 0.04, 280),
+    warHit: () => beep(180, 0.08, "square", 0.05, 90),
+    warBrick: () => beep(110, 0.1, "sawtooth", 0.05, 60),
+    warClank: () => beep(520, 0.04, "square", 0.03, 740),
+    warPop: () => { beep(220, 0.08, "square", 0.05, 80); beep(90, 0.12, "sawtooth", 0.04, 40, 0.04); },
+    warHurt: () => beep(140, 0.14, "sawtooth", 0.06, 50),
+    warPick: () => { beep(660, 0.06, "triangle", 0.045); beep(880, 0.08, "triangle", 0.04, null, 0.05); },
+    warHeli: () => { beep(90, 0.16, "sawtooth", 0.04, 140); beep(70, 0.18, "square", 0.03, 110, 0.08); },
+    warCharge: () => beep(480, 0.04, "square", 0.025, 720),
+    warAa: () => { beep(280, 0.1, "sawtooth", 0.06, 90); beep(740, 0.16, "square", 0.05, 180, 0.06); },
   };
   A.stopMusic = () => { if (musicInterval != null) { clearInterval(musicInterval); musicInterval = null; } };
   A.musicOn = () => musicInterval != null;
@@ -161,6 +171,7 @@
     });
   };
   A.releaseCue = () => {
+    stopOde();
     if (!A._cueHeld && !A._resumeJuke) return;
     const resume = !!A._resumeJuke;
     A._cueHeld = false;
@@ -168,6 +179,79 @@
     if (resume && A.jukeResume) {
       try { A.jukeResume(); } catch (e) {}
     }
+  };
+  let odeGen = 0;
+  let odeSrc = null;
+  let odeSynth = null;
+  function haltOdeAudio() {
+    const src = odeSrc; odeSrc = null;
+    const synth = odeSynth; odeSynth = null;
+    if (src) { try { src.onended = null; src.stop(); } catch (e) {} }
+    if (synth && synth.stop) { try { synth.stop(); } catch (e) {} }
+  }
+  function stopOde() { odeGen++; haltOdeAudio(); }
+  function startOde() {
+    if (muteTheme) return;
+    const lib = window.ABCJS;
+    if (!lib || !lib.synth || !lib.synth.supportsAudio || !lib.synth.supportsAudio()) return;
+    const abc = A.SONGS && A.SONGS.ode && A.SONGS.ode.abc;
+    if (!abc) return;
+    try { A.unlock(); } catch (e) {}
+    if (!ctx) return;
+    const gen = ++odeGen;
+    haltOdeAudio();
+    let el = document.getElementById("ode-hold");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "ode-hold";
+      el.hidden = true;
+      document.body.appendChild(el);
+    }
+    const run = async () => {
+      try {
+        const vis = lib.renderAbc("ode-hold", abc, { add_classes: false, staffwidth: 640, paddingtop: 1, paddingbottom: 1 });
+        const visual = vis && vis[0];
+        if (!visual || gen !== odeGen) return;
+        const synth = new lib.synth.CreateSynth();
+        await synth.init({
+          visualObj: visual,
+          audioContext: ctx,
+          millisecondsPerMeasure: visual.millisecondsPerMeasure ? visual.millisecondsPerMeasure() : 1778
+        });
+        const primed = await synth.prime();
+        if (gen !== odeGen) { try { synth.stop(); } catch (e) {} return; }
+        odeSynth = synth;
+        const buf = (synth.getAudioBuffer && synth.getAudioBuffer()) || null;
+        const dur = (buf && buf.duration) || (primed && primed.duration) || synth.duration || 0;
+        if (buf) {
+          const src = ctx.createBufferSource();
+          const g = ctx.createGain();
+          g.gain.value = 0.9;
+          src.buffer = buf;
+          src.connect(g);
+          g.connect(ctx.destination);
+          src.onended = () => { if (odeSrc === src) odeSrc = null; };
+          src.start();
+          odeSrc = src;
+        } else if (synth.start) {
+          synth.start();
+        }
+        if (dur) setTimeout(() => { if (gen === odeGen) haltOdeAudio(); }, Math.ceil(dur * 1000) + 400);
+      } catch (e) {}
+    };
+    run();
+  }
+  A.playVictory = () => {
+    try { if (A.unlock) A.unlock(); } catch (e) {}
+    if (!A._cueHeld) {
+      A._resumeJuke = !!(A.jukePlaying && A.jukePlaying());
+      if (A._resumeJuke && A.jukePause) {
+        try { A.jukePause(); } catch (e) {}
+      }
+    }
+    A._cueHeld = true;
+    A.stopMusic();
+    startOde();
   };
   const BEAR = [98, 110, 87, 110, 73, 87, 65, 73];
   const BULL = [329, 392, 523, 659, 523, 659, 783, 1046];
@@ -292,7 +376,23 @@ w: gone.
 w: be my wife.
 w: no gal at all.`;
 
+  const ODE_ABC = `X:1
+T:Ode to Joy - Victory Fanfare
+C:Ludwig van Beethoven (Arr. AI)
+M:4/4
+L:1/4
+Q:1/4=135
+K:D
+%%MIDI program 56
+%%MIDI chordprog 61
+%%MIDI bassprog 58
+|: [FAd]>[FAd] [GBe] [Adf] | [Adf] [GBe] [FAd] [EAc] | [DFBd] [DFBd] [EAc] [FAd] | [FAd]>[EAc] [EAc]2 |
+[FAd]>[FAd] [GBe] [Adf] | [Adf] [GBe] [FAd] [EAc] | [DFBd] [DFBd] [EAc] [FAd] | [EAc]>[DFA] [DFA]2 |
+[EAc] [EAc] [FAd] [DFBd] | [EAc] [FAd]/[GBe]/ [FAd] [DFBd] | [EAc] [FAd]/[GBe]/ [FAd] [EAc] | [DFBd] [EAc] [A,,E,A,]2 |
+[FAd]>[FAd] [GBe] [Adf] | [Adf] [GBe] [FAd] [EAc] | [DFBd] [DFBd] [EAc] [FAd] | [EAc]>[DFA] [DFA]2 :|`;
+
   A.SONGS = {
+    ode: tune("ode", "Ode to Joy", "fanfare", ODE_ABC),
     bonny: tune("bonny", "Bonny at Morn", "slow air", BONNY_ABC),
     shady: tune("shady", "Shady Grove", "play-party", SHADY_ABC),
     fisher: tune("fisher", "Fisher's Hornpipe", "hornpipe", `X:1
