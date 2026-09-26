@@ -141,32 +141,25 @@
     }
     applyPalette(id);
   }
-  let TEXT_SIZE = "m";
   let SHOW_GAIN = true;
   let SHOW_TRADE = true;
-  function textMul() {
-    return TEXT_SIZE === "s" ? 0.82 : TEXT_SIZE === "l" ? 1.55 : 1;
-  }
-  function playFloatPx(kind) {
-    const base = kind === "gain" || kind === "power" ? 12 : 15;
-    return Math.max(9, Math.round(base * textMul()));
-  }
-  function applyTextSizeAttr() {
-    try { document.documentElement.setAttribute("data-text", TEXT_SIZE); } catch (e) {}
+  let ARC_TEXT = "m";
+  function applyArcTextAttr() {
+    try { document.documentElement.setAttribute("data-arc-text", ARC_TEXT); } catch (e) {}
   }
   function loadTextPrefs() {
     try {
-      const s = localStorage.getItem("choppy-text-size");
-      if (s === "s" || s === "m" || s === "l") TEXT_SIZE = s;
+      const s = localStorage.getItem("choppy-arc-text");
+      if (s === "s" || s === "m" || s === "l") ARC_TEXT = s;
       if (localStorage.getItem("choppy-show-gain") === "0") SHOW_GAIN = false;
       if (localStorage.getItem("choppy-show-trade") === "0") SHOW_TRADE = false;
     } catch (e) {}
-    applyTextSizeAttr();
+    applyArcTextAttr();
   }
-  function setTextSize(id) {
-    TEXT_SIZE = id === "s" || id === "l" ? id : "m";
-    try { localStorage.setItem("choppy-text-size", TEXT_SIZE); } catch (e) {}
-    applyTextSizeAttr();
+  function cycleArcText() {
+    ARC_TEXT = ARC_TEXT === "s" ? "m" : ARC_TEXT === "m" ? "l" : "s";
+    try { localStorage.setItem("choppy-arc-text", ARC_TEXT); } catch (e) {}
+    applyArcTextAttr();
   }
   function setShowGain(on) {
     SHOW_GAIN = !!on;
@@ -481,7 +474,6 @@
       + "<h3 class=\"k\">" + t("donateTitle") + "</h3>"
       + "<p>" + t("donateBody") + "</p>"
       + "<p class=\"donate-links\"><a href=\"lightning:" + ln + "\">Lightning</a> · <a href=\"bitcoin:" + btc + "\">Bitcoin</a></p>"
-      + "<p class=\"k\">" + t("faqPrizeA") + "</p>"
       + "</section>";
   }
   function tutorialBody() {
@@ -990,13 +982,12 @@
     const shown = gain ? usdIntLabel(text) : text;
     const power = kind === "power";
     const flowerTalk = PALETTE_ID === "flower" && kind === "trade";
-    const px = playFloatPx(kind);
     S.floats.push({
       x, y, text: shown, color, kind: kind || "",
       life: gain || power ? 0.825 : 1.1,
       vy: gain || power ? -32 : -38,
-      size: px,
-      maxA: flowerTalk ? 1 : (gain || power ? 0.9 : 0.92),
+      size: flowerTalk ? 16 : (gain || power ? 7.35 * 1.05 : 13),
+      maxA: flowerTalk ? 1 : (gain || power ? 0.75 : 0.875),
     });
   }
 
@@ -1601,10 +1592,18 @@
     return y != null && y >= box.top - 4;
   }
 
+  let flapAt = 0;
+  let flapHold = false;
+  let flapQueued = false;
   function flap() {
     if (S.phase !== "play" || S.dead || S.spectate || S.finished) return;
-    const m = metrics();
-    S.bird.v = m.jump || -280;
+    const now = performance.now();
+    if (now - flapAt < 20) return;
+    flapAt = now;
+    const jump = metrics().jump || -280;
+    if (flapHold) { flapQueued = true; return; }
+    S.bird.v = jump;
+    flapHold = true;
     try { if (A && A.sfx && A.sfx.jump) A.sfx.jump(); } catch (e) {}
   }
   function buyBtc() {
@@ -2006,6 +2005,7 @@
     threeColors: { en: "The Crown Lattice closes the map. High Warden Soren Pell does not wave. He thinks a people who will not kneel are a clerical error.", es: "La Celosía de la Corona cierra el mapa. El Alto Guardián Soren Pell no saluda. Cree que un pueblo que no se arrodilla es un error de archivo." },
     ortegaCalls: { en: "Mr Ortega & Gambette calls with a thick stack of advice about recognition, treaties, fisheries, and seating.", es: "El señor Ortega & Gambette llama con un montón de consejos sobre reconocimiento, tratados, pesca y quién se sienta dónde." },
     theQuestion: { en: "The checklist is finally dangerous. Marek looks at the last open line. Independence.", es: "La lista por fin es peligrosa. Marek mira la última línea abierta. Independencia." },
+    cabinet: { en: "You are Head of State. Marek takes Finance, Nico takes Commerce, and Paco is Minister of Defense.", es: "Vos sos Jefe de Estado. Marek se queda con Hacienda, Nico con Comercio, y Paco es Ministro de Defensa." },
     declaration: { en: "You declare independence. San Arnaldo recognizes Bitcoin Country almost at once. Ortega sends a thumbs-up and an attachment.", es: "Declarás la independencia. San Arnaldo reconoce Bitcoin Country casi enseguida. Ortega manda un pulgar arriba y un adjunto." },
     theAnswer: { en: "The blocs have already answered.", es: "Los bloques ya contestaron." },
     fourthColor: { en: "All three blocs attacked and failed. The island is still standing, and Bitcoin Country is independent.", es: "Los tres bloques atacaron y fallaron. La isla sigue en pie, y Bitcoin Country es independiente." },
@@ -2325,7 +2325,8 @@
     { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", titleEs:"Tres colores", body:"A third color closes the map.\n\nThe Crown Lattice is older than the press releases. The Crown of Ashen, Bryn March, the Isle Keels, Vesper, and Orth have shared blood rites, harbor law, and a habit of calling their neighbors unfinished. High Warden Soren Pell walks at the front of the procession and does not wave. He believes borders are inherited, not argued, and that a people who will not kneel are a clerical error.\n\nWhere the Pact files a form and the Ledger prints a poster, the Lattice holds a parade and then a silence. Dissent is not debated. It is omitted. The gray spots on the map, including a small island that has been buying generators, are now described as unassigned.\n\nThree tyrannies. Three philosophies. One ocean.", bodyEs:"Un tercer color cierra el mapa.\n\nLa Celosía de la Corona es más vieja que los comunicados. La Corona de Ashen, Bryn March, las Quillas de la Isla, Vesper y Orth comparten ritos de sangre, derecho de puerto y la costumbre de llamar inconclusos a los vecinos. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Cree que las fronteras se heredan, no se discuten, y que un pueblo que no se arrodilla es un error de archivo.\n\nDonde el Pacto presenta un formulario y el Libro imprime un afiche, la Celosía hace un desfile y después un silencio. La disidencia no se debate. Se omite. Las manchas grises del mapa, incluida una isla chica que viene comprando generadores, ahora figuran como sin asignar.\n\nTres tiranías. Tres filosofías. Un océano." },
     { id:"ortegaCalls", kind:"choice", after:["threeColors"], title:"Mr Ortega & Gambette Calls", body:"Mr Ortega & Gambette calls with ninety-three pages of advice about recognition, treaties, fisheries and ceremonial precedence.", opts:[{k:"a",label:"Take the full package · $25,000"},{k:"b",label:"Take the useful pages"},{k:"c",label:"Decline politely"}] },
     { id:"theQuestion", kind:"choice", after:["ortegaCalls"], when:()=>S.bcNodes>=100&&!S.bcIndependent&&!S.bcVictory, title:"The Question", body:"The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the last unchecked line. Independence.", opts:[{k:"a",label:"Declare independence"},{k:"b",label:"Not yet"}] },
-    { id:"declaration", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent, title:"Declaration", body:"You declare independence. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Mr Ortega & Gambette sends a thumbs-up and a 14-page attachment." },
+    { id:"cabinet", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent&&!S.bcVictory, title:"The Cabinet", titleEs:"El gabinete", body:"The declaration needs names.\n\nYou are Head of State. Marek takes Finance and asks you not to spend the first week proving it. Nico takes Commerce, and says the title out loud as if the job had been his idea. Paco is Minister of Defense. He tries it once, then again. The second time he does not laugh.\n\nLena does not take a ministry. She says the island already has enough titles.", bodyEs:"La declaración necesita nombres.\n\nVos sos Jefe de Estado. Marek se queda con Hacienda y te pide que no pases la primera semana demostrándolo. Nico se queda con Comercio, y lo dice en voz alta como si el cargo hubiera sido idea de él. Paco es Ministro de Defensa. Lo prueba una vez, y después otra. La segunda no se ríe.\n\nLena no acepta un ministerio. Dice que la isla ya tiene suficientes títulos." },
+    { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", body:"You declare independence. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Mr Ortega & Gambette sends a thumbs-up and a 14-page attachment." },
     { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The blocs have already answered." },
     { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration." },
     { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
@@ -2563,6 +2564,7 @@
     if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
     if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
     if(card.id==="theQuestion"){if(S.bcVictory){return say("Bitcoin Country is already independent.","");}if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
+    if(card.id==="cabinet")return say("The posts are filled. Paco is Minister of Defense.","Los cargos quedan cubiertos. Paco es Ministro de Defensa.");
     if(card.id==="declaration")return say("San Arnaldo recognizes Bitcoin Country in thirty-seven seconds.","");
     if(card.id==="theAnswer"){return say("The blocs already answered.","");}
     if(card.id==="blocReplies"){
@@ -2716,7 +2718,7 @@
     });
   }
   function chanceArtHtml(id) {
-    const artId = id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "blocTriumph" ? "fourthColor" : id;
+    const artId = id === "cabinet" ? "declaration" : id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "blocTriumph" ? "fourthColor" : id;
     const jpg="chance/"+artId+".jpg?v=mp55";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
@@ -2730,6 +2732,16 @@
     { key:"lattice", en:"Crown Lattice", es:"Celosía de la Corona", short:"LATTICE", shortEs:"CORONA", leader:"High Warden Soren Pell", leaderEs:"el Alto Guardián Soren Pell" }
   ];
   function warBloc(i){ return WAR_BLOCS[Math.max(0, Math.min(2, i|0))]; }
+  const BC_ARC = {
+    justInCase:1, nothingToHide:1, somethingBetter:1, timeTraveler:1, temporaryMeasures:1,
+    citadelProblem:1, pieceWorld:1, islandInspection:1, paperwork:1, nobodyKnows:1, theOg:1,
+    peopleAsking:1, extensionCord:1, obviously:1, principality:1, stateVisit:1, firstBloc:1,
+    protectIsland:1, placeNow:1, citadelQuestion:1, rearmament:1, anOffer:1, ambassador:1,
+    threeColors:1, ortegaCalls:1, theQuestion:1, cabinet:1, declaration:1, theAnswer:1,
+    blocReplies:1, blocAssault:1, blocTriumph:1, fourthColor:1, notYet:1
+  };
+  function warSeason(){ return !!S.bcIndependent && !S.bcVictory; }
+  function arcInPool(c){ return !warSeason() || !!(c && BC_ARC[c.id]); }
   function rollBlocReactions(){
     const keys=["accept","reject","time","money"];
     for(let i=keys.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=keys[i]; keys[i]=keys[j]; keys[j]=t; }
@@ -2850,15 +2862,21 @@
   function closeArc(card){
     const id=card&&card.id;
     const launch=(id==="theAnswer"||id==="blocAssault")&&S.bcDefensePending;
+    const chainCabinet=id==="theQuestion"&&!!S.bcIndependent&&!S.chanceUsed.cabinet;
+    const chainDecl=id==="cabinet";
     const chainReplies=id==="declaration"&&!!S.bcIndependent&&!S.bcRepliesDone;
     const afterTriumph=id==="blocTriumph";
     const afterReplies=id==="blocReplies";
+    const chainFourth=id==="blocTriumph"&&(S.bcBattlesWon||0)>=9;
+    if(launch||chainCabinet||chainDecl||chainReplies||chainFourth) S.arcChain=true;
     finishArcHold();
     if(launch){
       S.bcDefensePending=false;
       startDefense();
       return;
     }
+    if(chainCabinet){ chainArc("cabinet"); return; }
+    if(chainDecl){ chainArc("declaration"); return; }
     if(chainReplies){
       rollBlocReactions();
       S.bcRepliesDone=true;
@@ -2888,6 +2906,7 @@
 
   function arcUnlocked(c) {
     if (!c) return false;
+    if (!arcInPool(c)) return false;
     if (!S.chanceUsed) S.chanceUsed = {};
     const introOf = {
       nico: "landfill", lena: "landfill", paco: "nicoWedding",
@@ -2935,7 +2954,7 @@
   function dealChance() {
     if (S.phase !== "play") return;
     if (!S.chanceUsed) S.chanceUsed = {};
-    const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && arcUnlocked(c));
+    const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && arcUnlocked(c) && arcInPool(c));
     const src = pool.length ? pool : CHANCE_CARDS.filter((c) => arcUnlocked(c) && !S.chanceUsed[c.id]);
     if (!src.length && !window.__arcForce) return;
     const forced = window.__arcForce && CHANCE_CARDS.find((c) => c.id === window.__arcForce);
@@ -3041,7 +3060,9 @@
     return s ? s + "\n" + d : d;
   }
   function arcTldrBtn() {
-    return "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\">" + t("chanceTldr") + "</button>";
+    const size = ARC_TEXT === "s" ? "S" : ARC_TEXT === "l" ? "L" : "M";
+    return "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\">" + t("chanceTldr") + "</button>"
+      + "<button type=\"button\" class=\"arc-size-tog\" id=\"arc-size-tog\">" + size + "</button>";
   }
   function arcStoryHtml(card, body) {
     const tldr = cardTldr(card);
@@ -3082,6 +3103,15 @@
     S.chanceSettled = false;
     S.arcTldr = "";
     S.arcHold = true;
+    if (S.arcChain) {
+      S.arcChain = false;
+      S.arcHold = false;
+      S.optPanel = null;
+      S.phase = "play";
+      try { hideOverlay(); overlay.classList.remove("chance-ui", "dock", "juke-ui"); } catch (e) {}
+      if (field) field.classList.add("is-play");
+      return;
+    }
     S.optBack = "play";
     S.optPanel = null;
     setPhase("paused");
@@ -3514,63 +3544,162 @@
   function bcAt(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
   function bcSet(m,x,y,t){if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;}
   function makeIslandMap(level, fort){
-    level=level|0;
+    level=Math.max(0,Math.min(8,level|0));
     const m=new Uint8Array(BC_C*BC_R);m.fill(3);
+    const shapes=[
+      {cx:15,cy:22,rx:11.2,ry:13.4},
+      {cx:12,cy:18,rx:10.4,ry:12.2},
+      {cx:18,cy:20,rx:12.2,ry:11.6},
+      {cx:14,cy:24,rx:12.6,ry:10.8},
+      {cx:17,cy:16,rx:10.8,ry:14.2},
+      {cx:13,cy:21,rx:13.2,ry:11.4},
+      {cx:16,cy:19,rx:11.5,ry:15},
+      {cx:18,cy:23,rx:10.6,ry:12.8},
+      {cx:12.5,cy:17,rx:12.4,ry:13.2}
+    ][level];
+    const edges=[["s"],["w","s"],["n"],["e"],["n","e"],["w","s","e"],["n","w"],["s","e"],["n","s","w"]][level];
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      const dx=(x-14.5)/12,dy=(y-20)/17.2,e=dx*dx+dy*dy;
-      if(e<1)m[y*BC_C+x]=e>0.84?0:6;
+      const dx=(x-shapes.cx)/shapes.rx, dy=(y-shapes.cy)/shapes.ry, e=dx*dx+dy*dy;
+      if(e<=1)m[y*BC_C+x]=e>0.86?0:6;
     }
-    for(let y=16;y<22;y++)for(let x=11;x<19;x++){
-      const dx=(x-14.5)/4,dy=(y-18.5)/2.6;if(dx*dx+dy*dy<1)bcSet(m,x,y,3);
+    function bridge(edge){
+      if(edge==="s"||edge==="n"){
+        for(let x=0;x<BC_C;x++){
+          let land=-1;
+          for(let y=0;y<BC_R;y++)if(m[y*BC_C+x]!==3){land=y;break;}
+          if(land<0)continue;
+          if(edge==="n"){for(let y=0;y<=land;y++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;}
+          else{
+            let last=land;
+            for(let y=0;y<BC_R;y++)if(m[y*BC_C+x]!==3)last=y;
+            for(let y=last;y<BC_R;y++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
+          }
+        }
+      }else{
+        for(let y=0;y<BC_R;y++){
+          let land=-1;
+          for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3){land=x;break;}
+          if(land<0)continue;
+          if(edge==="w"){for(let x=0;x<=land;x++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;}
+          else{
+            let last=land;
+            for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3)last=x;
+            for(let x=last;x<BC_C;x++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
+          }
+        }
+      }
     }
-    const lanes=[[6,7],[14,15],[22,23]];
-    const laneSet={};
-    lanes.forEach(([a,b])=>{laneSet[a]=1;laneSet[b]=1;});
-    const recipe=[
-      {streets:[18,19],gates:[[0,12],[1,15],[2,13]]},
-      {streets:[],gates:[[0,12],[0,22],[1,14],[1,24],[2,13],[2,23]]},
-      {streets:[14,15],gates:[[0,20],[1,11],[2,24],[1,26]]},
-      {streets:[22,23],gates:[[0,12],[0,18],[1,13],[1,20],[2,12],[2,21]]},
-      {streets:[14,15,26,27],gates:[[0,20],[2,18],[1,12]]},
-      {streets:[],gates:[[0,11],[0,18],[0,25],[1,12],[1,19],[1,26],[2,11],[2,18],[2,25]]},
-      {streets:[16,17],gates:[[0,12],[0,24],[1,14],[2,13],[2,22]],fort:1},
-      {streets:[12,13],gates:[[0,16],[0,24],[1,11],[1,20],[1,27],[2,15],[2,23]],fort:1},
-      {streets:[],gates:[[0,11],[0,17],[0,24],[1,12],[1,18],[1,25],[2,11],[2,17],[2,24]],fort:1}
-    ][Math.max(0,Math.min(8,level))];
-    const street={};
-    (recipe.streets||[]).forEach((y)=>{street[y]=1;});
-    street[8]=1;street[9]=1;street[27]=1;street[28]=1;
-    for(let y=8;y<=32;y++)for(let x=6;x<=23;x++){
-      if(laneSet[x]||street[y])bcSet(m,x,y,6);
+    edges.forEach(bridge);
+    let sx=0,sy=0,sn=0;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3){sx+=x;sy+=y;sn++;}
+    const ccx=sn?sx/sn:15, ccy=sn?sy/sn:20;
+    let pad=null,best=-1;
+    for(let y=2;y<BC_R-7;y++)for(let x=2;x<BC_C-8;x++){
+      let ok=true;
+      for(let dy=0;dy<5&&ok;dy++)for(let dx=0;dx<6;dx++)if(m[(y+dy)*BC_C+x+dx]===3)ok=false;
+      if(!ok)continue;
+      const score=1000-Math.abs(x+3-ccx)*4-Math.abs(y+3-ccy);
+      if(score>best){best=score;pad={x:x,y:y};}
     }
-    for(let y=30;y<=32;y++)for(let x=8;x<=21;x++)bcSet(m,x,y,6);
-    (recipe.gates||[]).forEach(([li,y])=>{
-      if(y<11||y>26||street[y])return;
-      const pair=lanes[li];if(!pair)return;
-      bcSet(m,pair[0],y,1);bcSet(m,pair[1],y,1);
-    });
-    const rocks=[[8,12],[21,12],[9,16],[20,16],[8,20],[21,20],[10,24],[19,24],[8,11],[21,11],[10,18],[19,18],[9,26],[20,26],[11,21],[18,14]];
-    const rockN=4+((level*5)/8|0);
-    for(let i=0;i<rocks.length&&i<rockN;i++){
-      const x=rocks[i][0],y=rocks[i][1];
-      if(laneSet[x]||street[y]||y>=29)continue;
-      if(bcAt(m,x,y)===3)continue;
-      bcSet(m,x,y,2);
+    if(!pad){
+      const px=Math.max(2,Math.min(BC_C-8,Math.round(ccx)-3));
+      const py=Math.max(2,Math.min(BC_R-7,Math.round(ccy)-2));
+      for(let dy=-1;dy<6;dy++)for(let dx=-1;dx<7;dx++){
+        const xx=px+dx,yy=py+dy;
+        if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3)m[yy*BC_C+xx]=6;
+      }
+      pad={x:px,y:py};
     }
-    [[10,10],[19,10],[9,21],[20,21],[11,25],[18,29]].forEach(([x,y])=>{
-      if(!laneSet[x]&&!street[y]&&bcAt(m,x,y)===6)bcSet(m,x,y,4);
-    });
-    const wall=!!(fort||recipe.fort);
-    for(let x=12;x<=17;x++){bcSet(m,x,33,1);bcSet(m,x,36,1);}
-    for(let y=33;y<=36;y++){bcSet(m,12,y,1);bcSet(m,17,y,1);}
-    bcSet(m,14,33,6);bcSet(m,15,33,6);
-    bcSet(m,14,34,5);bcSet(m,15,34,5);bcSet(m,14,35,5);bcSet(m,15,35,5);
-    if(wall){
-      for(let x=11;x<=18;x++)bcSet(m,x,32,1);
-      for(let y=32;y<=37;y++){bcSet(m,11,y,1);bcSet(m,18,y,1);}
-      bcSet(m,14,32,6);bcSet(m,15,32,6);
+    const spots=[];
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      if(m[y*BC_C+x]===3)continue;
+      let wet=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(m[(y+dy)*BC_C+(x+dx)]===3)wet=true;
+      if(!wet)continue;
+      const px=x*16+8,py=y*16+8;
+      const hx=(pad.x+3)*16, hy=(pad.y+2)*16;
+      const dist=Math.hypot(px-hx,py-hy);
+      if(dist<150)continue;
+      spots.push({x:px,y:py,d:dist,tx:x,ty:y});
     }
-    return m;
+    spots.sort((a,b)=>b.d-a.d);
+    const spawns=[];
+    for(const s of spots){
+      if(spawns.length>=3)break;
+      if(spawns.some((p)=>Math.hypot(p.x-s.x,p.y-s.y)<70))continue;
+      spawns.push(s);
+    }
+    while(spawns.length<3){
+      const ang=spawns.length*2.1;
+      spawns.push({x:Math.max(24,Math.min(S.W-24,ccx*16+Math.cos(ang)*80)),y:Math.max(24,Math.min(S.H-24,ccy*16+Math.sin(ang)*80)),tx:8,ty:8});
+    }
+    const road={};
+    function carve(x0,y0,x1,y1){
+      let x=x0|0,y=y0|0,guard=0;
+      const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;
+      let err=dx-dy;
+      while(guard++<900){
+        for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
+          const xx=x+ox,yy=y+oy;
+          if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1)continue;
+          if(m[yy*BC_C+xx]===3||m[yy*BC_C+xx]===0){m[yy*BC_C+xx]=6;road[yy*BC_C+xx]=1;}
+        }
+        if(x===x1&&y===y1)break;
+        const e2=2*err;
+        if(e2>-dy){err-=dy;x+=sx;}
+        if(e2<dx){err+=dx;y+=sy;}
+      }
+    }
+    const bx=pad.x+2, by=pad.y+2;
+    spawns.forEach((s)=>carve(s.tx||Math.floor(s.x/16), s.ty||Math.floor(s.y/16), bx, by));
+    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)m[(pad.y+dy)*BC_C+pad.x+dx]=6;
+    for(let x=pad.x;x<pad.x+6;x++){m[pad.y*BC_C+x]=1;m[(pad.y+4)*BC_C+x]=1;}
+    for(let y=pad.y;y<pad.y+5;y++){m[y*BC_C+pad.x]=1;m[y*BC_C+pad.x+5]=1;}
+    m[(pad.y+4)*BC_C+pad.x+2]=6;m[(pad.y+4)*BC_C+pad.x+3]=6;
+    m[(pad.y+1)*BC_C+pad.x+2]=5;m[(pad.y+1)*BC_C+pad.x+3]=5;
+    m[(pad.y+2)*BC_C+pad.x+2]=5;m[(pad.y+2)*BC_C+pad.x+3]=5;
+    if(fort){
+      for(let x=pad.x-1;x<=pad.x+6;x++)if(x>=0&&x<BC_C&&pad.y>0)m[(pad.y-1)*BC_C+x]=1;
+      if(pad.y>0){m[(pad.y-1)*BC_C+pad.x+2]=6;m[(pad.y-1)*BC_C+pad.x+3]=6;}
+    }
+    let seed=(level+1)*1103515245+12345;
+    const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const i=y*BC_C+x;
+      if(m[i]!==6||road[i])continue;
+      const nearBase=x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
+      if(nearBase)continue;
+      const r=rnd();
+      if(r<0.045+level*0.004)m[i]=2;
+      else if(r<0.11+level*0.008)m[i]=1;
+      else if(r<0.16)m[i]=4;
+    }
+    function plant(kind,need){
+      let have=0;
+      for(let i=0;i<m.length;i++)if(m[i]===kind)have++;
+      for(let y=2;y<BC_R-2 && have<need;y++)for(let x=2;x<BC_C-2 && have<need;x++){
+        const i=y*BC_C+x;
+        if(m[i]!==6||road[i])continue;
+        if(x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5)continue;
+        let wet=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(m[(y+dy)*BC_C+(x+dx)]===3)wet=true;
+        if(wet)continue;
+        if(((x*3+y*5+level)&3)!==(kind===2?0:1))continue;
+        m[i]=kind;have++;
+      }
+    }
+    plant(2,4);plant(4,5);plant(1,8);
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(m[y*BC_C+x]!==6)continue;
+      let wet=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const xx=x+dx,yy=y+dy;
+        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)wet=true;
+      }
+      if(wet&&!road[y*BC_C+x]&&!(x>=pad.x&&x<pad.x+6&&y>=pad.y&&y<pad.y+5))m[y*BC_C+x]=0;
+    }
+    const home={x:(pad.x+3)*16, y:(pad.y+4)*16+6};
+    return {map:m, home, spawns:spawns.map((s)=>({x:s.x,y:s.y}))};
   }
   function bcTileHp(t){return t===1?2:t===2?1:t===5?99:0;}
   function tankBlocked(d,x,y,sz,ignore){
@@ -3607,11 +3736,12 @@
     const mine=t===d.player?d.shots.filter(s=>s.mine&&!s.hit).length:d.shots.filter(s=>s.owner===t&&!s.hit).length;
     const cap=t===d.player?(d.up.cannon3?4:d.up.cannon2?2:1):1;
     if(mine>=cap)return;
-    t.fire=t===d.player?.22:.55;
-    const v=(t===d.player&&d.up.cannon1?280:t.bspd||180);
-    const dmg=(t===d.player&&d.up.cannon3)?2:(t.dmg||1);
+    t.fire=t===d.player?(d.shotT>0?.1:.22):.55;
+    const v=(t===d.player&&(d.up.cannon1||d.shotT>0)?280:t.bspd||180);
+    const dmg=(t===d.player&&(d.up.cannon3||d.shotT>0))?2:(t.dmg||1);
     const dx=t.dir===1?1:t.dir===3?-1:0,dy=t.dir===2?1:t.dir===0?-1:0;
     d.shots.push({x:t.x+dx*14,y:t.y+dy*14,dx,dy,v,damage:dmg,mine:t===d.player,owner:t,hit:false});
+    if(t===d.player)warSfx("warShot");
   }
   function los(d,a,x,y){
     if(Math.abs(a.x-x)>10&&Math.abs(a.y-y)>10)return false;
@@ -3643,25 +3773,52 @@
     const level=Math.max(0,Math.min(8,S.bcBattlesWon|0));
     const bloc=(level/3)|0;
     const u=defenseUpgrades();
-    const map=makeIslandMap(level,!!u.wall);
+    const built=makeIslandMap(level,!!u.wall);
+    const map=built.map;
     const hp=new Uint8Array(map.length);
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
     S.defHeld={u:0,d:0,l:0,r:0,f:0};S.defPtr=null;
-    const quota=4+((level/2)|0);
+    const quota=7+((level/2)|0);
     const delta=(S.bcArmy||0)-(S.bcWorld||20);
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
+    const hearts=3+(u.armor1?1:0)+(u.armor2?1:0);
     S.bcDefense={
-      map,hp,player:{x:240,y:488,dir:0,hp:1,sz:13,fire:0},
-      shots:[],enemies:[],wave:1,waves:2,spawn:.35,spawned:0,kills:0,quota,
-      integrity:100,wall:u.wall?100:0,done:false,inv:0,
-      profile:{rate:(.95+bloc*.06)*pressure,enemy:(.92+level*.025)*pressure},
+      map,hp,player:{x:built.home.x,y:built.home.y,dir:0,hp:hearts,hearts,maxHearts:hearts,sz:13,fire:0},
+      shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,
+      integrity:100,wall:u.wall?100:0,done:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,
+      heliLeft:(level%3===2)?2:0,
+      profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
-      home:{x:240,y:488},
-      spawns:[{x:112,y:136},{x:240,y:136},{x:368,y:136}]
+      home:built.home,
+      spawns:built.spawns
     };
+    scatterPickups(S.bcDefense,3);
     S.optPanel=null;S.arcHold=false;
-    if(field){field.classList.remove("is-play");field.classList.add("defense-mode");}
+    if(field){
+      field.classList.remove("is-play","bull","bear","swan-bear");
+      field.classList.add("defense-mode");
+    }
     setPhase("defense");
+  }
+  function scatterPickups(d,n){
+    const kinds=["heal","shot","god"];
+    const cells=[];
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      if(bcAt(d.map,x,y)!==6&&bcAt(d.map,x,y)!==0)continue;
+      const px=x*16+8,py=y*16+8;
+      if(Math.hypot(px-d.home.x,py-d.home.y)<70)continue;
+      cells.push({x:px,y:py});
+    }
+    for(let i=0;i<n&&cells.length;i++){
+      const k=(Math.random()*cells.length)|0;
+      const c=cells.splice(k,1)[0];
+      d.picks.push({x:c.x,y:c.y,kind:kinds[i%3],life:1});
+    }
+  }
+  function spawnHeli(d){
+    const sp=d.spawns[(Math.random()*d.spawns.length)|0]||{x:240,y:80};
+    d.enemies.push({x:sp.x,y:Math.max(28,sp.y-20),dir:2,hp:3,maxHp:3,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.8,think:.2,fly:true});
+    warSfx("warHeli");
   }
   function defenseEnemy(d){
     const r=Math.random(),bloc=d.bloc|0;
@@ -3733,20 +3890,23 @@
   }
   function smashTile(d,tx,ty,dmg){
     const t=bcAt(d.map,tx,ty);
-    if(t===5){hitBase(d,10);return true;}
-    if(t===1||(t===2&&dmg>=2)){
+    if(t===5){hitBase(d,10);warSfx("warHit");return true;}
+    if(t===2){warSfx("warClank");return true;}
+    if(t===1){
       const i=ty*BC_C+tx;d.hp[i]=Math.max(0,(d.hp[i]||0)-1);
-      if(d.hp[i]<=0){d.map[i]=6;return true;}
+      if(d.hp[i]<=0){d.map[i]=6;warSfx("warBrick");return true;}
+      warSfx("warHit");
       return true;
     }
-    if(t===2)return true;
-    return t===3||t===4||t===0||t===6?false:true;
+    return false;
   }
+  function warSfx(name){try{if(A&&A.sfx&&A.sfx[name])A.sfx[name]();}catch(e){}}
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done)return;
-    d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.spawn-=dt;
-    const p=d.player;p.fire=Math.max(0,p.fire-dt);
-    if(d.enemies.length<4&&d.spawned<d.quota&&d.spawn<=0){defenseEnemy(d);d.spawned++;d.spawn=(.85+Math.random()*.45)/d.profile.rate;}
+    d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.playerInv=Math.max(0,(d.playerInv||0)-dt);d.god=Math.max(0,(d.god||0)-dt);d.shotT=Math.max(0,(d.shotT||0)-dt);d.spawn-=dt;
+    const p=d.player;p.fire=Math.max(0,p.fire-dt);p.hearts=p.hearts==null?p.hp:p.hearts;
+    if((d.heliLeft||0)>0 && d.t>3.2 && (d.enemies.filter((e)=>e.type==="HELI").length<1)){d.heliLeft--;spawnHeli(d);}
+    if(d.enemies.length<5&&d.spawned<d.quota&&d.spawn<=0){defenseEnemy(d);d.spawned++;d.spawn=(1.15+Math.random()*.55)/(d.profile.rate||1);}
     let dir=-1;
     const h=S.defHeld||{};
     if(h.u)dir=0;else if(h.r)dir=1;else if(h.d)dir=2;else if(h.l)dir=3;
@@ -3756,17 +3916,34 @@
     }
     const pspd=d.up.mob?86:72;
     moveTank(d,p,dir,pspd,dt);
+    const helis=d.enemies.some((e)=>e.type==="HELI"&&e.hp>0);
     if(h.f)fireTank(d,p);
+    if(helis&&h.f){
+      d.aa=Math.min(1,(d.aa||0)+dt/1.25);
+      if(d.aa>=1){fireAa(d);d.aa=0;d.aaBeep=0;}
+      else if((d.aaBeep||0)<=0){d.aaBeep=.22;warSfx("warCharge");}
+      else d.aaBeep-=dt;
+    }else d.aa=Math.max(0,(d.aa||0)-dt*.55);
     for(const e of d.enemies){
       e.fire=Math.max(0,e.fire-dt);e.think-=dt;
       if(e.think<=0){
         e.think=.22+Math.random()*.28;
         if(los(d,e,p.x,p.y)){e.dir=Math.abs(e.x-p.x)>Math.abs(e.y-p.y)?(p.x>e.x?1:3):(p.y>e.y?2:0);e.want=true;}
-        else if(los(d,e,240,552)){e.dir=Math.abs(e.x-240)>Math.abs(e.y-552)?(240>e.x?1:3):(552>e.y?2:0);e.want=true;}
+        else if(los(d,e,d.home.x,d.home.y)){e.dir=Math.abs(e.x-d.home.x)>Math.abs(e.y-d.home.y)?(d.home.x>e.x?1:3):(d.home.y>e.y?2:0);e.want=true;}
         else if(Math.random()<.15)e.dir=(Math.random()*4)|0;
-        else e.dir=e.y<500?2:(240>e.x?1:3);
+        else e.dir=e.y<d.home.y?2:(d.home.x>e.x?1:3);
       }
       const ox=e.x,oy=e.y;
+      if(e.type==="HELI"){
+        const tx=p.x,ty=Math.min(p.y,d.home.y);
+        const ang=Math.atan2(ty-e.y,tx-e.x);
+        e.x=Math.max(16,Math.min(S.W-16,e.x+Math.cos(ang)*e.spd*dt));
+        e.y=Math.max(16,Math.min(S.H-16,e.y+Math.sin(ang)*e.spd*dt));
+        e.dir=Math.abs(Math.cos(ang))>Math.abs(Math.sin(ang))?(Math.cos(ang)>0?1:3):(Math.sin(ang)>0?2:0);
+        if(e.think<=0 && Math.hypot(e.x-p.x,e.y-p.y)<220)e.want=true;
+        if(Math.hypot(e.x-p.x,e.y-p.y)<190)e.want=true;
+        if(Math.hypot(e.x-d.home.x,e.y-d.home.y)<28){hitBase(d,e.leak||12);e.hp=0;warSfx("warPop");}
+      }else{
       moveTank(d,e,e.dir,e.spd,dt);
       if(Math.abs(e.x-ox)<.25&&Math.abs(e.y-oy)<.25){
         const dx=e.dir===1?1:e.dir===3?-1:0,dy=e.dir===2?1:e.dir===0?-1:0;
@@ -3789,10 +3966,24 @@
           e.want=k===1||k===2;
         }
       }
+      }
       if(e.want){fireTank(d,e);e.want=false;}
     }
+    function shotHits(s,t){return Math.abs(t.x-s.x)<t.sz+3&&Math.abs(t.y-s.y)<t.sz+3;}
     for(const s of d.shots){
       if(s.hit)continue;
+      if(s.aa){
+        const htarget=d.enemies.filter((e)=>e.type==="HELI"&&e.hp>0).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0];
+        if(htarget){const ang=Math.atan2(htarget.y-s.y,htarget.x-s.x);s.dx=Math.cos(ang);s.dy=Math.sin(ang);}
+        s.x+=s.dx*s.v*dt;s.y+=s.dy*s.v*dt;
+        if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
+        for(const t of d.enemies){
+          if(t.type!=="HELI"||t.hp<=0||!shotHits(s,t))continue;
+          s.hit=true;t.hp-=3;if(t.hp<=0){d.kills++;warSfx("warPop");}
+          break;
+        }
+        continue;
+      }
       s.x+=s.dx*s.v*dt;s.y+=s.dy*s.v*dt;
       if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
       const tx=Math.floor(s.x/BC_TS),ty=Math.floor(s.y/BC_TS);
@@ -3802,19 +3993,23 @@
       if(hit){s.hit=true;continue;}
       const targets=s.mine?d.enemies:[p];
       for(const t of targets){
-        if(!t||t.hp<=0)continue;
-        if(Math.abs(t.x-s.x)<t.sz+3&&Math.abs(t.y-s.y)<t.sz+3){
-          s.hit=true;t.hp-=s.damage;
-          if(t===p){
-            t.hp=1;
-            if(d.inv<=0){
-              hitBase(d,12);
-              const home=d.home||{x:240,y:488};
-              t.x=home.x;t.y=home.y;t.dir=0;
-            }
-          } else if(t.hp<=0)d.kills++;
-          break;
+        if(!t||(t!==p&&t.hp<=0))continue;
+        if(t.type==="HELI")continue;
+        if(!shotHits(s,t))continue;
+        s.hit=true;
+        if(t===p){
+          if(d.god>0||d.playerInv>0)break;
+          if((p.hearts||0)>0)p.hearts--;
+          else hitBase(d,14);
+          p.hearts=Math.max(0,p.hearts|0);
+          d.playerInv=1.1;
+          warSfx("warHurt");
+        }else{
+          t.hp-=s.damage;
+          warSfx("warHit");
+          if(t.hp<=0){d.kills++;warSfx("warPop");}
         }
+        break;
       }
     }
     for(let i=0;i<d.shots.length;i++)for(let j=i+1;j<d.shots.length;j++){
@@ -3824,11 +4019,32 @@
     }
     d.shots=d.shots.filter(s=>!s.hit);
     d.enemies=d.enemies.filter(e=>e.hp>0);
-    if(d.integrity<=0){finishDefense(false);return;}
-    if(d.spawned>=d.quota&&d.enemies.length===0){
-      if(d.wave>=d.waves){finishDefense(true);return;}
-      d.wave++;d.spawned=0;d.quota=(4+((d.level/2)|0))+1;d.spawn=.55;
+    if(d.picks){
+      for(const pk of d.picks){
+        if(pk.got)continue;
+        if(Math.hypot(pk.x-p.x,pk.y-p.y)<18){
+          pk.got=true;
+          if(pk.kind==="heal")p.hearts=Math.min(p.maxHearts||3,(p.hearts||0)+1);
+          else if(pk.kind==="shot")d.shotT=9;
+          else d.god=6.5;
+          warSfx("warPick");
+        }
+      }
+      d.picks=d.picks.filter((pk)=>!pk.got);
     }
+    if(d.integrity<=0){finishDefense(false);return;}
+    if(d.spawned>=d.quota&&d.enemies.length===0&&!(d.heliLeft>0)){
+      if(d.wave>=d.waves){finishDefense(true);return;}
+      d.wave++;d.spawned=0;d.quota=7+((d.level/2)|0)+d.wave;d.spawn=.8;
+      if((d.picks||[]).length<2)scatterPickups(d,1);
+    }
+  }
+  function fireAa(d){
+    const p=d.player;
+    const target=d.enemies.filter((e)=>e.type==="HELI"&&e.hp>0).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
+    const ang=target?Math.atan2(target.y-p.y,target.x-p.x):-Math.PI/2;
+    d.shots.push({x:p.x,y:p.y-8,dx:Math.cos(ang),dy:Math.sin(ang),v:360,damage:3,mine:true,aa:true,hit:false});
+    warSfx("warAa");
   }
   function drawTank(ctx,t,col,mark){
     ctx.save();ctx.translate(t.x,t.y);
@@ -3862,15 +4078,23 @@
       if(k===2){ctx.fillStyle="#6d6a66";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#8a8680";ctx.fillRect(px+3,py+2,8,6);continue;}
       if(k===5){ctx.fillStyle="#c8960a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#1a1206";ctx.font="700 10px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("B",px+8,py+9);continue;}
     }
-    const blink=d.inv>0&&Math.floor(d.inv*12)%2===0;
-    if(!blink)drawTank(ctx,d.player,BTC,"B");
+    const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
+    if(!blink)drawTank(ctx,d.player,d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC,"B");
     for(const e of d.enemies){
+      if(e.type==="HELI"){drawHeli(ctx,e,t);continue;}
       const col=e.type==="FAST"?"#e0b84a":e.type==="HEAVY"?"#6a6a70":e.type==="ELITE"?"#b989d6":"#c45c4a";
       drawTank(ctx,e,col,e.type==="FAST"?"▲":e.type==="HEAVY"?"■":e.type==="ELITE"?"◆":"●");
     }
+    for(const pk of d.picks||[]){
+      ctx.beginPath();ctx.arc(pk.x,pk.y,7,0,Math.PI*2);
+      ctx.fillStyle=pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":"#ffe14a";
+      ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#120c02";ctx.stroke();
+      ctx.fillStyle="#120c02";ctx.font="700 9px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";
+      ctx.fillText(pk.kind==="heal"?"+":pk.kind==="shot"?"S":"★",pk.x,pk.y+0.5);
+    }
     for(const s of d.shots){
-      ctx.fillStyle=s.mine?BTC:"#f3efe6";
-      ctx.fillRect(s.x-3,s.y-3,6,6);
+      if(s.aa){ctx.fillStyle="#ffe14a";ctx.fillRect(s.x-3,s.y-7,6,14);}
+      else{ctx.fillStyle=s.mine?BTC:"#f3efe6";ctx.fillRect(s.x-3,s.y-3,6,6);}
     }
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(bcAt(d.map,x,y)===4){
       const px=x*BC_TS,py=y*BC_TS;
@@ -3878,17 +4102,74 @@
       ctx.beginPath();ctx.arc(px+8,py+9,8,0,Math.PI*2);ctx.fill();
       ctx.fillStyle="rgba(20,80,36,.9)";ctx.fillRect(px+7,py+8,2,8);
     }
+    drawHearts(ctx,d.player.hearts||0,d.player.maxHearts||3);
+    drawCitadelShield(ctx,d.integrity||0);
     ctx.textBaseline="alphabetic";ctx.textAlign="left";ctx.font='700 12px "IBM Plex Mono",monospace';
     const bnames=chanceLang()?["PACTO","LIBRO","CORONA"]:["PACT","LEDGER","LATTICE"];
     const bname=bnames[d.bloc|0]||bnames[0];
-    paintHaloText(ctx,"CITADEL "+d.integrity+"%",12,21,d.integrity<35?RED:PAL.fg);
-    paintHaloText(ctx,bname+" "+((d.level%3)+1)+"/3",12,41,PAL.fg);
-    ctx.textAlign="right";paintHaloText(ctx,"ENEMIES "+(d.enemies.length+Math.max(0,d.quota-d.spawned)),S.W-12,21,PAL.fg);
-    paintHaloText(ctx,"WAR "+((S.bcBattlesWon||0)+1)+"/9",S.W-12,41,PAL.fg);
-    if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,61,BTC);}
+    paintHaloText(ctx,bname+" "+((d.level%3)+1)+"/3",12,58,PAL.fg);
+    const alive=d.enemies.filter((e)=>e.hp>0).length;
+    ctx.textAlign="right";
+    paintHaloText(ctx,"ALIVE "+alive,S.W-12,22,alive?PAL.fg:"#9dffc4");
+    paintHaloText(ctx,"WAR "+((S.bcBattlesWon||0)+1)+"/9",S.W-12,42,PAL.fg);
+    if(d.wall>0)paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);
+    if(d.enemies.some((e)=>e.type==="HELI")){
+      const bw=132,bx=(S.W-bw)/2,by=S.H-34;
+      ctx.fillStyle="rgba(0,0,0,.55)";ctx.fillRect(bx,by,bw,10);
+      ctx.fillStyle=(d.aa||0)>=1?"#ffe14a":"#e23b3b";ctx.fillRect(bx,by,bw*Math.max(0,Math.min(1,d.aa||0)),10);
+      ctx.strokeStyle="#f3efe6";ctx.strokeRect(bx+.5,by+.5,bw-1,9);
+      ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
+      paintHaloText(ctx,"AA",S.W/2,by-4,PAL.fg);
+    }
     ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
+    ctx.restore();
+  }
+  function drawHearts(ctx,hearts,max){
+    for(let i=0;i<max;i++){
+      const x=16+i*18,y=18,on=i<hearts;
+      ctx.beginPath();
+      ctx.moveTo(x,y+3);
+      ctx.bezierCurveTo(x-8,y-4,x-2,y-7,x,y-1);
+      ctx.bezierCurveTo(x+2,y-7,x+8,y-4,x,y+3);
+      ctx.fillStyle=on?"#e23b3b":"#141414";
+      ctx.fill();
+      ctx.lineWidth=1.4;ctx.strokeStyle=on?"#ffd0d0":"#3a3a3a";ctx.stroke();
+    }
+  }
+  function drawCitadelShield(ctx,integrity){
+    const k=Math.max(0,Math.min(100,integrity))/100;
+    const x=S.W/2,y=30;
+    ctx.save();ctx.translate(x,y);
+    ctx.beginPath();
+    ctx.moveTo(0,-16);ctx.lineTo(16,-8);ctx.lineTo(13,8);ctx.quadraticCurveTo(0,18,-0,18);ctx.quadraticCurveTo(0,18,-13,8);ctx.lineTo(-16,-8);ctx.closePath();
+    ctx.fillStyle="#241c12";ctx.fill();
+    ctx.save();ctx.clip();
+    ctx.fillStyle=k>0.66?"#f2a900":k>0.33?"#c47a12":"#8a4a12";
+    ctx.fillRect(-20,-18,40,36*k);
+    ctx.restore();
+    ctx.lineWidth=2;ctx.strokeStyle="#1a1204";ctx.stroke();
+    ctx.fillStyle="#1a1204";ctx.font="700 13px Georgia, serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText("₿",0,1);
+    if(k<0.85){
+      ctx.strokeStyle="#1a1204";ctx.lineWidth=1.2;
+      ctx.beginPath();
+      ctx.moveTo(-6,-8);ctx.lineTo(2,2);
+      if(k<0.55){ctx.moveTo(6,-7);ctx.lineTo(-2,7);}
+      if(k<0.3){ctx.moveTo(-10,0);ctx.lineTo(8,4);}
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawHeli(ctx,e,t){
+    ctx.save();ctx.translate(e.x,e.y);
+    ctx.fillStyle="rgba(0,0,0,.25)";ctx.beginPath();ctx.ellipse(0,10,10,4,0,0,Math.PI*2);ctx.fill();
+    ctx.rotate(Math.sin(t*18)*.08);
+    ctx.fillStyle="#d7dde6";ctx.fillRect(-12,-5,24,10);
+    ctx.fillStyle="#8aa0b8";ctx.fillRect(-4,-8,8,6);
+    ctx.strokeStyle="#f3efe6";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(16,0);ctx.stroke();
     ctx.restore();
   }
   function defenseInput(){}
@@ -3904,9 +4185,9 @@
       }
     } catch (e) {}
     if (field) {
-      field.classList.toggle("bull", S.power === "BULL");
-      field.classList.toggle("bear", S.power === "BEAR");
-      field.classList.toggle("swan-bear", S.power === "BEAR" && S.swanBear);
+      field.classList.toggle("bull", p !== "defense" && S.power === "BULL");
+      field.classList.toggle("bear", p !== "defense" && S.power === "BEAR");
+      field.classList.toggle("swan-bear", p !== "defense" && S.power === "BEAR" && S.swanBear);
       field.classList.toggle("perk-ui", p === "perk" || p === "chance" || (p === "paused" && S.arcHold));
       field.classList.toggle("is-play", p === "play");
       field.classList.toggle("defense-mode", p === "defense");
@@ -4020,13 +4301,19 @@
     }
     if (S.laserOn) { S.laserT -= dt; if (S.laserT <= 0) applyLaser(false); }
     const watching = !!(S.mp && S.spectate);
+    flapHold = false;
     if (watching) {
+      flapQueued = false;
       const foc = mpFocusPlayer();
       if (foc && foc.y != null) {
         S.bird.y = foc.y;
         S.bird.v = foc.v || 0;
       }
     } else {
+      if (flapQueued) {
+        flapQueued = false;
+        S.bird.v = m.jump || -280;
+      }
       S.bird.v += m.gravity * dt; S.bird.y += S.bird.v * dt;
       if (S.power === "BEAR") {
         const k = S.swanBear ? 1 : 0.52;
@@ -5532,7 +5819,7 @@
     }
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const f of S.floats) {
-      ctx.font = "700 " + playFloatPx(f.kind) + "px \"IBM Plex Mono\", monospace";
+      ctx.font = "700 " + f.size + "px \"IBM Plex Mono\", monospace";
       ctx.globalAlpha = f.maxA * Math.max(0, Math.min(1, f.life / 0.28));
       const label = f.kind === "gain" ? usdIntLabel(f.text) : f.text;
       if (PALETTE_ID === "flower" && f.kind === "trade") paintFlowerFloat(ctx, label, f.x, f.y);
@@ -6650,12 +6937,6 @@
         + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"120\" height=\"84\"></canvas>"
         + "</button>"
         + "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>"
-        + "<p class=\"k gfx-lab\">" + t("textSize") + "</p>"
-        + "<div class=\"gfx-seg\">"
-        + "<button type=\"button\" class=\"cta opt-item" + (TEXT_SIZE === "s" ? " on" : "") + "\" data-tsize=\"s\">" + t("textSmall") + "</button>"
-        + "<button type=\"button\" class=\"cta opt-item" + (TEXT_SIZE === "m" ? " on" : "") + "\" data-tsize=\"m\">" + t("textMed") + "</button>"
-        + "<button type=\"button\" class=\"cta opt-item" + (TEXT_SIZE === "l" ? " on" : "") + "\" data-tsize=\"l\">" + t("textLarge") + "</button>"
-        + "</div>"
         + "<div class=\"gfx-toggles\">"
         + "<button type=\"button\" class=\"mute-tog" + (SHOW_GAIN ? "" : " on") + "\" id=\"tog-gain\">" + t("candleText") + " " + (SHOW_GAIN ? t("soundOn") : t("soundOff")) + "</button>"
         + "<button type=\"button\" class=\"mute-tog" + (SHOW_TRADE ? "" : " on") + "\" id=\"tog-trade\">" + t("tradeText") + " " + (SHOW_TRADE ? t("soundOn") : t("soundOff")) + "</button>"
@@ -6881,13 +7162,6 @@
         e.stopPropagation();
         applyPalette(btn.getAttribute("data-pal"));
         setHero(btn.getAttribute("data-pal"), false);
-        renderOverlay();
-      };
-    });
-    overlay.querySelectorAll("[data-tsize]").forEach((btn) => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        setTextSize(btn.getAttribute("data-tsize"));
         renderOverlay();
       };
     });
@@ -7450,7 +7724,6 @@
           + awardListHtml(loadAwards(), "full")
           + "<h3 class=\"k\">" + t("boardBtc") + "</h3><pre id=\"ready-board\" class=\"board\">—</pre>"
           + "<h3 class=\"k\">" + t("boardInd") + "</h3><pre id=\"ready-indep\" class=\"board\">—</pre>"
-          + "<h3 class=\"k\">" + t("eloBoard") + "</h3><pre id=\"ready-elo\" class=\"board\">—</pre>"
           + donateBlock();
         $("go").onclick = () => startGame(true);
         $("go").onpointerdown = (e) => { e.stopPropagation(); startGame(true); };
@@ -7504,7 +7777,7 @@
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
+        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
           + arcOutcomeHtml()
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
@@ -7514,7 +7787,7 @@
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k\">" + title + "</p>"
+        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
           + arcStoryHtml(card, body)
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
@@ -7523,6 +7796,13 @@
         e.preventDefault();
         e.stopPropagation();
         setArcTldr(!ARC_TLDR);
+        renderOverlay();
+      };
+      const sizeTog = $("arc-size-tog");
+      if (sizeTog) sizeTog.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        cycleArcText();
         renderOverlay();
       };
       overlay.querySelectorAll("[data-ch]").forEach((btn) => {
@@ -7670,7 +7950,6 @@
     };
     el.addEventListener("pointerdown", go);
     el.addEventListener("touchstart", go, { passive: false });
-    el.addEventListener("mousedown", go);
   }
   bindFlap(flapLayer);
   bindFlap(canvas);

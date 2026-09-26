@@ -135,6 +135,16 @@
       beep(55, 0.48, "square", 0.16, 18, 0.02);
       beep(38, 0.55, "sawtooth", 0.12, 16, 0.04);
     },
+    warShot: () => beep(640, 0.05, "square", 0.04, 280),
+    warHit: () => beep(180, 0.08, "square", 0.05, 90),
+    warBrick: () => beep(110, 0.1, "sawtooth", 0.05, 60),
+    warClank: () => beep(520, 0.04, "square", 0.03, 740),
+    warPop: () => { beep(220, 0.08, "square", 0.05, 80); beep(90, 0.12, "sawtooth", 0.04, 40, 0.04); },
+    warHurt: () => beep(140, 0.14, "sawtooth", 0.06, 50),
+    warPick: () => { beep(660, 0.06, "triangle", 0.045); beep(880, 0.08, "triangle", 0.04, null, 0.05); },
+    warHeli: () => { beep(90, 0.16, "sawtooth", 0.04, 140); beep(70, 0.18, "square", 0.03, 110, 0.08); },
+    warCharge: () => beep(480, 0.04, "square", 0.025, 720),
+    warAa: () => { beep(280, 0.1, "sawtooth", 0.06, 90); beep(740, 0.16, "square", 0.05, 180, 0.06); },
   };
   A.stopMusic = () => { if (musicInterval != null) { clearInterval(musicInterval); musicInterval = null; } };
   A.musicOn = () => musicInterval != null;

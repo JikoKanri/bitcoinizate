@@ -170,7 +170,7 @@ body {
 .home { margin-left: auto; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--gold); text-decoration: none; border: 1px solid var(--line); font-size: 16px; letter-spacing: 0; text-transform: none; }
 .field { position: relative; width: 480px; height: 640px; flex: 0 0 640px; overflow: hidden; touch-action: manipulation; }
 #c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
-#flap-layer { position: absolute; inset: 0; z-index: 7; display: none; touch-action: manipulation; }
+#flap-layer { position: absolute; inset: 0; z-index: 7; display: none; touch-action: none; }
 .field.is-play #flap-layer { display: block; }
 #clock-box { position: absolute; top: 8px; right: 12px; z-index: 6; pointer-events: none; text-align: right; }
 #clock { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--hud); text-shadow: 0 0 4px #000, 0 1px 0 #000, 1px 1px 0 #000, -1px -1px 0 #000, 0 0 8px rgba(0,0,0,0.8); }
@@ -299,7 +299,7 @@ body {
   50% { box-shadow: 0 0 0 8px rgba(200,150,10,0.22); }
 }
 .overlay { position: absolute; inset: 0; background: color-mix(in srgb, var(--bg) 94%, transparent); display: none; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 12px; padding: 24px 16px 32px; z-index: 12; overflow-y: auto; -webkit-overflow-scrolling: touch; pointer-events: auto; }
-.overlay.open { display: flex !important; pointer-events: auto !important; }
+.overlay.open { display: flex !important; pointer-events: auto !important; z-index: 46; }
 .overlay.dock {
   inset: auto 8px auto 8px;
   top: 8px;
@@ -372,7 +372,34 @@ body {
   background: var(--gold);
   color: #120c02;
 }
-.overlay.dock.chance-ui p.k { text-decoration: underline; color: var(--fg); }
+.overlay.dock.chance-ui .arc-size-tog {
+  position: absolute;
+  top: 32px;
+  right: 8px;
+  z-index: 24;
+  min-height: 22px;
+  min-width: 52px;
+  padding: 2px 8px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.overlay.dock.chance-ui .arc-title {
+  text-decoration: underline;
+  color: var(--fg);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding-right: 64px;
+}
 .overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; color: var(--fg); }
 .overlay.dock.chance-ui .arc-body {
   font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
@@ -861,6 +888,7 @@ html[data-palette="flower"] #app {
 .bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:9px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
 .bc-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.bc-actions button{flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:9px 7px;background:var(--surface);color:var(--fg);font:700 10px "IBM Plex Mono",monospace}.bc-actions button:disabled{opacity:.35}.bc-actions #bc-declare{border-color:#f2a900;color:#f2a900}.bc-actions #bc-form-army{border-color:#4f9d6e;color:#8fd4a8}.bc-note{min-height:13px;margin:8px 2px 0;font-size:9px;opacity:.7;white-space:normal;line-height:1.35}
 .field.defense-mode #flap-layer{display:none;pointer-events:none}
+.field.defense-mode #c { animation: none !important; filter: none !important; }
 .def-pad{position:absolute;inset:0;z-index:24;pointer-events:none}
 .def-pad.hide{display:none}
 .def-fire{
@@ -1129,9 +1157,12 @@ html[data-palette="flower"] .lyric-now .w.hot { color: #ffe14a; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-html[data-text="s"] .caption { font-size: 12px; }
-html[data-text="m"] .caption { font-size: 13px; }
-html[data-text="l"] .caption { font-size: 16px; }
-html[data-text="s"] .job-title { font-size: 11px; }
-html[data-text="m"] .job-title { font-size: 12px; }
-html[data-text="l"] .job-title { font-size: 15px; }
+html[data-arc-text="s"] .overlay.dock.chance-ui .arc-title { font-size: 17px; }
+html[data-arc-text="s"] .overlay.dock.chance-ui .arc-body { font-size: 13px; }
+html[data-arc-text="s"] .overlay.dock.chance-ui .arc-tldr { font-size: 12px; }
+html[data-arc-text="m"] .overlay.dock.chance-ui .arc-title { font-size: 20px; }
+html[data-arc-text="m"] .overlay.dock.chance-ui .arc-body { font-size: 14px; }
+html[data-arc-text="l"] .overlay.dock.chance-ui .arc-title { font-size: 24px; }
+html[data-arc-text="l"] .overlay.dock.chance-ui .arc-body { font-size: 17px; }
+html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
+#bc-panel, #bc-panel * { font-family: "IBM Plex Mono", monospace; }
