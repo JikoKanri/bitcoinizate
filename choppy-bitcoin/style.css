@@ -447,6 +447,35 @@ body {
   margin-right: auto;
   text-align: center;
 }
+.overlay.dock.chance-ui.fest-ui {
+  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: none;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  padding: 14px 14px 18px;
+  gap: 10px;
+  background: rgba(10, 8, 6, 0.98);
+}
+.overlay.dock.chance-ui.fest-ui .chance-art {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  max-height: 46vh;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.overlay.dock.chance-ui.fest-ui .arc-body {
+  font-size: 15px;
+  line-height: 1.5;
+}
+html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-title { font-size: 26px; }
+html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-body { font-size: 18px; }
 .overlay.dock.chance-ui .arc-tldr-k {
   display: inline-block;
   margin-right: 8px;

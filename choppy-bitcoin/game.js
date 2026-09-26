@@ -2053,7 +2053,7 @@
   };
   function cardTldr(card) {
     if (!card) return "";
-    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph") return warTldr(card.id);
+    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return warTldr(card.id);
     const row = CHANCE_TLDR[card.id];
     if (!row) return "";
     let line = chanceLang() ? (row.es || row.en) : row.en;
@@ -2330,6 +2330,7 @@
     { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The blocs have already answered." },
     { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration." },
     { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
+    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails." },
     { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
     { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends." },
@@ -2573,6 +2574,7 @@
       return say("The statements are in. The ships are already moving.","Los comunicados llegaron. Los barcos ya se mueven.");
     }
     if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
+    if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
     if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
     if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO.");}
     if(card.id==="notYet"){return say("Not yet.","");}
@@ -2718,7 +2720,10 @@
     });
   }
   function chanceArtHtml(id) {
-    const artId = id === "cabinet" ? "declaration" : id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "blocTriumph" ? "fourthColor" : id;
+    const artId = id === "cabinet" ? "declaration" : id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "battleWon" ? "theAnswer" : id;
+    if (id === "blocTriumph") {
+      return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
+    }
     const jpg="chance/"+artId+".jpg?v=mp55";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
@@ -2738,7 +2743,7 @@
     peopleAsking:1, extensionCord:1, obviously:1, principality:1, stateVisit:1, firstBloc:1,
     protectIsland:1, placeNow:1, citadelQuestion:1, rearmament:1, anOffer:1, ambassador:1,
     threeColors:1, ortegaCalls:1, theQuestion:1, cabinet:1, declaration:1, theAnswer:1,
-    blocReplies:1, blocAssault:1, blocTriumph:1, fourthColor:1, notYet:1
+    blocReplies:1, blocAssault:1, battleWon:1, blocTriumph:1, fourthColor:1, notYet:1
   };
   function warSeason(){ return !!S.bcIndependent && !S.bcVictory; }
   function arcInPool(c){ return !warSeason() || !!(c && BC_ARC[c.id]); }
@@ -2779,30 +2784,84 @@
     const es=chanceLang();
     const n=(S.bcBattlesWon||0);
     const b=warBloc((n/3)|0);
-    const within=(n%3)+1;
     const name=es?b.es:b.en, who=es?b.leaderEs:b.leader;
+    const slot=n%3;
+    const beat=es
+      ? (slot===0?"Los barcos ya se ven desde el muelle.":slot===1?"Vuelven por otra cala, y no avisan la hora.":"El mar se vuelve a llenar de cascos.")
+      : (slot===0?"The ships are already visible from the dock.":slot===1?"They come back through another cove, and they do not name the hour.":"The sea fills with hulls again.");
     return es
-      ? "Batalla "+(n+1)+" de 9. "+name+" abre fuego. Esta es la batalla "+within+" de 3 contra ellos.\n\n"+who+" ya escribió el comunicado. No negocia bajo fuego.\n\nLa isla tiene que aguantar."
-      : "Battle "+(n+1)+" of 9. The "+name+" opens fire. This is battle "+within+" of 3 against them.\n\n"+who+" has already written the communiqué. There is no negotiation under fire.\n\nThe island has to hold.";
+      ? name+" abre fuego. "+who+" ya escribió el comunicado. No negocia bajo fuego.\n\n"+beat+"\n\nLa isla tiene que aguantar."
+      : "The "+name+" opens fire. "+who+" has already written the communiqué. There is no negotiation under fire.\n\n"+beat+"\n\nThe island has to hold.";
+  }
+  function battleReportText(){
+    const es=chanceLang();
+    const won=S.bcBattlesWon||0;
+    const bloc=((won-1)/3)|0;
+    const slot=(won-1)%3;
+    const packs=[
+      [
+        { enT:"The Beach Holds", esT:"La playa aguanta",
+          en:"A landing dies in the sand. The occupation order was already stamped. Paco brings one stamp back and does not say where the clerk went.\n\nThe beach goes quiet enough to hear the bakery.",
+          es:"Un desembarco muere en la arena. La orden de ocupación ya estaba sellada. Paco vuelve con un sello y no dice dónde quedó el funcionario.\n\nLa playa se calla lo suficiente como para oír la panadería." },
+        { enT:"The Other Cove", esT:"La otra cala",
+          en:"They try another cove before noon. The tanks that make the road do not make the hill. Marek watches what the tide returns and does not call it a victory. Nico opens the bar anyway.",
+          es:"Prueban otra cala antes del mediodía. Los tanques que llegan al camino no llegan a la loma. Marek mira lo que devuelve la marea y no lo llama victoria. Nico abre el bar igual." }
+      ],
+      [
+        { enT:"The Posters", esT:"Los afiches",
+          en:"The Ledger comes in shouting. The posters hit the water before the soldiers do. Marshal Kade is still on the radio when the radio goes into the sea.\n\nSomeone on the dock starts laughing and cannot stop.",
+          es:"El Libro entra gritando. Los afiches caen al agua antes que los soldados. La mariscal Kade sigue en la radio cuando la radio se va al mar.\n\nAlguien en el muelle se larga a reír y no puede parar." },
+        { enT:"The Line Breaks", esT:"La fila se corta",
+          en:"They come back thinner and louder. The line breaks at the wall. Paco sits on a turret that is no longer moving and eats an orange.\n\nThe island does not cheer. It exhales.",
+          es:"Vuelven más flacos y más ruidosos. La fila se corta en el muro. Paco se sienta en una torreta que ya no se mueve y se come una naranja.\n\nLa isla no festeja. Suelta el aire." }
+      ],
+      [
+        { enT:"The Parade Stops", esT:"El desfile se detiene",
+          en:"The Lattice arrives as if this were a procession. It is not. The gray ships turn when the citadel does not kneel.\n\nSoren Pell does not speak. The silence, for once, is yours.",
+          es:"La Celosía llega como si esto fuera un desfile. No lo es. Los barcos grises giran cuando la ciudadela no se arrodilla.\n\nSoren Pell no habla. El silencio, por una vez, es de ustedes." },
+        { enT:"Ash on the Water", esT:"Ceniza en el agua",
+          en:"They return without the music. The hulls burn low and even. By dusk the eastern cliff is just a cliff again.\n\nLena watches the smoke and says nothing, which on this island counts as a toast.",
+          es:"Vuelven sin la música. Los cascos arden bajos y parejos. Al anochecer el acantilado del este vuelve a ser solo un acantilado.\n\nLena mira el humo y no dice nada, que en esta isla cuenta como un brindis." }
+      ]
+    ];
+    const row=packs[Math.max(0,Math.min(2,bloc))][slot===1?1:0];
+    S.chanceTitle={ en:row.enT, es:row.esT };
+    return es?row.es:row.en;
   }
   function triumphText(){
     const es=chanceLang();
     const won=S.bcBattlesWon||0;
     const b=warBloc(((won-1)/3)|0);
     const name=es?b.es:b.en, who=es?b.leaderEs:b.leader;
-    let tail;
-    if(won>=9) tail=es
-      ? "No queda una flota que pueda pagar el combustible. La radio queda lo bastante quieta como para oír la panadería."
-      : "No fleet is left that can spare the fuel. The radio goes quiet enough to hear the bakery.";
-    else if(won>=6) tail=es
-      ? "La Celosía todavía no acepta el color nuevo en el mapa. Van a atacar dentro de 210 velas."
-      : "The Lattice has not accepted the new color on the map. They will attack within 210 candles.";
-    else tail=es
-      ? "El Libro y la Celosía siguen alistando barcos. Uno de los dos va a atacar dentro de 210 velas."
-      : "The Ledger and the Lattice are still fitting out ships. One of them will attack within 210 candles.";
-    return es
-      ? name+" está derrotado. Tres batallas. Tres desembarcos fallidos. "+who+" va a llamarlo una pausa. No es una pausa.\n\n"+tail
-      : "The "+name+" is beaten. Three battles. Three failed landings. "+who+" will call it a pause. It is not a pause.\n\n"+tail;
+    const titles={
+      pact:{en:"The Pact Falls Back",es:"El Pacto retrocede"},
+      ledger:{en:"The Ledger Breaks",es:"El Libro se rompe"},
+      lattice:{en:"The Lattice Goes Quiet",es:"La Celosía se calla"}
+    };
+    S.chanceTitle=titles[b.key]||titles.pact;
+    const recog=es
+      ? (b.key==="ledger"
+        ? "La firma de "+who+" queda en un papel que llama a la isla una nación y a la campaña un error de cálculo. En casa van a tener que reimprimir los afiches."
+        : b.key==="lattice"
+        ? who+" no pide perdón. Lo hace un heraldo, una sola vez, en un puerto que la Celosía ya no controla. La palabra es reconocimiento. La dice como si fuera una corrección de archivo."
+        : who+" manda una nota de una línea. Usa la palabra reconocimiento. No usa la palabra rendición. Bitcoin Country queda escrito como un país, con la tipografía que usan para los países que no les gustan.")
+      : (b.key==="ledger"
+        ? who+" signs a paper that calls the island a nation and the campaign a miscalculation. The posters at home will have to be reprinted."
+        : b.key==="lattice"
+        ? who+" does not apologize. A herald does it once, in a harbor the Lattice no longer holds. The word is recognition. He makes it sound like a clerical correction."
+        : who+" sends a one-line note. It uses the word recognition. It does not use the word surrender. Bitcoin Country is set in the type they use for countries they dislike.");
+    const holiday=es
+      ? "La panadería cierra al mediodía. Alguien apoya un parlante en un cajón junto al muelle. Los chicos corren la playa con banderas que no coinciden. Es día de celebración nacional. Nadie espera a que el calendario esté de acuerdo."
+      : "The bakery closes at noon. Someone sets a speaker on a crate by the dock. Children run the beach with flags that do not match. It is a national day of celebration. Nobody waits for the calendar to agree.";
+    const tail=won>=9
+      ? (es?"La radio queda lo bastante quieta como para oír la panadería.":"The radio goes quiet enough to hear the bakery.")
+      : won>=6
+      ? (es?"La Celosía todavía puede decidir que esta derrota fue de otro. Si vienen, va a ser dentro de 210 velas.":"The Lattice may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
+      : (es?"El mar no terminó con ustedes. Otro bloque puede decidir que esta derrota fue de otro. Si vienen, va a ser dentro de 210 velas.":"The sea is not finished with you. Another bloc may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.");
+    const open=es
+      ? name+" está derrotado. Los barcos dan la vuelta con las banderas todavía arriba, porque bajarlas pediría un formulario que nadie quiere firmar."
+      : "The "+name+" is beaten. The ships turn for home with the flags still up, because taking them down would require a form nobody wants to sign.";
+    return open+"\n\n"+recog+"\n\n"+holiday+"\n\n"+tail;
   }
   function warTldr(id){
     const es=chanceLang();
@@ -2811,15 +2870,42 @@
       ? "Los tres bloques no contestan igual. Para el fin de la semana, los tres están armando igual."
       : "The three blocs do not answer the same way. By the end of the week, all three are arming anyway.";
     if(id==="blocAssault") return es
-      ? "Batalla "+(n+1)+" de 9 contra este bloque. El comunicado ya está escrito. La isla tiene que aguantar."
-      : "Battle "+(n+1)+" of 9 against this bloc. The communiqué is already written. The island has to hold.";
+      ? "Abren fuego. El comunicado ya está escrito. La isla tiene que aguantar."
+      : "They open fire. The communiqué is already written. The island has to hold.";
+    if(id==="battleWon"){
+      const i=Math.max(0,(S.bcBattlesWon||1)-1);
+      const en=[
+        "A landing dies in the sand. Paco brings one stamp back.",
+        "They try another cove. The tanks do not make the hill.",
+        "",
+        "The posters hit the water before the soldiers do.",
+        "The line breaks at the wall. The island exhales.",
+        "",
+        "The gray ships turn when the citadel does not kneel.",
+        "They return without the music. By dusk the cliff is just a cliff."
+      ];
+      const sp=[
+        "Un desembarco muere en la arena. Paco vuelve con un sello.",
+        "Prueban otra cala. Los tanques no llegan a la loma.",
+        "",
+        "Los afiches caen al agua antes que los soldados.",
+        "La fila se corta en el muro. La isla suelta el aire.",
+        "",
+        "Los barcos grises giran cuando la ciudadela no se arrodilla.",
+        "Vuelven sin la música. Al anochecer el acantilado vuelve a ser un acantilado."
+      ];
+      return (es?sp:en)[i] || (es?sp[0]:en[0]);
+    }
     if(id==="blocTriumph"){
-      if(n>=9) return es
-        ? "Ese bloque está derrotado. No queda una flota que pueda pagar el combustible."
-        : "That bloc is beaten. No fleet is left that can spare the fuel.";
+      const won=n;
+      const b=warBloc(((won-1)/3)|0);
+      const name=es?b.es:b.en;
+      if(won>=9) return es
+        ? name+" reconoce a la nación. La panadería cierra. Es día de celebración nacional."
+        : "The "+name+" recognizes the nation. The bakery closes. It is a national day of celebration.";
       return es
-        ? "Ese bloque está derrotado. Van a llamar a esto una pausa. El siguiente ataque llega dentro de 210 velas."
-        : "That bloc is beaten. They will call this a pause. The next attack comes within 210 candles.";
+        ? name+" reconoce a la nación. Es día de celebración nacional. Si vuelve otro bloque, va a ser dentro de 210 velas."
+        : "The "+name+" recognizes the nation. It is a national day of celebration. If another bloc comes, it will be within 210 candles.";
     }
     return "";
   }
@@ -2835,6 +2921,7 @@
       return repliesText();
     }
     if(card.id==="blocAssault") return assaultText();
+    if(card.id==="battleWon") return battleReportText();
     if(card.id==="blocTriumph") return triumphText();
     return null;
   }
@@ -2866,9 +2953,12 @@
     const chainDecl=id==="cabinet";
     const chainReplies=id==="declaration"&&!!S.bcIndependent&&!S.bcRepliesDone;
     const afterTriumph=id==="blocTriumph";
+    const afterBattle=id==="battleWon";
     const afterReplies=id==="blocReplies";
     const chainFourth=id==="blocTriumph"&&(S.bcBattlesWon||0)>=9;
-    if(launch||chainCabinet||chainDecl||chainReplies||chainFourth) S.arcChain=true;
+    const chainTriumph=afterTriumph&&!chainFourth;
+    const chainBattle=afterBattle;
+    if(launch||chainCabinet||chainDecl||chainReplies||chainFourth||chainBattle||chainTriumph) S.arcChain=true;
     finishArcHold();
     if(launch){
       S.bcDefensePending=false;
@@ -2887,6 +2977,7 @@
       chainArc("fourthColor");
       return;
     }
+    if(afterBattle) scheduleAssault(40);
     if(afterTriumph || afterReplies) scheduleAssault(210);
     if (!launch && !chainReplies) nudgeArcWindow();
   }
@@ -2977,6 +3068,7 @@
     S.arcPending = null;
     S.arcTldr = "";
     S.arcHold = false;
+    S.chanceTitle = null;
     const es0 = chanceLang();
     const warBody = applyWarCard(card);
     let body = warBody != null ? warBody : weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
@@ -3011,10 +3103,15 @@
       }
       S.chanceBody = body;
     }
-    const cue = (card.id === "blocAssault" || card.id === "theAnswer") ? "war" : ((card.id === "blocTriumph" || card.id === "fourthColor") ? "triumph" : "");
-    if (cue) { try { if (A.playCue) A.playCue(cue); } catch (e) {} }
-    else { try { A.speak("Arc"); } catch (e) {} }
+    const cue = (card.id === "blocAssault" || card.id === "theAnswer") ? "war" : "";
     setPhase("chance");
+    if (card.id === "blocTriumph") {
+      try { if (A.playVictory) A.playVictory(); } catch (e) {}
+    } else if (cue) {
+      try { if (A.playCue) A.playCue(cue); } catch (e) {}
+    } else {
+      try { A.speak("Arc"); } catch (e) {}
+    }
     renderHud();
   }
 
@@ -3101,14 +3198,20 @@
     S.chanceReadyNote = "";
     S.chanceBody = "";
     S.chanceSettled = false;
+    S.chanceTitle = null;
     S.arcTldr = "";
     S.arcHold = true;
     if (S.arcChain) {
+      const intoBattle = !!S.bcDefensePending;
       S.arcChain = false;
       S.arcHold = false;
       S.optPanel = null;
+      if (!intoBattle) {
+        try { setPhase("play"); } catch (e) { S.phase = "play"; }
+        return;
+      }
       S.phase = "play";
-      try { hideOverlay(); overlay.classList.remove("chance-ui", "dock", "juke-ui"); } catch (e) {}
+      try { hideOverlay(); overlay.classList.remove("chance-ui", "dock", "juke-ui", "fest-ui"); } catch (e) {}
       if (field) field.classList.add("is-play");
       return;
     }
@@ -3857,15 +3960,9 @@
       const won=S.bcBattlesWon;
       if(won>=9){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}}
       if(field)field.classList.add("is-play");
-      if(won%3===0){
-        window.__arcForce="blocTriumph";
-        S.phase="play";
-        setTimeout(()=>{try{dealChance();}finally{window.__arcForce="";}},80);
-        return;
-      }
-      scheduleAssault(40);
-      try{if(A&&A.releaseCue)A.releaseCue();}catch(e){}
-      try{setPhase("play");}catch(e){}
+      window.__arcForce=(won%3===0)?"blocTriumph":"battleWon";
+      S.phase="play";
+      setTimeout(()=>{try{dealChance();}finally{window.__arcForce="";}},80);
       return;
     }
     S.bcAssaultAt=0;
@@ -4107,11 +4204,10 @@
     ctx.textBaseline="alphabetic";ctx.textAlign="left";ctx.font='700 12px "IBM Plex Mono",monospace';
     const bnames=chanceLang()?["PACTO","LIBRO","CORONA"]:["PACT","LEDGER","LATTICE"];
     const bname=bnames[d.bloc|0]||bnames[0];
-    paintHaloText(ctx,bname+" "+((d.level%3)+1)+"/3",12,58,PAL.fg);
+    paintHaloText(ctx,bname,12,58,PAL.fg);
     const alive=d.enemies.filter((e)=>e.hp>0).length;
     ctx.textAlign="right";
     paintHaloText(ctx,"ALIVE "+alive,S.W-12,22,alive?PAL.fg:"#9dffc4");
-    paintHaloText(ctx,"WAR "+((S.bcBattlesWon||0)+1)+"/9",S.W-12,42,PAL.fg);
     if(d.wall>0)paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);
     if(d.enemies.some((e)=>e.type==="HELI")){
       const bw=132,bx=(S.W-bw)/2,by=S.H-34;
@@ -5902,7 +5998,7 @@
     const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
     bar.classList.toggle("hide",!unlocked);
     if(!unlocked){if(panel)panel.classList.add("hide");return;}
-    const warBit=S.bcVictory?" · WAR 9/9":(S.bcRepliesDone?" · WAR "+(S.bcBattlesWon||0)+"/9":"");
+    const warBit=S.bcRepliesDone&&!S.bcVictory?(chanceLang()?" · EN GUERRA":" · AT WAR"):"";
     setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20)+warBit);
     setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",(S.bcArmy||0)+" / 100");setTxt("bc-world",String(S.bcWorld||20));
     setTxt("bc-citadel",S.bcCitadel?"BUILT":"NOT BUILT");setTxt("bc-mine",S.bcMine?"ONLINE":"OFFLINE");
@@ -7678,7 +7774,7 @@
     const p = S.phase;
     if (p === "defense") {
       hideOverlay();
-      overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui", "mp-spec");
+      overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui", "mp-spec", "fest-ui");
       return;
     }
     if (p === "play") {
@@ -7696,7 +7792,7 @@
         return;
       }
       hideOverlay();
-      overlay.classList.remove("mp-spec", "dock");
+      overlay.classList.remove("mp-spec", "dock", "fest-ui");
       return;
     }
     overlay.classList.remove("mp-spec");
@@ -7704,6 +7800,7 @@
     overlay.classList.toggle("dock", p === "perk" || p === "paused" || p === "chance");
     overlay.classList.toggle("mp-ui", p === "mplobby" || p === "mpwait" || p === "mpwin");
     overlay.classList.toggle("chance-ui", p === "chance");
+    overlay.classList.toggle("fest-ui", p === "chance" && !S.optPanel && !!(S.chanceCard && S.chanceCard.id === "blocTriumph"));
     overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready" || p === "perk" || p === "chance") && S.optPanel === "juke");
     overlay.classList.toggle("test-ui", S.optPanel === "test");
     overlay.classList.toggle("gfx-ui", S.optPanel === "gfx");
@@ -7771,6 +7868,7 @@
       if (!card) { finishArcHold(); return; }
       const es = chanceLang();
       let title = es ? (card.titleEs || card.title) : card.title;
+      if (S.chanceTitle) title = es ? (S.chanceTitle.es || S.chanceTitle.en || title) : (S.chanceTitle.en || title);
       if (card.job) title = fillJob(title);
       const body = S.chanceBody || (es ? (card.bodyEs || card.body) : card.body);
       const pic = chanceArtHtml(card.id);
