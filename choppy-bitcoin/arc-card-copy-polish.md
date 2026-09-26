@@ -18,6 +18,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `b39b62a38c6cc1fe0c5592d99f5db90fa6cb5c5c`
   - Pull request: #9
 
+- [x] `somethingBetter` — “Algo mejor”
+  - Mission relation: follows `nothingToHide` and turns the preceding political unease into the first explicit idea of building something beyond a company or charity, leading into the independence / Bitcoin Country arc.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `8af8dc35f95965a9701bec346e34d9c295fd26b2`
+  - Pull request: #9
+
 ## Next priority
 
-- `somethingBetter`
+- `timeTraveler`
