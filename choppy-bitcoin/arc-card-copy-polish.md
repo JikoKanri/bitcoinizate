@@ -11,3 +11,4 @@ Este registro sigue el orden de `CHANCE_CARDS` en `game.js`. En cada ejecución 
 - `flu` — full text y TL;DR en español revisados; esta card no ofrece opciones.
 - `phish` — full text, TL;DR y opciones en español revisados.
 - `crash` — full text y TL;DR en español revisados; esta card no ofrece opciones.
+- `wine` — full text, TL;DR y opciones en español revisados.
