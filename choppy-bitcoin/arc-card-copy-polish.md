@@ -6,3 +6,4 @@ Este registro sigue el orden de `CHANCE_CARDS` en `game.js`. En cada ejecución 
 
 - `landfill` — full text, TL;DR y opciones en español revisados.
 - `taxbill` — full text y TL;DR en español revisados; esta card no ofrece opciones.
+- `nicoWedding` — full text, TL;DR y opciones en español revisados.
