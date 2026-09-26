@@ -141,6 +141,41 @@
     }
     applyPalette(id);
   }
+  let TEXT_SIZE = "m";
+  let SHOW_GAIN = true;
+  let SHOW_TRADE = true;
+  function textMul() {
+    return TEXT_SIZE === "s" ? 0.82 : TEXT_SIZE === "l" ? 1.55 : 1;
+  }
+  function playFloatPx(kind) {
+    const base = kind === "gain" || kind === "power" ? 12 : 15;
+    return Math.max(9, Math.round(base * textMul()));
+  }
+  function applyTextSizeAttr() {
+    try { document.documentElement.setAttribute("data-text", TEXT_SIZE); } catch (e) {}
+  }
+  function loadTextPrefs() {
+    try {
+      const s = localStorage.getItem("choppy-text-size");
+      if (s === "s" || s === "m" || s === "l") TEXT_SIZE = s;
+      if (localStorage.getItem("choppy-show-gain") === "0") SHOW_GAIN = false;
+      if (localStorage.getItem("choppy-show-trade") === "0") SHOW_TRADE = false;
+    } catch (e) {}
+    applyTextSizeAttr();
+  }
+  function setTextSize(id) {
+    TEXT_SIZE = id === "s" || id === "l" ? id : "m";
+    try { localStorage.setItem("choppy-text-size", TEXT_SIZE); } catch (e) {}
+    applyTextSizeAttr();
+  }
+  function setShowGain(on) {
+    SHOW_GAIN = !!on;
+    try { localStorage.setItem("choppy-show-gain", SHOW_GAIN ? "1" : "0"); } catch (e) {}
+  }
+  function setShowTrade(on) {
+    SHOW_TRADE = !!on;
+    try { localStorage.setItem("choppy-show-trade", SHOW_TRADE ? "1" : "0"); } catch (e) {}
+  }
   function setHero(skin, anim) {
     HERO_SKIN = HERO_SKINS[skin] ? skin : "classic";
     HERO_ANIM = !!anim;
@@ -180,6 +215,7 @@
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
   }
   loadPalette();
+  loadTextPrefs();
   loadHero();
   loadArcTldr();
   const PX_MIN = 1;
@@ -396,6 +432,14 @@
     testCopied: "Copied",
     testNoneRevealed: "(none yet)",
     testNonePool: "(pool is empty)",
+    testPreInd: "Pre-independence",
+    testPreIndHint: "Nodes 100 and cards through Ortega. Army and the enemy follow the battle you pick. Does not count for the board.",
+    testBattle: "BATTLE",
+    testEasy: "EASY",
+    testMod: "MODERATE",
+    testHard: "HARD",
+    testArmy: "YOUR ARMY",
+    testWorld: "ENEMY",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
     runStats: "STATS", runChart: "CHART", runRecap: "RUN TAPE",
     graphics: "GRAPHICS",
@@ -404,6 +448,12 @@
     animHero: "3D",
     hero2d: "2D",
     tapHero: "Tap the hero to switch 2D / 3D",
+    textSize: "TEXT SIZE",
+    textSmall: "SMALL",
+    textMed: "MEDIUM",
+    textLarge: "LARGE",
+    candleText: "CANDLE INCOME",
+    tradeText: "BUY / SELL",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
     tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
     tut3a: "Bull pumps price.",
@@ -789,7 +839,7 @@
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
     offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
     optPanel: null, optBack: "ready",
-    testArcEvery: 0, testArcNext: 0, testPerkSeed: {}, testPerkPick: "dca", testCashOnce: 0, testBtcOnce: 0, testCur: "usd", testCheat: false,
+    testArcEvery: 0, testArcNext: 0, testPerkSeed: {}, testPerkPick: "dca", testCashOnce: 0, testBtcOnce: 0, testCur: "usd", testCheat: false, testBattle: "mod",
     sellsBear: 0, coldLost: 0, boughtBtc: false, halveMiss: 0, halveSpawned: 0,
     jukeList: [], jukeUnlock: [], jukeTrack: 0, jukeOn: false, jukeShuffle: false, jukeRepeat: "off", jukeOff: {},
     aibudOn: false, aibudLit: {}, iaLog: [], iaProfit: 0, aibudSpeechUntil: 0, aiAcc: 0,
@@ -934,16 +984,19 @@
   }
 
   function pop(x, y, text, color, kind) {
+    if (kind === "gain" && !SHOW_GAIN) return;
+    if (kind === "trade" && !SHOW_TRADE) return;
     const gain = kind === "gain";
     const shown = gain ? usdIntLabel(text) : text;
     const power = kind === "power";
-    const flowerTalk = PALETTE_ID === "flower" && (gain || kind === "trade");
+    const flowerTalk = PALETTE_ID === "flower" && kind === "trade";
+    const px = playFloatPx(kind);
     S.floats.push({
       x, y, text: shown, color, kind: kind || "",
       life: gain || power ? 0.825 : 1.1,
       vy: gain || power ? -32 : -38,
-      size: flowerTalk ? (gain ? 15 : 16) : (gain || power ? 7.35 * 1.05 : 13),
-      maxA: flowerTalk ? 1 : (gain || power ? 0.75 : 0.875),
+      size: px,
+      maxA: flowerTalk ? 1 : (gain || power ? 0.9 : 0.92),
     });
   }
 
@@ -2056,7 +2109,7 @@
       body: "Lena gets the flu. You spend the day bringing her water, medicine, soup, and whatever else she asks for. By evening you have spent money you will not get back. Paco eats half the soup. Lena does not notice.",
       bodyEs: "A Lena le da gripe. Pasás el día llevándole agua, remedio, sopa y lo que pida. A la noche ya gastaste plata que no vuelve. Paco se come la mitad de la sopa. Lena no se da cuenta." },
     { id: "phish", kind: "choice",
-      title: "Phishing", titleEs: "Phishing",
+      title: "Support", titleEs: "Soporte",
       body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
       bodyEs: "Llega un mail de soporte. Dicen que hay un problema con tu cuenta. Necesitan tu seed para verificar la identidad. El mail se ve extremadamente convincente.",
       opts: [
@@ -5479,10 +5532,10 @@
     }
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const f of S.floats) {
-      ctx.font = "700 " + f.size + "px \"IBM Plex Mono\", monospace";
+      ctx.font = "700 " + playFloatPx(f.kind) + "px \"IBM Plex Mono\", monospace";
       ctx.globalAlpha = f.maxA * Math.max(0, Math.min(1, f.life / 0.28));
       const label = f.kind === "gain" ? usdIntLabel(f.text) : f.text;
-      if (PALETTE_ID === "flower" && (f.kind === "gain" || f.kind === "trade")) paintFlowerFloat(ctx, label, f.x, f.y);
+      if (PALETTE_ID === "flower" && f.kind === "trade") paintFlowerFloat(ctx, label, f.x, f.y);
       else paintHaloText(ctx, label, f.x, f.y, f.color || PAL.fg);
     }
     ctx.globalAlpha = 1;
@@ -6236,7 +6289,94 @@
     }
     if (S.testCashOnce > 0) { S.cash += S.testCashOnce; S.testCashOnce = 0; cheated = true; }
     if (S.testBtcOnce > 0) { creditBtc(S.testBtcOnce); S.testBtcOnce = 0; cheated = true; }
+    if (S.testIndepQueued) {
+      applyPreIndependence();
+      S.testIndepQueued = false;
+      cheated = true;
+    }
     if (cheated) S.testCheat = true;
+  }
+  const PRE_INDEP_CARDS = [
+    "landfill", "wine", "justInCase", "nothingToHide", "somethingBetter", "wedding",
+    "timeTraveler", "temporaryMeasures", "citadelProblem",
+    "pieceWorld", "islandInspection", "paperwork", "nobodyKnows", "theOg",
+    "peopleAsking", "extensionCord", "obviously",
+    "principality", "stateVisit", "firstBloc", "protectIsland", "placeNow",
+    "citadelQuestion", "rearmament", "anOffer", "ambassador", "threeColors", "ortegaCalls"
+  ];
+  function battlePreset(id) {
+    if (id === "easy") return { army: 80, world: 50 };
+    if (id === "hard") return { army: 30, world: 75 };
+    return { army: 55, world: 55 };
+  }
+  function testBattleNote() {
+    const p = battlePreset(S.testBattle);
+    return t("testArmy") + " " + p.army + " · " + t("testWorld") + " " + p.world;
+  }
+  function applyPreIndependence() {
+    if (!S.chanceUsed) S.chanceUsed = {};
+    if (!S.chanceMet) S.chanceMet = {};
+    PRE_INDEP_CARDS.forEach((id) => {
+      S.chanceUsed[id] = true;
+      noteArcSeen(id);
+    });
+    S.familyClosed = true;
+    S.familyPath = false;
+    S.engaged = false;
+    S.arcBias = "theQuestion";
+    S.bcBook = true;
+    S.bcBookOffer = false;
+    S.chanceMet.islandTrip = true;
+    S.bcIsland = true;
+    S.bcIslandOffer = 0;
+    S.bcOg = true;
+    S.bcSettlement = true;
+    S.bcPower = true;
+    S.bcMine = true;
+    S.bcCitadel = true;
+    S.bcArmyUnlocked = true;
+    const fight = battlePreset(S.testBattle);
+    S.bcArmy = fight.army;
+    S.bcWorld = fight.world;
+    S.bcNodes = 100;
+    S.bcIndependent = false;
+    S.bcVictory = false;
+    S.bcArcClosed = false;
+    S.bcDefense = null;
+    S.bcDefensePending = false;
+    S.bcBattlesWon = 0;
+    S.bcAssaultAt = 0;
+    S.bcReactions = null;
+    S.bcRepliesDone = false;
+    S.indepNoted = false;
+    if (!S.have) S.have = {};
+    S.have.market = Math.max(S.have.market || 0, 1);
+    S.have.chance = Math.max(S.have.chance || 0, 2);
+    if ((S.cash || 0) < 120000) S.cash = 120000;
+    if ((S.btc || 0) < 0.85) S.btc = 0.85;
+    if (!(S.price > 1000)) S.price = 42000;
+    S.candles = Math.max(S.candles || 0, 336);
+    S.shownCandles = S.candles;
+    S.bcNodeTick = S.candles;
+    S.chanceAt = [(S.candles || 0) + 1];
+    S.chanceUntil = (S.candles || 0) + 21;
+    S.testCheat = true;
+    S.peakNet = Math.max(S.peakNet || 0, netBtc());
+  }
+  function testPreIndependence() {
+    S.testCheat = true;
+    if (!testInRun()) {
+      S.testIndepQueued = true;
+      S.optPanel = null;
+      startGame(false);
+      return;
+    }
+    applyPreIndependence();
+    testLogHold = false;
+    testLogDraft = null;
+    try { renderHud(); } catch (e) {}
+    try { layoutStage(); } catch (e) {}
+    try { renderOverlay(); } catch (e) {}
   }
   function testGrantPerk(kind) {
     if (!kind || !PERK_MAX[kind]) return;
@@ -6363,7 +6503,7 @@
     const moneyVal = S.testCur === "btc" ? "0.1" : "10000";
     const note = (S.testCheat || (S.testArcEvery | 0) > 0 || S.testCashOnce > 0 || S.testBtcOnce > 0 || Object.keys(S.testPerkSeed || {}).some((k) => testSeedOf(k) > 0))
       ? "<p class=\"k\">" + t("testBoard") + "</p>" : "";
-    return "<h1>" + t("testing") + "</h1><div class=\"test-box\">"
+    return "<div class=\"opt-head\">" + optHead(t("testing")) + "</div><div class=\"test-box\">"
       + "<p class=\"test-lab\">" + t("testRevealed") + "</p>"
       + "<textarea id=\"test-arc-log\" class=\"test-log\" rows=\"8\" spellcheck=\"false\">" + escTxt(testLogValue()) + "</textarea>"
       + "<div class=\"test-row\">"
@@ -6392,47 +6532,60 @@
       + "<button type=\"button\" class=\"cta\" id=\"test-add\">" + t("testAdd") + "</button>"
       + "</div>"
       + "<p class=\"k\">" + testMoneyStatus() + "</p>"
+      + "<p class=\"test-lab\">" + t("testBattle") + "</p>"
+      + "<div class=\"gfx-seg\">"
+      + "<button type=\"button\" class=\"cta" + (S.testBattle === "easy" ? " on" : "") + "\" data-battle=\"easy\">" + t("testEasy") + "</button>"
+      + "<button type=\"button\" class=\"cta" + (S.testBattle === "mod" ? " on" : "") + "\" data-battle=\"mod\">" + t("testMod") + "</button>"
+      + "<button type=\"button\" class=\"cta" + (S.testBattle === "hard" ? " on" : "") + "\" data-battle=\"hard\">" + t("testHard") + "</button>"
+      + "</div>"
+      + "<p class=\"k\" id=\"test-battle-note\">" + testBattleNote() + "</p>"
+      + "<p class=\"test-lab\">" + t("testPreInd") + "</p>"
+      + "<div class=\"test-row\">"
+      + "<button type=\"button\" class=\"cta\" id=\"test-preindep\">" + t("testPreInd") + "</button>"
+      + "</div>"
+      + "<p class=\"k\">" + t("testPreIndHint") + "</p>"
       + note
-      + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+      + "</div>";
   }
 
+  function optHead(title) {
+    return "<h1>" + title + "</h1><button type=\"button\" class=\"opt-x\" id=\"opt-x\" aria-label=\"Close\">×</button>";
+  }
   function pauseMarkup() {
     const panel = S.optPanel || "";
     if (panel === "help") {
-      return "<h1>" + t("howPlay") + "</h1>" + tutorialBody() + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+      return "<div class=\"opt-head\">" + optHead(t("howPlay")) + "</div>" + tutorialBody();
     }
     if (panel === "market") {
       const mul = S.ranked ? 10 : 1;
       const cold = 1200 * mul, laser = 1800 * mul, msig = 9000 * mul;
       const book = S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">THE BITCOIN STATE · $666</button>" : "";
       const island = S.bcIslandOffer&&!S.bcIsland&&S.chanceMet&&S.chanceMet.islandTrip ? "<button class=\"cta\" data-buy=\"bcisland\">The Island · "+money(S.bcIslandOffer)+"</button>" : "";
-      return "<h1>" + t("market") + "</h1>"
+      return "<div class=\"opt-head\">" + optHead(t("market")) + "</div>"
         + "<p class=\"k\">" + money(S.cash) + "</p>" + book + island
         + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + money(cold) + "</button>"
         + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + money(laser) + "</button>"
-        + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>"
-        + "<button class=\"cta play-alt\" id=\"help-back\">" + t("back") + "</button>";
+        + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>";
     }
     if (panel === "feed") {
-      return "<h1>" + t("feedback") + "</h1>"
+      return "<div class=\"opt-head\">" + optHead(t("feedback")) + "</div>"
         + "<textarea id=\"feed-text\" rows=\"5\" style=\"width:100%;max-width:360px;background:#0a0a0c;color:#f3efe6;border:1px solid #3a3a40;padding:8px;font:inherit\"></textarea>"
         + "<p class=\"k\" id=\"feed-msg\"></p>"
-        + "<button class=\"cta\" id=\"feed-send\">" + t("send") + "</button>"
-        + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        + "<button class=\"cta\" id=\"feed-send\">" + t("send") + "</button>";
     }
     if (panel === "aibud") {
       if ((S.have.aibud || 0) <= 0) {
-        return "<h1>" + t("aiLog") + "</h1><p>" + t("aiNeed") + "</p><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        return "<div class=\"opt-head\">" + optHead(t("aiLog")) + "</div><p>" + t("aiNeed") + "</p>";
       }
       const rows = (S.iaLog || []).map((e) => {
         const sec = Math.floor(e.t);
         return "<p><span class=\"ia-act\">" + e.act + "</span> — " + e.why + " <span class=\"k\">" + sec + "s · " + fmtBtc(e.btc != null ? e.btc : 0) + "</span></p>";
       }).join("") || "<p>" + t("noAiCalls") + "</p>";
-      return "<h1>" + t("aiLog") + "</h1><p class=\"k\">" + t("markedPl") + " " + fmtBtc(S.iaProfit || 0) + " · T" + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+      return "<div class=\"opt-head\">" + optHead(t("aiLog")) + "</div><p class=\"k\">" + t("markedPl") + " " + fmtBtc(S.iaProfit || 0) + " · T" + (S.have.aibud || 0) + "</p><div class=\"awards\">" + rows + "</div>";
     }
     if (panel === "juke") {
       if ((S.have.juke || 0) <= 0) {
-        return "<h1>" + t("jukebox") + "</h1><p>" + t("jukeNeed") + "</p><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        return "<div class=\"opt-head\">" + optHead(t("jukebox")) + "</div><p>" + t("jukeNeed") + "</p>";
       }
       fillJukebox();
       const id = S.jukeList[S.jukeTrack] || "";
@@ -6448,7 +6601,7 @@
           + "</div>";
       }).join("");
       const rpt = S.jukeRepeat || "off";
-      return "<h1>" + t("jukebox") + "</h1><div class=\"juke retro\">"
+      return "<div class=\"opt-head\">" + optHead(t("jukebox")) + "</div><div class=\"juke retro\">"
         + "<p class=\"juke-lab\">Retro Jukebox</p>"
         + "<p class=\"juke-now\">" + (song ? song.title : id) + "</p>"
         + "<p class=\"juke-gen\">" + (song && song.genre ? song.genre : "") + "</p>"
@@ -6464,24 +6617,24 @@
         + "<button type=\"button\" class=\"juke-btn ico" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\" aria-label=\"Repeat\">" + (rpt === "one" ? "🔂" : "🔁") + "</button>"
         + "</div>"
         + "<div class=\"juke-list\">" + rows + "</div>"
-        + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        + "</div>";
     }
     if (panel === "sound") {
       const themeOn = !A.muteTheme();
       const sfxOn = !A.muteSfx();
       const voiceOn = !A.muteVoice();
-      return "<h1>" + t("sound") + "</h1><div class=\"mute-row\">"
+      return "<div class=\"opt-head\">" + optHead(t("sound")) + "</div><div class=\"mute-row\">"
         + "<button type=\"button\" class=\"mute-tog" + (themeOn ? "" : " on") + "\" id=\"mute-theme\">" + t("bullSongs") + " " + (themeOn ? t("soundOn") : t("soundOff")) + "</button>"
         + "<button type=\"button\" class=\"mute-tog" + (sfxOn ? "" : " on") + "\" id=\"mute-sfx\">" + t("gameFx") + " " + (sfxOn ? t("soundOn") : t("soundOff")) + "</button>"
         + "<button type=\"button\" class=\"mute-tog" + (voiceOn ? "" : " on") + "\" id=\"mute-voice\">" + t("voices") + " " + (voiceOn ? t("soundOn") : t("soundOff")) + "</button>"
-        + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        + "</div>";
     }
     if (panel === "lang") {
       const cur = (window.BZ && BZ.lang && BZ.lang()) || "en";
-      return "<h1>" + t("language") + "</h1><div class=\"opt-menu\">"
+      return "<div class=\"opt-head\">" + optHead(t("language")) + "</div><div class=\"opt-menu\">"
         + "<button type=\"button\" class=\"cta opt-item" + (cur === "en" ? " on" : "") + "\" data-lang=\"en\">English</button>"
         + "<button type=\"button\" class=\"cta opt-item" + (cur === "es" ? " on" : "") + "\" data-lang=\"es\">Español</button>"
-        + "</div><button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        + "</div>";
     }
     if (panel === "gfx") {
       const pal = currentPaletteId();
@@ -6491,17 +6644,28 @@
           + "<span class=\"pal-dots\" aria-hidden=\"true\"><i style=\"background:" + p.bg + "\"></i><i style=\"background:" + p.gold + "\"></i><i style=\"background:" + p.green + "\"></i><i style=\"background:" + p.red + "\"></i></span>"
           + t(p.nameKey) + "</button>";
       }).join("");
-      return "<h1>" + t("graphics") + "</h1>"
+      return "<div class=\"opt-head\">" + optHead(t("graphics")) + "</div>"
+        + "<div class=\"gfx-sheet\">"
         + "<button type=\"button\" class=\"hero-tog\" id=\"hero-tog\" aria-label=\"" + t("tapHero") + "\">"
-        + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"168\" height=\"120\"></canvas>"
+        + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"120\" height=\"84\"></canvas>"
         + "</button>"
         + "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>"
+        + "<p class=\"k gfx-lab\">" + t("textSize") + "</p>"
+        + "<div class=\"gfx-seg\">"
+        + "<button type=\"button\" class=\"cta opt-item" + (TEXT_SIZE === "s" ? " on" : "") + "\" data-tsize=\"s\">" + t("textSmall") + "</button>"
+        + "<button type=\"button\" class=\"cta opt-item" + (TEXT_SIZE === "m" ? " on" : "") + "\" data-tsize=\"m\">" + t("textMed") + "</button>"
+        + "<button type=\"button\" class=\"cta opt-item" + (TEXT_SIZE === "l" ? " on" : "") + "\" data-tsize=\"l\">" + t("textLarge") + "</button>"
+        + "</div>"
+        + "<div class=\"gfx-toggles\">"
+        + "<button type=\"button\" class=\"mute-tog" + (SHOW_GAIN ? "" : " on") + "\" id=\"tog-gain\">" + t("candleText") + " " + (SHOW_GAIN ? t("soundOn") : t("soundOff")) + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (SHOW_TRADE ? "" : " on") + "\" id=\"tog-trade\">" + t("tradeText") + " " + (SHOW_TRADE ? t("soundOn") : t("soundOff")) + "</button>"
+        + "</div>"
         + "<div class=\"pal-grid\">" + swatches + "</div>"
-        + "<button class=\"cta\" id=\"help-back\">" + t("back") + "</button>";
+        + "</div>";
     }
     if (panel === "test") return testMarkup();
     const fromPlay = S.phase === "paused" && (S.optBack === "play" || !S.optBack);
-    return "<h1>" + (fromPlay ? t("paused") : t("options")) + "</h1>"
+    return "<div class=\"opt-head\">" + optHead(fromPlay ? t("paused") : t("options")) + "</div>"
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
@@ -6511,8 +6675,7 @@
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-feed\">" + t("feedback") + "</button>"
-      + "</div>"
-      + (fromPlay ? "" : "<button class=\"cta\" id=\"opt-close\">" + t("back") + "</button>");
+      + "</div>";
   }
   function bindPauseUi() {
     const go = $("go");
@@ -6531,6 +6694,18 @@
     };
     const helpBack = $("help-back");
     if (helpBack) helpBack.onclick = (e) => { e.stopPropagation(); S.optPanel = "menu"; renderOverlay(); };
+    const optX = $("opt-x");
+    if (optX) optX.onclick = (e) => {
+      e.stopPropagation();
+      const panel = S.optPanel || "";
+      const nested = panel && panel !== "menu" && panel !== "off";
+      if (nested) { S.optPanel = "menu"; renderOverlay(); return; }
+      S.optPanel = null;
+      if (S.phase === "chance" || S.phase === "perk") { renderOverlay(); return; }
+      if (S.optBack === "ready" || S.phase === "ready") { S.phase = "ready"; renderOverlay(); return; }
+      if (S.phase === "paused") { S.optPanel = S.arcHold ? null : "off"; renderOverlay(); return; }
+      setPhase(S.optBack || "play");
+    };
     overlay.querySelectorAll("[data-buy]").forEach((btn) => {
       btn.onclick = (e) => {
         e.stopPropagation();
@@ -6687,6 +6862,16 @@
       testAddMoney(inp ? inp.value : 0, cur ? cur.value : "usd");
       renderOverlay();
     };
+    const testPre = $("test-preindep");
+    if (testPre) testPre.onclick = (e) => { e.stopPropagation(); testPreIndependence(); };
+    overlay.querySelectorAll("[data-battle]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-battle");
+        S.testBattle = id === "easy" || id === "hard" ? id : "mod";
+        renderOverlay();
+      };
+    });
     const testPerkSel = $("test-perk");
     if (testPerkSel) testPerkSel.onchange = (e) => { e.stopPropagation(); S.testPerkPick = testPerkSel.value; };
     const testCur = $("test-cur");
@@ -6699,6 +6884,17 @@
         renderOverlay();
       };
     });
+    overlay.querySelectorAll("[data-tsize]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        setTextSize(btn.getAttribute("data-tsize"));
+        renderOverlay();
+      };
+    });
+    const togGain = $("tog-gain");
+    if (togGain) togGain.onclick = (e) => { e.stopPropagation(); setShowGain(!SHOW_GAIN); renderOverlay(); };
+    const togTrade = $("tog-trade");
+    if (togTrade) togTrade.onclick = (e) => { e.stopPropagation(); setShowTrade(!SHOW_TRADE); renderOverlay(); };
     const heroTog = $("hero-tog") || $("hero-prev");
     if (heroTog) {
       heroTog.onpointerdown = (e) => {
@@ -7236,6 +7432,7 @@
     overlay.classList.toggle("chance-ui", p === "chance");
     overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready" || p === "perk" || p === "chance") && S.optPanel === "juke");
     overlay.classList.toggle("test-ui", S.optPanel === "test");
+    overlay.classList.toggle("gfx-ui", S.optPanel === "gfx");
     if (p === "ready") {
       if (S.optPanel) {
         overlay.innerHTML = pauseMarkup();

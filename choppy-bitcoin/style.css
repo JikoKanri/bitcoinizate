@@ -340,7 +340,14 @@ body {
   filter: none !important;
   mix-blend-mode: normal !important;
 }
-.overlay.dock.chance-ui h1 { text-align: left; padding-right: 72px; }
+.overlay.dock.chance-ui h1 {
+  text-align: left;
+  padding-right: 72px;
+  font-size: 22px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 .overlay.dock.chance-ui .arc-tldr-tog {
   position: absolute;
   top: 6px;
@@ -369,7 +376,7 @@ body {
 .overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; color: var(--fg); }
 .overlay.dock.chance-ui .arc-body {
   font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.55;
   letter-spacing: 0.005em;
@@ -732,6 +739,12 @@ video.chance-art {
   width: 100%;
   max-width: 280px;
 }
+.gfx-lab { width: 100%; max-width: 280px; text-align: left; margin: 2px 0 0; }
+.gfx-seg { display: flex; gap: 6px; width: 100%; max-width: 280px; }
+.gfx-seg .cta { flex: 1; min-width: 0; min-height: 34px; padding: 0 6px; font-size: 11px; }
+.gfx-seg .cta.on { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.gfx-toggles { max-width: 280px; flex-direction: column; }
+.gfx-toggles .mute-tog { width: 100%; min-width: 0; }
 .overlay .pal-swatch.cta {
   display: flex;
   align-items: center;
@@ -1037,3 +1050,88 @@ html[data-palette="flower"] .lyric-now .w.hot { color: #ffe14a; }
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   align-items: stretch; text-align: left;
 }
+.opt-head {
+  width: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  flex: 0 0 auto;
+}
+.overlay .opt-head h1,
+.overlay.dock .opt-head h1,
+.overlay.dock.chance-ui .opt-head h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  flex: 1;
+  min-width: 0;
+}
+.opt-x,
+.overlay.dock .opt-x {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.overlay.dock.gfx-ui,
+.overlay.gfx-ui {
+  max-height: 90%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  align-items: stretch;
+  text-align: left;
+  padding: 8px 10px 12px;
+}
+.gfx-sheet {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+.gfx-sheet .hero-tog { align-self: center; }
+.gfx-sheet .hero-prev { width: 132px; height: 94px; }
+.gfx-sheet .hero-prev-cap { max-width: none; width: 100%; margin: 0; text-align: center; }
+.gfx-sheet .gfx-lab,
+.gfx-sheet .gfx-seg,
+.gfx-sheet .gfx-toggles,
+.gfx-sheet .pal-grid { width: 100%; max-width: none; }
+.gfx-sheet .gfx-toggles { display: flex; flex-direction: column; gap: 6px; }
+.gfx-sheet .mute-tog {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 36px;
+  white-space: normal;
+  line-height: 1.25;
+  padding: 8px 10px;
+}
+.gfx-sheet .pal-swatch {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html[data-text="s"] .caption { font-size: 12px; }
+html[data-text="m"] .caption { font-size: 13px; }
+html[data-text="l"] .caption { font-size: 16px; }
+html[data-text="s"] .job-title { font-size: 11px; }
+html[data-text="m"] .job-title { font-size: 12px; }
+html[data-text="l"] .job-title { font-size: 15px; }
