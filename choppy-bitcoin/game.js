@@ -2690,7 +2690,7 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
-  const BC_ART=Object.fromEntries(["justInCase","nothingToHide","somethingBetter","timeTraveler","temporaryMeasures","citadelProblem","rearmament","anOffer","ambassador","threeColors","ortegaCalls","theQuestion","declaration","theAnswer","fourthColor","notYet"].map(x=>[x,1]));
+  const BC_ART=Object.fromEntries(["justInCase","nothingToHide","somethingBetter","timeTraveler","temporaryMeasures","citadelProblem","anOffer","ambassador","threeColors","ortegaCalls","theQuestion","declaration","theAnswer","fourthColor","notYet"].map(x=>[x,1]));
   const ARC_VID = { landfill: 1, proposal: 1, mexico: 1, phish: 1, baby: 1 };
   let chanceArtBusy = false;
   function preloadChanceArt() {
