@@ -1965,7 +1965,7 @@
     phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
     crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
-    casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde. Encontró una mesa en un casino y ya decidió que el juego es interesante." },
+    casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Puedes apostar el 10% o el 30% de tu patrimonio, o salir sin apostar." },
     poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a un póker de madrugada con gente que conoce. No es un casino. Asiente cuando decís que jugás." },
     uncle: { en: "Uncle Héctor wires you {gift} and refuses to say why.", es: "El tío Héctor te gira {gift} y se niega a decir por qué." },
     school: { en: "Sofi is going on a school trip to the Mint Museum, and her family is short this month. Lena thinks you should help.", es: "Sofi se va de viaje de estudio al museo de la Casa de Moneda, y en casa este mes están justos. Lena cree que deberías ayudar." },
@@ -2077,13 +2077,13 @@
         { k: "c", label: "Cab home", labelEs: "Tomar un taxi a casa" }
       ] },
     { id: "casino", kind: "choice", after: ["landfill"],
-      title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
+      title: "Nico Finds a Table", titleEs: "Nico encuentra una mesa",
       body: "Nico calls at 11:40 P.M. \"I found a table.\" You ask where. \"A casino.\" You should probably ask more questions. Instead, you go. He has already found a game that he considers interesting.",
-      bodyEs: "Nico llama a las 23:40. \"Encontré una mesa.\" Preguntás dónde. \"Un casino.\" Deberías hacer más preguntas. En vez de eso, vas. Ya encontró un juego que considera interesante.",
+      bodyEs: "Nico llama a las 11:40 p. m. \"Encontré una mesa\". Le preguntas dónde. \"En un casino\". Deberías hacer más preguntas, pero decides acompañarlo. Cuando llegas, Nico ya eligió un juego que considera interesante.",
       opts: [
-        { k: "a", label: "Bet 10%", labelEs: "Apostar 10%" },
-        { k: "b", label: "Bet 30%", labelEs: "Apostar 30%" },
-        { k: "c", label: "Leave", labelEs: "Irte" }
+        { k: "a", label: "Bet 10%", labelEs: "Apostar el 10% del patrimonio" },
+        { k: "b", label: "Bet 30%", labelEs: "Apostar el 30% del patrimonio" },
+        { k: "c", label: "Leave", labelEs: "Salir del casino" }
       ] },
     { id: "poker", kind: "choice", after: ["wine", "casino"],
       title: "Poker", titleEs: "Póker",
