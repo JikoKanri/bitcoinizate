@@ -1962,7 +1962,7 @@
     nicoWedding: { en: "Nico is getting married. You barely know the room. Lena asks you not to let him talk you into anything.", es: "Nico se casa. Apenas conoces a la gente del salón y Lena te pide que no permitas que él te convenza de nada. En la mesa de regalos debes decidir cuánto dar." },
     mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere pasar cinco días en Tulum. Reservar el viaje cuesta 8% del patrimonio y otorga unos segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
     flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
-    phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Soporte te escribe y pide tu seed. Se ve extremadamente convincente." },
+    phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
     crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un scooter de delivery pega el auto despacio. Nadie sale realmente lastimado. Todos se disculpan de más." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "El viernes en lo de Marek hay vino y 12 Monkeys en pausa. La charla deriva a la I.A., como siempre. Ninguno gana." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde. Encontró una mesa en un casino y ya decidió que el juego es interesante." },
@@ -2058,10 +2058,10 @@
     { id: "phish", kind: "choice",
       title: "Phishing", titleEs: "Phishing",
       body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
-      bodyEs: "Llega un mail de soporte. Dicen que hay un problema con tu cuenta. Necesitan tu seed para verificar la identidad. El mail se ve extremadamente convincente.",
+      bodyEs: "Recibes un correo del equipo de soporte: aseguran que hay un problema con tu cuenta y te piden la frase semilla para verificar tu identidad. El mensaje parece totalmente auténtico.",
       opts: [
-        { k: "a", label: "Open the link", labelEs: "Abrir el enlace" },
-        { k: "b", label: "Delete it", labelEs: "Borrarlo" }
+        { k: "a", label: "Open the link", labelEs: "Abrir el enlace y compartir la frase semilla" },
+        { k: "b", label: "Delete it", labelEs: "Eliminar el correo" }
       ] },
     { id: "crash", kind: "report",
       title: "Scooter Crash", titleEs: "El scooter",
