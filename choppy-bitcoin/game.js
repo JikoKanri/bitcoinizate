@@ -2694,7 +2694,7 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
-  const BC_ART=Object.fromEntries(["nothingToHide","somethingBetter","timeTraveler","temporaryMeasures","citadelProblem","theAnswer","fourthColor","notYet"].map(x=>[x,1]));
+  const BC_ART=Object.fromEntries(["somethingBetter","timeTraveler","temporaryMeasures","citadelProblem","theAnswer","fourthColor","notYet"].map(x=>[x,1]));
   const ARC_VID = { landfill: 1, proposal: 1, mexico: 1, phish: 1, baby: 1 };
   let chanceArtBusy = false;
   function preloadChanceArt() {
@@ -2708,7 +2708,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp78";
+        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp79";
       }
     };
     kick(4);
@@ -2725,7 +2725,7 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const jpg="chance/"+artId+".jpg?v=mp78";
+    const jpg="chance/"+artId+".jpg?v=mp79";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
