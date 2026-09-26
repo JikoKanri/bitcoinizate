@@ -20,7 +20,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bitcoinizate">
   <meta property="og:title" content="Choppy Bitcoin | Bitcoinizate">
-  <meta property="og:description" content="Free bitcoin-themed games. September prizes: 5,000 / 3,000 / 2,000 sats for the top 3 with a BTC address.">
+  <meta property="og:description" content="Free bitcoin-themed games. 70% of donations is paid out as leaderboard prizes.">
   <meta property="og:url" content="https://bitcoinizate.com/">
   <meta property="og:image" content="https://bitcoinizate.com/og-icon.png">
   <meta property="og:image:width" content="1200">
@@ -118,6 +118,10 @@
     .faq details:first-of-type { border-top: 0; padding-top: 0; }
     .faq summary { cursor: pointer; color: var(--paper); font-size: 13px; }
     .faq p { margin: 8px 0 0; color: #b4b0a8; font-size: 13px; line-height: 1.5; }
+    .faq a { color: var(--gold); }
+    .donate-links { display: flex; gap: 16px; margin-top: 10px; }
+    .donate-links a { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .donate-addr { overflow-wrap: anywhere; word-break: break-all; font-family: "IBM Plex Mono", monospace; font-size: 11px; }
     footer { margin-top: 36px; color: #6a6660; font-size: 11px; letter-spacing: 0.06em; }
     footer a { color: var(--gold); text-decoration: none; }
     .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
@@ -125,6 +129,14 @@
     .lang-sw { display: flex; gap: 4px; margin-right: 8px; }
     .lang-sw button { min-width: 36px; min-height: 32px; border: 1px solid #3a3a40; background: transparent; color: var(--paper); font: inherit; font-size: 11px; cursor: pointer; }
     .lang-sw button.on { border-color: var(--gold); color: var(--gold); }
+    .auth-chip {
+      min-height: 32px; padding: 0 12px;
+      border: 1px solid var(--gold); background: transparent; color: var(--paper);
+      font: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer;
+    }
+    .auth-chip:hover { background: var(--gold); color: #120c02; }
+    #user-profile-tag.auth-chip { text-transform: none; letter-spacing: 0; font-weight: 700; }
     .auth-modal { position: fixed; inset: 0; z-index: 40; background: rgba(10,10,12,0.86); display: none; align-items: center; justify-content: center; padding: 16px; pointer-events: none; }
     .auth-modal.open { display: flex; pointer-events: auto; }
     .auth-modal.open { display: flex; }
@@ -199,10 +211,18 @@
     </div>
     <button type="button" class="play play-alt" id="cta-signup"><span data-i18n="ctaAccount">Create a free account</span><small data-i18n="ctaSub">Save your score · be on the board for prizes</small></button>
     <section class="how">
-      <h3 data-i18n="board">Leaderboard</h3>
+      <h3 data-i18n="boardBtc">Most BTC</h3>
       <div id="site-board" class="board">—</div>
+      <h3 data-i18n="boardInd">Fastest independence</h3>
+      <div id="site-indep" class="board">—</div>
       <h3 data-i18n="eloBoard">Versus ELO</h3>
       <div id="site-elo" class="board">—</div>
+    </section>
+    <section class="faq" id="donate">
+      <h3 data-i18n="donateTitle">Donations</h3>
+      <p data-i18n="donateBody">Donations keep the game going. 70% of every donation is distributed as leaderboard prizes.</p>
+      <p class="donate-links"><a href="lightning:lnbc1p4tdeq9pp5v39yyvsws5swurns2gpmj64m469548f64t2cqjsfyka574fj0dasdqqcqzzgxqyz5vqrzjqf0wu22xsefd8gzu0m9n93g2khea86l6yy26en9v46g9e6hk7v9z8lytgux50yx2zuqqqqryqqqqthqqpyrzjqfwdd2w9y5ra5z3m4qetfa5ccu6432xfuvk6zrvg9vxwltvukd48dlytgux50yx2zuqqqqryqqqqthqqpysp5zc5j4qd90hqxklpcy4skg9rfl5aypv9rsmrypjdt62td8869kx0s9qrsgq43tqd4ujehpvccxw5rzkk8z74mk7sdhgga3tqtk3uwvtlj3tl3s3yhrv5vy5x8t6x2zfursvw7z82rqu4fmuttaj57ukyspx35np6zgq6tutga">Lightning</a><a href="bitcoin:bc1q5yrmsvdh3m7ad03txs2h5ktw5zzdxwxrgeujsj0e25s83cffzauq4vgjez">Bitcoin</a></p>
+      <p data-i18n="faqPrizeA">Guest scores do not count. We may ignore runs that look automated.</p>
     </section>
     <section class="how">
       <h3 data-i18n="how">How to play</h3>
@@ -227,12 +247,7 @@
         <p data-i18n="faqAccA">No. Play is free. Sign in only if you want the cloud leaderboard.</p>
       </details>
     </section>
-    <section class="faq">
-      <h3 data-i18n="faqPrize">How do the September prizes work?</h3>
-      <p data-i18n="prizes">September 2026 prizes, paid in satoshis to a bitcoin address saved on your profile: 5,000 first, 3,000 second, 2,000 third.</p>
-      <p data-i18n="faqPrizeA">Guest scores do not count. We may ignore runs that look automated.</p>
-    </section>
-    <footer>© Bitcoinizate · <a href="/privacy.html" data-i18n="privacy">Privacy</a> · <a href="https://bitcoinizate.com/choppy-bitcoin/" data-i18n="playLink">play Choppy Bitcoin</a></footer>
+    <footer>© Bitcoinizate · <a href="/privacy.html" data-i18n="privacy">Privacy</a> · <a href="mailto:hello@bitcoinizate.com">hello@bitcoinizate.com</a> · <a href="https://bitcoinizate.com/choppy-bitcoin/" data-i18n="playLink">play Choppy Bitcoin</a></footer>
   </main>
   <div id="auth-modal" class="auth-modal hide" role="dialog" aria-labelledby="modal-auth-title">
     <div class="auth-card">
@@ -264,9 +279,9 @@
       <button type="button" class="text-btn" id="btn-close-profile" data-i18n="close">Close</button>
     </div>
   </div>
-  <script src="/i18n.js?v=mp33"></script>
+  <script src="/i18n.js?v=mp67"></script>
   <script src="/choppy-bitcoin/supabase-lib.js"></script>
-  <script src="/choppy-bitcoin/auth.js"></script>
+  <script src="/choppy-bitcoin/auth.js?v=mp66"></script>
   <script src="/choppy-bitcoin/run-stats.js"></script>
   <script>
     (function () {
