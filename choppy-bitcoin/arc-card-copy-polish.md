@@ -8,3 +8,4 @@ Este registro sigue el orden de `CHANCE_CARDS` en `game.js`. En cada ejecución 
 - `taxbill` — full text y TL;DR en español revisados; esta card no ofrece opciones.
 - `nicoWedding` — full text, TL;DR y opciones en español revisados.
 - `mexico` — full text, TL;DR y opciones en español revisados.
+- `flu` — full text y TL;DR en español revisados; esta card no ofrece opciones.
