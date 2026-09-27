@@ -1286,7 +1286,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2032,9 +2032,41 @@
     speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"],
     unclemike: ["mike"]
   };
-  function weaveCast(text) {
-    return text;
+  function cleanCountryName(raw){
+    return String(raw||"").replace(/[<>&"'`]/g,"").replace(/\s+/g," ").trim().slice(0,24);
   }
+  function nationName(){
+    return cleanCountryName(S.bcCountryName) || "Bitcoin Country";
+  }
+  function stampNation(text){
+    const name=nationName();
+    if(!text) return "";
+    if(name==="Bitcoin Country") return String(text);
+    return String(text).replace(/Bitcoin Country/g, name);
+  }
+  function askCountryName(){
+    S.bcNameAsk=true;
+    S.optPanel=null;
+    S.arcHold=false;
+    S.optBack="play";
+    if(S.phase!=="chance") setPhase("chance");
+    else { try{ renderOverlay(); }catch(e){} }
+  }
+  function commitCountryName(raw){
+    const name=cleanCountryName(raw);
+    const input=$("bc-name-in");
+    if(!name){ if(input) input.classList.add("bad"); return; }
+    S.bcCountryName=name;
+    S.bcNameAsk=false;
+    S.bcIndependent=true;
+    if(!S.chanceUsed) S.chanceUsed={};
+    S.chanceUsed.theQuestion=true;
+    noteArcSeen("theQuestion");
+    S.optPanel=null;
+    const card=(S.chanceCard&&S.chanceCard.id==="theQuestion")?S.chanceCard:{id:"theQuestion"};
+    closeArc(card);
+  }
+  function weaveCast(text) { return text; }
   const CHANCE_TLDR = {
     justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una nueva ley de emergencia amplía las facultades del Estado ante la inestabilidad económica. La llaman temporal, aunque la definición parece abarcar casi todos los años." },
     nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un documento de identidad digital opcional agiliza los viajes y las operaciones bancarias, mientras los servicios públicos comienzan a adoptarlo. No tienes nada que ocultar, pero la pregunta aún te incomoda." },
@@ -2110,7 +2142,7 @@
   };
   function cardTldr(card) {
     if (!card) return "";
-    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return warTldr(card.id);
+    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return stampNation(warTldr(card.id));
     const row = CHANCE_TLDR[card.id];
     if (!row) return "";
     let line = chanceLang() ? (row.es || row.en) : row.en;
@@ -2124,7 +2156,7 @@
         : "Uncle Héctor wires you money and refuses to say why.";
       else line = line.replace(/\s*(It is|Son)\s*\{gift\}\.?/g, "").replace(/\s+/g, " ").trim();
     }
-    return line;
+    return stampNation(line);
   }
   function bodyIsLong(text) {
     const s = String(text || "");
@@ -2621,9 +2653,9 @@
     if(card.id==="ambassador")return say("Diplomatic contact unlocked.","");
     if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
     if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
-    if(card.id==="theQuestion"){if(S.bcVictory){return say("Bitcoin Country is already independent.","");}if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
-    if(card.id==="cabinet")return say("The posts are filled. Paco is Minister of Defense.","Los cargos quedan cubiertos. Paco es Ministro de Defensa.");
-    if(card.id==="declaration")return say("San Arnaldo recognizes Bitcoin Country in thirty-seven seconds.","");
+    if(card.id==="theQuestion"){if(S.bcVictory){return say(stampNation("Bitcoin Country is already independent."),"");}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declarás.":"You declare.","");}delete S.chanceUsed.theQuestion;return say(chanceLang()?"Todavía no.":"Not yet.","");}
+    if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
+    if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
     if(card.id==="theAnswer"){return say("The blocs already answered.","");}
     if(card.id==="blocReplies"){
       if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+money(p)+".","La carta se pone más cálida. Las flotas no. −"+money(p)+".");}
@@ -2633,7 +2665,7 @@
     if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
     if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
     if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
-    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO.");}
+    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
     if(card.id==="notYet"){return say("Not yet.","");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
@@ -2764,7 +2796,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src=(id==="pieceWorld"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin6":"chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=(id==="citadelQuestion"||id==="declaration"||id==="justInCase")?"chance/"+id+"-wide.png?v=gpt1":(id==="citadelProblem"||id==="citadelQuestion"||id==="pieceWorld"||id==="islandInspection"||id==="paperwork"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin9":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2781,8 +2813,8 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const wide = artId === "pieceWorld" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
-    const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin6" : "chance/"+artId+".jpg?v=mp86";
+    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
+    const jpg = (artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase") ? "chance/"+artId+"-wide.png?v=gpt1" : wide ? "chance/"+artId+"-wide.jpg?v=cin9" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
@@ -3013,8 +3045,10 @@
   }
   function chainArc(id){
     window.__arcForce=id;
-    S.phase="play";
-    setTimeout(()=>{ try{ dealChance(); } finally { window.__arcForce=""; } }, 80);
+    S.optPanel=null;
+    S.bcNameAsk=false;
+    if(S.phase!=="chance") S.phase="chance";
+    try{ dealChance(); } finally { window.__arcForce=""; }
   }
   function clearBattleField(){
     S.bcDefense=null;
@@ -3124,7 +3158,8 @@
   }
 
   function dealChance() {
-    if (S.phase !== "play") return;
+    const chaining = !!(window.__arcForce && S.phase === "chance");
+    if (S.phase !== "play" && !chaining) return;
     if (!S.chanceUsed) S.chanceUsed = {};
     const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && arcUnlocked(c) && arcInPool(c));
     const src = pool.length ? pool : CHANCE_CARDS.filter((c) => arcUnlocked(c) && !S.chanceUsed[c.id]);
@@ -3156,7 +3191,7 @@
     if (card.job) body = fillJob(body);
     if (card.kind === "report") {
       const before = bagSnap();
-      S.chanceReadyNote = resolveChance(card, "ok");
+      S.chanceReadyNote = stampNation(resolveChance(card, "ok"));
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
       const gift = formatBagDelta(before, S.arcPending);
@@ -3185,6 +3220,8 @@
       S.chanceBody = body;
     }
     const cue = (card.id === "blocAssault" || card.id === "theAnswer") ? "war" : "";
+    S.optPanel = null;
+    S.bcNameAsk = false;
     setPhase("chance");
     if (card.id === "blocTriumph") {
       try { if (A.playVictory) A.playVictory(); } catch (e) {}
@@ -3288,7 +3325,7 @@
       S.arcHold = false;
       S.optPanel = null;
       if (!intoBattle) {
-        try { setPhase("play"); } catch (e) { S.phase = "play"; }
+        S.phase = "chance";
         return;
       }
       S.phase = "play";
@@ -3325,6 +3362,10 @@
       closeArc(card);
       return;
     }
+    if (card.id==="theQuestion" && opt==="a" && !S.bcVictory) {
+      askCountryName();
+      return;
+    }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
         closeArc(card);
@@ -3332,7 +3373,7 @@
       }
       const before = bagSnap();
       let note = "";
-      try { note = resolveChance(card, opt) || ""; } catch (err) { note = ""; }
+      try { note = stampNation(resolveChance(card, opt) || ""); } catch (err) { note = ""; }
       if (!note) note = chanceLang() ? "Listo." : "Done.";
       S.chanceNote = note;
       S.arcPending = bagSnap();
@@ -3991,7 +4032,7 @@
   function wildGroves(m,pad,road){
     const spots=[];
     for(let y=3;y<BC_R-3;y+=4)for(let x=3;x<BC_C-3;x+=5)if(canTree(m,x,y,pad,road))spots.push({x,y});
-    spots.filter((_,i)=>i%3===0).slice(0,3).forEach((s)=>groveAt(m,s.x,s.y,pad,road));
+    spots.filter((_,i)=>i%5===0).slice(0,1).forEach((s)=>groveAt(m,s.x,s.y,pad,road));
   }
   function beachTrees(m,pad,road){
     for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
@@ -4002,7 +4043,7 @@
         if(t===0)sand=true;
         if(t===7)path=true;
       }
-      if(!sand||path||((x+y)%4)!==0)continue;
+      if(!sand||path||((x+y)%7)!==0)continue;
       putTree(m,x,y,pad,road);
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
         if(m[(y+dy)*BC_C+(x+dx)]!==0)continue;
@@ -4068,6 +4109,28 @@
     return best||{x:gx,y:gy};
   }
   function fortCenter(pad){return {x:(pad.x+2)*BC_TS+16,y:(pad.y+1)*BC_TS+16};}
+  function onMainLand(m,x,y,home){
+    const hx=Math.floor(home.x/BC_TS),hy=Math.floor(home.y/BC_TS);
+    const key=hy*BC_C+hx;
+    const land=(t)=>t===0||t===6||t===7||t===1||t===4||t===5;
+    if(!land(m[y*BC_C+x]))return false;
+    const seen=new Uint8Array(BC_C*BC_R);
+    const q=[key]; seen[key]=1;
+    let qi=0, found=false, n=0;
+    while(qi<q.length && n<900){
+      const i=q[qi++]; n++;
+      const cx=i%BC_C, cy=(i/BC_C)|0;
+      if(cx===x&&cy===y){found=true;break;}
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const xx=cx+dx,yy=cy+dy;
+        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+        const j=yy*BC_C+xx;
+        if(seen[j]||!land(m[j]))continue;
+        seen[j]=1;q.push(j);
+      }
+    }
+    return found;
+  }
   function collectSpawns(m,home,naval){
     const pts=[];
     for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
@@ -4085,6 +4148,7 @@
         const edge=x<=3||y<=3||x>=BC_C-4||y>=BC_R-4;
         pts.push({x:px,y:py,d:Math.hypot(px-home.x,py-home.y)+(edge?50:0)});
       }else if(t===0||t===6||t===7){
+        if(!onMainLand(m,x,y,home))continue;
         let wet=false;
         for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
           const xx=x+dx,yy=y+dy;
@@ -4173,16 +4237,29 @@
       let clear=true;
       for(let dy=-2;dy<=3&&clear;dy++)for(let dx=-2;dx<=3;dx++)if(mtile(m,x+dx,y+dy)!==3)clear=false;
       if(!clear)continue;
-      const blob=[[0,0],[1,0],[0,1]];
-      if(rng()<0.65)blob.push([1,1]);
-      if(rng()<0.45)blob.push([2,0]);
-      if(rng()<0.4)blob.push([-1,0]);
-      if(rng()<0.35)blob.push([0,2]);
+      const blob=[[0,0],[1,0]];
+      if(rng()<0.4)blob.push([0,1]);
       for(const [dx,dy] of blob){
         const xx=x+dx,yy=y+dy;
         if(xx>0&&yy>0&&xx<BC_C-1&&yy<BC_R-1)m[yy*BC_C+xx]=6;
       }
       made++;
+    }
+  }
+  function openTransit(m,pad){
+    const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const t=m[y*BC_C+x];
+      if(t!==8&&t!==4)continue;
+      if(prot(x,y))continue;
+      let sea=0,land=0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const tv=mtile(m,x+dx,y+dy);
+        if(tv===3)sea++;
+        if(tv===0||tv===6||tv===7)land++;
+      }
+      if(t===8&&sea>=2)m[y*BC_C+x]=3;
+      if(t===4&&land>=2&&((x+y)%3===0))m[y*BC_C+x]=6;
     }
   }
   function rockyCoast(m,pad,salt){
@@ -4199,16 +4276,7 @@
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)wet=true;
       if(!wet)continue;
       const h=coastHash(x,y,salt+9);
-      if(h<30)marks.push(y*BC_C+x);
-      if(h<10){
-        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-          const xx=x+dx,yy=y+dy;
-          if(mtile(m,xx,yy)!==3||prot(xx,yy))continue;
-          let sea=0;
-          for(const [ax,ay] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,xx+ax,yy+ay)===3)sea++;
-          if(sea>=2){m[yy*BC_C+xx]=8;break;}
-        }
-      }
+      if(h<1)marks.push(y*BC_C+x);
     }
     for(const i of marks)m[i]=8;
   }
@@ -4266,10 +4334,9 @@
       const t=m[y*BC_C+x];
       if(t===5||t===9||t===1||t===2||t===4||t===8)return;
       if(!water&&(t===0||t===6||t===7)){m[y*BC_C+x]=t===7&&!edge(x,y)?8:4;return;}
-      if(!sideOpen(x,y,horiz,true))return;
-      if(t===3)m[y*BC_C+x]=8;
+      if(t===3)return;
     };
-    const MAX=7;
+    const MAX=14;
     function scan(horiz){
       const outer=horiz?BC_R:BC_C, inner=horiz?BC_C:BC_R;
       for(let a=0;a<outer;a++){
@@ -4296,6 +4363,89 @@
     }
     scan(true);scan(false);
   }
+  function seaNeighbors(m,x,y){
+    let n=0;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)n++;
+    return n;
+  }
+  function thinSeaRocks(m){
+    const kill=[];
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const i=y*BC_C+x;
+      if(m[i]!==8)continue;
+      if(seaNeighbors(m,x,y)>=2)kill.push(i);
+    }
+    const keep=Math.floor(kill.length*0.05);
+    for(let i=keep;i<kill.length;i++)m[kill[i]]=3;
+  }
+  function unsealWater(m){
+    const N=BC_C*BC_R;
+    const seen=new Uint8Array(N);
+    const q=[];
+    const pushSea=(i)=>{ if(i<0||i>=N||seen[i]||m[i]!==3)return; seen[i]=1; q.push(i); };
+    for(let x=0;x<BC_C;x++){ pushSea(x); pushSea((BC_R-1)*BC_C+x); }
+    for(let y=0;y<BC_R;y++){ pushSea(y*BC_C); pushSea(y*BC_C+BC_C-1); }
+    for(let qi=0;qi<q.length;qi++){
+      const i=q[qi], x=i%BC_C, y=(i/BC_C)|0;
+      if(x>0)pushSea(i-1);
+      if(x<BC_C-1)pushSea(i+1);
+      if(y>0)pushSea(i-BC_C);
+      if(y<BC_R-1)pushSea(i+BC_C);
+    }
+    const comp=new Int32Array(N);
+    comp.fill(-1);
+    let cid=0;
+    for(let i=0;i<N;i++){
+      if(m[i]!==3||seen[i]||comp[i]>=0)continue;
+      const cells=[i];
+      comp[i]=cid;
+      for(let qi=0;qi<cells.length;qi++){
+        const c=cells[qi], x=c%BC_C, y=(c/BC_C)|0;
+        const nbs=[];
+        if(x>0)nbs.push(c-1);
+        if(x<BC_C-1)nbs.push(c+1);
+        if(y>0)nbs.push(c-BC_C);
+        if(y<BC_R-1)nbs.push(c+BC_C);
+        for(const j of nbs){
+          if(m[j]===3&&!seen[j]&&comp[j]<0){comp[j]=cid;cells.push(j);}
+        }
+      }
+      const inComp=new Uint8Array(N);
+      for(const c of cells)inComp[c]=1;
+      const prev=new Int32Array(N);
+      prev.fill(-2);
+      const vis=new Uint8Array(N);
+      const bfs=cells.slice();
+      for(const c of cells){vis[c]=1;prev[c]=-1;}
+      let hit=-1, from=-1;
+      for(let qi=0;qi<bfs.length&&hit<0;qi++){
+        const c=bfs[qi], x=c%BC_C, y=(c/BC_C)|0;
+        const nbs=[];
+        if(x>0)nbs.push(c-1);
+        if(x<BC_C-1)nbs.push(c+1);
+        if(y>0)nbs.push(c-BC_C);
+        if(y<BC_R-1)nbs.push(c+BC_C);
+        for(const j of nbs){
+          if(vis[j]||m[j]===5)continue;
+          if(seen[j]&&m[j]===3){hit=j;from=c;break;}
+          vis[j]=1;prev[j]=c;bfs.push(j);
+        }
+      }
+      if(hit<0){
+        for(const c of cells)m[c]=0;
+      }else{
+        let c=from;
+        let guard=0;
+        while(c>=0&&!inComp[c]&&guard++<N){
+          if(m[c]!==5)m[c]=3;
+          seen[c]=1;
+          c=prev[c];
+        }
+        for(const c of cells)seen[c]=1;
+      }
+      cid++;
+    }
+  }
   function makeIslandMap(level, fort){
     level=Math.max(0,Math.min(8,level|0));
     const plan=ensureMapPlan()[level];
@@ -4311,9 +4461,10 @@
     stampCitadel(m,pad,pref.gate);
     const rng=mapMulberry((salt*131+level*97)>>>0);
     const wantIslets=plan.islets!=null?!!plan.islets:rng()<0.78;
-    if(wantIslets)sprinkleIslets(m,rng,1+(rng()*2|0));
+    if(wantIslets && rng()<0.35)sprinkleIslets(m,rng,1);
     sandFringe(m,pad,plan.naval?1:2);
     rockyCoast(m,pad,salt);
+    openTransit(m,pad);
     if(fort)addFort(m,pad,pref.gate);
     const road={};
     if(!plan.naval&&dress==="village")layRoad(m,pad,pref.gate,road);
@@ -4325,6 +4476,8 @@
     if(wantLight)placeLighthouse(m,pad,rng);
     breakLanes(m,pad);
     repairEdges(m,!!plan.naval);
+    thinSeaRocks(m);
+    unsealWater(m);
     const home=homeFrom(m,pad,pref.gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -4464,7 +4617,7 @@
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
-      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,aaArmed:false,aaTap:0,reticle:null,
+      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
@@ -4571,7 +4724,7 @@
     S.dead=true;
     try{applyLaser(false);}catch(e){}
     S.power="NONE";S.powerT=0;
-    S.ticker=chanceLang()?"Bitcoin Country cayó.":"Bitcoin Country fell.";
+    S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
     try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
     try{if(A&&A.speak)A.speak(formatVoice(S.ticker),true);}catch(e){}
     if(!S.mp){try{S.best=saveBest(scoreSats());}catch(e){}try{snapshotRun();}catch(e){}}
@@ -4582,8 +4735,10 @@
     if(d.wall>0){d.wall=Math.max(0,d.wall-dmg*2);return;}
     if(d.inv>0)return;
     const resist=Math.max(0,Math.min(50,(d.up&&d.up.shield)||0));
+    const before=d.integrity;
     d.integrity=Math.max(0,d.integrity-dmg*(1-resist/100));
     d.inv=0.18;
+    spawnShieldBreak(d, before, d.integrity);
     if(d.integrity<=0)finishDefense(false);
   }
   function smashTile(d,tx,ty,dmg){
@@ -4681,6 +4836,16 @@
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done||d.frozen)return;
     d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.playerInv=Math.max(0,(d.playerInv||0)-dt);d.god=Math.max(0,(d.god||0)-dt);d.shotT=Math.max(0,(d.shotT||0)-dt);d.spawn-=dt;
+    if(d.aaCharging&&!d.aaArmed){
+      d.aaCharge=Math.min(1,(d.aaCharge||0)+dt/3);
+      if(d.aaCharge>=1){
+        d.aaCharging=false;d.aaArmed=true;d.aa=1;
+        d.reticle={x:d.player.x,y:Math.max(36,d.player.y-78)};
+        addFx(d,{kind:"scopeOn",x:d.reticle.x,y:d.reticle.y,life:.4});
+        warSfx("warAa");
+      }
+    }
+    stepFx(d,dt);
     const p=d.player;p.fire=Math.max(0,p.fire-dt);p.hearts=p.hearts==null?p.hp:p.hearts;
     if((d.heliLeft||0)>0 && d.t>3.2 && (d.enemies.filter((e)=>e.type==="HELI").length<1)){d.heliLeft--;spawnHeli(d);}
     if(d.enemies.length<5&&d.spawned<d.quota&&d.spawn<=0){defenseEnemy(d);d.spawned++;d.spawn=(1.15+Math.random()*.55)/(d.profile.rate||1);}
@@ -4696,8 +4861,8 @@
       const rspd=210;
       let rdx=0,rdy=0;
       if(dir===0)rdy=-1;else if(dir===1)rdx=1;else if(dir===2)rdy=1;else if(dir===3)rdx=-1;
-      d.reticle.x=Math.max(28,Math.min(S.W-28,d.reticle.x+rdx*rspd*dt));
-      d.reticle.y=Math.max(28,Math.min(S.H-28,d.reticle.y+rdy*rspd*dt));
+      d.reticle.x=Math.max(-40,Math.min(S.W+40,d.reticle.x+rdx*rspd*dt));
+      d.reticle.y=Math.max(-40,Math.min(S.H+40,d.reticle.y+rdy*rspd*dt));
     }else{
       if(d.naval)moveShip(d,p,dir,pspd,dt);else moveTank(d,p,dir,pspd,dt);
       if(h.f)fireTank(d,p);
@@ -4811,6 +4976,7 @@
           }
           else if(pk.kind==="shot")d.shotT=9;
           else d.god=6.5;
+          addFx(d,{kind:"eat",x:pk.x,y:pk.y,life:.55,col:pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":"#ffe14a",label:pk.kind==="heal"?"+HP":pk.kind==="shot"?"RAPID":"GOD"});
           warSfx("warPick");
         }
       }
@@ -4831,26 +4997,92 @@
     }
     syncAaButton(d);
   }
-  const AA_R=44;
+  const AA_R=52;
+  function unitRadius(e){return Math.max(6,(e.sz||12)*0.55);}
+  function circleOverlapFrac(dist,R,r){
+    if(dist+r<=R)return 1;
+    if(dist>=R+r)return 0;
+    return Math.max(0,Math.min(1,(R+r-dist)/(2*r)));
+  }
+  function lrmClass(e){
+    if(e.hull==="heavy"||e.type==="HEAVY")return "heavy";
+    if(e.hull==="light"||e.type==="FAST"||e.type==="HELI")return "light";
+    return "medium";
+  }
   function fireReticle(d){
     if(!d||!d.aaArmed||!d.reticle)return;
-    let hit=null,best=1e9;
+    const rx=d.reticle.x,ry=d.reticle.y;
+    const inner=AA_R*0.10;
+    const hits=[];
     for(const e of d.enemies){
-      if(e.hp<=0||(e.type!=="HELI"&&!e.foreign))continue;
-      const dist=Math.hypot(e.x-d.reticle.x,e.y-d.reticle.y);
-      if(dist<AA_R&&dist<best){best=dist;hit=e;}
+      if(e.hp<=0)continue;
+      const dist=Math.hypot(e.x-rx,e.y-ry);
+      const r=unitRadius(e);
+      const cls=lrmClass(e);
+      let ok=false;
+      if(cls==="heavy")ok=dist<=inner+r;
+      else ok=circleOverlapFrac(dist,AA_R,r)>=0.5;
+      if(ok)hits.push(e);
     }
-    d.aaArmed=false;d.aa=0;d.reticle=null;
-    if(hit){hit.hp=0;d.kills++;warSfx("warPop");}
-    else warSfx("warClank");
+    addFx(d,{kind:"lrmFire",x:rx,y:ry,life:.45});
+    d.aaArmed=false;d.aa=0;d.aaCharge=0;d.aaCharging=false;d.reticle=null;
+    if(hits.length){
+      for(const hit of hits){
+        hit.hp=0;d.kills++;
+        addFx(d,{kind:"lrmKill",x:hit.x,y:hit.y,life:.5});
+      }
+      warSfx("warPop");
+    }else warSfx("warClank");
+  }
+  function addFx(d,fx){
+    if(!d)return;
+    if(!d.fx)d.fx=[];
+    fx.t=0;fx.life=fx.life||.4;
+    d.fx.push(fx);
+  }
+  function spawnShieldBreak(d,before,after){
+    if(!d)return;
+    const drop=Math.max(0,(before||0)-(after||0));
+    if(drop<=0)return;
+    const c=shieldCenter(d);
+    const n=Math.max(3,Math.min(10,2+Math.round(drop/8)));
+    if(!d.shards)d.shards=[];
+    for(let i=0;i<n;i++){
+      const a=Math.random()*Math.PI*2;
+      const sp=40+Math.random()*90;
+      d.shards.push({x:c.x+(Math.random()-0.5)*18,y:c.y+(Math.random()-0.5)*18,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-20,rot:Math.random()*6,vr:(Math.random()-.5)*8,life:.7+Math.random()*.5,t:0});
+    }
+    addFx(d,{kind:"shieldHit",x:c.x,y:c.y,life:.35});
+  }
+  function shieldCenter(d){
+    if(d.shieldAnchor)return d.shieldAnchor;
+    let sx=0,sy=0,n=0;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(bcAt(d.map,x,y)===5){sx+=x*BC_TS+BC_TS/2;sy+=y*BC_TS+BC_TS/2;n++;}
+    d.shieldAnchor=n?{x:sx/n,y:sy/n}:(d.fort||d.home||{x:S.W/2,y:S.H/2});
+    return d.shieldAnchor;
+  }
+  function stepFx(d,dt){
+    if(!d)return;
+    if(d.fx){
+      for(const f of d.fx)f.t=(f.t||0)+dt;
+      d.fx=d.fx.filter(f=>f.t<f.life);
+    }
+    if(d.shards){
+      for(const sh of d.shards){
+        sh.t+=dt;sh.x+=sh.vx*dt;sh.y+=sh.vy*dt;sh.vy+=180*dt;sh.rot+=sh.vr*dt;
+      }
+      d.shards=d.shards.filter(sh=>sh.t<sh.life);
+    }
   }
   function syncAaButton(d){
     const btn=$("def-aa");
     if(!btn)return;
     const show=!!(d&&!d.done&&!d.frozen);
     btn.classList.toggle("hide",!show);
-    btn.style.setProperty("--aa",d&&d.aaArmed?"360deg":"360deg");
+    const pct=d?(d.aaArmed?1:(d.aaCharge||0)):0;
+    btn.style.setProperty("--aa",(pct*360)+"deg");
     btn.classList.toggle("armed",!!(d&&d.aaArmed));
+    btn.classList.toggle("charging",!!(d&&d.aaCharging&&!d.aaArmed));
   }
   function fireAa(d){
     const p=d.player;
@@ -4970,39 +5202,22 @@
       }
       if(k===2){ctx.fillStyle="#6d6a66";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#8a8680";ctx.fillRect(px+3,py+2,8,6);continue;}
       if(k===5){
-        if(!d.shieldCells){
-          const cells=[];
-          for(let yy=0;yy<BC_R;yy++)for(let xx=0;xx<BC_C;xx++)if(bcAt(d.map,xx,yy)===5)cells.push(yy*BC_C+xx);
-          cells.sort((a,b)=>a-b);
-          d.shieldCells=cells;
-        }
-        const idx=d.shieldCells.indexOf(y*BC_C+x);
-        const n=Math.max(1,d.shieldCells.length);
-        const part=Math.max(0,Math.min(n,(d.integrity||0)/100*n));
-        const full=idx>=0&&idx<Math.floor(part);
-        const frac=idx===Math.floor(part)?part-Math.floor(part):0;
-        ctx.fillStyle="#241c12";ctx.fillRect(px,py,BC_TS,BC_TS);
-        const hh=full?BC_TS:Math.round(BC_TS*(full?1:frac));
-        if(hh>0){
-          ctx.fillStyle=(d.integrity||0)>66?"#f2a900":(d.integrity||0)>33?"#c47a12":"#8a4a12";
-          ctx.fillRect(px,py+BC_TS-hh,BC_TS,hh);
-        }
-        ctx.strokeStyle="#1a1204";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);
-        if(full){
-          ctx.strokeStyle="#fff1c2";ctx.lineWidth=1.2;
-          ctx.beginPath();ctx.moveTo(px+8,py+3);ctx.lineTo(px+12,py+6);ctx.lineTo(px+11,py+11);ctx.lineTo(px+8,py+13);ctx.lineTo(px+5,py+11);ctx.lineTo(px+4,py+6);ctx.closePath();ctx.stroke();
-        }else if(frac<0.35){
-          ctx.strokeStyle="#1a1204";ctx.beginPath();ctx.moveTo(px+3,py+4);ctx.lineTo(px+12,py+12);ctx.moveTo(px+11,py+5);ctx.lineTo(px+4,py+11);ctx.stroke();
-        }
+        ctx.fillStyle="#1c1610";ctx.fillRect(px,py,BC_TS,BC_TS);
+        ctx.fillStyle="#2a2218";ctx.fillRect(px+1,py+1,BC_TS-2,BC_TS-2);
         continue;
       }
     }
+    drawCitadelShield(ctx,d,t);
+    drawWarFx(ctx,d,t);
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
-    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC;
+    const heroOrange="#ef6a12";
+    const blocPaint=["#3d4f2a","#7a2432","#6a4324"];
+    const ecol=blocPaint[Math.max(0,Math.min(2,d.bloc|0))];
+    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":heroOrange;
     if(!blink){if(d.naval)drawShip(ctx,d.player,pcol);else drawTank(ctx,d.player,pcol);}
     for(const e of d.enemies){
-      if(e.type==="HELI"){drawHeli(ctx,e,t);continue;}
-      if(e.ship)drawShip(ctx,e,null);else drawTank(ctx,e,null);
+      if(e.type==="HELI"){drawHeli(ctx,e,t,ecol);continue;}
+      if(e.ship)drawShip(ctx,e,ecol);else drawTank(ctx,e,ecol);
     }
     for(const pk of d.picks||[]){
       if(pk.ttl!=null&&pk.ttl<2.6&&Math.floor(t*8)%2===0)continue;
@@ -5019,11 +5234,20 @@
     if(d.aaArmed&&d.reticle&&!d.frozen){
       const rx=d.reticle.x,ry=d.reticle.y;
       ctx.save();
-      ctx.strokeStyle="#e23b3b";ctx.lineWidth=3;
+      ctx.fillStyle="rgba(4,8,6,.28)";
+      ctx.beginPath();ctx.rect(0,0,S.W,S.H);ctx.arc(rx,ry,AA_R+18,0,Math.PI*2,true);ctx.fill("evenodd");
+      ctx.strokeStyle="rgba(226,59,59,.95)";ctx.lineWidth=2.4;
       ctx.beginPath();ctx.arc(rx,ry,AA_R,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle="rgba(226,59,59,.55)";ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.arc(rx,ry,AA_R*0.62,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle="#ffe14a";ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.arc(rx,ry,AA_R*0.10,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle="#e23b3b";ctx.lineWidth=1.4;
       ctx.beginPath();
-      ctx.moveTo(rx-12,ry);ctx.lineTo(rx+12,ry);
-      ctx.moveTo(rx,ry-12);ctx.lineTo(rx,ry+12);
+      ctx.moveTo(rx-AA_R-8,ry);ctx.lineTo(rx-AA_R*0.12,ry);
+      ctx.moveTo(rx+AA_R*0.12,ry);ctx.lineTo(rx+AA_R+8,ry);
+      ctx.moveTo(rx,ry-AA_R-8);ctx.lineTo(rx,ry-AA_R*0.12);
+      ctx.moveTo(rx,ry+AA_R*0.12);ctx.lineTo(rx,ry+AA_R+8);
       ctx.stroke();
       ctx.restore();
     }
@@ -5039,6 +5263,100 @@
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
     ctx.restore();
+  }
+  function drawCitadelShield(ctx,d,t){
+    const c=shieldCenter(d);
+    const hp=Math.max(0,Math.min(100,d.integrity||0))/100;
+    const col=hp>.66?"#f2a900":hp>.33?"#d07a14":"#9a3a18";
+    ctx.save();
+    ctx.translate(c.x,c.y);
+    const pulse=1+Math.sin((t||0)*6)*0.02*hp;
+    ctx.scale(pulse,pulse);
+    ctx.beginPath();
+    ctx.moveTo(0,-16);
+    ctx.bezierCurveTo(12,-16,16,-6,16,2);
+    ctx.bezierCurveTo(16,12,8,18,0,22);
+    ctx.bezierCurveTo(-8,18,-16,12,-16,2);
+    ctx.bezierCurveTo(-16,-6,-12,-16,0,-16);
+    ctx.closePath();
+    ctx.fillStyle="#1a1208";
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    ctx.fillStyle=col;
+    const h=44*hp;
+    ctx.fillRect(-18,22-h,36,h);
+    if(hp<0.85){
+      ctx.strokeStyle="rgba(20,10,4,.7)";ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(-8,-6);ctx.lineTo(-2,4);ctx.lineTo(-7,12);ctx.stroke();
+    }
+    if(hp<0.55){
+      ctx.beginPath();ctx.moveTo(6,-8);ctx.lineTo(1,2);ctx.lineTo(8,10);ctx.stroke();
+    }
+    if(hp<0.3){
+      ctx.beginPath();ctx.moveTo(-12,2);ctx.lineTo(10,8);ctx.stroke();
+    }
+    ctx.restore();
+    ctx.strokeStyle="#fff1c2";ctx.lineWidth=1.6;ctx.stroke();
+    ctx.strokeStyle="#1a1204";
+    ctx.beginPath();
+    ctx.moveTo(0,-9);ctx.lineTo(5,-3);ctx.lineTo(4,5);ctx.lineTo(0,8);ctx.lineTo(-4,5);ctx.lineTo(-5,-3);
+    ctx.closePath();ctx.stroke();
+    ctx.restore();
+    if(d.shards){
+      for(const sh of d.shards){
+        const a=1-sh.t/sh.life;
+        ctx.save();
+        ctx.translate(sh.x,sh.y);ctx.rotate(sh.rot);
+        ctx.globalAlpha=Math.max(0,a);
+        ctx.fillStyle=col;
+        ctx.beginPath();ctx.moveTo(-4,-3);ctx.lineTo(5,-2);ctx.lineTo(2,5);ctx.lineTo(-3,4);ctx.closePath();ctx.fill();
+        ctx.restore();
+      }
+    }
+  }
+  function drawWarFx(ctx,d,t){
+    if(!d.fx)return;
+    for(const f of d.fx){
+      const u=Math.max(0,Math.min(1,f.t/f.life));
+      ctx.save();
+      if(f.kind==="eat"){
+        const r=6+u*22;
+        ctx.globalAlpha=1-u;
+        ctx.strokeStyle=f.col||"#ffe14a";ctx.lineWidth=2.4;
+        ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.stroke();
+        for(let i=0;i<8;i++){
+          const a=i*Math.PI/4+(t||0);
+          ctx.fillStyle=f.col||"#ffe14a";
+          ctx.beginPath();ctx.arc(f.x+Math.cos(a)*r,f.y+Math.sin(a)*r,2.2*(1-u),0,Math.PI*2);ctx.fill();
+        }
+        ctx.globalAlpha=1-u;
+        ctx.fillStyle="#fff6d8";ctx.font='700 11px "IBM Plex Mono",monospace';
+        ctx.textAlign="center";ctx.fillText(f.label||"+",f.x,f.y-10-u*16);
+      }else if(f.kind==="lrmFire"){
+        ctx.globalAlpha=1-u;
+        ctx.strokeStyle="#ffe14a";ctx.lineWidth=3;
+        ctx.beginPath();ctx.arc(f.x,f.y,8+u*70,0,Math.PI*2);ctx.stroke();
+        ctx.strokeStyle="#e23b3b";ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.arc(f.x,f.y,4+u*28,0,Math.PI*2);ctx.stroke();
+      }else if(f.kind==="lrmKill"){
+        ctx.globalAlpha=1-u;
+        ctx.fillStyle="#ffe14a";
+        for(let i=0;i<10;i++){
+          const a=i*Math.PI/5;
+          ctx.fillRect(f.x+Math.cos(a)*u*28-1.5,f.y+Math.sin(a)*u*28-1.5,3,3);
+        }
+      }else if(f.kind==="scopeOn"){
+        ctx.globalAlpha=1-u;
+        ctx.strokeStyle="#9befff";ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(f.x,f.y,20+u*40,0,Math.PI*2);ctx.stroke();
+      }else if(f.kind==="shieldHit"){
+        ctx.globalAlpha=1-u;
+        ctx.strokeStyle="#f2a900";ctx.lineWidth=3;
+        ctx.beginPath();ctx.arc(f.x,f.y,10+u*26,0,Math.PI*2);ctx.stroke();
+      }
+      ctx.restore();
+    }
   }
   function drawHearts(ctx,hearts,max){
     const n=Math.max(3,Math.min(4,max|0));
@@ -5073,12 +5391,12 @@
     }
     ctx.restore();
   }
-  function drawHeli(ctx,e,t){
+  function drawHeli(ctx,e,t,col){
     ctx.save();ctx.translate(e.x,e.y);
     ctx.fillStyle="rgba(0,0,0,.25)";ctx.beginPath();ctx.ellipse(0,10,10,4,0,0,Math.PI*2);ctx.fill();
     ctx.rotate(Math.sin(t*18)*.08);
-    ctx.fillStyle="#5c6b4a";ctx.fillRect(-12,-5,24,10);
-    ctx.fillStyle="#2e352c";ctx.fillRect(-4,-8,8,6);
+    ctx.fillStyle=col||"#3d4f2a";ctx.fillRect(-12,-5,24,10);
+    ctx.fillStyle="#1c140c";ctx.fillRect(-4,-8,8,6);
     ctx.strokeStyle="#f3efe6";ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(16,0);ctx.stroke();
     ctx.restore();
@@ -6819,6 +7137,10 @@
     const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
     bar.classList.toggle("hide",!unlocked);
     if(!unlocked){if(panel)panel.classList.add("hide");return;}
+    const named=cleanCountryName(S.bcCountryName);
+    const brand=named?named.toUpperCase():"BITCOIN COUNTRY";
+    const openBtn=$("bc-open"); if(openBtn) openBtn.textContent=brand;
+    const headB=document.querySelector("#bc-panel .bc-head b"); if(headB) headB.textContent=brand;
     const warBit=S.bcRepliesDone&&!S.bcVictory?(chanceLang()?" · EN GUERRA":" · AT WAR"):"";
     setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20)+warBit);
     setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",(S.bcArmy||0)+" / 100");setTxt("bc-world",String(S.bcWorld||20));
@@ -7583,6 +7905,8 @@
     S.bcReactions = null;
     S.bcRepliesDone = false;
     S.indepNoted = false;
+    S.bcCountryName = "";
+    S.bcNameAsk = false;
     if (!S.have) S.have = {};
     S.have.market = Math.max(S.have.market || 0, 1);
     S.have.chance = Math.max(S.have.chance || 0, 2);
@@ -8710,7 +9034,29 @@
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "chance") {
-      if (S.optPanel) {
+      if (S.bcNameAsk) {
+        overlay.classList.remove("chance-options");
+        const esN = chanceLang();
+        overlay.innerHTML = "<h1>" + (esN ? "El nombre" : "The name") + "</h1>"
+          + "<p class=\"k arc-title\">" + (esN ? "¿Cómo se llama el país?" : "What is the country called?") + "</p>"
+          + "<p class=\"arc-body\">" + (esN
+            ? "Ese nombre queda en la declaración, en las respuestas y en las cartas que siguen."
+            : "That name stays on the declaration, the replies, and the cards that follow.") + "</p>"
+          + "<form id=\"bc-name-form\" class=\"nation-ask\" autocomplete=\"off\">"
+          + "<input id=\"bc-name-in\" maxlength=\"24\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"" + (esN ? "País Bitcoin" : "Bitcoin Country") + "\">"
+          + "<button type=\"submit\" class=\"cta\">" + (esN ? "Declarar" : "Declare") + "</button>"
+          + "</form>";
+        const nameForm = $("bc-name-form");
+        const nameIn = $("bc-name-in");
+        if (nameIn) setTimeout(() => { try { nameIn.focus(); } catch (e) {} }, 40);
+        if (nameForm) nameForm.onsubmit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          commitCountryName(nameIn ? nameIn.value : "");
+        };
+        return;
+      }
+      if (S.optPanel && S.optPanel !== "off") {
         overlay.classList.add("chance-options");
         overlay.innerHTML = "<div class=\"chance-options-sheet\">" + pauseMarkup() + "</div>";
         bindPauseUi();
@@ -8724,7 +9070,8 @@
       if (S.chanceTitle) title = es ? (S.chanceTitle.es || S.chanceTitle.en || title) : (S.chanceTitle.en || title);
       if (S.battleTutOpen) title = t("tutBattle");
       if (card.job) title = fillJob(title);
-      const body = S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body));
+      title = stampNation(title);
+      const body = stampNation(S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body)));
       const pic = chanceArtHtml(card.id);
       let btns = "";
       if (S.chanceNote) {
@@ -8948,9 +9295,9 @@
         const d=S.bcDefense;
         if(!d||e.repeat)return;
         if(d.aaArmed)d.aaTap=1;
+        else if(d.aaCharging){/* hold charge */}
         else{
-          d.aaArmed=true;d.aa=1;
-          d.reticle={x:d.player.x,y:Math.max(36,d.player.y-78)};
+          d.aaCharging=true;d.aaCharge=0;d.aaArmed=false;d.reticle=null;
           warSfx("warAa");
         }
       }
@@ -9146,13 +9493,13 @@
   if(bcArmy10)bcArmy10.addEventListener("click",onBuyArmy);
   if(bcArmyBar)bcArmyBar.addEventListener("click",onBuyArmy);
   if(bcForm)bcForm.addEventListener("click",()=>{formArmy();renderBitcoinCountry();renderHud();});
-  if(bcDeclare)bcDeclare.addEventListener("click",()=>{
+  if(bcDeclare)bcDeclare.addEventListener("click",(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
     if((S.bcNodes||0)<100||S.bcIndependent||S.bcVictory)return;
     const p=$("bc-panel");if(p)p.classList.add("hide");
-    window.__arcForce="theQuestion";
-    if(S.phase!=="play")S.phase="play";
-    dealChance();
-    window.__arcForce="";
+    S.optPanel=null;
+    askCountryName();
   });
   (function bindDefensePad(){
     const stick=$("def-stick"), knob=$("def-knob"), fire=$("def-fire");
@@ -9209,9 +9556,9 @@
         const d=S.bcDefense;
         if(!d||d.done||d.frozen)return;
         if(d.aaArmed)d.aaTap=1;
+        else if(d.aaCharging){/* hold charge */}
         else{
-          d.aaArmed=true;d.aa=1;
-          d.reticle={x:d.player.x,y:Math.max(36,d.player.y-78)};
+          d.aaCharging=true;d.aaCharge=0;d.aaArmed=false;d.reticle=null;
           warSfx("warAa");
         }
       });

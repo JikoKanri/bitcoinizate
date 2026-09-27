@@ -1,0 +1,27 @@
+name: restore-css
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/restore-css.yml
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore stylesheet
+        run: git show ca2e60acd8702e615b7d8b73315c30dc3cd53a96:choppy-bitcoin/style.css > choppy-bitcoin/style.css
+      - name: Move LRM button
+        run: python3 scripts/fix-lrm-css.py
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add choppy-bitcoin/style.css
+          git diff --cached --quiet || git commit -m "Restore full stylesheet and keep LRM button bottom-center"
+          git push
