@@ -4,12 +4,15 @@ This file is the source of truth for new and replacement arc-card illustrations.
 
 ## Output and composition
 
-- Create every replacement as a new native **1920 × 800 px** composition with a **2.4:1** aspect ratio.
-- Design for display at approximately **480 × 200 CSS px** on desktop and responsive scaling on smaller screens.
+- Create every replacement as a new original panoramic composition using the canonical cinematic **2.4:1** aspect ratio.
+- Design the illustration to occupy all or nearly all of the available game width: approximately **480 × 200 CSS px** on desktop, with responsive scaling on smaller screens.
+- **1920 × 800 px is the preferred master export size when practical, not a hard acceptance requirement.** Equivalent resolutions are acceptable only when they preserve the canonical 2.4:1 ratio, remain sharp at card size, and match the rest of the series.
 - Do not crop, extend, pad, stretch, or resize an older square illustration as a replacement.
+- Do not use letterboxing or internal margins to fake the panoramic format; the scene itself must fill the canvas.
 - Keep principal characters and essential story information inside central safe margins.
+- Maintain series consistency in aspect ratio, displayed visual height, perceived subject scale, safe margins, and framing.
 - The scene must remain readable at card size. Prefer clear silhouettes and one coherent narrative beat.
-- Do not add letterboxing, black bars, watermarks, UI chrome, or decorative borders.
+- Do not add black bars, watermarks, UI chrome, or decorative borders.
 
 ## Choppy — mandatory model sheet
 
@@ -53,11 +56,12 @@ Reject an image if the emblem is gold, dark, malformed, partly hidden, or replac
 
 ## Required review before publication
 
-1. Inspect the full-resolution image and confirm it is exactly 1920 × 800 px.
-2. Inspect a 480 × 200 preview.
-3. Confirm the card's characters, location, action, and narrative logic.
-4. Check every Choppy invariant above when Choppy is present.
-5. Confirm Lena is absent from every Bitcoin Country/island scene.
-6. Confirm there is no unintended text and every prop is plausible.
-7. Publish the asset, mapping, and status update only after all checks pass.
-8. Keep the older image in branch/PR history until the replacement is verified.
+1. Inspect the full-resolution image and confirm its actual aspect ratio is **2.4:1** (allowing only negligible export/encoding tolerance); exact pixel dimensions are not mandatory.
+2. Inspect it at approximately **480 × 200 CSS px**, filling the desktop card width, and in a smaller responsive viewport.
+3. Compare it beside accepted cards and confirm consistent visual height, framing, safe margins, and perceived subject scale.
+4. Confirm the card's characters, location, action, and narrative logic.
+5. Check every Choppy invariant above when Choppy is present.
+6. Confirm Lena is absent from every Bitcoin Country/island scene.
+7. Confirm there is no unintended text and every prop is plausible.
+8. Publish the asset, mapping, and status update only after all checks pass.
+9. Keep the older image in branch/PR history until the replacement is verified.
