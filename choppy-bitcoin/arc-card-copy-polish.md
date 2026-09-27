@@ -95,6 +95,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `cafa7350d29ec672122f7ad9d361513f247d4c53`
   - Pull request: #9
 
+- [x] `obviously` — “Era obvio”
+  - Mission relation: follows the power-grid build and introduces the Bitcoin mine that gives the island an economic identity within the Bitcoin Country arc.
+  - Updated: Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; 5% mine cost, four-word proposal, option keys, retry behavior, `bcMine`, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `003d302641ab2e82ad700adc7ef9e8426f3fff3e`
+  - Pull request: #9
+
 ## Next priority
 
-- `obviously`
+- `principality`
