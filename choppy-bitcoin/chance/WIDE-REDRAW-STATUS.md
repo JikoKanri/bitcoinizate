@@ -1,8 +1,8 @@
 # Bitcoin Country cinematic arc art
 
-Target display: full game width (480 CSS px on desktop, responsive on smaller screens), 2.4:1. Each new replacement must be composed natively at exactly 1920 × 800 pixels; displayed at about 480 × 200 CSS pixels. Do not resize, crop, extend, or pad earlier square art to meet this target. Old square files remain in PR history.
+Target display: all or nearly all of the available game width (about 480 CSS px on desktop, responsive on smaller screens), using the canonical cinematic **2.4:1** aspect ratio. **1920 × 800 px remains the preferred master export size, not a hard acceptance requirement.** Equivalent resolutions are acceptable when they preserve 2.4:1, remain sharp at card size, and match the series in visual height, framing, safe margins, and perceived subject scale. Do not resize, crop, extend, pad, letterbox, or stretch earlier square art to meet this target. Old square files remain in PR history.
 
-## Wide compositions already reviewed (native 1920 × 800 requirement noted below)
+## Wide compositions already reviewed (canonical 2.4:1)
 
 - `citadelProblem` — `citadelProblem-wide.jpg` — fresh native panoramic mainland-ridge scene, 1920 × 800 px; inspected at 480 × 200 px; Marek is the sole human and reacts seriously to Choppy's country proposal; Choppy has a complete unobstructed white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, gloves, and shoes; no island, Lena, Madame Luck, other characters, documents, flags, visible text, or watermark.
 - `islandInspection` — `islandInspection-wide.jpg` — fresh native panoramic high-point inspection scene, 1920 × 800 px; inspected at 480 × 200 px; both coves, forested interior, eastern cliffs, weathered dock, and arrival boat are visible; Choppy has a complete unobstructed white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, gloves, and shoes; no Lena, Madame Luck, seller, other characters, documents, visible text, or watermark.
