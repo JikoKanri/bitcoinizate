@@ -474,6 +474,18 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
+.overlay.dock.chance-ui.battle-report {
+  inset: 0 0 auto 0;
+  max-height: 52%;
+  border-radius: 0 0 16px 16px;
+  background: rgba(12, 10, 8, 0.94);
+}
+.overlay.dock.chance-ui.battle-report .chance-art {
+  width: 84px;
+  height: 84px;
+  max-height: 84px;
+  border-radius: 12px;
+}
 html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-title { font-size: 26px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-body { font-size: 18px; }
 .overlay.dock.chance-ui .arc-tldr-k {
@@ -951,6 +963,19 @@ html[data-palette="flower"] #app {
   pointer-events:none;
   will-change:transform;
 }
+.def-aa{
+  position:absolute;left:42px;bottom:154px;width:72px;height:72px;z-index:27;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;pointer-events:auto;touch-action:none;cursor:pointer;
+  color:#fff6e8;font:700 13px "IBM Plex Mono",monospace;letter-spacing:.06em;
+  border:3px solid #f0d0c8;-webkit-tap-highlight-color:transparent;user-select:none;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(18,10,8,.94) 0 56%, transparent 57%),
+    conic-gradient(from -90deg, #e23b3b var(--aa, 0deg), rgba(50,18,16,.72) var(--aa, 0deg));
+  box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 2px rgba(0,0,0,.35);
+}
+.def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
+.def-aa.hide{display:none}
 [data-palette="sunset"] #clock,
 [data-palette="sunset"] #h-candles {
   color: #fff8f2;
