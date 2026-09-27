@@ -116,6 +116,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `7070d3748769233a1231794a776573d267a494b5`
   - Pull request: #9
 
+- [x] `firstBloc` — “El primer bloque”
+  - Mission relation: follows `stateVisit` and opens the geopolitical phase of the Bitcoin Country arc by introducing the first bloc that later participates in the conflict.
+  - Updated: English and Spanish full text and TL;DR; replaced the seven fictional member countries with Germany, France, Italy, Spain, the Netherlands, Belgium, and Austria.
+  - Mechanics: report card; no options; `bcWorld +4`, bloc identity, leader, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `370e0a3a1d079ba0fa844b00fe8ced6d3affb96b`
+  - Pull request: #9
+
 ## Next priority
 
-- `firstBloc`
+- `protectIsland`
