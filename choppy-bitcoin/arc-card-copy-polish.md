@@ -102,6 +102,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `003d302641ab2e82ad700adc7ef9e8426f3fff3e`
   - Pull request: #9
 
+- [x] `principality` — “El principado”
+  - Mission relation: unlocks at 25 nodes and introduces San Arnaldo, the first diplomatic relationship and a path toward recognition for Bitcoin Country.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; 614 claimed citizens, 25-node threshold, sidequest unlock, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `84d5e59500714c05f007caa9467ae50e32fd958b`
+  - Pull request: #9
+
 ## Next priority
 
-- `principality`
+- `stateVisit`
