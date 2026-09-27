@@ -74,6 +74,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `4d1f38fa47e14c923609ec78d7b1b2f6167cf761`
   - Pull request: #9
 
+- [x] `theOg` — “La veterana”
+  - Mission relation: follows the contact with Madame Luck and starts the node growth that unlocks settlement, infrastructure, and the later Bitcoin Country milestones.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; seventeen-minute delay, `bcOg` condition, node initialization, IDs, sequence, and effects unchanged.
+  - Confirmed remote commit: `875dcedb0905f3fa27ef884a1b670e2c54884a79`
+  - Pull request: #9
+
 ## Next priority
 
-- `theOg`
+- `peopleAsking`
