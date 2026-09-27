@@ -137,6 +137,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `fde84ca4996f8c7840d4b68ad9d95bfdd3a1a78a`
   - Pull request: #9
 
+- [x] `citadelQuestion` — “La cuestión de la ciudadela”
+  - Mission relation: follows `placeNow` and asks whether the growing Bitcoin Country community should be fortified before the international rearmament phase.
+  - Updated: English and Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; 8% citadel cost, `bcCitadel` effect, deferred-plans outcome, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `3db145cd45264e847af112d5d2f7c4defb846ce4`
+  - Pull request: #9
+
 ## Next priority
 
-- `citadelQuestion`
+- `rearmament`
