@@ -88,6 +88,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `cbb99e2f62216c197d3ba24381c2c9228bf7aa07`
   - Pull request: #9
 
+- [x] `extensionCord` — “El problema de los cables de extensión”
+  - Mission relation: follows the settlement and introduces the power infrastructure required for residents, mining, and the later Bitcoin Country milestones.
+  - Updated: Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; 4% power-grid cost, 8:43 p.m. detail, option keys, retry behavior, `bcPower`, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `cafa7350d29ec672122f7ad9d361513f247d4c53`
+  - Pull request: #9
+
 ## Next priority
 
-- `extensionCord`
+- `obviously`
