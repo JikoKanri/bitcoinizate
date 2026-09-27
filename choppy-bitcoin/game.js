@@ -2707,7 +2707,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp55";
+        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2724,7 +2724,7 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const jpg="chance/"+artId+".jpg?v=mp55";
+    const jpg="chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
