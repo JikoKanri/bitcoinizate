@@ -5,6 +5,7 @@ Target display: full game width (480 CSS px on desktop, responsive on smaller sc
 ## Redrawn and verified
 
 - `pieceWorld` — `pieceWorld-wide.jpg` — original panoramic scene, 1916 × 802 px; inspected at 480 × 201 px; mapped with `wide-art` CSS.
+- `ortegaCalls` — `ortegaCalls-wide.jpg` — original panoramic office-call scene, 1939 × 811 px; inspected at 480 × 201 px; plain coin reverse avoids a malformed emblem; papers are secondary, plausible, and unlabeled.
 
 ## Still pending
 
@@ -24,7 +25,6 @@ The following existing square scene assets need original wide replacements and c
 - `notYet.jpg`
 - `nothingToHide.jpg`
 - `obviously.jpg`
-- `ortegaCalls.jpg`
 - `paperwork.jpg`
 - `peopleAsking.jpg`
 - `placeNow.jpg`
