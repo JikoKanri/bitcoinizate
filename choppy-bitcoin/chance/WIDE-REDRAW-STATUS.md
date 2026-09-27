@@ -15,6 +15,7 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 - `citadelQuestion` — `citadelQuestion-wide.png` — new original island-ridge citadel scene, 1942 × 809 px (2.4005:1); inspected at 480 × 200 px; Marek and Choppy, no plans or text; Choppy design checked.
 - `declaration` — `declaration-wide.png` — new original panoramic independence-and-recognition scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy addresses the island community as a male San Arnaldo envoy arrives at the harbor; complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, two orange arms and legs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, anonymous women, documents, readable text, invented emblems, weapons, or watermark.
 - `justInCase` — `justInCase-wide.png` — new original panoramic late-night emergency-law vote, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; lawmakers vote as male officers expand barriers and checkpoints while Choppy watches from the gallery; complete white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, gloves, and shoes verified; no Lena, Madame Luck, women, documents, readable text, weapons, or watermark.
+- `nothingToHide` — `nothingToHide-wide.png` — new original panoramic airport identity-lane scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; male travelers move through unmarked automated arches while Choppy pauses between the narrowing manual lane and the frictionless route; complete white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, gloves, and shoes verified; no Lena, Madame Luck, women, phones, cards, documents, readable text, visible interfaces, or watermark.
 
 ## Still pending
 
@@ -25,7 +26,6 @@ The following existing square scene assets need original wide replacements and c
 - `fourthColor.jpg`
 - `nobodyKnows.jpg`
 - `notYet.jpg`
-- `nothingToHide.jpg`
 - `obviously.jpg`
 - `peopleAsking.jpg`
 - `placeNow.jpg`
