@@ -432,4 +432,126 @@
       mpYou: "vos",
       mpMixNeed: "Tiene que sumar 100",
       mpColdW: "Cold",
-    
+      mpMode: "Modo",
+      mpLast: "Último en pie",
+      mpWhale: "Ballena",
+      mpRace: "Carrera",
+      mpRaceN: "Vela de meta",
+      mpBestOf: "Al mejor de",
+      mpSpec: "Espectando",
+      mpRematch: "REVANCHA",
+      mpQuit: "SALIR",
+      mpNext: "Siguiente",
+      mpSeries: "Serie",
+      mpFinished: "META",
+      tryAgain: "Otra vez",
+      playAgain: "Jugar de nuevo",
+      keepPlaying: "Seguir jugando",
+      runStats: "STATS",
+      runChart: "CHART",
+      runRecap: "CINTA DE LA RUN",
+      rekt: "Rekt · patrimonio",
+      board: "Ranking",
+      boardBtc: "Más BTC",
+      boardInd: "Independencia más rápida",
+      eloBoard: "ELO Versus",
+      aliasMonth: "El alias se puede cambiar una vez cada 30 días.",
+      aliasWait: "Próximo cambio de alias después del ",
+      best: "Mejor",
+      congrats: "El float es tuyo",
+      stacked: "Llenaste el tope. Esta es la cinta de la partida.",
+      newPass: "Nueva contraseña",
+      savePass: "Guardar contraseña",
+      choosePass: "Elige una contraseña nueva.",
+      privacyH: "Política de privacidad",
+      privacyB1: "Bitcoinizate es un sitio de juegos en el navegador. No vendemos un token, no mostramos anuncios y no vendemos tus datos.",
+      privacyB2: "Si juegas como invitado, este dispositivo guarda tu mejor puntaje, premios de partida y ajustes como el aspecto, el sonido y el idioma. Eso queda en el almacenamiento local del dispositivo. No lo recibimos.",
+      privacyB3: "Si creas una cuenta guardamos tu correo, un hash de contraseña (lo maneja Supabase), tu alias, direcciones opcionales de Bitcoin y Lightning para cobros, tu puntaje en la nube, la cinta de una partida guardada, logros y tu rating de versus. El feedback que envías con la sesión iniciada se guarda con tu cuenta.",
+      privacyB4: "Eso sirve para iniciar sesión, mostrar un ranking público de alias y puntaje, pagar premios y leer el feedback. No vendemos listas. Las donaciones van a nuestra factura Lightning o a nuestra dirección Bitcoin. El pago en sí no nos dice quién eres.",
+      privacyB5: "Puedes cerrar sesión cuando quieras. Para borrar una cuenta escribe a hello@bitcoinizate.com desde el correo con el que te registraste. Borramos la cuenta y el perfil asociado.",
+      privacyB6: "Consultas: <a href=\"mailto:hello@bitcoinizate.com\">hello@bitcoinizate.com</a>",
+      lookUp: "Mira arriba!",
+      lookDown: "Mira abajo!",
+      welcome: "Bienvenido a Choppy Bitcoin: Sobrevive al mercado!",
+      liquidated: "Rekt! Te liquidaron",
+      floatYours: "Veintiún millones El float es tuyo",
+      bullSongs: "Canciones bull/bear",
+      gameFx: "FX del juego",
+      voices: "Voces",
+      language: "IDIOMA",
+      nextHalve: "PRÓX. HALVING",
+      halvings: "HALVINGS",
+      buyBtc: "COMPRAR BTC",
+      sellBtc: "VENDER BTC",
+      dcaOn: "DCA ACTIVADO",
+      dcaOff: "DCA APAGADO",
+      aiOn: "A.I. BUD ACTIVADO",
+      aiOff: "A.I. BUD APAGADO",
+      trendUp: "TENDENCIA ↑",
+      trendDown: "TENDENCIA ↓",
+      trendOff: "TENDENCIA OFF",
+      share: "Compartir",
+      saveAlias: "Guardar alias",
+      awards: "Premios",
+      howPlay: "Cómo se juega",
+      bullRun: "BULL",
+      bearCrash: "BEAR",
+      halvingNow: "HALVING",
+      laserNow: "LÁSER",
+      soundOn: "ON",
+      soundOff: "OFF",
+      noAiCalls: "Todavía no hay llamadas. Activá A.I. bud en el HUD.",
+      markedPl: "P/L marcado"
+    }
+  };
+
+  function detect() {
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (saved === "es" || saved === "en") return saved;
+    } catch (e) {}
+    const list = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]).map((s) => String(s || "").toLowerCase());
+    return list.some((l) => l === "es" || l.indexOf("es-") === 0) ? "es" : "en";
+  }
+
+  let lang = detect();
+
+  function t(key) {
+    const pack = dict[lang] || dict.en;
+    return pack[key] != null ? pack[key] : (dict.en[key] != null ? dict.en[key] : key);
+  }
+
+  function apply(root) {
+    const box = root || document;
+    box.querySelectorAll("[data-i18n]").forEach((el) => {
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    box.querySelectorAll("[data-i18n-html]").forEach((el) => {
+      el.innerHTML = t(el.getAttribute("data-i18n-html"));
+    });
+    document.documentElement.lang = lang === "es" ? "es" : "en";
+    document.querySelectorAll("[data-lang]").forEach((btn) => {
+      btn.classList.toggle("on", btn.getAttribute("data-lang") === lang);
+    });
+    if (window.ArcadeAudio && typeof window.ArcadeAudio.setLang === "function") {
+      window.ArcadeAudio.setLang(lang);
+    }
+  }
+
+  function setLang(next) {
+    lang = next === "es" ? "es" : "en";
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+    apply(document);
+    window.dispatchEvent(new CustomEvent("bz-lang", { detail: lang }));
+  }
+
+  window.BZ = { t, setLang, apply, lang() { return lang; }, detect };
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-lang]");
+    if (!btn) return;
+    e.preventDefault();
+    setLang(btn.getAttribute("data-lang"));
+  });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => apply(document));
+  else apply(document);
+})();
