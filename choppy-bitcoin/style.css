@@ -474,6 +474,18 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
+.overlay.dock.chance-ui.battle-report {
+  inset: 0 0 auto 0;
+  max-height: 52%;
+  border-radius: 0 0 16px 16px;
+  background: rgba(12, 10, 8, 0.94);
+}
+.overlay.dock.chance-ui.battle-report .chance-art {
+  width: 84px;
+  height: 84px;
+  max-height: 84px;
+  border-radius: 12px;
+}
 html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-title { font-size: 26px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-body { font-size: 18px; }
 .overlay.dock.chance-ui .arc-tldr-k {
@@ -916,6 +928,13 @@ html[data-palette="flower"] #app {
 .bc-panel.hide{display:none}.bc-head{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-size:13px}.bc-head button{background:transparent;border:0;color:var(--fg);font-size:22px}
 .bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:9px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
 .bc-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.bc-actions button{flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:9px 7px;background:var(--surface);color:var(--fg);font:700 10px "IBM Plex Mono",monospace}.bc-actions button:disabled{opacity:.35}.bc-actions #bc-declare{border-color:#f2a900;color:#f2a900}.bc-actions #bc-form-army{border-color:#4f9d6e;color:#8fd4a8}.bc-note{min-height:13px;margin:8px 2px 0;font-size:9px;opacity:.7;white-space:normal;line-height:1.35}
+.bc-panel{max-height:min(72vh,540px);overflow:auto}
+.bc-up-now{margin:8px 2px 0;font-size:11px;line-height:1.45;color:var(--fg)}
+.bc-up-list{list-style:none;margin:6px 0 0;padding:0}
+.bc-up-list li{font-size:10px;line-height:1.35;opacity:.48}
+.bc-up-list li.on{opacity:1;color:#f2a900}
+.help-icos{display:flex;flex-wrap:wrap;gap:3px;flex:0 0 132px;max-width:156px}
+.battle-help p span{flex:1;min-width:120px}
 .field.defense-mode #flap-layer{display:none;pointer-events:none}
 .field.defense-mode #c { animation: none !important; filter: none !important; }
 .def-pad{position:absolute;inset:0;z-index:24;pointer-events:none}
@@ -951,6 +970,19 @@ html[data-palette="flower"] #app {
   pointer-events:none;
   will-change:transform;
 }
+.def-aa{
+  position:absolute;left:42px;bottom:154px;width:72px;height:72px;z-index:27;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;pointer-events:auto;touch-action:none;cursor:pointer;
+  color:#fff6e8;font:700 13px "IBM Plex Mono",monospace;letter-spacing:.06em;
+  border:3px solid #f0d0c8;-webkit-tap-highlight-color:transparent;user-select:none;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(18,10,8,.94) 0 56%, transparent 57%),
+    conic-gradient(from -90deg, #e23b3b var(--aa, 0deg), rgba(50,18,16,.72) var(--aa, 0deg));
+  box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 2px rgba(0,0,0,.35);
+}
+.def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
+.def-aa.hide{display:none}
 [data-palette="sunset"] #clock,
 [data-palette="sunset"] #h-candles {
   color: #fff8f2;
@@ -1195,3 +1227,31 @@ html[data-arc-text="l"] .overlay.dock.chance-ui .arc-title { font-size: 24px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui .arc-body { font-size: 17px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
 #bc-panel, #bc-panel * { font-family: "IBM Plex Mono", monospace; }
+
+/* Native 2.4:1 arc compositions; square cards keep their original framing until redrawn. */
+.overlay.dock.chance-ui .chance-art.wide-art,
+.overlay.dock.chance-ui.fest-ui .chance-art.wide-art {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 2.4 / 1;
+  max-height: none;
+  object-fit: contain;
+  align-self: stretch;
+  margin: 0;
+}
+
+/* Let a verified wide image reach both edges of the 480px game field. */
+.overlay.dock.chance-ui:has(> .chance-art.wide-art) {
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.overlay.dock.chance-ui:has(> .chance-art.wide-art) > :not(.chance-art) {
+  margin-left: 10px;
+  margin-right: 10px;
+}

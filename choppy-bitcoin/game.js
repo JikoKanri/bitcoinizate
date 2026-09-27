@@ -292,6 +292,26 @@
     if (kind === "rank") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#120c02\" font-family=\"IBM Plex Mono,monospace\">#1</text>", "#c8960a", "#ffe7a0");
     if (kind === "perk") return wrap("<polygon points=\"0,-8 2.2,-2.2 8,-2.2 3.4,1.6 5.2,7.5 0,4 -5.2,7.5 -3.4,1.6 -8,-2.2 -2.2,-2.2\" fill=\"#ffe7a0\"/>", "#141416", "#c8960a");
     if (kind === "gfx") return wrap("<g><circle cx=\"-4.2\" cy=\"1.2\" r=\"3.4\" fill=\"#0a0a0c\"/><circle cx=\"0.4\" cy=\"-3.2\" r=\"3.4\" fill=\"#c8960a\"/><circle cx=\"4\" cy=\"2.4\" r=\"3.4\" fill=\"#4f9d6e\"/></g>", "#141416", "#c8960a");
+    if (kind === "heart") return wrap("<path d=\"M0 4.6 C-4.4 1.4 -6.4-1.5 -4.3-3.4 C-2.6-4.9 -0.6-3.6 0-2.1 C0.6-3.6 2.6-4.9 4.3-3.4 C6.4-1.5 4.4 1.4 0 4.6Z\" fill=\"#e23b3b\"/>", "#1a0c0c", "#ffb4ac");
+    if (kind === "sand") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#e0c27a\"/><rect x=\"-6\" y=\"1\" width=\"10\" height=\"2\" fill=\"#c9a45e\"/>", "#6a4e22", "#e0c27a");
+    if (kind === "grass") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#62b33a\"/><rect x=\"-2\" y=\"-2\" width=\"3\" height=\"3\" fill=\"#ffe56a\"/>", "#143018", "#8ed44e");
+    if (kind === "dirt") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#e2c56a\"/><rect x=\"-8\" y=\"-1\" width=\"16\" height=\"3\" fill=\"#c49a42\"/>", "#5a3e14", "#e2c56a");
+    if (kind === "brick") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#b07a3a\"/><path d=\"M-8 0H8M0-8V0M-4 0V8\" stroke=\"#6a4218\" stroke-width=\"1.2\"/>", "#3a2410", "#e0b07a");
+    if (kind === "metal") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#6d6a66\"/><rect x=\"-4\" y=\"-5\" width=\"8\" height=\"6\" fill=\"#b0aca6\"/>", "#222224", "#d0ccc6");
+    if (kind === "tree") return wrap("<rect x=\"-1.2\" y=\"1.5\" width=\"2.4\" height=\"6\" fill=\"#6b4423\"/><circle cy=\"-1.5\" r=\"5.5\" fill=\"#1c7a34\"/>", "#102818", "#8ed44e");
+    if (kind === "water") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#1c7484\"/><path d=\"M-7-1H7M-7 4H7\" stroke=\"#b4f0ff\" stroke-width=\"1.4\"/>", "#0c3038", "#9befff");
+    if (kind === "tank") return wrap("<g><rect x=\"-8\" y=\"-6\" width=\"3\" height=\"13\" fill=\"#1c1f16\"/><rect x=\"5\" y=\"-6\" width=\"3\" height=\"13\" fill=\"#1c1f16\"/><path d=\"M-5-5 H5 L6 2 L4 7 H-4 L-6 2Z\" fill=\"#3f5344\"/><rect x=\"-1\" y=\"-11\" width=\"2\" height=\"7\" fill=\"#1a1c14\"/></g>", "#1a2218", "#8a9078");
+    if (kind === "fast") return wrap("<g><rect x=\"-7\" y=\"-5\" width=\"2.4\" height=\"11\" fill=\"#1c1f16\"/><rect x=\"4.6\" y=\"-5\" width=\"2.4\" height=\"11\" fill=\"#1c1f16\"/><path d=\"M0-8 L5-1 L4 6 H-4 L-5-1Z\" fill=\"#8a8f55\"/><rect x=\"-0.8\" y=\"-12\" width=\"1.6\" height=\"6\" fill=\"#1a1c14\"/></g>", "#1a2218", "#c5c48a");
+    if (kind === "heavy") return wrap("<g><rect x=\"-9\" y=\"-6\" width=\"3.2\" height=\"13\" fill=\"#1c1f16\"/><rect x=\"5.8\" y=\"-6\" width=\"3.2\" height=\"13\" fill=\"#1c1f16\"/><rect x=\"-6\" y=\"-6\" width=\"12\" height=\"12\" fill=\"#2e352c\"/><circle r=\"3.2\" cy=\"-1\" fill=\"#3d4638\"/><rect x=\"-1.4\" y=\"-11\" width=\"2.8\" height=\"6\" fill=\"#1a1c14\"/></g>", "#121612", "#8a9080");
+    if (kind === "elite") return wrap("<g><rect x=\"-8\" y=\"-6\" width=\"3\" height=\"13\" fill=\"#1c1f16\"/><rect x=\"5\" y=\"-6\" width=\"3\" height=\"13\" fill=\"#1c1f16\"/><path d=\"M-5-5 H5 L6 2 L4 7 H-4 L-6 2Z\" fill=\"#4d5340\"/><rect x=\"-1\" y=\"-11\" width=\"2\" height=\"7\" fill=\"#1a1c14\"/><path d=\"M-3 4 L0 1 L3 4\" fill=\"none\" stroke=\"#d7c27a\" stroke-width=\"1.3\"/></g>", "#1a2218", "#d7c27a");
+    if (kind === "ship") return wrap("<path d=\"M0-8 L6-2 L5.2 6 H-5.2 L-6-2 Z\" fill=\"#3c4f42\"/><rect x=\"-2\" y=\"-2\" width=\"4\" height=\"5\" fill=\"#d9d4c6\"/>", "#102018", "#9aab96");
+    if (kind === "heli") return wrap("<rect x=\"-7\" y=\"-2.5\" width=\"14\" height=\"6\" rx=\"1\" fill=\"#5c6b4a\"/><path d=\"M-9 0H9\" stroke=\"#d7d4c4\" stroke-width=\"1.7\"/>", "#1a2218", "#c5c8b0");
+    if (kind === "heal") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#fff\" font-family=\"IBM Plex Mono,monospace\">+</text>", "#e23b3b", "#ffd0d0");
+    if (kind === "shot") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"13\" font-weight=\"700\" fill=\"#062028\" font-family=\"IBM Plex Mono,monospace\">S</text>", "#7fd0ff", "#e8f7ff");
+    if (kind === "star") return wrap("<polygon points=\"0,-7.2 2.1,-2.2 7.2,-2.2 3.1,1.2 4.6,6.4 0,3.2 -4.6,6.4 -3.1,1.2 -7.2,-2.2 -2.1,-2.2\" fill=\"#ffe14a\"/>", "#2a2208", "#ffe7a0");
+    if (kind === "rock") return wrap("<polygon points=\"-7,6 -3,-1 1,3 4,-6 8,6\" fill=\"#6a6864\"/>", "#222220", "#c8c4bc");
+    if (kind === "lh") return wrap("<g><rect x=\"-2\" y=\"-2\" width=\"4\" height=\"9\" fill=\"#f4f1ea\"/><rect x=\"-3.2\" y=\"-6\" width=\"6.4\" height=\"4\" fill=\"#b42318\"/><rect x=\"-1\" y=\"-5\" width=\"2\" height=\"2\" fill=\"#ffe56a\"/></g>", "#6a4e22", "#f4f1ea");
+    if (kind === "aa" || kind === "lrm") return wrap("<g><path d=\"M0-8 L2.2-1.5 L2 5 H-2 L-2.2-1.5Z\" fill=\"#e8e2d4\"/><path d=\"M-4 3 L0 1 L4 3 L0 6Z\" fill=\"#c45c4a\"/></g>", "#1a0808", "#ff9b92");
     return wrap("", "#141416", "#3a3a40");
   }
   const HEROES = [
@@ -457,7 +477,15 @@
     tut6: "Laser eyes eat a bear and unlock a perk.",
     tut7: "Ranked is 0 cold and 0 multisig and counts for the board. Training is 9 cold and 999 multisig and does not. Versus does not count for ranked scores or awards.",
     tut8: "Pick a perk and the menu vanishes like an Arc card — then tap ▶. DCA, A.I. bud, Jukebox, Marketplace and Arc sit on the HUD. Speed is the 1x button between Buy and Sell.",
-    tut9: "Options → Graphics: pick a look, then tap the hero in the preview to switch 2D / 3D."
+    tut9: "Options → Graphics: pick a look, then tap the hero in the preview to switch 2D / 3D.",
+    tutBattle: "Battle tutorial",
+    tutHold: "Hold the beach",
+    tutB1: "On land you drive the tank. Sea battles put you in a ship — those maps keep water on at least two edges. The stick moves you. The right side of the screen fires.",
+    tutB2: "You start with 3 hearts. Each hit empties one. Empty hearts means you lose. The citadel shield is separate — if it breaks, the island falls.",
+    tutB3: "Sand is beach. Grass and dirt paths are open. Brick breaks. Metal does not. Trees block movement and shots. Tanks cannot cross water. Ships sail on water and stop at land.",
+    tutB4: "One pickup at a time, every 5–15 seconds. It disappears 10 seconds after it spawns. + restores a heart, or adds a fourth if you are already full at 3. S speeds your shot. The star makes you untouchable for a moment.",
+    tutB5: "Some land battles send helicopters. They ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
+    tutB6: "Red tanks, gold fast tanks, gray heavy tanks and purple elites come in waves. Sea battles send ships instead. KIA is how many you destroyed in this battle, over how many were sent."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -476,6 +504,32 @@
       + "<p class=\"donate-links\"><a href=\"lightning:" + ln + "\">Lightning</a> · <a href=\"bitcoin:" + btc + "\">Bitcoin</a></p>"
       + "</section>";
   }
+  function battleIcos(kinds){
+    return "<span class=\"help-icos\">" + kinds.map(badgeIco).join("") + "</span>";
+  }
+  function battleTutInner(){
+    const line = (icos, key) => "<p>" + icos + "<span>" + t(key) + "</span></p>";
+    return line(badgeIco("tank") + badgeIco("ship"), "tutB1")
+      + line(badgeIco("heart"), "tutB2")
+      + line(battleIcos(["sand", "grass", "dirt", "brick", "metal", "tree", "rock", "lh", "water"]), "tutB3")
+      + line(battleIcos(["heal", "shot", "star"]), "tutB4")
+      + line(battleIcos(["tank", "fast", "heavy", "elite", "ship"]), "tutB6")
+      + line(badgeIco("heli") + badgeIco("aa"), "tutB5");
+  }
+  function battleTutHtml(){ return "<div class=\"help battle-help\">" + battleTutInner() + "</div>"; }
+  function battleTutParas() {
+    return [t("tutB1"), t("tutB2"), t("tutB3"), t("tutB4"), t("tutB5"), t("tutB6")];
+  }
+  function battleTutPlain() { return battleTutParas().join("\n\n"); }
+  function markBattleTut() {
+    S.bcBattleTut = true;
+    try { localStorage.setItem("choppy-battle-tut", "1"); } catch (e) {}
+  }
+  function battleTutSeen() {
+    if (S.bcBattleTut) return true;
+    try { if (localStorage.getItem("choppy-battle-tut") === "1") { S.bcBattleTut = true; return true; } } catch (e) {}
+    return false;
+  }
   function tutorialBody() {
     return "<div class=\"help\">"
       + "<p>" + badgeIco("hero") + " " + t("tut1") + "</p>"
@@ -484,6 +538,9 @@
       + "<p>" + badgeIco("swan") + " " + t("tut4a") + " " + badgeIco("halve") + " " + t("tut4b") + "</p>"
       + "<p>" + badgeIco("cold") + " " + t("tut5") + "</p>"
       + "<p>" + badgeIco("laser") + " " + t("tut6") + "</p>"
+      + (battleTutSeen()
+        ? "<p class=\"k\">" + t("tutBattle") + "</p>" + battleTutInner()
+        : "")
       + "</div>";
   }
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
@@ -1229,7 +1286,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1979,27 +2036,27 @@
     return text;
   }
   const CHANCE_TLDR = {
-    justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una ley de emergencia amplía el poder del Estado cuando la economía se ve inestable. La llaman temporal. La definición parece cubrir casi todos los años." },
-    nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un DNI digital opcional hace más fáciles los viajes y los bancos, y los trámites empiezan a mudarse ahí. No tenés nada que ocultar. La pregunta igual molesta." },
-    somethingBetter: { en: "On a run with Marek you say that, with enough money, you could build something better than a company or a charity. You do not yet know what.", es: "En una corrida con Marek decís que, con suficiente plata, podrías construir algo mejor que una empresa o una ONG. Todavía no sabés qué." },
-    timeTraveler: { en: "An old post claims to be from a future of citadels. A search turns up a self-published book, THE BITCOIN STATE, for $666.", es: "Un post viejo dice venir de un futuro de ciudadelas. Una búsqueda te lleva a un libro autoeditado, THE BITCOIN STATE, a $666." },
-    temporaryMeasures: { en: "A financial emergency brings transfer limits and payment apps that stop working. Officials say it is temporary. Bitcoin does not fall with the markets.", es: "Una emergencia financiera trae límites a las transferencias y apps de pago que dejan de andar. Dicen que es temporal. Bitcoin no cae con los mercados." },
-    citadelProblem: { en: "You tell Marek you want to build a country. He laughs, then asks how much land. The stupid idea now has a checklist.", es: "Le decís a Marek que querés construir un país. Se ríe, y después pregunta cuánta tierra. La idea estúpida ahora tiene una lista." },
-    pieceWorld: { en: "Nico finds a listing for an isolated island that calls itself a sovereign opportunity. It is not sovereign.", es: "Nico encuentra el aviso de una isla aislada que se vende como una oportunidad soberana. No es soberana." },
-    islandInspection: { en: "At sunrise the island is more beautiful than the listing. At sunset the seller's offer arrives.", es: "Al amanecer la isla es más linda que el aviso. Al atardecer llega la oferta del vendedor." },
-    paperwork: { en: "Lawyers turn the purchase into something that looks serious. Nico signs in the wrong place. Paco eats a corner of the last page.", es: "Los abogados hacen que la compra se vea seria. Nico firma en el lugar equivocado. Paco se come una esquina de la última hoja." },
-    nobodyKnows: { en: "You have land and paperwork, and almost no reason for anyone to care. The only name you are given is Madame Luck.", es: "Tenés tierra y papeles, y casi ningún motivo para que a alguien le importe. El único nombre que te dan es Madame Luck." },
-    theOg: { en: "Madame Luck asks very good questions, says she will tell some people, and your phone starts vibrating.", es: "Madame Luck hace muy buenas preguntas, dice que se lo va a contar a alguna gente, y el teléfono empieza a vibrar." },
-    peopleAsking: { en: "People ask if they can move in. Nico makes a spreadsheet. There are no houses.", es: "La gente pregunta si puede mudarse. Nico arma una planilla. No hay casas." },
-    extensionCord: { en: "The new residents bring more machines than the island can feed. The lights go out. Someone asks who was mining.", es: "Los residentes nuevos traen más máquinas de las que la isla puede alimentar. Se corta la luz. Alguien pregunta quién estaba minando." },
-    obviously: { en: "The grid works. Nico says you should mine Bitcoin. The proposal is four words: cheap power, we mine.", es: "La red anda. Nico dice que habría que minar Bitcoin. La propuesta tiene cuatro palabras: energía barata, minamos." },
-    principality: { en: "Mr Ortega & Gambette writes from San Arnaldo. They have a flag, an anthem, and a website. They would like relations.", es: "Escribe el señor Ortega & Gambette desde San Arnaldo. Tienen bandera, himno y sitio web. Quieren relaciones." },
-    stateVisit: { en: "San Arnaldo wants Bitcoin infrastructure. Their government building may have been a restaurant. You want friends.", es: "San Arnaldo quiere infraestructura Bitcoin. El edificio de gobierno pudo haber sido un restorán. Vos querés amigos." },
-    firstBloc: { en: "Seven capitals announce the Meridian Stability Pact. Chancellor Voss never raises his voice. The Pact looks like a form, and the form is mandatory.", es: "Siete capitales anuncian el Pacto de Estabilidad Meridiano. El canciller Voss no alza la voz. El Pacto parece un formulario, y el formulario es obligatorio." },
-    protectIsland: { en: "Someone steals a boat. The island's security is one camera and Paco, and Paco was asleep.", es: "Alguien se roba un bote. La seguridad de la isla es una cámara y Paco, y Paco estaba dormido." },
-    placeNow: { en: "A coffee shop, a bakery, a bar, and a newspaper appear. The first editorial criticizes you. Nico is delighted.", es: "Aparecen un café, una panadería, un bar y un diario. El primer editorial te critica. Nico está encantado." },
-    citadelQuestion: { en: "Marek brings plans for walls and a hardened center and calls it a citadel. A wall can keep people out, or keep them safe.", es: "Marek trae planos de muros y un centro reforzado y lo llama ciudadela. Un muro puede dejar gente afuera, o cuidarla." },
-    rearmament: { en: "The Pact launches frigates and calls it maintenance. Five states answer with the Red Ledger and a language of purity. Both sides lay keels.", es: "El Pacto lanza fragatas y lo llama mantenimiento. Cinco Estados responden con el Libro Rojo y un idioma de pureza. Los dos lados ponen quillas." },
+    justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una nueva ley de emergencia amplía las facultades del Estado ante la inestabilidad económica. La llaman temporal, aunque la definición parece abarcar casi todos los años." },
+    nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un documento de identidad digital opcional agiliza los viajes y las operaciones bancarias, mientras los servicios públicos comienzan a adoptarlo. No tienes nada que ocultar, pero la pregunta aún te incomoda." },
+    somethingBetter: { en: "On a run with Marek you say that, with enough money, you could build something better than a company or a charity. You do not yet know what.", es: "Mientras corres con Marek, dices que con suficiente dinero podrías construir algo mejor que una empresa o una organización benéfica. Aún no sabes qué sería." },
+    timeTraveler: { en: "An old post claims to be from a future of citadels. A search turns up a self-published book, THE BITCOIN STATE, for $666.", es: "Una publicación antigua describe un futuro de ciudadelas y gobiernos debilitados. La búsqueda te lleva a un libro autoeditado, THE BITCOIN STATE, por $666." },
+    temporaryMeasures: { en: "A financial emergency brings transfer limits and payment apps that stop working. Officials say it is temporary. Bitcoin does not fall with the markets.", es: "Una emergencia financiera impone límites a las transferencias y al efectivo, mientras varias aplicaciones de pago dejan de funcionar. Las autoridades prometen noventa días; las medidas temporales anteriores llevan casi cuatro años. Los mercados caen, pero Bitcoin no." },
+    citadelProblem: { en: "You tell Marek you want to build a country. He laughs, then asks how much land. The stupid idea now has a checklist.", es: "Le dices a Marek que quieres construir un país. Se ríe, pero luego pregunta cuánta tierra necesitarían. La idea absurda ya tiene una lista de requisitos." },
+    pieceWorld: { en: "Nico finds a listing for an isolated island that calls itself a sovereign opportunity. It is not sovereign.", es: "Nico encuentra el anuncio de una isla aislada que se presenta como una oportunidad para una vida soberana. La isla no es soberana." },
+    islandInspection: { en: "At sunrise the island is more beautiful than the listing. At sunset the seller's offer arrives.", es: "Al amanecer, la isla resulta más hermosa que en el anuncio. Después de recorrerla, al atardecer llega la oferta del vendedor." },
+    paperwork: { en: "Lawyers turn the purchase into something that looks serious. Nico signs in the wrong place. Paco eats a corner of the last page.", es: "Los abogados formalizan la compra. Nico firma donde no corresponde y Paco se come una esquina del documento final." },
+    nobodyKnows: { en: "You have land and paperwork, and almost no reason for anyone to care. The only name you are given is Madame Luck.", es: "Tienes tierra y documentos, pero aún no tienes ciudadanos, reconocimiento ni atención. La única pista es Madame Luck." },
+    theOg: { en: "Madame Luck asks very good questions, says she will tell some people, and your phone starts vibrating.", es: "Madame Luck hace preguntas muy acertadas, dice que hablará del proyecto con algunas personas y tu teléfono empieza a vibrar." },
+    peopleAsking: { en: "People ask if they can move in. Nico makes a spreadsheet. There are no houses.", es: "Desarrolladores, mineros y familias quieren mudarse a la isla. Nico organiza los nombres, pero Marek señala que no hay viviendas." },
+    extensionCord: { en: "The new residents bring more machines than the island can feed. The lights go out. Someone asks who was mining.", es: "Los nuevos residentes conectan más equipos de los que la isla puede abastecer. La energía se corta y alguien pregunta quién estaba minando." },
+    obviously: { en: "The grid works. Nico says you should mine Bitcoin. The proposal is four words: cheap power, we mine.", es: "La red eléctrica funciona y Nico propone minar Bitcoin. Su propuesta se resume en cuatro palabras: energía barata, minamos Bitcoin." },
+    principality: { en: "Mr Ortega & Gambette writes from San Arnaldo. They have a flag, an anthem, and a website. They would like relations.", es: "El señor Ortega & Gambette escribe desde San Arnaldo. Tienen bandera, himno, sitio web y 614 ciudadanos declarados; quieren establecer relaciones." },
+    stateVisit: { en: "San Arnaldo asks for help building Bitcoin infrastructure. The principality needs a node; Bitcoin Country needs its first diplomatic ally.", es: "San Arnaldo solicita ayuda para desarrollar infraestructura de Bitcoin. El principado necesita un nodo; Bitcoin Country necesita su primer aliado diplomático." },
+    firstBloc: { en: "Germany, France, Italy, Spain, the Netherlands, Belgium, and Austria form the Meridian Stability Pact. Its language is administrative; its restrictions are not optional.", es: "Alemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria forman el Pacto de Estabilidad Meridiano. Su lenguaje es administrativo, pero sus restricciones no son opcionales." },
+    protectIsland: { en: "A boat disappears from the dock overnight. One camera caught nothing, and Paco slept through it. The island now needs a security plan.", es: "Un bote desaparece del muelle durante la noche. La única cámara no registró nada y Paco no despertó. La isla necesita un plan de seguridad." },
+    placeNow: { en: "At fifty nodes, the island gains a coffee shop, a bakery, a bar, and a newspaper. Its first editorial criticizes you. Nico calls that progress.", es: "Al alcanzar cincuenta nodos, la isla ya tiene cafetería, panadería, bar y periódico. Su primer editorial te critica. Nico considera que eso es progreso." },
+    citadelQuestion: { en: "Marek proposes a citadel with protected power, walls, and a hardened center. It could defend the community, but it would also turn the settlement into a fortress.", es: "Marek propone una ciudadela con energía protegida, muros y un centro reforzado. Podría defender a la comunidad, pero también convertiría el asentamiento en una fortaleza." },
+    rearmament: { en: "The Meridian Pact announces a frigate program and calls it maintenance. Russia, Belarus, China, North Korea, and Cuba answer by forming the Red Ledger Compact. Both blocs begin building warships.", es: "El Pacto Meridiano anuncia un programa de fragatas y lo llama mantenimiento. Rusia, Bielorrusia, China, Corea del Norte y Cuba responden con el Compacto del Libro Rojo. Ambos bloques comienzan a construir buques de guerra." },
     anOffer: { en: "A private group offers {offer} for the whole project. Madame Luck asks why you built it.", es: "Un grupo privado ofrece {offer} por todo el proyecto. Madame Luck pregunta por qué lo construiste." },
     ambassador: { en: "A real ambassador visits and says that if this ever becomes more than a project, call her first.", es: "Visita una embajadora de verdad y dice que si esto alguna vez es más que un proyecto, la llames primero." },
     threeColors: { en: "The Crown Lattice closes the map. High Warden Soren Pell does not wave. He thinks a people who will not kneel are a clerical error.", es: "La Celosía de la Corona cierra el mapa. El Alto Guardián Soren Pell no saluda. Cree que un pueblo que no se arrodilla es un error de archivo." },
@@ -2299,27 +2356,27 @@
         { k: "c", label: "Leave a small voluntary tip", labelEs: "Leave a small voluntary tip" }
       ] }
 ,
-    { id:"justInCase", kind:"report", title:"Just in Case", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years." },
-    { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you." },
-    { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what." },
-    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published." },
-    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not." },
-    { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist." },
-    { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", opts:[{k:"a",label:"Go see the island · $1,800"},{k:"b",label:"This is insane"}] },
-    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", opts:[{k:"a",label:"Buy the island"},{k:"b",label:"Walk away"}] },
-    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”" },
-    { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", opts:[{k:"a",label:"Make contact · $5,000"},{k:"b",label:"Post about it"}] },
-    { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating." },
-    { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", opts:[{k:"a",label:"Build a settlement · 3%"},{k:"b",label:"Not yet"}] },
-    { id:"extensionCord", kind:"choice", after:["peopleAsking"], when:()=>!!S.bcSettlement, title:"The Extension Cord Problem", body:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. Someone asks who was mining.", opts:[{k:"a",label:"Build proper power · 4%"},{k:"b",label:"More extension cords"}] },
-    { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", opts:[{k:"a",label:"Build the mine · 5%"},{k:"b",label:"Not yet"}] },
-    { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations." },
-    { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", body:"San Arnaldo has a coastal town, hills, and a government building that may have been a restaurant three months ago. They want Bitcoin infrastructure. You want friends.", opts:[{k:"a",label:"Build a node · $15,000"},{k:"b",label:"Help a little · $5,000"},{k:"c",label:"Just visit"}] },
-    { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", titleEs:"El primer bloque", body:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is short. The annexes are not.\n\nValden, Osterbruck, Lior, Maren, Holt, the Sable Coast, and the River Republic of Dun. Trade, energy, a shared payments rail, and a defense clause nobody reads out loud.\n\nChancellor Ivo Voss chairs the first session. He does not raise his voice. He thanks the cameras for their patience and says instability is a kind of violence. Then he lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, uncooperative newspapers.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.", bodyEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es corto. Los anexos no.\n\nValden, Osterbruck, Lior, Maren, Holt, la Costa Sable y la República Fluvial de Dun. Comercio, energía, un riel de pagos común y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. No alza la voz. Agradece a las cámaras por la paciencia y dice que la inestabilidad es una forma de violencia. Después enumera lo que ahora necesita permiso: transferencias grandes, cuentas en el exterior, puertos no autorizados, diarios poco cooperativos.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
-    { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", body:"Someone steals a boat. Your current security system is one camera and Paco. Paco was asleep.", opts:[{k:"a",label:"Build a defense force · 2%"},{k:"b",label:"Hire private security · $50,000"},{k:"c",label:"Give Paco a vest"}] },
-    { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", body:"Coffee shops appear. Then a bakery. Then a bar. Then a newspaper. Its first editorial criticizes you. Nico is delighted. “You made it. You have opposition.”" },
-    { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", body:"Marek brings plans for protected power, walls and a hardened center. “Citadel.” A wall can keep people out. It can also keep people safe.", opts:[{k:"a",label:"Build it · 8%"},{k:"b",label:"Not now"}] },
-    { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", titleEs:"Rearme", body:"The Pact launches a new frigate program and calls it maintenance.\n\nAcross the water, five states answer with a different kind of order. Karth, Vire, the Collective Coast, Namm, and Solenne sign the Red Ledger Compact in a hall with the lights too bright. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, then the person who decides which shortages are patriotic.\n\nThe Ledger does not talk about stability. It talks about purity. Hoarding is treason. Private mines are unfinished revolutions. Posters go up before the bread does. Police notebooks get thicker. The speeches are beautiful. The queues are not.\n\nBoth blocs lay keels. Neither calls it an arms race.", bodyEs:"El Pacto bota un programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua, cinco Estados responden con otro tipo de orden. Karth, Vire, la Costa Colectiva, Namm y Solenne firman el Compacto del Libro Rojo en un salón con las luces demasiado fuertes. La mariscal Amina Kade lee el preámbulo ella misma. Fue oficial de muelle, después fiscal, después la persona que decide qué escasez es patriótica.\n\nEl Libro no habla de estabilidad. Habla de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los afiches llegan antes que el pan. Los cuadernos de la policía se ponen más gruesos. Los discursos son hermosos. Las filas no.\n\nLos dos bloques ponen quillas. Ninguno lo llama carrera armamentista." },
+    { id:"justInCase", kind:"report", title:"Just in Case", titleEs:"Por si acaso", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years.", bodyEs:"Tras tres días de debate, se aprueba una nueva ley de emergencia. Amplía las facultades del Estado durante períodos de inestabilidad económica. La presentan como temporal. Lees la definición dos veces: parece abarcar casi todos los años." },
+    { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", titleEs:"Nada que ocultar", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you.", bodyEs:"Se lanza un nuevo documento de identidad digital. Es opcional. Los controles en los aeropuertos se agilizan. Los bancos ofrecen descuentos. Los servicios públicos comienzan a trasladarse al sistema. Un presentador de televisión pregunta: «Si no tienes nada que ocultar, ¿cuál es el problema?». No tienes nada que ocultar. Aun así, la pregunta te incomoda." },
+    { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", titleEs:"Algo mejor", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what.", bodyEs:"Corres con Marek por el bosque. El sendero sigue un río entre colinas bajas. «Con suficiente dinero», dices, «podrías construir algo mejor». Marek te mira de reojo. «¿Una empresa?». «No». «¿Una organización benéfica?». «No». Sigues corriendo. Aún no sabes qué sería." },
+    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", titleEs:"El viajero del tiempo", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published.", bodyEs:"Una noche encuentras una publicación antigua en un foro de Bitcoin. El autor asegura escribir desde el futuro: Bitcoin es enorme, los gobiernos son más débiles y los grandes tenedores viven en ciudadelas que comenzaron como complejos mineros, se convirtieron en comunidades fortificadas y luego en algo más. Lo que te inquieta no son los muros, sino que dejaron de intentar mejorar los lugares donde vivían. La búsqueda te conduce a un libro: THE BITCOIN STATE — $666. Parece autoeditado." },
+    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", titleEs:"Medidas temporales", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not.", bodyEs:"Se declara una emergencia financiera. Primero llegan las restricciones a las transferencias; después, los límites al uso de efectivo. Varias aplicaciones de pago dejan de funcionar. Las autoridades aseguran que las medidas durarán noventa días. Las medidas temporales anteriores están por cumplir cuatro años. Los mercados caen. Bitcoin no." },
+    { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", titleEs:"El problema de la ciudadela", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist.", bodyEs:"El libro llega: 417 páginas y 186 usos de la palabra «soberanía». Le envías a Marek varias páginas dudosas. Más tarde, mientras corren por las colinas, lo dices de todos modos: «Un país». Marek se ríe una vez y después comprende que hablas en serio. Veinte minutos más tarde pregunta: «¿Cuánta tierra?». Preparas una lista: tierra, energía, agua, población, dinero, normas, seguridad y reconocimiento. Marek añade una bandera. «No». «Necesitas una bandera». Lo que antes era una idea absurda ahora es una idea absurda con una lista." },
+    { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", titleEs:"Un pedazo del mundo", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", bodyEs:"Nico encuentra el anuncio de una isla aislada. Dos calas. Un muelle en mal estado. Colinas verdes. La frase OPORTUNIDAD ÚNICA PARA UN ESTILO DE VIDA SOBERANO aparece dos veces. La isla no es soberana. Lo compruebas. Tres veces.", opts:[{k:"a",label:"Go see the island · $1,800",labelEs:"Ir a conocer la isla · $1,800"},{k:"b",label:"This is insane",labelEs:"Esto es una locura"}] },
+    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", titleEs:"Inspección de la isla", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", bodyEs:"El barco llega a la isla al amanecer. Nico salta al muelle. La estructura emite un crujido preocupante. Detrás de dos calas se elevan colinas verdes. Pinos y bosque costero cubren casi todo el interior; los acantilados recorren el lado oriental. Es más hermosa que en el anuncio. Marek observa alrededor. «No puede ser», dice, en el buen sentido. Paco desaparece entre los árboles. Al atardecer, están en el punto más alto, rodeados de agua. Entonces llega la oferta del vendedor.", opts:[{k:"a",label:"Buy the island",labelEs:"Comprar la isla"},{k:"b",label:"Walk away",labelEs:"Rechazar la oferta"}] },
+    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", titleEs:"Los trámites", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”", bodyEs:"Durante varias semanas, los abogados convierten la compra en algo que se ve cada vez más serio sobre el papel. Nico firma donde no corresponde. Paco se come una esquina del documento final. «País», dice Nico. «Isla», respondes. «Por ahora»." },
+    { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", titleEs:"Nadie sabe que existimos", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", bodyEs:"Tienes tierra. Tienes documentos. No tienes ciudadanos, reconocimiento ni demasiadas razones para que alguien se interese. Un antiguo contacto te da un solo nombre: Madame Luck. Marek lo lee dos veces. Nico dice que la conoce. Por supuesto que sí.", opts:[{k:"a",label:"Make contact · $5,000",labelEs:"Contactar a Madame Luck · $5,000"},{k:"b",label:"Post about it",labelEs:"Publicar sobre el proyecto"}] },
+    { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", titleEs:"La veterana", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating.", bodyEs:"Madame Luck se conecta diecisiete minutos tarde y hace preguntas muy acertadas. Después dice que hablará del proyecto con algunas personas. Tu teléfono empieza a vibrar." },
+    { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", titleEs:"La gente empieza a preguntar", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", bodyEs:"Desarrolladores, mineros y familias preguntan si pueden mudarse a la isla. Nico prepara una hoja de cálculo. Marek detecta el problema. «No tenemos viviendas».", opts:[{k:"a",label:"Build a settlement · 3%",labelEs:"Construir un asentamiento · 3%"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
+    { id:"extensionCord", kind:"choice", after:["peopleAsking"], when:()=>!!S.bcSettlement, title:"The Extension Cord Problem", titleEs:"El problema de los cables de extensión", body:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. Someone asks who was mining.", bodyEs:"Los residentes llevan refrigeradores, computadoras, bombas, servidores y un sauna que nadie admite que sea suyo. A las 8:43 p. m., toda la isla queda a oscuras. Alguien pregunta quién estaba minando.", opts:[{k:"a",label:"Build proper power · 4%",labelEs:"Construir una red eléctrica adecuada · 4%"},{k:"b",label:"More extension cords",labelEs:"Añadir más cables de extensión"}] },
+    { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", titleEs:"Era obvio", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", bodyEs:"La red eléctrica funciona. Nico dice que deberían minar Bitcoin. Era obvio. Una de las propuestas contiene solo cuatro palabras: ENERGÍA BARATA. MINAMOS BITCOIN.", opts:[{k:"a",label:"Build the mine · 5%",labelEs:"Construir la mina · 5%"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
+    { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", titleEs:"El principado", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations.", bodyEs:"Llega un correo del señor Ortega & Gambette, ministro de Relaciones Exteriores de San Arnaldo. San Arnaldo tiene bandera, himno, sitio web y 614 ciudadanos declarados. Quieren establecer relaciones." },
+    { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", titleEs:"Visita de Estado", body:"San Arnaldo is a coastal town nestled among hills. Its government building was a restaurant three months ago; the menu board still hangs behind the ministerial desk. Ortega & Gambette asks for help building Bitcoin infrastructure. The principality needs a node. Bitcoin Country needs its first diplomatic ally.", bodyEs:"San Arnaldo es un pueblo costero entre colinas. Su edificio de gobierno era un restaurante hace tres meses; el menú aún cuelga detrás del escritorio ministerial. Ortega & Gambette solicita ayuda para desarrollar infraestructura de Bitcoin. El principado necesita un nodo. Bitcoin Country necesita su primer aliado diplomático.", opts:[{k:"a",label:"Build and install a node · $15,000",labelEs:"Construir e instalar un nodo · $15,000"},{k:"b",label:"Fund basic equipment · $5,000",labelEs:"Financiar equipamiento básico · $5,000"},{k:"c",label:"Make a courtesy visit",labelEs:"Realizar una visita de cortesía"}] },
+    { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", titleEs:"El primer bloque", body:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is brief. Its annexes are not.\n\nGermany, France, Italy, Spain, the Netherlands, Belgium, and Austria coordinate trade, energy, a shared payment network, and a defense clause nobody reads aloud.\n\nChancellor Ivo Voss chairs the first session. He never raises his voice. After thanking the cameras for their patience, he calls instability a form of violence and lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, and newspapers that refuse to cooperate.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.", bodyEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es breve. Sus anexos no.\n\nAlemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria coordinan el comercio, la energía, una red de pagos compartida y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. Nunca alza la voz. Tras agradecer la paciencia de las cámaras, define la inestabilidad como una forma de violencia y enumera lo que ahora requiere autorización: grandes transferencias, cuentas en el extranjero, puertos no autorizados y periódicos que se nieguen a cooperar.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
+    { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", titleEs:"¿Quién protege la isla?", body:"At sunrise, an empty mooring line is all that remains of a boat. The island’s only camera was aimed at the wrong section of the dock. Paco, officially the night watch, slept through everything. Marek says the problem is no longer the missing boat: a growing settlement needs a real security plan.", bodyEs:"Al amanecer, una amarra vacía es lo único que queda de un bote. La única cámara de la isla apuntaba al sector equivocado del muelle. Paco, encargado oficialmente de la guardia nocturna, durmió durante todo el incidente. Marek señala que el problema ya no es el bote desaparecido: un asentamiento en crecimiento necesita un verdadero plan de seguridad.", opts:[{k:"a",label:"Establish a defense force · 2%",labelEs:"Establecer una fuerza de defensa · 2%"},{k:"b",label:"Hire private security · $50,000",labelEs:"Contratar seguridad privada · $50,000"},{k:"c",label:"Issue Paco a security vest",labelEs:"Entregarle a Paco un chaleco de seguridad"}] },
+    { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", titleEs:"Esto ya parece un lugar", body:"At fifty nodes, daily life begins filling the spaces you never planned. A coffee shop opens near the dock, followed by a bakery, a bar, and a newspaper. Its first editorial complains that the generators are too loud and your decisions are too quiet. Nico reads it twice, delighted. “You made it. You have opposition.”", bodyEs:"Al alcanzar cincuenta nodos, la vida cotidiana comienza a ocupar los espacios que nunca planificaste. Cerca del muelle abre una cafetería; después llegan una panadería, un bar y un periódico. Su primer editorial se queja de que los generadores hacen demasiado ruido y tus decisiones se explican demasiado poco. Nico lo lee dos veces, encantado. «Lo lograste. Ya tienes oposición»." },
+    { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", titleEs:"La cuestión de la ciudadela", body:"Marek unrolls plans for protected power, perimeter walls, and a hardened center supplied for a siege. “Citadel.” The island now has families, shops, and a newspaper. The same walls that could protect that community would also turn its home into a fortress.", bodyEs:"Marek despliega planos para proteger la red eléctrica, levantar muros perimetrales y construir un centro reforzado con suministros para resistir un asedio. «Ciudadela». La isla ya tiene familias, comercios y un periódico. Los mismos muros que podrían proteger a esa comunidad también convertirían su hogar en una fortaleza.", opts:[{k:"a",label:"Build the citadel · 8%",labelEs:"Construir la ciudadela · 8%"},{k:"b",label:"Keep the plans on hold",labelEs:"Dejar los planos en espera"}] },
+    { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", titleEs:"Rearme", body:"The Meridian Stability Pact announces a new frigate program and calls it maintenance.\n\nAcross the water, Russia, Belarus, China, North Korea, and Cuba answer with a different kind of order. They sign the Red Ledger Compact in a hall lit too brightly. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, and now decides which shortages count as patriotic.\n\nThe Compact does not speak of stability. It speaks of purity. Hoarding is treason. Private mines are unfinished revolutions. Posters appear before bread does. Police notebooks grow thicker. The speeches are beautiful. The queues are not.\n\nBoth blocs begin building warships. Neither calls it an arms race.", bodyEs:"El Pacto de Estabilidad Meridiano anuncia un nuevo programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua, Rusia, Bielorrusia, China, Corea del Norte y Cuba responden con otro tipo de orden. Firman el Compacto del Libro Rojo en un salón iluminado en exceso. La mariscal Amina Kade lee personalmente el preámbulo. Primero fue oficial de muelle, después fiscal y ahora decide qué escasez cuenta como patriótica.\n\nEl Compacto no habla de estabilidad, sino de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los carteles aparecen antes que el pan. Los cuadernos de la policía se vuelven más gruesos. Los discursos son hermosos. Las filas no.\n\nAmbos bloques comienzan a construir buques de guerra. Ninguno lo llama carrera armamentista." },
     { id:"anOffer", kind:"choice", after:["rearmament"], title:"An Offer", body:"A private group offers to buy everything for 35% more than your current net worth. Madame Luck asks one question: “Why did you build it?”", opts:[{k:"a",label:"Sell"},{k:"b",label:"Bitcoin Country is not for sale"}] },
     { id:"ambassador", kind:"report", after:["anOffer"], when:()=>!S.bcArcClosed&&S.bcNodes>=75, title:"The Ambassador", body:"A real ambassador visits. Before leaving, she says: “If you ever decide this is more than a project, call me first.”" },
     { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", titleEs:"Tres colores", body:"A third color closes the map.\n\nThe Crown Lattice is older than the press releases. The Crown of Ashen, Bryn March, the Isle Keels, Vesper, and Orth have shared blood rites, harbor law, and a habit of calling their neighbors unfinished. High Warden Soren Pell walks at the front of the procession and does not wave. He believes borders are inherited, not argued, and that a people who will not kneel are a clerical error.\n\nWhere the Pact files a form and the Ledger prints a poster, the Lattice holds a parade and then a silence. Dissent is not debated. It is omitted. The gray spots on the map, including a small island that has been buying generators, are now described as unassigned.\n\nThree tyrannies. Three philosophies. One ocean.", bodyEs:"Un tercer color cierra el mapa.\n\nLa Celosía de la Corona es más vieja que los comunicados. La Corona de Ashen, Bryn March, las Quillas de la Isla, Vesper y Orth comparten ritos de sangre, derecho de puerto y la costumbre de llamar inconclusos a los vecinos. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Cree que las fronteras se heredan, no se discuten, y que un pueblo que no se arrodilla es un error de archivo.\n\nDonde el Pacto presenta un formulario y el Libro imprime un afiche, la Celosía hace un desfile y después un silencio. La disidencia no se debate. Se omite. Las manchas grises del mapa, incluida una isla chica que viene comprando generadores, ahora figuran como sin asignar.\n\nTres tiranías. Tres filosofías. Un océano." },
@@ -2707,7 +2764,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=(id==="pieceWorld"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin6":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2724,11 +2781,12 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const jpg="chance/"+artId+".jpg?v=mp86";
+    const wide = artId === "pieceWorld" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
+    const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin6" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
-    return "<img class=\"chance-art\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
+    return "<img class=\"chance-art" + (wide ? " wide-art" : "") + "\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
   }
 
   const WAR_BLOCS = [
@@ -2920,7 +2978,19 @@
       ];
       return repliesText();
     }
-    if(card.id==="blocAssault") return assaultText();
+    if(card.id==="blocAssault"){
+      if((S.bcBattlesWon||0)===0){
+        card.kind="choice";
+        card.opts=[
+          {k:"go", label:"Hold the beach", labelEs:"Aguantar la playa"},
+          {k:"tut", label:"Battle tutorial", labelEs:"Tutorial de batalla"}
+        ];
+      }else{
+        card.kind="report";
+        card.opts=[];
+      }
+      return assaultText();
+    }
     if(card.id==="battleWon") return battleReportText();
     if(card.id==="blocTriumph") return triumphText();
     return null;
@@ -2946,6 +3016,15 @@
     S.phase="play";
     setTimeout(()=>{ try{ dealChance(); } finally { window.__arcForce=""; } }, 80);
   }
+  function clearBattleField(){
+    S.bcDefense=null;
+    S.battleTutOpen=false;
+    if(field)field.classList.remove("defense-mode");
+    const pad=$("def-pad");if(pad)pad.classList.add("hide");
+    const aa=$("def-aa");if(aa)aa.classList.add("hide");
+    S.defPtr=null;
+    S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};
+  }
   function closeArc(card){
     const id=card&&card.id;
     const launch=(id==="theAnswer"||id==="blocAssault")&&S.bcDefensePending;
@@ -2958,6 +3037,8 @@
     const chainFourth=id==="blocTriumph"&&(S.bcBattlesWon||0)>=9;
     const chainTriumph=afterTriumph&&!chainFourth;
     const chainBattle=afterBattle;
+    if((id==="battleWon"||id==="blocTriumph")&&S.bcDefense&&S.bcDefense.frozen)clearBattleField();
+    S.battleTutOpen=false;
     if(launch||chainCabinet||chainDecl||chainReplies||chainFourth||chainBattle||chainTriumph) S.arcChain=true;
     finishArcHold();
     if(launch){
@@ -3227,6 +3308,23 @@
     arcClickLock = now;
     const card = S.chanceCard;
     if (!card) { finishArcHold(); return; }
+    if (card.id==="blocAssault" && opt==="tut") {
+      markBattleTut();
+      S.battleTutOpen=true;
+      S.chanceBody=battleTutPlain();
+      S.chanceTitle={en:"Battle tutorial", es:"Tutorial de batalla"};
+      card.kind="choice";
+      card.opts=[{k:"go", label:"Hold the beach", labelEs:"Aguantar la playa"}];
+      S.chanceNote="";
+      renderOverlay();
+      return;
+    }
+    if (card.id==="blocAssault" && opt==="go") {
+      S.battleTutOpen=false;
+      S.bcDefensePending=true;
+      closeArc(card);
+      return;
+    }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
         closeArc(card);
@@ -3624,10 +3722,22 @@
     if(delta<25)return {waves:5,rate:1.08,enemy:.92};
     return {waves:4,rate:1.16,enemy:.84};
   }
-  function defenseUpgrades(){
-    const a=S.bcArmy||0;
-    return {mob:a>=40,armor1:a>=50,cannon1:a>=60,cannon2:a>=70,armor2:a>=80,cannon3:a>=90,wall:a>=100};
+  function armyBattleMods(a){
+    a=a|0;
+    let speed=0,shot=0,shield=0,power=1,medic=false,wall=false;
+    if(a>=10)speed=10;
+    if(a>=20)speed=20;
+    if(a>=30){speed=30;shield=10;}
+    if(a>=40){speed=40;shot=10;}
+    if(a>=50){speed=50;medic=true;}
+    if(a>=60){shot=20;shield=20;}
+    if(a>=70){shot=30;power=2;}
+    if(a>=80){shot=40;shield=30;}
+    if(a>=90){shot=50;shield=40;power=3;}
+    if(a>=100){shield=50;wall=true;}
+    return {speed,shot,shield,power,medic,wall};
   }
+  function defenseUpgrades(){return armyBattleMods(S.bcArmy||0);}
   function buyArmy(points){
     points=Math.max(1,Math.floor(points||10));if(!S.bcArmyUnlocked||S.bcVictory||S.bcArcClosed)return false;
     const room=Math.max(0,100-(S.bcArmy||0)),add=Math.min(room,points);if(!add)return false;
@@ -3646,164 +3756,587 @@
   const BC_TS=16,BC_C=30,BC_R=40;
   function bcAt(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
   function bcSet(m,x,y,t){if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;}
+// MAPGEN_START
+  const LAND_SKEL=["beach","bay","peninsula","harbor","docks","cove","headland","coastVillage"];
+  const NAVAL_SKEL=["openSea","channel","roadstead","twinPiers"];
+  const VILLAGE_SKEL={harbor:1,docks:1,coastVillage:1,cove:1,openSea:1,roadstead:1,twinPiers:1};
+  const SKEL_PAD={
+    beach:{x:12,y:26,gate:"n"},
+    bay:{x:12,y:24,gate:"n"},
+    peninsula:{x:12,y:33,gate:"n"},
+    harbor:{x:12,y:27,gate:"n"},
+    docks:{x:12,y:26,gate:"n"},
+    cove:{x:2,y:16,gate:"e"},
+    headland:{x:1,y:22,gate:"e"},
+    coastVillage:{x:18,y:26,gate:"n"},
+    openSea:{x:2,y:35,gate:"n"},
+    channel:{x:0,y:17,gate:"e"},
+    roadstead:{x:8,y:32,gate:"n"},
+    twinPiers:{x:13,y:31,gate:"n"}
+  };
+  function mapMulberry(seed){
+    let s=seed>>>0;
+    return function(){
+      s=(Math.imul(1664525,s)+1013904223)>>>0;
+      return s/4294967296;
+    };
+  }
+  function shuffleIds(rng,arr){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=(rng()*(i+1))|0;
+      const t=a[i];a[i]=a[j];a[j]=t;
+    }
+    return a;
+  }
+  function ensureMapPlan(){
+    if(S.bcMapPlan&&S.bcMapPlan.length===9)return S.bcMapPlan;
+    if(!S.bcMapSeed)S.bcMapSeed=(Math.random()*0x7fffffff)|1;
+    const rng=mapMulberry(S.bcMapSeed);
+    const land=shuffleIds(rng,LAND_SKEL);
+    const naval=shuffleIds(rng,NAVAL_SKEL);
+    const mids=shuffleIds(rng,[0,1,3,4,6,7]);
+    const navalSet={};
+    mids.slice(0,3).forEach((n)=>{navalSet[n]=1;});
+    let li=0,ni=0;
+    const plan=[];
+    for(let level=0;level<9;level++){
+      const finale=(level%3)===2;
+      const isNaval=!finale&&!!navalSet[level];
+      const id=isNaval?naval[ni++]:land[li++];
+      let dress="wild";
+      if(!isNaval){
+        const r=rng();
+        if(id==="harbor"||id==="docks"||id==="coastVillage")dress=r<0.72?"village":"farm";
+        else if(r<0.34)dress="wild";
+        else if(r<0.67)dress="farm";
+        else dress="village";
+      }
+      plan.push({id:id,naval:isNaval,fx:rng()<0.5,fy:rng()<0.5,dress:dress,islets:rng()<0.78,light:rng()<0.55});
+    }
+    S.bcMapPlan=plan;
+    return plan;
+  }
+  function mfill(m,x0,y0,x1,y1,t){
+    const xa=Math.max(0,Math.min(x0,x1)|0), xb=Math.min(BC_C-1,Math.max(x0,x1)|0);
+    const ya=Math.max(0,Math.min(y0,y1)|0), yb=Math.min(BC_R-1,Math.max(y0,y1)|0);
+    for(let y=ya;y<=yb;y++)for(let x=xa;x<=xb;x++)m[y*BC_C+x]=t;
+  }
+  function paintSkel(m,id){
+    if(id==="beach")mfill(m,0,12,29,39,6);
+    else if(id==="bay"){mfill(m,0,8,29,39,6);mfill(m,9,8,20,18,3);}
+    else if(id==="peninsula"){
+      for(let y=22;y<=39;y++){
+        const k=(y-22)/17, half=Math.round(3+k*6), cx=15;
+        mfill(m,cx-half,y,cx+half,y,6);
+      }
+    }else if(id==="harbor"){
+      mfill(m,0,14,29,39,6);
+      mfill(m,10,14,19,24,3);
+      mfill(m,6,6,6,14,7);
+      mfill(m,22,6,22,14,7);
+      mfill(m,10,16,10,23,7);
+      mfill(m,19,16,19,23,7);
+    }else if(id==="docks"){
+      mfill(m,0,12,29,39,6);
+      mfill(m,6,3,6,12,7);
+      mfill(m,14,3,14,12,7);
+      mfill(m,22,3,22,12,7);
+    }else if(id==="cove"){
+      mfill(m,0,0,18,39,6);
+      mfill(m,12,12,29,27,3);
+    }else if(id==="headland"){
+      mfill(m,0,12,12,28,6);
+      mfill(m,12,16,18,24,6);
+      mfill(m,3,19,12,20,2);
+    }else if(id==="coastVillage"){
+      mfill(m,0,11,29,39,6);
+      mfill(m,8,11,16,16,3);
+    }else if(id==="openSea"){
+      mfill(m,0,28,14,39,6);
+      mfill(m,3,28,10,34,3);
+    }else if(id==="channel"){
+      mfill(m,0,6,9,33,6);
+      mfill(m,6,15,9,24,3);
+    }else if(id==="roadstead"){
+      mfill(m,0,16,7,39,6);
+      mfill(m,0,31,16,39,6);
+      mfill(m,12,24,12,31,7);
+    }else{
+      mfill(m,8,30,22,39,6);
+      mfill(m,10,22,10,30,7);
+      mfill(m,19,22,19,30,7);
+    }
+  }
+  function padFits(m,x,y){
+    if(x<0||y<0||x+5>=BC_C||y+4>=BC_R)return false;
+    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)if(m[(y+dy)*BC_C+(x+dx)]===3)return false;
+    return true;
+  }
+  function fitPad(m,x,y){
+    if(padFits(m,x,y))return {x,y};
+    for(let r=1;r<22;r++){
+      for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+        if(Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
+        if(padFits(m,x+dx,y+dy))return {x:x+dx,y:y+dy};
+      }
+    }
+    return {x:Math.max(0,Math.min(BC_C-6,x)),y:Math.max(0,Math.min(BC_R-5,y))};
+  }
+  function stampCitadel(m,pad,gate){
+    const x=pad.x,y=pad.y;
+    const set=(xx,yy,t)=>{if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R)m[yy*BC_C+xx]=t;};
+    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)set(x+dx,y+dy,6);
+    for(let dx=0;dx<6;dx++){set(x+dx,y,1);set(x+dx,y+4,1);}
+    for(let dy=0;dy<5;dy++){set(x,y+dy,1);set(x+5,y+dy,1);}
+    if(gate==="n"){set(x+2,y,6);set(x+3,y,6);}
+    else if(gate==="s"){set(x+2,y+4,6);set(x+3,y+4,6);}
+    else if(gate==="w"){set(x,y+1,6);set(x,y+2,6);}
+    else {set(x+5,y+1,6);set(x+5,y+2,6);}
+    set(x+2,y+1,5);set(x+3,y+1,5);set(x+2,y+2,5);set(x+3,y+2,5);
+  }
+  function addFort(m,pad,gate){
+    const x0=pad.x-1,y0=pad.y-1,x1=pad.x+6,y1=pad.y+5;
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+      if(x!==x0&&x!==x1&&y!==y0&&y!==y1)continue;
+      if(x<0||y<0||x>=BC_C||y>=BC_R)continue;
+      const t=m[y*BC_C+x];
+      if(t===3||t===5||t===2)continue;
+      if(gate==="n"&&y===y0&&(x===pad.x+2||x===pad.x+3))continue;
+      if(gate==="s"&&y===y1&&(x===pad.x+2||x===pad.x+3))continue;
+      if(gate==="w"&&x===x0&&(y===pad.y+1||y===pad.y+2))continue;
+      if(gate==="e"&&x===x1&&(y===pad.y+1||y===pad.y+2))continue;
+      if(t===6||t===0||t===7)m[y*BC_C+x]=1;
+    }
+  }
+  function sandFringe(m,pad,depth){
+    const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
+    for(let pass=0;pass<depth;pass++){
+      const mark=[];
+      for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+        if(m[y*BC_C+x]!==6||prot(x,y))continue;
+        let wet=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+          const tv=m[yy*BC_C+xx];
+          if(tv===3||(pass&&tv===0))wet=true;
+        }
+        if(wet)mark.push(y*BC_C+x);
+      }
+      for(const i of mark)m[i]=0;
+    }
+  }
+  function layRoad(m,pad,gate,road){
+    const set=(x,y)=>{
+      if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)return;
+      const i=y*BC_C+x,t=m[i];
+      if(t===0||t===6){m[i]=7;road[i]=1;}
+    };
+    let x=pad.x+2,y=pad.y+2;
+    const legs=gate==="n"?[[0,-1],[1,0]]:gate==="s"?[[0,1],[-1,0]]:gate==="w"?[[-1,0],[0,1]]:[[1,0],[0,-1]];
+    let dx=legs[0][0],dy=legs[0][1];
+    for(let n=0;n<12;n++){
+      x+=dx;y+=dy;
+      const t=mtile(m,x,y);
+      if(t===3||t===1||t===2||t===5||t===8||t===9)break;
+      set(x,y);
+      if(n===5){dx=legs[1][0];dy=legs[1][1];}
+    }
+  }
+  function placeHouses(m,pad,road){
+    const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
+    const g=(x,y)=>x<0||y<0||x>=BC_C||y>=BC_R?3:m[y*BC_C+x];
+    let placed=0;
+    function pass(loose){
+      for(let y=2;y<BC_R-4&&placed<4;y++){
+        for(let x=2;x<BC_C-5&&placed<4;x++){
+          if(!loose&&((x*5+y*3)%11)!==0)continue;
+          let fit=true;
+          for(let dy=0;dy<2&&fit;dy++)for(let dx=0;dx<3;dx++){
+            const i=(y+dy)*BC_C+(x+dx);
+            if(m[i]!==6||road[i]||near(x+dx,y+dy))fit=false;
+          }
+          if(!fit)continue;
+          let door="s";
+          if(g(x+1,y+2)===7)door="s";
+          else if(g(x+1,y-1)===7)door="n";
+          else if(g(x-1,y)===7||g(x-1,y+1)===7)door="w";
+          else if(g(x+3,y)===7||g(x+3,y+1)===7)door="e";
+          else if(g(x+1,y+2)===0)door="s";
+          else if(!loose)continue;
+          for(let dy=0;dy<2;dy++)for(let dx=0;dx<3;dx++){
+            const gap=(door==="s"&&dy===1&&dx===1)||(door==="n"&&dy===0&&dx===1)||(door==="w"&&dx===0&&dy===0)||(door==="e"&&dx===2&&dy===0);
+            if(!gap)m[(y+dy)*BC_C+(x+dx)]=1;
+          }
+          placed++;
+          x+=4;
+        }
+      }
+    }
+    pass(false);
+    if(placed<2)pass(true);
+  }
+  function canTree(m,x,y,pad,road){
+    if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)return false;
+    const i=y*BC_C+x;
+    if(m[i]!==6||road[i])return false;
+    if(x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6)return false;
+    return true;
+  }
+  function putTree(m,x,y,pad,road){if(canTree(m,x,y,pad,road))m[y*BC_C+x]=4;}
+  function groveAt(m,cx,cy,pad,road){
+    [[0,0],[1,0],[0,1],[1,1],[-1,0],[0,-1],[2,0],[-1,1]].forEach(([dx,dy])=>putTree(m,cx+dx,cy+dy,pad,road));
+  }
+  function wildGroves(m,pad,road){
+    const spots=[];
+    for(let y=3;y<BC_R-3;y+=4)for(let x=3;x<BC_C-3;x+=5)if(canTree(m,x,y,pad,road))spots.push({x,y});
+    spots.filter((_,i)=>i%3===0).slice(0,3).forEach((s)=>groveAt(m,s.x,s.y,pad,road));
+  }
+  function beachTrees(m,pad,road){
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      if(!canTree(m,x,y,pad,road))continue;
+      let sand=false,path=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const t=m[(y+dy)*BC_C+(x+dx)];
+        if(t===0)sand=true;
+        if(t===7)path=true;
+      }
+      if(!sand||path||((x+y)%4)!==0)continue;
+      putTree(m,x,y,pad,road);
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        if(m[(y+dy)*BC_C+(x+dx)]!==0)continue;
+        putTree(m,x-dx,y-dy,pad,road);
+        break;
+      }
+    }
+  }
+  function countEdges(m){
+    let n=false,s=false,w=false,e=false;
+    for(let x=0;x<BC_C;x++){
+      if(m[x]!==3)n=true;
+      if(m[(BC_R-1)*BC_C+x]!==3)s=true;
+    }
+    for(let y=0;y<BC_R;y++){
+      if(m[y*BC_C]!==3)w=true;
+      if(m[y*BC_C+BC_C-1]!==3)e=true;
+    }
+    const land=(n?1:0)+(s?1:0)+(w?1:0)+(e?1:0);
+    return {n,s,w,e,land,water:4-land};
+  }
+  function scrubEdge(m,edge){
+    const kill=(i)=>{if(m[i]!==5)m[i]=3;};
+    if(edge==="n"){for(let x=0;x<BC_C;x++)kill(x);}
+    else if(edge==="s"){for(let x=0;x<BC_C;x++)kill((BC_R-1)*BC_C+x);}
+    else if(edge==="w"){for(let y=0;y<BC_R;y++)kill(y*BC_C);}
+    else {for(let y=0;y<BC_R;y++)kill(y*BC_C+BC_C-1);}
+  }
+  function repairEdges(m,naval){
+    let info=countEdges(m);
+    if(info.land>=4){scrubEdge(m,"n");info=countEdges(m);}
+    if(info.land>=4){scrubEdge(m,"e");info=countEdges(m);}
+    if(info.land===0){
+      mfill(m,11,BC_R-6,18,BC_R-1,6);
+      info=countEdges(m);
+    }
+    if(naval&&info.water<2){
+      if(info.n)scrubEdge(m,"n");
+      info=countEdges(m);
+      if(info.water<2&&info.e)scrubEdge(m,"e");
+    }
+  }
+  function mtile(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
+  function homeFrom(m,pad,gate,naval){
+    const step=gate==="n"?[0,-1]:gate==="s"?[0,1]:gate==="w"?[-1,0]:[1,0];
+    let x=(gate==="n"||gate==="s")?pad.x+2:(gate==="w"?pad.x-1:pad.x+6);
+    let y=(gate==="w"||gate==="e")?pad.y+2:(gate==="n"?pad.y-1:pad.y+5);
+    for(let i=0;i<14;i++){
+      const t=mtile(m,x,y);
+      const ok=naval?t===3:(t===0||t===6||t===7);
+      if(ok&&x>=0&&y>=0&&x<BC_C&&y<BC_R)return {x:x*BC_TS+8,y:y*BC_TS+8};
+      x+=step[0];y+=step[1];
+    }
+    let best=null,bd=1e9;
+    const gx=(pad.x+3)*BC_TS, gy=(pad.y+2)*BC_TS;
+    for(let y2=0;y2<BC_R;y2++)for(let x2=0;x2<BC_C;x2++){
+      const t=m[y2*BC_C+x2];
+      const ok=naval?t===3:(t===0||t===6||t===7);
+      if(!ok)continue;
+      const px=x2*BC_TS+8,py=y2*BC_TS+8,d=Math.hypot(px-gx,py-gy);
+      if(d<bd){bd=d;best={x:px,y:py};}
+    }
+    return best||{x:gx,y:gy};
+  }
+  function fortCenter(pad){return {x:(pad.x+2)*BC_TS+16,y:(pad.y+1)*BC_TS+16};}
+  function collectSpawns(m,home,naval){
+    const pts=[];
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const t=m[y*BC_C+x];
+      const px=x*BC_TS+8,py=y*BC_TS+8;
+      if(Math.hypot(px-home.x,py-home.y)<110)continue;
+      if(naval){
+        if(t!==3)continue;
+        let open=0;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)open++;
+        }
+        if(open<3)continue;
+        const edge=x<=3||y<=3||x>=BC_C-4||y>=BC_R-4;
+        pts.push({x:px,y:py,d:Math.hypot(px-home.x,py-home.y)+(edge?50:0)});
+      }else if(t===0||t===6||t===7){
+        let wet=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)wet=true;
+        }
+        if(!wet)continue;
+        pts.push({x:px,y:py,d:Math.hypot(px-home.x,py-home.y)});
+      }
+    }
+    pts.sort((a,b)=>b.d-a.d);
+    const out=[];
+    for(const p of pts){
+      if(out.length>=4)break;
+      if(out.some((q)=>Math.hypot(q.x-p.x,q.y-p.y)<72))continue;
+      out.push({x:p.x,y:p.y});
+    }
+    if(out.length<3){
+      for(let y=1;y<BC_R-1&&out.length<3;y+=2)for(let x=1;x<BC_C-1&&out.length<3;x+=2){
+        const t=m[y*BC_C+x];
+        const ok=naval?t===3:(t===0||t===6||t===7);
+        if(!ok)continue;
+        const px=x*BC_TS+8,py=y*BC_TS+8;
+        if(Math.hypot(px-home.x,py-home.y)<70)continue;
+        if(out.some((q)=>Math.hypot(q.x-px,q.y-py)<48))continue;
+        out.push({x:px,y:py});
+      }
+    }
+    while(out.length<3)out.push({x:Math.max(24,Math.min(BC_C*BC_TS-24,home.x+90)),y:Math.max(24,Math.min(BC_R*BC_TS-24,home.y))});
+    return out;
+  }
+  function flipAll(built,fx,fy){
+    if(!fx&&!fy)return built;
+    const m=built.map,o=new Uint8Array(m.length);
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const nx=fx?BC_C-1-x:x, ny=fy?BC_R-1-y:y;
+      o[ny*BC_C+nx]=m[y*BC_C+x];
+    }
+    const pt=(p)=>({x:fx?BC_C*BC_TS-p.x:p.x,y:fy?BC_R*BC_TS-p.y:p.y});
+    return {map:o,home:pt(built.home),fort:pt(built.fort),spawns:built.spawns.map(pt),landSpawns:(built.landSpawns||[]).map(pt),seaSpawns:(built.seaSpawns||[]).map(pt),naval:built.naval,skel:built.skel};
+  }
+  function faceIn(p){
+    const dx=BC_C*BC_TS/2-p.x, dy=BC_R*BC_TS/2-p.y;
+    if(Math.abs(dx)>Math.abs(dy))return dx>0?1:3;
+    return dy>0?2:0;
+  }
+  function coastHash(x,y,salt){
+    let n=(Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(salt,1442695041))>>>0;
+    n=Math.imul(n^(n>>>13),1274126177)>>>0;
+    return n%100;
+  }
+  function jaggedCoast(m,pad,salt,keepTown){
+    const prot=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
+    const pier=(x,y)=>{
+      for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(mtile(m,x+dx,y+dy)===7)return true;
+      return false;
+    };
+    const town=(x,y)=>keepTown&&y>=pad.y-8&&y<=pad.y+10&&x>=pad.x-6&&x<=pad.x+12;
+    const bites=[];
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const t=m[y*BC_C+x];
+      if(t!==6&&t!==0)continue;
+      if(prot(x,y)||pier(x,y)||town(x,y))continue;
+      let wet=0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)wet++;
+      if(!wet)continue;
+      const h=coastHash(x,y,salt);
+      if(h<22||(wet>=2&&h<38))bites.push(y*BC_C+x);
+    }
+    for(const i of bites)m[i]=3;
+    for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
+      if(m[y*BC_C+x]!==3||prot(x,y)||pier(x,y)||town(x,y))continue;
+      let land=0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const t=mtile(m,x+dx,y+dy);
+        if(t===6||t===0)land++;
+      }
+      if(land===1&&coastHash(x,y,salt+3)<12)m[y*BC_C+x]=6;
+    }
+  }
+  function sprinkleIslets(m,rng,n){
+    let made=0,tries=0;
+    while(made<n&&tries<48){
+      tries++;
+      const x=3+(rng()*(BC_C-8)|0), y=3+(rng()*(BC_R-8)|0);
+      if(m[y*BC_C+x]!==3)continue;
+      let clear=true;
+      for(let dy=-2;dy<=3&&clear;dy++)for(let dx=-2;dx<=3;dx++)if(mtile(m,x+dx,y+dy)!==3)clear=false;
+      if(!clear)continue;
+      const blob=[[0,0],[1,0],[0,1]];
+      if(rng()<0.65)blob.push([1,1]);
+      if(rng()<0.45)blob.push([2,0]);
+      if(rng()<0.4)blob.push([-1,0]);
+      if(rng()<0.35)blob.push([0,2]);
+      for(const [dx,dy] of blob){
+        const xx=x+dx,yy=y+dy;
+        if(xx>0&&yy>0&&xx<BC_C-1&&yy<BC_R-1)m[yy*BC_C+xx]=6;
+      }
+      made++;
+    }
+  }
+  function rockyCoast(m,pad,salt){
+    const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
+    const pier=(x,y)=>{
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(mtile(m,x+dx,y+dy)===7)return true;
+      return false;
+    };
+    const marks=[];
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const t=m[y*BC_C+x];
+      if((t!==0&&t!==6)||prot(x,y)||pier(x,y))continue;
+      let wet=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)wet=true;
+      if(!wet)continue;
+      const h=coastHash(x,y,salt+9);
+      if(h<30)marks.push(y*BC_C+x);
+      if(h<10){
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(mtile(m,xx,yy)!==3||prot(xx,yy))continue;
+          let sea=0;
+          for(const [ax,ay] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,xx+ax,yy+ay)===3)sea++;
+          if(sea>=2){m[yy*BC_C+xx]=8;break;}
+        }
+      }
+    }
+    for(const i of marks)m[i]=8;
+  }
+  function placeLighthouse(m,pad,rng){
+    const cand=[];
+    for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
+      if(x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6)continue;
+      const t=m[y*BC_C+x];
+      if(t!==0&&t!==6&&t!==8)continue;
+      let wet=false,pier=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const tv=mtile(m,x+dx,y+dy);
+        if(tv===3)wet=true;
+        if(tv===7)pier=true;
+      }
+      if(wet&&!pier)cand.push(y*BC_C+x);
+    }
+    if(!cand.length)return;
+    m[cand[(rng()*cand.length)|0]]=9;
+  }
+  function placeFarm(m,pad){
+    const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
+    for(let y=3;y<BC_R-8;y+=3)for(let x=3;x<BC_C-9;x+=4){
+      if(near(x,y))continue;
+      let ok=true;
+      for(let dy=0;dy<5&&ok;dy++)for(let dx=0;dx<6;dx++)if(m[(y+dy)*BC_C+(x+dx)]!==6)ok=false;
+      if(!ok)continue;
+      for(let dx=0;dx<6;dx++){m[y*BC_C+(x+dx)]=1;m[(y+4)*BC_C+(x+dx)]=1;}
+      for(let dy=1;dy<4;dy++){m[(y+dy)*BC_C+x]=1;m[(y+dy)*BC_C+(x+5)]=1;}
+      m[(y+4)*BC_C+(x+2)]=7;m[(y+4)*BC_C+(x+3)]=7;
+      for(let i=1;i<=4;i++){
+        const yy=y+4+i;
+        if(yy>=BC_R-1)break;
+        if(m[yy*BC_C+(x+2)]===6||m[yy*BC_C+(x+2)]===0)m[yy*BC_C+(x+2)]=7;
+      }
+      return;
+    }
+  }
+  function breakLanes(m,pad){
+    const prot=(x,y)=>x>=pad.x&&x<=pad.x+5&&y>=pad.y&&y<=pad.y+4;
+    const landOpen=(t)=>t===0||t===6||t===7;
+    const sideOpen=(x,y,horiz,water)=>{
+      const open=(xx,yy)=>{
+        const t=mtile(m,xx,yy);
+        return water?t===3:(t===0||t===6||t===7);
+      };
+      if(horiz)return open(x,y-1)||open(x,y+1)||open(x,y-2)||open(x,y+2);
+      return open(x-1,y)||open(x+1,y)||open(x-2,y)||open(x+2,y);
+    };
+    const pier=(x,y)=>m[y*BC_C+x]===7&&((mtile(m,x-1,y)===3&&mtile(m,x+1,y)===3)||(mtile(m,x,y-1)===3&&mtile(m,x,y+1)===3));
+    const edge=(x,y)=>x<=0||y<=0||x>=BC_C-1||y>=BC_R-1;
+    const plug=(x,y,water,horiz)=>{
+      if(x<0||y<0||x>=BC_C||y>=BC_R||prot(x,y)||pier(x,y))return;
+      if(water&&edge(x,y))return;
+      const t=m[y*BC_C+x];
+      if(t===5||t===9||t===1||t===2||t===4||t===8)return;
+      if(!water&&(t===0||t===6||t===7)){m[y*BC_C+x]=t===7&&!edge(x,y)?8:4;return;}
+      if(!sideOpen(x,y,horiz,true))return;
+      if(t===3)m[y*BC_C+x]=8;
+    };
+    const MAX=7;
+    function scan(horiz){
+      const outer=horiz?BC_R:BC_C, inner=horiz?BC_C:BC_R;
+      for(let a=0;a<outer;a++){
+        let run=0,b0=0,water=false;
+        for(let b=0;b<=inner;b++){
+          const x=horiz?b:a, y=horiz?a:b;
+          const t=b<inner?m[y*BC_C+x]:-1;
+          const land=landOpen(t), sea=t===3;
+          if(run&&((water&&sea)||(!water&&land)))run++;
+          else{
+            if(run>MAX){
+              for(let k=MAX;k<run;k+=MAX){
+                const shift=((a*5+k)%5)-2;
+                const at=b0+k+shift;
+                if(at<=b0||at>=b0+run-1)continue;
+                if(horiz)plug(at,a,water,true);
+                else plug(a,at,water,false);
+              }
+            }
+            run=(land||sea)?1:0;b0=b;water=!!sea;
+          }
+        }
+      }
+    }
+    scan(true);scan(false);
+  }
   function makeIslandMap(level, fort){
     level=Math.max(0,Math.min(8,level|0));
-    const m=new Uint8Array(BC_C*BC_R);m.fill(3);
-    const shapes=[
-      {cx:15,cy:22,rx:11.2,ry:13.4},
-      {cx:12,cy:18,rx:10.4,ry:12.2},
-      {cx:18,cy:20,rx:12.2,ry:11.6},
-      {cx:14,cy:24,rx:12.6,ry:10.8},
-      {cx:17,cy:16,rx:10.8,ry:14.2},
-      {cx:13,cy:21,rx:13.2,ry:11.4},
-      {cx:16,cy:19,rx:11.5,ry:15},
-      {cx:18,cy:23,rx:10.6,ry:12.8},
-      {cx:12.5,cy:17,rx:12.4,ry:13.2}
-    ][level];
-    const edges=[["s"],["w","s"],["n"],["e"],["n","e"],["w","s","e"],["n","w"],["s","e"],["n","s","w"]][level];
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      const dx=(x-shapes.cx)/shapes.rx, dy=(y-shapes.cy)/shapes.ry, e=dx*dx+dy*dy;
-      if(e<=1)m[y*BC_C+x]=e>0.86?0:6;
-    }
-    function bridge(edge){
-      if(edge==="s"||edge==="n"){
-        for(let x=0;x<BC_C;x++){
-          let land=-1;
-          for(let y=0;y<BC_R;y++)if(m[y*BC_C+x]!==3){land=y;break;}
-          if(land<0)continue;
-          if(edge==="n"){for(let y=0;y<=land;y++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;}
-          else{
-            let last=land;
-            for(let y=0;y<BC_R;y++)if(m[y*BC_C+x]!==3)last=y;
-            for(let y=last;y<BC_R;y++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
-          }
-        }
-      }else{
-        for(let y=0;y<BC_R;y++){
-          let land=-1;
-          for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3){land=x;break;}
-          if(land<0)continue;
-          if(edge==="w"){for(let x=0;x<=land;x++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;}
-          else{
-            let last=land;
-            for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3)last=x;
-            for(let x=last;x<BC_C;x++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
-          }
-        }
-      }
-    }
-    edges.forEach(bridge);
-    let sx=0,sy=0,sn=0;
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3){sx+=x;sy+=y;sn++;}
-    const ccx=sn?sx/sn:15, ccy=sn?sy/sn:20;
-    let pad=null,best=-1;
-    for(let y=2;y<BC_R-7;y++)for(let x=2;x<BC_C-8;x++){
-      let ok=true;
-      for(let dy=0;dy<5&&ok;dy++)for(let dx=0;dx<6;dx++)if(m[(y+dy)*BC_C+x+dx]===3)ok=false;
-      if(!ok)continue;
-      const score=1000-Math.abs(x+3-ccx)*4-Math.abs(y+3-ccy);
-      if(score>best){best=score;pad={x:x,y:y};}
-    }
-    if(!pad){
-      const px=Math.max(2,Math.min(BC_C-8,Math.round(ccx)-3));
-      const py=Math.max(2,Math.min(BC_R-7,Math.round(ccy)-2));
-      for(let dy=-1;dy<6;dy++)for(let dx=-1;dx<7;dx++){
-        const xx=px+dx,yy=py+dy;
-        if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3)m[yy*BC_C+xx]=6;
-      }
-      pad={x:px,y:py};
-    }
-    const spots=[];
-    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      if(m[y*BC_C+x]===3)continue;
-      let wet=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(m[(y+dy)*BC_C+(x+dx)]===3)wet=true;
-      if(!wet)continue;
-      const px=x*16+8,py=y*16+8;
-      const hx=(pad.x+3)*16, hy=(pad.y+2)*16;
-      const dist=Math.hypot(px-hx,py-hy);
-      if(dist<150)continue;
-      spots.push({x:px,y:py,d:dist,tx:x,ty:y});
-    }
-    spots.sort((a,b)=>b.d-a.d);
-    const spawns=[];
-    for(const s of spots){
-      if(spawns.length>=3)break;
-      if(spawns.some((p)=>Math.hypot(p.x-s.x,p.y-s.y)<70))continue;
-      spawns.push(s);
-    }
-    while(spawns.length<3){
-      const ang=spawns.length*2.1;
-      spawns.push({x:Math.max(24,Math.min(S.W-24,ccx*16+Math.cos(ang)*80)),y:Math.max(24,Math.min(S.H-24,ccy*16+Math.sin(ang)*80)),tx:8,ty:8});
-    }
+    const plan=ensureMapPlan()[level];
+    const m=new Uint8Array(BC_C*BC_R);
+    m.fill(3);
+    paintSkel(m,plan.id);
+    const pref=SKEL_PAD[plan.id]||SKEL_PAD.beach;
+    const salt=(((S.bcMapSeed||1)>>>0)+level*17)>>>0;
+    const dress=plan.dress||(plan.naval?"wild":"wild");
+    const keepTown=!plan.naval&&(dress==="village"||dress==="farm"||plan.id==="harbor"||plan.id==="docks"||plan.id==="coastVillage");
+    jaggedCoast(m,{x:pref.x,y:pref.y},salt,keepTown);
+    const pad=fitPad(m,pref.x,pref.y);
+    stampCitadel(m,pad,pref.gate);
+    const rng=mapMulberry((salt*131+level*97)>>>0);
+    const wantIslets=plan.islets!=null?!!plan.islets:rng()<0.78;
+    if(wantIslets)sprinkleIslets(m,rng,1+(rng()*2|0));
+    sandFringe(m,pad,plan.naval?1:2);
+    rockyCoast(m,pad,salt);
+    if(fort)addFort(m,pad,pref.gate);
     const road={};
-    function carve(x0,y0,x1,y1){
-      let x=x0|0,y=y0|0,guard=0;
-      const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;
-      let err=dx-dy;
-      while(guard++<900){
-        for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
-          const xx=x+ox,yy=y+oy;
-          if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1)continue;
-          if(m[yy*BC_C+xx]===3||m[yy*BC_C+xx]===0){m[yy*BC_C+xx]=6;road[yy*BC_C+xx]=1;}
-        }
-        if(x===x1&&y===y1)break;
-        const e2=2*err;
-        if(e2>-dy){err-=dy;x+=sx;}
-        if(e2<dx){err+=dx;y+=sy;}
-      }
-    }
-    const bx=pad.x+2, by=pad.y+2;
-    spawns.forEach((s)=>carve(s.tx||Math.floor(s.x/16), s.ty||Math.floor(s.y/16), bx, by));
-    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)m[(pad.y+dy)*BC_C+pad.x+dx]=6;
-    for(let x=pad.x;x<pad.x+6;x++){m[pad.y*BC_C+x]=1;m[(pad.y+4)*BC_C+x]=1;}
-    for(let y=pad.y;y<pad.y+5;y++){m[y*BC_C+pad.x]=1;m[y*BC_C+pad.x+5]=1;}
-    m[(pad.y+4)*BC_C+pad.x+2]=6;m[(pad.y+4)*BC_C+pad.x+3]=6;
-    m[(pad.y+1)*BC_C+pad.x+2]=5;m[(pad.y+1)*BC_C+pad.x+3]=5;
-    m[(pad.y+2)*BC_C+pad.x+2]=5;m[(pad.y+2)*BC_C+pad.x+3]=5;
-    if(fort){
-      for(let x=pad.x-1;x<=pad.x+6;x++)if(x>=0&&x<BC_C&&pad.y>0)m[(pad.y-1)*BC_C+x]=1;
-      if(pad.y>0){m[(pad.y-1)*BC_C+pad.x+2]=6;m[(pad.y-1)*BC_C+pad.x+3]=6;}
-    }
-    let seed=(level+1)*1103515245+12345;
-    const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
-    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      const i=y*BC_C+x;
-      if(m[i]!==6||road[i])continue;
-      const nearBase=x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
-      if(nearBase)continue;
-      const r=rnd();
-      if(r<0.045+level*0.004)m[i]=2;
-      else if(r<0.11+level*0.008)m[i]=1;
-      else if(r<0.16)m[i]=4;
-    }
-    function plant(kind,need){
-      let have=0;
-      for(let i=0;i<m.length;i++)if(m[i]===kind)have++;
-      for(let y=2;y<BC_R-2 && have<need;y++)for(let x=2;x<BC_C-2 && have<need;x++){
-        const i=y*BC_C+x;
-        if(m[i]!==6||road[i])continue;
-        if(x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5)continue;
-        let wet=false;
-        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(m[(y+dy)*BC_C+(x+dx)]===3)wet=true;
-        if(wet)continue;
-        if(((x*3+y*5+level)&3)!==(kind===2?0:1))continue;
-        m[i]=kind;have++;
-      }
-    }
-    plant(2,4);plant(4,5);plant(1,8);
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      if(m[y*BC_C+x]!==6)continue;
-      let wet=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        const xx=x+dx,yy=y+dy;
-        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)wet=true;
-      }
-      if(wet&&!road[y*BC_C+x]&&!(x>=pad.x&&x<pad.x+6&&y>=pad.y&&y<pad.y+5))m[y*BC_C+x]=0;
-    }
-    const home={x:(pad.x+3)*16, y:(pad.y+4)*16+6};
-    return {map:m, home, spawns:spawns.map((s)=>({x:s.x,y:s.y}))};
+    if(!plan.naval&&dress==="village")layRoad(m,pad,pref.gate,road);
+    if(!plan.naval&&dress==="village")placeHouses(m,pad,road);
+    else if(!plan.naval&&dress==="farm")placeFarm(m,pad);
+    else if(!plan.naval)wildGroves(m,pad,road);
+    beachTrees(m,pad,road);
+    const wantLight=plan.light!=null?!!plan.light:rng()<0.55;
+    if(wantLight)placeLighthouse(m,pad,rng);
+    breakLanes(m,pad);
+    repairEdges(m,!!plan.naval);
+    const home=homeFrom(m,pad,pref.gate,!!plan.naval);
+    const built=flipAll({
+      map:m,home,fort:fortCenter(pad),
+      spawns:collectSpawns(m,home,!!plan.naval),
+      landSpawns:collectSpawns(m,home,false),
+      seaSpawns:collectSpawns(m,home,true),
+      naval:!!plan.naval,skel:plan.id
+    },!!plan.fx,!!plan.fy);
+    built.dir=faceIn(built.home);
+    return built;
   }
+// MAPGEN_END
   function bcTileHp(t){return t===1?2:t===2?1:t===5?99:0;}
   function tankBlocked(d,x,y,sz,ignore){
     const hw=sz*.40;
@@ -3811,13 +4344,10 @@
     const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
     for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
       const t=bcAt(d.map,tx,ty);
-      if(t===3||t===1||t===2||t===5)return true;
+      if(t===3||t===1||t===2||t===4||t===5||t===8||t===9)return true;
     }
-    const all=[d.player].concat(d.enemies);
-    for(const o of all){
-      if(!o||o===ignore||o.hp<=0)continue;
-      if(Math.abs(o.x-x)<sz*.9&&Math.abs(o.y-y)<sz*.9)return true;
-    }
+    const o=d.player;
+    if(o&&o!==ignore&&o.hp>0&&!o.fly&&Math.abs(o.x-x)<sz*.9&&Math.abs(o.y-y)<sz*.9)return true;
     return false;
   }
   function snapTank(t,dir,d){
@@ -3834,14 +4364,39 @@
     const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
     if(!tankBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
   }
+  function shipBlocked(d,x,y,sz,ignore){
+    const hw=sz*.42;
+    const x0=Math.floor((x-hw)/BC_TS),x1=Math.floor((x+hw)/BC_TS);
+    const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
+    for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
+      if(bcAt(d.map,tx,ty)!==3)return true;
+    }
+    const o=d.player;
+    if(o&&o!==ignore&&o.hp>0&&!o.fly&&Math.abs(o.x-x)<sz*.9&&Math.abs(o.y-y)<sz*.9)return true;
+    return false;
+  }
+  function moveShip(d,t,dir,spd,dt){
+    if(dir<0)return;
+    if(t.dir!==dir){
+      const ox=t.x,oy=t.y,g=8;
+      if(dir===0||dir===2)t.x=Math.round(t.x/g)*g;else t.y=Math.round(t.y/g)*g;
+      if(shipBlocked(d,t.x,t.y,t.sz,t)){t.x=ox;t.y=oy;}
+      t.dir=dir;
+    }
+    const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
+    const nx=Math.max(t.sz,Math.min(S.W-t.sz,t.x+vx*dt));
+    const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
+    if(!shipBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
+  }
   function fireTank(d,t){
     if(t.fire>0)return;
     const mine=t===d.player?d.shots.filter(s=>s.mine&&!s.hit).length:d.shots.filter(s=>s.owner===t&&!s.hit).length;
-    const cap=t===d.player?(d.up.cannon3?4:d.up.cannon2?2:1):1;
+    const cap=1;
     if(mine>=cap)return;
     t.fire=t===d.player?(d.shotT>0?.1:.22):.55;
-    const v=(t===d.player&&(d.up.cannon1||d.shotT>0)?280:t.bspd||180);
-    const dmg=(t===d.player&&(d.up.cannon3||d.shotT>0))?2:(t.dmg||1);
+    const shotMul=t===d.player?(1+((d.up&&d.up.shot)||0)/100)*(d.shotT>0?1.5:1):1;
+    const v=t===d.player?180*shotMul:(t.bspd||180);
+    const dmg=t===d.player?((d.up&&d.up.power)||1):(t.dmg||1);
     const dx=t.dir===1?1:t.dir===3?-1:0,dy=t.dir===2?1:t.dir===0?-1:0;
     d.shots.push({x:t.x+dx*14,y:t.y+dy*14,dx,dy,v,damage:dmg,mine:t===d.player,owner:t,hit:false});
     if(t===d.player)warSfx("warShot");
@@ -3853,7 +4408,7 @@
     for(let i=1;i<=n;i++){
       const px=x0+(x1-x0)*i/n,py=y0+(y1-y0)*i/n;
       const t=bcAt(d.map,Math.floor(px/BC_TS),Math.floor(py/BC_TS));
-      if(t===1||t===2)return false;
+      if(t===1||t===2||t===4||t===8||t===9)return false;
     }
     return true;
   }
@@ -3872,6 +4427,23 @@
     }
     return {x:x,y:y};
   }
+  function placeShip(d,x,y,sz,ignore){
+    for(let rad=0;rad<=160;rad+=8){
+      const xs=rad? [0,rad,-rad] : [0];
+      const ys=rad? [0,rad,-rad] : [0];
+      for(const dx of xs)for(const dy of ys){
+        const nx=x+dx,ny=y+dy;
+        if(nx<20||ny<20||nx>S.W-20||ny>S.H-20)continue;
+        if(!shipBlocked(d,nx,ny,sz,ignore||null))return {x:nx,y:ny};
+      }
+    }
+    return {x:x,y:y};
+  }
+  function battleWaveQuota(level,wave,world){
+    const boost=Math.max(0,Math.round((((world|0)||20)-20)/4));
+    const base=6+level*2+boost;
+    return base+(wave<=1?0:wave===2?2:4);
+  }
   function startDefense(){
     const level=Math.max(0,Math.min(8,S.bcBattlesWon|0));
     const bloc=(level/3)|0;
@@ -3880,34 +4452,50 @@
     const map=built.map;
     const hp=new Uint8Array(map.length);
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
-    S.defHeld={u:0,d:0,l:0,r:0,f:0};S.defPtr=null;
-    const quota=7+((level/2)|0);
-    const delta=(S.bcArmy||0)-(S.bcWorld||20);
+    S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
+    const world=S.bcWorld||20;
+    const quota=battleWaveQuota(level,1,world);
+    const naval=!!built.naval;
+    const heliN=(!naval && (level%3===2))?2:0;
+    const ground=battleWaveQuota(level,1,world)+battleWaveQuota(level,2,world)+battleWaveQuota(level,3,world);
+    const delta=(S.bcArmy||0)-world;
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
-    const hearts=3+(u.armor1?1:0)+(u.armor2?1:0);
+    const hearts=u.medic?4:3;
     S.bcDefense={
-      map,hp,player:{x:built.home.x,y:built.home.y,dir:0,hp:hearts,hearts,maxHearts:hearts,sz:13,fire:0},
-      shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,
-      integrity:100,wall:u.wall?100:0,done:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,
-      heliLeft:(level%3===2)?2:0,
+      map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
+      shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
+      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,aaArmed:false,aaTap:0,reticle:null,
+      heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
       home:built.home,
-      spawns:built.spawns
+      spawns:built.spawns,
+      landSpawns:built.landSpawns&&built.landSpawns.length?built.landSpawns:built.spawns,
+      seaSpawns:built.seaSpawns&&built.seaSpawns.length?built.seaSpawns:built.spawns,
+      foreignLeft:Math.floor(ground*0.15),
+      groundLeft:ground,
+      pickIn:5+Math.random()*10
     };
-    scatterPickups(S.bcDefense,3);
+    if(naval){
+      const at=placeShip(S.bcDefense,built.home.x,built.home.y,14,S.bcDefense.player);
+      S.bcDefense.player.x=at.x;S.bcDefense.player.y=at.y;
+    }
     S.optPanel=null;S.arcHold=false;
     if(field){
       field.classList.remove("is-play","bull","bear","swan-bear");
       field.classList.add("defense-mode");
     }
     setPhase("defense");
+    syncAaButton(S.bcDefense);
   }
   function scatterPickups(d,n){
     const kinds=["heal","shot","god"];
     const cells=[];
+    const naval=!!d.naval;
     for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      if(bcAt(d.map,x,y)!==6&&bcAt(d.map,x,y)!==0)continue;
+      const tile=bcAt(d.map,x,y);
+      if(naval){if(tile!==3)continue;}
+      else if(tile!==6&&tile!==0&&tile!==7)continue;
       const px=x*16+8,py=y*16+8;
       if(Math.hypot(px-d.home.x,py-d.home.y)<70)continue;
       cells.push({x:px,y:py});
@@ -3915,12 +4503,12 @@
     for(let i=0;i<n&&cells.length;i++){
       const k=(Math.random()*cells.length)|0;
       const c=cells.splice(k,1)[0];
-      d.picks.push({x:c.x,y:c.y,kind:kinds[i%3],life:1});
+      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:10});
     }
   }
   function spawnHeli(d){
     const sp=d.spawns[(Math.random()*d.spawns.length)|0]||{x:240,y:80};
-    d.enemies.push({x:sp.x,y:Math.max(28,sp.y-20),dir:2,hp:3,maxHp:3,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.8,think:.2,fly:true});
+    d.enemies.push({x:sp.x,y:Math.max(28,sp.y-20),dir:2,hp:3,maxHp:3,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.8,think:.2,fly:true,role:Math.random()<0.5?"hero":"shield"});
     warSfx("warHeli");
   }
   function defenseEnemy(d){
@@ -3944,27 +4532,39 @@
       else {type="HEAVY";hp=3;spd=40;bspd=150;dmg=2;leak=18;}
     }
     spd*=d.profile.enemy||1;
-    const sp=d.spawns[d.spawnI%d.spawns.length];d.spawnI++;
-    const at=placeTank(d,sp.x,sp.y,13);
-    d.enemies.push({x:at.x,y:at.y,dir:2,hp,maxHp:hp,sz:13,spd,bspd,dmg,leak,type,fire:.25,think:.05});
+    const hull=type==="FAST"?"light":type==="HEAVY"?"heavy":type==="ELITE"?"elite":"medium";
+    const sz=hull==="light"?11:hull==="heavy"?16:13;
+    let asShip=!!d.naval,foreign=false;
+    const left=d.groundLeft|0;
+    if((d.foreignLeft|0)>0&&left>0&&Math.random()<d.foreignLeft/left){
+      const pool=!d.naval?d.seaSpawns:d.landSpawns;
+      if(pool&&pool.length){foreign=true;asShip=!d.naval;d.foreignLeft--;}
+    }
+    if(left>0)d.groundLeft=left-1;
+    const pool=asShip?(d.seaSpawns&&d.seaSpawns.length?d.seaSpawns:d.spawns):(d.landSpawns&&d.landSpawns.length?d.landSpawns:d.spawns);
+    const sp=pool[d.spawnI%pool.length];d.spawnI++;
+    const at=asShip?placeShip(d,sp.x,sp.y,sz,null):placeTank(d,sp.x,sp.y,sz);
+    d.enemies.push({x:at.x,y:at.y,dir:2,hp,maxHp:hp,sz,spd,bspd,dmg,leak,type,hull,fire:.25,think:.05,ship:asShip,foreign,role:Math.random()<0.5?"hero":"shield"});
   }
   function finishDefense(win){
     const d=S.bcDefense;if(!d||d.done)return;
-    d.done=true;S.chanceMet.bcDefenseResult=win?"win":"lose";
-    S.defHeld={u:0,d:0,l:0,r:0,f:0};S.defPtr=null;
+    d.done=true;
+    d.frozen=!!win;
+    S.chanceMet.bcDefenseResult=win?"win":"lose";
+    S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
     const pad=$("def-pad");if(pad)pad.classList.add("hide");
-    if(field)field.classList.remove("defense-mode");
-    S.bcDefense=null;
+    const aa=$("def-aa");if(aa)aa.classList.add("hide");
     if(win){
       S.bcBattlesWon=(S.bcBattlesWon||0)+1;
       const won=S.bcBattlesWon;
       if(won>=9){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}}
-      if(field)field.classList.add("is-play");
       window.__arcForce=(won%3===0)?"blocTriumph":"battleWon";
       S.phase="play";
-      setTimeout(()=>{try{dealChance();}finally{window.__arcForce="";}},80);
+      try{dealChance();}finally{window.__arcForce="";}
+      if(S.phase==="play")clearBattleField();
       return;
     }
+    clearBattleField();
     S.bcAssaultAt=0;
     S.bcIndependent=false;S.bcVictory=false;S.bcArcClosed=true;
     if(S.dead)return;
@@ -3981,14 +4581,16 @@
   function hitBase(d,dmg){
     if(d.wall>0){d.wall=Math.max(0,d.wall-dmg*2);return;}
     if(d.inv>0)return;
-    d.integrity=Math.max(0,d.integrity-dmg);
-    if(d.up.armor1)d.inv=d.up.armor2?1.25:.65;
+    const resist=Math.max(0,Math.min(50,(d.up&&d.up.shield)||0));
+    d.integrity=Math.max(0,d.integrity-dmg*(1-resist/100));
+    d.inv=0.18;
     if(d.integrity<=0)finishDefense(false);
   }
   function smashTile(d,tx,ty,dmg){
     const t=bcAt(d.map,tx,ty);
     if(t===5){hitBase(d,10);warSfx("warHit");return true;}
-    if(t===2){warSfx("warClank");return true;}
+    if(t===2||t===8||t===9){warSfx("warClank");return true;}
+    if(t===4){warSfx("warHit");return true;}
     if(t===1){
       const i=ty*BC_C+tx;d.hp[i]=Math.max(0,(d.hp[i]||0)-1);
       if(d.hp[i]<=0){d.map[i]=6;warSfx("warBrick");return true;}
@@ -3998,8 +4600,86 @@
     return false;
   }
   function warSfx(name){try{if(A&&A.sfx&&A.sfx[name])A.sfx[name]();}catch(e){}}
+  function facePoint(e,x,y){e.dir=Math.abs(e.x-x)>Math.abs(e.y-y)?(x>e.x?1:3):(y>e.y?2:0);}
+  function openStep(d,e,dir){
+    const s=12;
+    const x=e.x+(dir===1?s:dir===3?-s:0), y=e.y+(dir===2?s:dir===0?-s:0);
+    return e.ship?!shipBlocked(d,x,y,e.sz,e):!tankBlocked(d,x,y,e.sz,e);
+  }
+  function laneCenter(d,e){
+    const blocked=e.ship?(x,y)=>shipBlocked(d,x,y,e.sz,e):(x,y)=>tankBlocked(d,x,y,e.sz,e);
+    if(e.dir===1||e.dir===3){
+      const c=Math.floor(e.y/BC_TS)*BC_TS+8;
+      const ny=e.y+Math.sign(c-e.y)*Math.min(10,Math.abs(c-e.y));
+      if(Math.abs(ny-e.y)>0.4&&!blocked(e.x,ny))e.y=ny;
+    }else if(e.dir===0||e.dir===2){
+      const c=Math.floor(e.x/BC_TS)*BC_TS+8;
+      const nx=e.x+Math.sign(c-e.x)*Math.min(10,Math.abs(c-e.x));
+      if(Math.abs(nx-e.x)>0.4&&!blocked(nx,e.y))e.x=nx;
+    }
+  }
+  function nearestWalk(d,e,gx,gy){
+    const ok=(t)=>e.ship?t===3:(t===0||t===6||t===7);
+    let best=null,bd=1e9;
+    const tx0=Math.floor(gx/BC_TS),ty0=Math.floor(gy/BC_TS);
+    for(let r=0;r<16;r++){
+      for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+        if(r&&Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
+        const x=tx0+dx,y=ty0+dy;
+        if(x<0||y<0||x>=BC_C||y>=BC_R||!ok(bcAt(d.map,x,y)))continue;
+        const dist=dx*dx+dy*dy;
+        if(dist<bd){bd=dist;best={x,y};}
+      }
+      if(best&&r>1)break;
+    }
+    return best;
+  }
+  function pathDir(d,e,goal){
+    const ok=(t)=>e.ship?t===3:(t===0||t===6||t===7);
+    const sx=Math.max(0,Math.min(BC_C-1,Math.floor(e.x/BC_TS)));
+    const sy=Math.max(0,Math.min(BC_R-1,Math.floor(e.y/BC_TS)));
+    const dest=nearestWalk(d,e,goal.x,goal.y);
+    if(!dest)return e.dir;
+    if(sx===dest.x&&sy===dest.y){facePoint(e,goal.x,goal.y);return e.dir;}
+    const W=BC_C,prev=new Int16Array(W*BC_R);
+    prev.fill(-1);
+    const q=[sy*W+sx];
+    prev[q[0]]=q[0];
+    const destI=dest.y*W+dest.x;
+    const steps=[[1,0],[-1,0],[0,1],[0,-1]];
+    let found=-1;
+    for(let qi=0;qi<q.length&&qi<480;qi++){
+      const cur=q[qi];
+      if(cur===destI){found=cur;break;}
+      const cx=cur%W,cy=(cur/W)|0;
+      for(const [dx,dy] of steps){
+        const nx=cx+dx,ny=cy+dy;
+        if(nx<0||ny<0||nx>=W||ny>=BC_R)continue;
+        const ni=ny*W+nx;
+        if(prev[ni]!==-1||!ok(bcAt(d.map,nx,ny)))continue;
+        prev[ni]=cur;q.push(ni);
+      }
+    }
+    if(found<0){
+      let best=e.dir,bd=1e9;
+      for(let dir=0;dir<4;dir++){
+        if(!openStep(d,e,dir))continue;
+        const nx=e.x+(dir===1?12:dir===3?-12:0),ny=e.y+(dir===2?12:dir===0?-12:0);
+        const dist=Math.hypot(nx-goal.x,ny-goal.y);
+        if(dist<bd){bd=dist;best=dir;}
+      }
+      return best;
+    }
+    let cur=found,guard=0;
+    while(prev[cur]!==q[0]&&prev[cur]!==cur&&guard++<500)cur=prev[cur];
+    const cx=cur%W,cy=(cur/W)|0;
+    if(cx>sx)return 1;
+    if(cx<sx)return 3;
+    if(cy>sy)return 2;
+    return 0;
+  }
   function stepDefense(dt){
-    const d=S.bcDefense;if(!d||d.done)return;
+    const d=S.bcDefense;if(!d||d.done||d.frozen)return;
     d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.playerInv=Math.max(0,(d.playerInv||0)-dt);d.god=Math.max(0,(d.god||0)-dt);d.shotT=Math.max(0,(d.shotT||0)-dt);d.spawn-=dt;
     const p=d.player;p.fire=Math.max(0,p.fire-dt);p.hearts=p.hearts==null?p.hp:p.hearts;
     if((d.heliLeft||0)>0 && d.t>3.2 && (d.enemies.filter((e)=>e.type==="HELI").length<1)){d.heliLeft--;spawnHeli(d);}
@@ -4011,58 +4691,60 @@
       const dx=S.defStick.x,dy=S.defStick.y;
       if(dx*dx+dy*dy>0.12)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0);
     }
-    const pspd=d.up.mob?86:72;
-    moveTank(d,p,dir,pspd,dt);
-    const helis=d.enemies.some((e)=>e.type==="HELI"&&e.hp>0);
-    if(h.f)fireTank(d,p);
-    if(helis&&h.f){
-      d.aa=Math.min(1,(d.aa||0)+dt/1.25);
-      if(d.aa>=1){fireAa(d);d.aa=0;d.aaBeep=0;}
-      else if((d.aaBeep||0)<=0){d.aaBeep=.22;warSfx("warCharge");}
-      else d.aaBeep-=dt;
-    }else d.aa=Math.max(0,(d.aa||0)-dt*.55);
+    const pspd=72*(1+((d.up&&d.up.speed)||0)/100);
+    if(d.aaArmed&&d.reticle){
+      const rspd=210;
+      let rdx=0,rdy=0;
+      if(dir===0)rdy=-1;else if(dir===1)rdx=1;else if(dir===2)rdy=1;else if(dir===3)rdx=-1;
+      d.reticle.x=Math.max(28,Math.min(S.W-28,d.reticle.x+rdx*rspd*dt));
+      d.reticle.y=Math.max(28,Math.min(S.H-28,d.reticle.y+rdy*rspd*dt));
+    }else{
+      if(d.naval)moveShip(d,p,dir,pspd,dt);else moveTank(d,p,dir,pspd,dt);
+      if(h.f)fireTank(d,p);
+    }
+    if(d.aaTap){
+      d.aaTap=0;
+      if(d.aaArmed)fireReticle(d);
+    }
     for(const e of d.enemies){
       e.fire=Math.max(0,e.fire-dt);e.think-=dt;
+      const goal=e.role==="shield"?(d.fort||d.home):p;
+      const other=e.role==="shield"?p:(d.fort||d.home);
       if(e.think<=0){
-        e.think=.22+Math.random()*.28;
-        if(los(d,e,p.x,p.y)){e.dir=Math.abs(e.x-p.x)>Math.abs(e.y-p.y)?(p.x>e.x?1:3):(p.y>e.y?2:0);e.want=true;}
-        else if(los(d,e,d.home.x,d.home.y)){e.dir=Math.abs(e.x-d.home.x)>Math.abs(e.y-d.home.y)?(d.home.x>e.x?1:3):(d.home.y>e.y?2:0);e.want=true;}
-        else if(Math.random()<.15)e.dir=(Math.random()*4)|0;
-        else e.dir=e.y<d.home.y?2:(d.home.x>e.x?1:3);
+        e.think=.24+Math.random()*.2;
+        if(los(d,e,goal.x,goal.y)){facePoint(e,goal.x,goal.y);e.want=true;}
+        else if(los(d,e,other.x,other.y)){facePoint(e,other.x,other.y);e.want=true;}
+        else if(e.type!=="HELI")e.dir=pathDir(d,e,goal);
       }
       const ox=e.x,oy=e.y;
       if(e.type==="HELI"){
-        const tx=p.x,ty=Math.min(p.y,d.home.y);
-        const ang=Math.atan2(ty-e.y,tx-e.x);
+        const ang=Math.atan2(goal.y-e.y,goal.x-e.x);
         e.x=Math.max(16,Math.min(S.W-16,e.x+Math.cos(ang)*e.spd*dt));
         e.y=Math.max(16,Math.min(S.H-16,e.y+Math.sin(ang)*e.spd*dt));
         e.dir=Math.abs(Math.cos(ang))>Math.abs(Math.sin(ang))?(Math.cos(ang)>0?1:3):(Math.sin(ang)>0?2:0);
-        if(e.think<=0 && Math.hypot(e.x-p.x,e.y-p.y)<220)e.want=true;
-        if(Math.hypot(e.x-p.x,e.y-p.y)<190)e.want=true;
-        if(Math.hypot(e.x-d.home.x,e.y-d.home.y)<28){hitBase(d,e.leak||12);e.hp=0;warSfx("warPop");}
+        if(Math.hypot(e.x-goal.x,e.y-goal.y)<200)e.want=true;
+        const ram=e.role==="shield"?(d.fort||d.home):p;
+        if(e.role==="shield"&&Math.hypot(e.x-ram.x,e.y-ram.y)<28){hitBase(d,e.leak||12);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");}
       }else{
-      moveTank(d,e,e.dir,e.spd,dt);
-      if(Math.abs(e.x-ox)<.25&&Math.abs(e.y-oy)<.25){
-        const dx=e.dir===1?1:e.dir===3?-1:0,dy=e.dir===2?1:e.dir===0?-1:0;
-        const tx=Math.floor((e.x+dx*10)/BC_TS),ty=Math.floor((e.y+dy*10)/BC_TS);
-        const k=bcAt(d.map,tx,ty);
-        let friend=false;
-        for(const o of d.enemies){
-          if(o===e||o.hp<=0)continue;
-          const vx=o.x-e.x,vy=o.y-e.y;
-          if(dx&&Math.sign(vx)===dx&&Math.abs(vx)<26&&Math.abs(vy)<16)friend=true;
-          if(dy&&Math.sign(vy)===dy&&Math.abs(vy)<26&&Math.abs(vx)<16)friend=true;
-        }
-        if(k===1||k===5||(k===2&&(e.dmg||1)>=2))e.want=true;
-        else if(!friend){
-          const order=e.x<220?[1,2,0,3]:e.x>260?[3,2,0,1]:[2,1,3,0];
-          for(const nd of order){
-            const sx=nd===1?8:nd===3?-8:0,sy=nd===2?8:nd===0?-8:0;
-            if(!tankBlocked(d,e.x+sx,e.y+sy,e.sz,e)){e.dir=nd;break;}
+        laneCenter(d,e);
+        if(e.ship)moveShip(d,e,e.dir,e.spd,dt);
+        else moveTank(d,e,e.dir,e.spd,dt);
+        if(Math.hypot(e.x-ox,e.y-oy)<0.35){
+          const tx=Math.floor((e.x+(e.dir===1?12:e.dir===3?-12:0))/BC_TS);
+          const ty=Math.floor((e.y+(e.dir===2?12:e.dir===0?-12:0))/BC_TS);
+          const kt=bcAt(d.map,tx,ty);
+          if(kt===1||kt===5){facePoint(e,(d.fort||d.home).x,(d.fort||d.home).y);e.want=true;e.jam=0;}
+          else{
+            e.jam=(e.jam||0)+dt;
+            if(e.jam>0.22){
+              for(const nd of [(e.dir+1)&3,(e.dir+3)&3,(e.dir+2)&3])if(openStep(d,e,nd)){e.dir=nd;break;}
+              e.jam=0;e.think=0;
+            }
           }
-          e.want=k===1||k===2;
+        }else e.jam=0;
+        if(e.ship&&e.role==="shield"&&Math.hypot(e.x-(d.fort||d.home).x,e.y-(d.fort||d.home).y)<36){
+          hitBase(d,e.leak||8);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");
         }
-      }
       }
       if(e.want){fireTank(d,e);e.want=false;}
     }
@@ -4096,11 +4778,10 @@
         s.hit=true;
         if(t===p){
           if(d.god>0||d.playerInv>0)break;
-          if((p.hearts||0)>0)p.hearts--;
-          else hitBase(d,14);
-          p.hearts=Math.max(0,p.hearts|0);
-          d.playerInv=1.1;
+          p.hearts=Math.max(0,(p.hearts|0)-1);
           warSfx("warHurt");
+          if(p.hearts<=0){finishDefense(false);return;}
+          d.playerInv=0.85;
         }else{
           t.hp-=s.damage;
           warSfx("warHit");
@@ -4118,23 +4799,58 @@
     d.enemies=d.enemies.filter(e=>e.hp>0);
     if(d.picks){
       for(const pk of d.picks){
-        if(pk.got)continue;
+        if(pk.got||pk.dead)continue;
+        pk.ttl=(pk.ttl==null?10:pk.ttl)-dt;
+        if(pk.ttl<=0){pk.dead=true;continue;}
         if(Math.hypot(pk.x-p.x,pk.y-p.y)<18){
           pk.got=true;
-          if(pk.kind==="heal")p.hearts=Math.min(p.maxHearts||3,(p.hearts||0)+1);
+          if(pk.kind==="heal"){
+            const max=p.maxHearts||3;
+            if((p.hearts|0)>=max && max===3){p.maxHearts=4;p.hearts=4;}
+            else p.hearts=Math.min(p.maxHearts||3,(p.hearts|0)+1);
+          }
           else if(pk.kind==="shot")d.shotT=9;
           else d.god=6.5;
           warSfx("warPick");
         }
       }
-      d.picks=d.picks.filter((pk)=>!pk.got);
+      d.picks=d.picks.filter((pk)=>!pk.got&&!pk.dead);
+    }
+    if(!(d.picks&&d.picks.length)){
+      d.pickIn=(d.pickIn==null?5+Math.random()*10:d.pickIn)-dt;
+      if(d.pickIn<=0){
+        const before=d.picks.length;
+        scatterPickups(d,1);
+        d.pickIn=d.picks.length>before?(5+Math.random()*10):1.2;
+      }
     }
     if(d.integrity<=0){finishDefense(false);return;}
     if(d.spawned>=d.quota&&d.enemies.length===0&&!(d.heliLeft>0)){
       if(d.wave>=d.waves){finishDefense(true);return;}
-      d.wave++;d.spawned=0;d.quota=7+((d.level/2)|0)+d.wave;d.spawn=.8;
-      if((d.picks||[]).length<2)scatterPickups(d,1);
+      d.wave++;d.spawned=0;d.quota=battleWaveQuota(d.level,d.wave,S.bcWorld||20);d.spawn=.8;
     }
+    syncAaButton(d);
+  }
+  const AA_R=44;
+  function fireReticle(d){
+    if(!d||!d.aaArmed||!d.reticle)return;
+    let hit=null,best=1e9;
+    for(const e of d.enemies){
+      if(e.hp<=0||(e.type!=="HELI"&&!e.foreign))continue;
+      const dist=Math.hypot(e.x-d.reticle.x,e.y-d.reticle.y);
+      if(dist<AA_R&&dist<best){best=dist;hit=e;}
+    }
+    d.aaArmed=false;d.aa=0;d.reticle=null;
+    if(hit){hit.hp=0;d.kills++;warSfx("warPop");}
+    else warSfx("warClank");
+  }
+  function syncAaButton(d){
+    const btn=$("def-aa");
+    if(!btn)return;
+    const show=!!(d&&!d.done&&!d.frozen);
+    btn.classList.toggle("hide",!show);
+    btn.style.setProperty("--aa",d&&d.aaArmed?"360deg":"360deg");
+    btn.classList.toggle("armed",!!(d&&d.aaArmed));
   }
   function fireAa(d){
     const p=d.player;
@@ -4143,15 +4859,59 @@
     d.shots.push({x:p.x,y:p.y-8,dx:Math.cos(ang),dy:Math.sin(ang),v:360,damage:3,mine:true,aa:true,hit:false});
     warSfx("warAa");
   }
-  function drawTank(ctx,t,col,mark){
+  function drawShip(ctx,t,col){
     ctx.save();ctx.translate(t.x,t.y);
     const rot=[0,Math.PI/2,Math.PI,-Math.PI/2][t.dir]||0;ctx.rotate(rot);
-    ctx.fillStyle=col;ctx.strokeStyle=palRgba(PAL.ink,.55);ctx.lineWidth=1.5;
-    ctx.fillRect(-11,-11,22,22);ctx.strokeRect(-11,-11,22,22);
-    ctx.fillRect(-4,-16,8,10);
-    ctx.fillStyle=palRgba(PAL.ink,.25);ctx.fillRect(-11,-11,4,22);ctx.fillRect(7,-11,4,22);
-    ctx.fillStyle=PAL.ink;ctx.font="700 10px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.rotate(-rot);ctx.fillText(mark,0,1);
+    const hero=!!t.hero;
+    const hull=hero?"medium":(t.hull||"medium");
+    const fill=col||(hull==="light"?"#8a8f55":hull==="heavy"?"#2a3128":hull==="elite"?"#4a4532":"#3c4f42");
+    ctx.fillStyle=fill;ctx.strokeStyle="#14180f";ctx.lineWidth=1.2;
+    if(hull==="light"){
+      ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(5,-2);ctx.lineTo(4,10);ctx.lineTo(-4,10);ctx.lineTo(-5,-2);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle="#d9d4c6";ctx.fillRect(-2,-2,4,5);
+    }else if(hull==="heavy"){
+      ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(11,-4);ctx.lineTo(11,12);ctx.lineTo(-11,12);ctx.lineTo(-11,-4);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle="#1e2420";ctx.fillRect(-6,-2,12,8);
+      ctx.fillStyle="#14180f";ctx.fillRect(-2,-16,4,5);
+    }else{
+      ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(8,-3);ctx.lineTo(7,12);ctx.lineTo(-7,12);ctx.lineTo(-8,-3);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle="#d9d4c6";ctx.fillRect(-3,-1,6,7);
+      ctx.fillStyle="#14180f";ctx.fillRect(-1.2,-12,2.4,6);
+      if(hull==="elite"){ctx.fillStyle="#d7c27a";ctx.fillRect(-4,6,8,2);}
+      if(hero){
+        ctx.fillStyle="#1a1204";ctx.font="700 8px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";
+        ctx.fillText("B",0,3);
+      }
+    }
+    ctx.restore();
+  }
+  function drawTank(ctx,t,col){
+    ctx.save();ctx.translate(t.x,t.y);
+    const rot=[0,Math.PI/2,Math.PI,-Math.PI/2][t.dir]||0;ctx.rotate(rot);
+    const hero=!!t.hero;
+    const hull=hero?"medium":(t.hull||"medium");
+    const fill=col||(hull==="light"?"#8a8f55":hull==="heavy"?"#2e352c":hull==="elite"?"#4d5340":"#3f5344");
+    const track="#1c1f16",gun="#14180f";
+    if(hull==="light"){
+      ctx.fillStyle=track;ctx.fillRect(-8,-8,3,16);ctx.fillRect(5,-8,3,16);
+      ctx.fillStyle=fill;ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(6,-2);ctx.lineTo(5,8);ctx.lineTo(-5,8);ctx.lineTo(-6,-2);ctx.closePath();ctx.fill();
+      ctx.fillStyle=gun;ctx.fillRect(-1,-15,2,8);
+    }else if(hull==="heavy"){
+      ctx.fillStyle=track;ctx.fillRect(-13,-10,4,20);ctx.fillRect(9,-10,4,20);
+      ctx.fillStyle=fill;ctx.fillRect(-10,-9,20,18);
+      ctx.fillStyle="#3d4638";ctx.beginPath();ctx.arc(0,-1,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=gun;ctx.fillRect(-2,-16,4,10);
+    }else{
+      ctx.fillStyle=track;ctx.fillRect(-11,-9,3,18);ctx.fillRect(8,-9,3,18);
+      ctx.fillStyle=fill;ctx.beginPath();ctx.moveTo(-7,-7);ctx.lineTo(7,-7);ctx.lineTo(9,2);ctx.lineTo(7,9);ctx.lineTo(-7,9);ctx.lineTo(-9,2);ctx.closePath();ctx.fill();
+      ctx.fillStyle=hero?"#1a1204":"#2a3124";ctx.beginPath();ctx.arc(0,-1,4.5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=gun;ctx.fillRect(-1.3,-16,2.6,9);
+      if(hull==="elite"){ctx.strokeStyle="#d7c27a";ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(-3,4);ctx.lineTo(0,1);ctx.lineTo(3,4);ctx.stroke();}
+      if(hero){
+        ctx.fillStyle="#f2a900";ctx.font="700 7px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";
+        ctx.fillText("B",0,0);
+      }
+    }
     ctx.restore();
   }
   function drawDefense(ctx){
@@ -4170,19 +4930,82 @@
         continue;
       }
       if(k===0){ctx.fillStyle="#e0c27a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#c9a45e";ctx.fillRect(px+2,py+9,12,3);continue;}
-      if(k===6){ctx.fillStyle="#2f8a4a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#246b39";ctx.fillRect(px+3,py+3,4,4);continue;}
+      if(k===6||k===4){
+        ctx.fillStyle=(x+y)%2?"#8ed44e":"#62b33a";
+        ctx.fillRect(px,py,BC_TS,BC_TS);
+        if(k===6&&((x*7+y*3)%11)===0){ctx.fillStyle="#ffe56a";ctx.fillRect(px+6,py+6,3,3);}
+        if(k===4){
+          ctx.fillStyle="#6b4423";ctx.fillRect(px+7,py+8,2,7);
+          ctx.fillStyle="#1c7a34";ctx.beginPath();ctx.arc(px+8,py+7,7,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#c6ee8a";ctx.beginPath();ctx.arc(px+5,py+5,2.1,0,Math.PI*2);ctx.fill();
+        }
+        continue;
+      }
+      if(k===7){
+        const pier=(bcAt(d.map,x-1,y)===3&&bcAt(d.map,x+1,y)===3)||(bcAt(d.map,x,y-1)===3&&bcAt(d.map,x,y+1)===3);
+        if(pier){
+          ctx.fillStyle="#8a5a2b";ctx.fillRect(px,py,BC_TS,BC_TS);
+          ctx.fillStyle="#c48a4a";
+          if(bcAt(d.map,x,y-1)===3||bcAt(d.map,x,y+1)===3){ctx.fillRect(px+2,py,3,BC_TS);ctx.fillRect(px+8,py,3,BC_TS);ctx.fillRect(px+12,py,2,BC_TS);}
+          else{ctx.fillRect(px,py+2,BC_TS,3);ctx.fillRect(px,py+8,BC_TS,3);ctx.fillRect(px,py+12,BC_TS,2);}
+        }else{
+          ctx.fillStyle="#e2c56a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#c49a42";ctx.fillRect(px,py+6,BC_TS,3);ctx.fillStyle="#f0dc8c";ctx.fillRect(px+2,py+2,6,3);
+        }
+        continue;
+      }
       if(k===1){ctx.fillStyle="#b07a3a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.strokeStyle="#6a4218";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);ctx.beginPath();ctx.moveTo(px,py+8);ctx.lineTo(px+16,py+8);ctx.stroke();continue;}
+      if(k===8){
+        const wet=bcAt(d.map,x-1,y)===3||bcAt(d.map,x+1,y)===3||bcAt(d.map,x,y-1)===3||bcAt(d.map,x,y+1)===3;
+        ctx.fillStyle=wet?"#1a6e80":"#d7c48a";ctx.fillRect(px,py,BC_TS,BC_TS);
+        ctx.fillStyle=wet?"#5c6468":"#7a7872";
+        ctx.beginPath();ctx.moveTo(px+2,py+13);ctx.lineTo(px+4,py+5);ctx.lineTo(px+8,py+8);ctx.lineTo(px+11,py+3);ctx.lineTo(px+14,py+13);ctx.closePath();ctx.fill();
+        continue;
+      }
+      if(k===9){
+        ctx.fillStyle="#e0c27a";ctx.fillRect(px,py,BC_TS,BC_TS);
+        ctx.fillStyle="#f4f1ea";ctx.fillRect(px+6,py+4,4,11);
+        ctx.fillStyle="#b42318";ctx.fillRect(px+5,py+2,6,4);
+        ctx.fillStyle="#ffe56a";ctx.fillRect(px+7,py+3,2,2);
+        continue;
+      }
       if(k===2){ctx.fillStyle="#6d6a66";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#8a8680";ctx.fillRect(px+3,py+2,8,6);continue;}
-      if(k===5){ctx.fillStyle="#c8960a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#1a1206";ctx.font="700 10px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("B",px+8,py+9);continue;}
+      if(k===5){
+        if(!d.shieldCells){
+          const cells=[];
+          for(let yy=0;yy<BC_R;yy++)for(let xx=0;xx<BC_C;xx++)if(bcAt(d.map,xx,yy)===5)cells.push(yy*BC_C+xx);
+          cells.sort((a,b)=>a-b);
+          d.shieldCells=cells;
+        }
+        const idx=d.shieldCells.indexOf(y*BC_C+x);
+        const n=Math.max(1,d.shieldCells.length);
+        const part=Math.max(0,Math.min(n,(d.integrity||0)/100*n));
+        const full=idx>=0&&idx<Math.floor(part);
+        const frac=idx===Math.floor(part)?part-Math.floor(part):0;
+        ctx.fillStyle="#241c12";ctx.fillRect(px,py,BC_TS,BC_TS);
+        const hh=full?BC_TS:Math.round(BC_TS*(full?1:frac));
+        if(hh>0){
+          ctx.fillStyle=(d.integrity||0)>66?"#f2a900":(d.integrity||0)>33?"#c47a12":"#8a4a12";
+          ctx.fillRect(px,py+BC_TS-hh,BC_TS,hh);
+        }
+        ctx.strokeStyle="#1a1204";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);
+        if(full){
+          ctx.strokeStyle="#fff1c2";ctx.lineWidth=1.2;
+          ctx.beginPath();ctx.moveTo(px+8,py+3);ctx.lineTo(px+12,py+6);ctx.lineTo(px+11,py+11);ctx.lineTo(px+8,py+13);ctx.lineTo(px+5,py+11);ctx.lineTo(px+4,py+6);ctx.closePath();ctx.stroke();
+        }else if(frac<0.35){
+          ctx.strokeStyle="#1a1204";ctx.beginPath();ctx.moveTo(px+3,py+4);ctx.lineTo(px+12,py+12);ctx.moveTo(px+11,py+5);ctx.lineTo(px+4,py+11);ctx.stroke();
+        }
+        continue;
+      }
     }
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
-    if(!blink)drawTank(ctx,d.player,d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC,"B");
+    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC;
+    if(!blink){if(d.naval)drawShip(ctx,d.player,pcol);else drawTank(ctx,d.player,pcol);}
     for(const e of d.enemies){
       if(e.type==="HELI"){drawHeli(ctx,e,t);continue;}
-      const col=e.type==="FAST"?"#e0b84a":e.type==="HEAVY"?"#6a6a70":e.type==="ELITE"?"#b989d6":"#c45c4a";
-      drawTank(ctx,e,col,e.type==="FAST"?"▲":e.type==="HEAVY"?"■":e.type==="ELITE"?"◆":"●");
+      if(e.ship)drawShip(ctx,e,null);else drawTank(ctx,e,null);
     }
     for(const pk of d.picks||[]){
+      if(pk.ttl!=null&&pk.ttl<2.6&&Math.floor(t*8)%2===0)continue;
       ctx.beginPath();ctx.arc(pk.x,pk.y,7,0,Math.PI*2);
       ctx.fillStyle=pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":"#ffe14a";
       ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#120c02";ctx.stroke();
@@ -4193,68 +5016,60 @@
       if(s.aa){ctx.fillStyle="#ffe14a";ctx.fillRect(s.x-3,s.y-7,6,14);}
       else{ctx.fillStyle=s.mine?BTC:"#f3efe6";ctx.fillRect(s.x-3,s.y-3,6,6);}
     }
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(bcAt(d.map,x,y)===4){
-      const px=x*BC_TS,py=y*BC_TS;
-      ctx.fillStyle="rgba(30,110,48,.82)";
-      ctx.beginPath();ctx.arc(px+8,py+9,8,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle="rgba(20,80,36,.9)";ctx.fillRect(px+7,py+8,2,8);
+    if(d.aaArmed&&d.reticle&&!d.frozen){
+      const rx=d.reticle.x,ry=d.reticle.y;
+      ctx.save();
+      ctx.strokeStyle="#e23b3b";ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(rx,ry,AA_R,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(rx-12,ry);ctx.lineTo(rx+12,ry);
+      ctx.moveTo(rx,ry-12);ctx.lineTo(rx,ry+12);
+      ctx.stroke();
+      ctx.restore();
     }
     drawHearts(ctx,d.player.hearts||0,d.player.maxHearts||3);
-    drawCitadelShield(ctx,d.integrity||0);
     ctx.textBaseline="alphabetic";ctx.textAlign="left";ctx.font='700 12px "IBM Plex Mono",monospace';
     const bnames=chanceLang()?["PACTO","LIBRO","CORONA"]:["PACT","LEDGER","LATTICE"];
     const bname=bnames[d.bloc|0]||bnames[0];
-    paintHaloText(ctx,bname,12,58,PAL.fg);
-    const alive=d.enemies.filter((e)=>e.hp>0).length;
-    ctx.textAlign="right";
-    paintHaloText(ctx,"ALIVE "+alive,S.W-12,22,alive?PAL.fg:"#9dffc4");
-    if(d.wall>0)paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);
-    if(d.enemies.some((e)=>e.type==="HELI")){
-      const bw=132,bx=(S.W-bw)/2,by=S.H-34;
-      ctx.fillStyle="rgba(0,0,0,.55)";ctx.fillRect(bx,by,bw,10);
-      ctx.fillStyle=(d.aa||0)>=1?"#ffe14a":"#e23b3b";ctx.fillRect(bx,by,bw*Math.max(0,Math.min(1,d.aa||0)),10);
-      ctx.strokeStyle="#f3efe6";ctx.strokeRect(bx+.5,by+.5,bw-1,9);
-      ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
-      paintHaloText(ctx,"AA",S.W/2,by-4,PAL.fg);
-    }
+    paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,52,PAL.fg);
+    paintHaloText(ctx,bname,12,68,PAL.fg);
+    if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
+    if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);}
     ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
     ctx.restore();
   }
   function drawHearts(ctx,hearts,max){
-    for(let i=0;i<max;i++){
-      const x=16+i*18,y=18,on=i<hearts;
+    const n=Math.max(3,Math.min(4,max|0));
+    const filled=Math.max(0,Math.min(n,hearts|0));
+    const gap=22,s=8;
+    ctx.save();
+    ctx.fillStyle="rgba(10,8,4,.72)";
+    ctx.strokeStyle="rgba(243,239,230,.35)";
+    ctx.lineWidth=1.5;
+    const w=10+n*gap,h=30,px=6,py=6;
+    ctx.beginPath();
+    ctx.roundRect(px,py,w,h,8);
+    ctx.fill();ctx.stroke();
+    for(let i=0;i<n;i++){
+      const x=px+16+i*gap,y=py+15,on=i<filled;
       ctx.beginPath();
-      ctx.moveTo(x,y+3);
-      ctx.bezierCurveTo(x-8,y-4,x-2,y-7,x,y-1);
-      ctx.bezierCurveTo(x+2,y-7,x+8,y-4,x,y+3);
+      ctx.moveTo(x,y+s*0.55);
+      ctx.bezierCurveTo(x-s*0.15,y+s*0.25,x-s*0.95,y+s*0.2,x-s*0.95,y-s*0.15);
+      ctx.bezierCurveTo(x-s*0.95,y-s*0.55,x-s*0.45,y-s*0.75,x,y-s*0.35);
+      ctx.bezierCurveTo(x+s*0.45,y-s*0.75,x+s*0.95,y-s*0.55,x+s*0.95,y-s*0.15);
+      ctx.bezierCurveTo(x+s*0.95,y+s*0.2,x+s*0.15,y+s*0.25,x,y+s*0.55);
+      ctx.closePath();
       ctx.fillStyle=on?"#e23b3b":"#141414";
       ctx.fill();
-      ctx.lineWidth=1.4;ctx.strokeStyle=on?"#ffd0d0":"#3a3a3a";ctx.stroke();
-    }
-  }
-  function drawCitadelShield(ctx,integrity){
-    const k=Math.max(0,Math.min(100,integrity))/100;
-    const x=S.W/2,y=30;
-    ctx.save();ctx.translate(x,y);
-    ctx.beginPath();
-    ctx.moveTo(0,-16);ctx.lineTo(16,-8);ctx.lineTo(13,8);ctx.quadraticCurveTo(0,18,-0,18);ctx.quadraticCurveTo(0,18,-13,8);ctx.lineTo(-16,-8);ctx.closePath();
-    ctx.fillStyle="#241c12";ctx.fill();
-    ctx.save();ctx.clip();
-    ctx.fillStyle=k>0.66?"#f2a900":k>0.33?"#c47a12":"#8a4a12";
-    ctx.fillRect(-20,-18,40,36*k);
-    ctx.restore();
-    ctx.lineWidth=2;ctx.strokeStyle="#1a1204";ctx.stroke();
-    ctx.fillStyle="#1a1204";ctx.font="700 13px Georgia, serif";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillText("₿",0,1);
-    if(k<0.85){
-      ctx.strokeStyle="#1a1204";ctx.lineWidth=1.2;
-      ctx.beginPath();
-      ctx.moveTo(-6,-8);ctx.lineTo(2,2);
-      if(k<0.55){ctx.moveTo(6,-7);ctx.lineTo(-2,7);}
-      if(k<0.3){ctx.moveTo(-10,0);ctx.lineTo(8,4);}
+      ctx.lineWidth=1.6;
+      ctx.strokeStyle=on?"#ffe4e4":"#8a8680";
       ctx.stroke();
+      if(on){
+        ctx.fillStyle="rgba(255,255,255,.55)";
+        ctx.beginPath();ctx.arc(x-s*0.38,y-s*0.22,1.5,0,Math.PI*2);ctx.fill();
+      }
     }
     ctx.restore();
   }
@@ -4262,8 +5077,8 @@
     ctx.save();ctx.translate(e.x,e.y);
     ctx.fillStyle="rgba(0,0,0,.25)";ctx.beginPath();ctx.ellipse(0,10,10,4,0,0,Math.PI*2);ctx.fill();
     ctx.rotate(Math.sin(t*18)*.08);
-    ctx.fillStyle="#d7dde6";ctx.fillRect(-12,-5,24,10);
-    ctx.fillStyle="#8aa0b8";ctx.fillRect(-4,-8,8,6);
+    ctx.fillStyle="#5c6b4a";ctx.fillRect(-12,-5,24,10);
+    ctx.fillStyle="#2e352c";ctx.fillRect(-4,-8,8,6);
     ctx.strokeStyle="#f3efe6";ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(16,0);ctx.stroke();
     ctx.restore();
@@ -4280,16 +5095,17 @@
         else if (A.stopMusic) A.stopMusic();
       }
     } catch (e) {}
+    const fieldBattle = p === "defense" || !!(S.bcDefense && S.bcDefense.frozen && p === "chance");
     if (field) {
-      field.classList.toggle("bull", p !== "defense" && S.power === "BULL");
-      field.classList.toggle("bear", p !== "defense" && S.power === "BEAR");
-      field.classList.toggle("swan-bear", p !== "defense" && S.power === "BEAR" && S.swanBear);
+      field.classList.toggle("bull", !fieldBattle && S.power === "BULL");
+      field.classList.toggle("bear", !fieldBattle && S.power === "BEAR");
+      field.classList.toggle("swan-bear", !fieldBattle && S.power === "BEAR" && S.swanBear);
       field.classList.toggle("perk-ui", p === "perk" || p === "chance" || (p === "paused" && S.arcHold));
       field.classList.toggle("is-play", p === "play");
-      field.classList.toggle("defense-mode", p === "defense");
+      field.classList.toggle("defense-mode", fieldBattle);
     }
-    const pad=$("def-pad");if(pad)pad.classList.toggle("hide", p!=="defense");
-    if(p!=="defense"){S.defPtr=null;if(S.defHeld)S.defHeld={u:0,d:0,l:0,r:0,f:0};}
+    const pad=$("def-pad");if(pad)pad.classList.toggle("hide", p!=="defense" || !!(S.bcDefense && S.bcDefense.frozen));
+    if(p!=="defense"){S.defPtr=null;if(S.defHeld)S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};}
     try { renderOverlay(); } catch (e) { if (p !== "play") showOverlay(); }
     try { renderHud(); } catch (e) {}
   }
@@ -4346,7 +5162,12 @@
     S.particles = S.particles.filter((p) => p.life > 0);
     for (const f of S.floats) { f.y += f.vy * dt; f.life -= dt; }
     S.floats = S.floats.filter((f) => f.life > 0);
-    if (S.phase === "defense") { stepDefense(dt); return; }
+    if (S.phase === "defense" || (S.bcDefense && S.bcDefense.frozen)) {
+      S.lifeT += dt;
+      if (S.bcDefense && S.bcDefense.frozen) S.bcDefense.t = (S.bcDefense.t || 0) + dt;
+      if (S.phase === "defense") stepDefense(dt);
+      return;
+    }
     if (S.phase !== "play") return;
     if (S.invuln > 0) S.invuln -= dt;
 
@@ -6014,12 +6835,39 @@
     [ab,ab2].forEach((el)=>{if(!el)return;el.disabled=!canBuy;el.classList.toggle("hide",!S.bcArmyUnlocked||S.bcVictory);el.textContent=el.id==="bc-army-bar"?"+10 ARMY":lab;});
     const dec=$("bc-declare");if(dec){const ready=(S.bcNodes||0)>=100&&!S.bcIndependent&&!S.bcVictory;dec.classList.toggle("hide",!ready);}
     const ups=$("bc-ups");
+    const es=chanceLang();
     if(ups){
-      const a=S.bcArmy||0;
-      const bits=[["40 Mobility I",a>=40],["50 Armor I",a>=50],["60 Cannon I",a>=60],["70 Cannon II",a>=70],["80 Armor II",a>=80],["90 Cannon III",a>=90],["100 Citadel wall",a>=100]];
-      ups.textContent=S.bcArmyUnlocked?bits.map(([n,on])=>(on?"● ":"○ ")+n).join("  "):"Form a defense force to train Army.";
+      if(!S.bcArmyUnlocked){
+        ups.innerHTML="<p class=\"bc-note\">"+(es?"Formá una fuerza de defensa para entrenar el ejército.":"Form a defense force to train the army.")+"</p>";
+      }else{
+        const a=S.bcArmy||0;
+        const m=armyBattleMods(a);
+        const bits=[];
+        if(m.speed)bits.push((es?"Velocidad +":"Speed +")+m.speed+"%");
+        if(m.shot)bits.push((es?"Tiros +":"Shots +")+m.shot+"%"+(es?" más rápidos":" faster"));
+        if(m.power>1)bits.push((es?"Potencia ×":"Power ×")+m.power);
+        if(m.shield)bits.push((es?"Escudo −":"Shield −")+m.shield+"%"+(es?" de daño":" damage"));
+        if(m.medic)bits.push(es?"4 corazones al empezar":"Start on 4 hearts");
+        if(m.wall)bits.push(es?"Muro de ciudadela":"Citadel wall");
+        const now=(es?"En batalla: ":"In battle: ")+(bits.join(" · ")||(es?"sin bonus":"no bonuses"));
+        const steps=[
+          [10,es?"Velocidad +10%":"Speed +10%"],
+          [20,es?"Velocidad +20%":"Speed +20%"],
+          [30,es?"Velocidad +30% · escudo −10% de daño":"Speed +30% · shield −10% damage"],
+          [40,es?"Velocidad +40% · tiros +10% más rápidos":"Speed +40% · shots +10% faster"],
+          [50,es?"Velocidad +50% · empezás con 4 corazones":"Speed +50% · start with 4 hearts"],
+          [60,es?"Tiros +20% más rápidos · escudo −20%":"Shots +20% faster · shield −20%"],
+          [70,es?"Tiros +30% más rápidos · potencia ×2":"Shots +30% faster · power ×2"],
+          [80,es?"Tiros +40% más rápidos · escudo −30%":"Shots +40% faster · shield −30%"],
+          [90,es?"Tiros +50% más rápidos · escudo −40% · potencia ×3":"Shots +50% faster · shield −40% · power ×3"],
+          [100,es?"Escudo −50% de daño · muro de ciudadela":"Shield −50% damage · citadel wall"]
+        ];
+        const list=steps.map(([n,lab])=>"<li class=\""+(a>=n?"on":"")+"\">"+(a>=n?"●":"○")+" "+n+" · "+lab+"</li>").join("");
+        const hint=es?"Cada +10 de ejército alcanza la línea siguiente. Todo esto aplica en la batalla.":"Each +10 Army reaches the next line. All of this applies in battle.";
+        ups.innerHTML="<p class=\"bc-up-now\">"+now+"</p><ul class=\"bc-up-list\">"+list+"</ul><p class=\"bc-note\">"+hint+"</p>";
+      }
     }
-    setTxt("bc-note",S.bcVictory?"Independent. Keep playing.":S.bcArmyUnlocked?"Army purchases are permanent. World strength can keep rising.":"Army is trained here. Form a defense force (2%) if you skipped it.");
+    setTxt("bc-note",S.bcVictory?(es?"Independiente. Seguí jugando.":"Independent. Keep playing."):S.bcArmyUnlocked?(es?"Las compras de ejército son permanentes. La fuerza mundial puede seguir subiendo.":"Army purchases are permanent. World strength can keep rising."):(es?"El ejército se entrena acá. Formá una fuerza de defensa (2%) si te la salteaste.":"Army is trained here. Form a defense force (2%) if you skipped it."));
   }
   function renderHud() {
     try { renderBitcoinCountry(); } catch (e) {}
@@ -6027,6 +6875,7 @@
     if (app) app.classList.toggle("vs-on", !!(S.phase === "mplobby" || S.phase === "mpwin" || S.phase === "mpwait" || S.phase === "count" || (S.mp && S.phase === "play")));
     const clock = $("clock");
     const candles = $("h-candles");
+    const battleHud = S.phase === "defense" || !!(S.bcDefense && S.bcDefense.frozen);
     const hideClock = S.phase === "ready" || S.phase === "count";
     if (clock) {
       clock.textContent = fmtTime(S.lifeT);
@@ -6034,7 +6883,7 @@
     }
     if (candles) {
       candles.textContent = String(S.shownCandles || 0);
-      candles.classList.toggle("hide", hideClock);
+      candles.classList.toggle("hide", hideClock || battleHud);
     }
     const box = $("clock-box");
     if (box) box.classList.toggle("hide", hideClock);
@@ -6728,6 +7577,8 @@
     S.bcDefense = null;
     S.bcDefensePending = false;
     S.bcBattlesWon = 0;
+    S.bcMapPlan = null;
+    S.bcMapSeed = 0;
     S.bcAssaultAt = 0;
     S.bcReactions = null;
     S.bcRepliesDone = false;
@@ -7774,7 +8625,7 @@
     const p = S.phase;
     if (p === "defense") {
       hideOverlay();
-      overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui", "mp-spec", "fest-ui");
+      overlay.classList.remove("chance-ui", "dock", "juke-ui", "mp-ui", "mp-spec", "fest-ui", "battle-report");
       return;
     }
     if (p === "play") {
@@ -7792,7 +8643,7 @@
         return;
       }
       hideOverlay();
-      overlay.classList.remove("mp-spec", "dock", "fest-ui");
+      overlay.classList.remove("mp-spec", "dock", "fest-ui", "battle-report");
       return;
     }
     overlay.classList.remove("mp-spec");
@@ -7800,7 +8651,9 @@
     overlay.classList.toggle("dock", p === "perk" || p === "paused" || p === "chance");
     overlay.classList.toggle("mp-ui", p === "mplobby" || p === "mpwait" || p === "mpwin");
     overlay.classList.toggle("chance-ui", p === "chance");
-    overlay.classList.toggle("fest-ui", p === "chance" && !S.optPanel && !!(S.chanceCard && S.chanceCard.id === "blocTriumph"));
+    const battleSheet = p === "chance" && !S.optPanel && !!(S.bcDefense && S.bcDefense.frozen) && !!(S.chanceCard && (S.chanceCard.id === "battleWon" || S.chanceCard.id === "blocTriumph"));
+    overlay.classList.toggle("fest-ui", false);
+    overlay.classList.toggle("battle-report", battleSheet);
     overlay.classList.toggle("juke-ui", (p === "paused" || p === "ready" || p === "perk" || p === "chance") && S.optPanel === "juke");
     overlay.classList.toggle("test-ui", S.optPanel === "test");
     overlay.classList.toggle("gfx-ui", S.optPanel === "gfx");
@@ -7869,8 +8722,9 @@
       const es = chanceLang();
       let title = es ? (card.titleEs || card.title) : card.title;
       if (S.chanceTitle) title = es ? (S.chanceTitle.es || S.chanceTitle.en || title) : (S.chanceTitle.en || title);
+      if (S.battleTutOpen) title = t("tutBattle");
       if (card.job) title = fillJob(title);
-      const body = S.chanceBody || (es ? (card.bodyEs || card.body) : card.body);
+      const body = S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body));
       const pic = chanceArtHtml(card.id);
       let btns = "";
       if (S.chanceNote) {
@@ -7886,7 +8740,7 @@
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
         overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
-          + arcStoryHtml(card, body)
+          + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       const tog = $("arc-tldr-tog");
@@ -8016,7 +8870,7 @@
     }
     hudAcc += 0.016;
     const ctx = fit();
-    if(S.phase==="defense") drawDefense(ctx); else draw(ctx);
+    if(S.phase==="defense" || (S.bcDefense && S.bcDefense.frozen && S.phase==="chance")) drawDefense(ctx); else draw(ctx);
     paintHeroPreview();
     if (hudAcc > 0.12) { renderHud(); hudAcc = 0; }
     requestAnimationFrame(loop);
@@ -8074,6 +8928,7 @@
     if(e.code==="ArrowLeft"||k==="a")h.l=0;
     if(e.code==="ArrowRight"||k==="d")h.r=0;
     if(e.code==="Space")h.f=0;
+    if(e.code==="KeyQ"||e.code==="KeyE")h.aa=0;
   });
   window.addEventListener("keydown", (e) => {
     const tag = (e.target && e.target.tagName ? e.target.tagName : "").toLowerCase();
@@ -8088,7 +8943,17 @@
       if(e.code==="ArrowDown"||k==="s")h.d=1;
       if(e.code==="ArrowLeft"||k==="a")h.l=1;
       if(e.code==="ArrowRight"||k==="d")h.r=1;
-      if(e.code==="Space"){h.f=1;if(!e.repeat&&S.bcDefense)fireTank(S.bcDefense,S.bcDefense.player);}
+      if(e.code==="Space"){h.f=1;if(!e.repeat&&S.bcDefense&&!S.bcDefense.aaArmed)fireTank(S.bcDefense,S.bcDefense.player);}
+      if(e.code==="KeyQ"||e.code==="KeyE"){
+        const d=S.bcDefense;
+        if(!d||e.repeat)return;
+        if(d.aaArmed)d.aaTap=1;
+        else{
+          d.aaArmed=true;d.aa=1;
+          d.reticle={x:d.player.x,y:Math.max(36,d.player.y-78)};
+          warSfx("warAa");
+        }
+      }
       return;
     }
     if (S.arcHold || S.phase === "chance") {
@@ -8336,6 +9201,24 @@
     }
     fire.addEventListener("pointerup",endFire);
     fire.addEventListener("pointercancel",endFire);
+    const aa=$("def-aa");
+    if(aa){
+      aa.addEventListener("pointerdown",(e)=>{
+        e.preventDefault();e.stopPropagation();
+        try{aa.setPointerCapture(e.pointerId);}catch(err){}
+        const d=S.bcDefense;
+        if(!d||d.done||d.frozen)return;
+        if(d.aaArmed)d.aaTap=1;
+        else{
+          d.aaArmed=true;d.aa=1;
+          d.reticle={x:d.player.x,y:Math.max(36,d.player.y-78)};
+          warSfx("warAa");
+        }
+      });
+      const endAa=()=>{held().aa=0;};
+      aa.addEventListener("pointerup",endAa);
+      aa.addEventListener("pointercancel",endAa);
+    }
   })();
   window.startChoppy = startGame;
   window.replayChoppy = replay;
