@@ -165,6 +165,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `5c82ef4745143a30845af7e08727c25edfe24231`
   - Pull request: #9
 
+- [x] `threeColors` — “Tres colores”
+  - Mission relation: follows `ambassador`, completes the three-bloc geopolitical map around Bitcoin Country, and leads into Ortega & Gambette’s recognition advice.
+  - Updated: English and Spanish full text and TL;DR; replaced five fictional member states with Saudi Arabia, Jordan, Morocco, Thailand, and Brunei.
+  - Mechanics: report card; no options; `bcWorld +5`, bloc identity, leader, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `f92817aa7c1e513b8ae21c012cfc3cbf9706daa5`
+  - Pull request: #9
+
 ## Next priority
 
-- `threeColors`
+- `ortegaCalls`
