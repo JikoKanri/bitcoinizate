@@ -22,6 +22,8 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `firstBloc` — `firstBloc-wide.png` — new original panoramic European bloc-formation scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; seven distinct male delegates make a coordinated formal vote while two security officers and severe institutional architecture imply compulsory administrative power; no Choppy because he is not physically present at the summit; no women, Lena, Madame Luck, flags, maps, documents, readable text, national emblems, weapons, or watermark.
 
+- `temporaryMeasures` — `temporaryMeasures-wide.png` — new original panoramic financial-restrictions scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; male citizens face dark payment kiosks while officials extend worn barriers at a bank entrance and Choppy remains stable in the open foreground; complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, two orange arms and legs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, women, phones, cards, cash, documents, maps, flags, visible text, numbers, calendars, charts, readable screens, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
@@ -36,7 +38,6 @@ The following existing square scene assets need original wide replacements and c
 - `protectIsland.jpg`
 - `rearmament.jpg`
 - `stateVisit.jpg`
-- `temporaryMeasures.jpg`
 - `theAnswer.jpg`
 - `theOg.jpg`
 - `theQuestion.jpg`
