@@ -130,6 +130,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `a683200eefaf443c2589c9129067a6bde7db3124`
   - Pull request: #9
 
+- [x] `placeNow` — “Esto ya parece un lugar”
+  - Mission relation: follows `protectIsland`, unlocks at 50 nodes, and marks the island’s transition into a functioning civil community on the path to independence.
+  - Updated: English and Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; 50-node threshold, +5 Liberty Nodes, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `fde84ca4996f8c7840d4b68ad9d95bfdd3a1a78a`
+  - Pull request: #9
+
 ## Next priority
 
-- `placeNow`
+- `citadelQuestion`
