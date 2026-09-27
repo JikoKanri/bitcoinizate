@@ -81,6 +81,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `875dcedb0905f3fa27ef884a1b670e2c54884a79`
   - Pull request: #9
 
+- [x] `peopleAsking` — “La gente empieza a preguntar”
+  - Mission relation: unlocks at ten nodes and introduces the first residents, requiring the settlement that advances Bitcoin Country from an island project toward a functioning community.
+  - Updated: Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; 3% settlement cost, ten-node threshold, option keys, retry behavior, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `cbb99e2f62216c197d3ba24381c2c9228bf7aa07`
+  - Pull request: #9
+
 ## Next priority
 
-- `peopleAsking`
+- `extensionCord`
