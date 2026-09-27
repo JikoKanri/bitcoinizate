@@ -179,6 +179,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `dedbbdba93e6e91b2d3fffd60a6ba5959e05e670`
   - Delivery branch: `maingpt`
 
+- [x] `theQuestion` — “La pregunta”
+  - Mission relation: follows `ortegaCalls`, unlocks at 100 nodes, and presents the central decision to declare Bitcoin Country independent before the three blocs respond.
+  - Updated: English and Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; 100-node threshold, country-name prompt, independence state, retry behavior, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `e42e92e7d1747307509d229f11a99692b6b16aaa`
+  - Pull request: #11
+
 ## Next priority
 
-- `theQuestion`
+- `cabinet`
