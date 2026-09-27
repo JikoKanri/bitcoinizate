@@ -109,6 +109,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `84d5e59500714c05f007caa9467ae50e32fd958b`
   - Pull request: #9
 
+- [x] `stateVisit` — “Visita de Estado”
+  - Mission relation: follows `principality` and turns Bitcoin Country’s first diplomatic contact into concrete cooperation before the geopolitical bloc sequence begins.
+  - Updated: English and Spanish full text, title, TL;DR, and all three options.
+  - Mechanics: choice card; $15,000 and $5,000 costs, +10 and +4 Liberty Nodes, no-investment visit, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `7070d3748769233a1231794a776573d267a494b5`
+  - Pull request: #9
+
 ## Next priority
 
-- `stateVisit`
+- `firstBloc`
