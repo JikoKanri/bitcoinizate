@@ -2764,7 +2764,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src=(id==="citadelProblem"||id==="pieceWorld"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin7":"chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=(id==="citadelProblem"||id==="pieceWorld"||id==="islandInspection"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin8":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2781,8 +2781,8 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const wide = artId === "citadelProblem" || artId === "pieceWorld" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
-    const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin7" : "chance/"+artId+".jpg?v=mp86";
+    const wide = artId === "citadelProblem" || artId === "pieceWorld" || artId === "islandInspection" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
+    const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin8" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
