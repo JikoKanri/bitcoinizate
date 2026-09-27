@@ -292,6 +292,24 @@
     if (kind === "rank") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"11\" font-weight=\"700\" fill=\"#120c02\" font-family=\"IBM Plex Mono,monospace\">#1</text>", "#c8960a", "#ffe7a0");
     if (kind === "perk") return wrap("<polygon points=\"0,-8 2.2,-2.2 8,-2.2 3.4,1.6 5.2,7.5 0,4 -5.2,7.5 -3.4,1.6 -8,-2.2 -2.2,-2.2\" fill=\"#ffe7a0\"/>", "#141416", "#c8960a");
     if (kind === "gfx") return wrap("<g><circle cx=\"-4.2\" cy=\"1.2\" r=\"3.4\" fill=\"#0a0a0c\"/><circle cx=\"0.4\" cy=\"-3.2\" r=\"3.4\" fill=\"#c8960a\"/><circle cx=\"4\" cy=\"2.4\" r=\"3.4\" fill=\"#4f9d6e\"/></g>", "#141416", "#c8960a");
+    if (kind === "heart") return wrap("<path d=\"M0 4.6 C-4.4 1.4 -6.4-1.5 -4.3-3.4 C-2.6-4.9 -0.6-3.6 0-2.1 C0.6-3.6 2.6-4.9 4.3-3.4 C6.4-1.5 4.4 1.4 0 4.6Z\" fill=\"#e23b3b\"/>", "#1a0c0c", "#ffb4ac");
+    if (kind === "sand") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#e0c27a\"/><rect x=\"-6\" y=\"1\" width=\"10\" height=\"2\" fill=\"#c9a45e\"/>", "#6a4e22", "#e0c27a");
+    if (kind === "grass") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#62b33a\"/><rect x=\"-2\" y=\"-2\" width=\"3\" height=\"3\" fill=\"#ffe56a\"/>", "#143018", "#8ed44e");
+    if (kind === "dirt") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#e2c56a\"/><rect x=\"-8\" y=\"-1\" width=\"16\" height=\"3\" fill=\"#c49a42\"/>", "#5a3e14", "#e2c56a");
+    if (kind === "brick") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#b07a3a\"/><path d=\"M-8 0H8M0-8V0M-4 0V8\" stroke=\"#6a4218\" stroke-width=\"1.2\"/>", "#3a2410", "#e0b07a");
+    if (kind === "metal") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#6d6a66\"/><rect x=\"-4\" y=\"-5\" width=\"8\" height=\"6\" fill=\"#b0aca6\"/>", "#222224", "#d0ccc6");
+    if (kind === "tree") return wrap("<rect x=\"-1.2\" y=\"1.5\" width=\"2.4\" height=\"6\" fill=\"#6b4423\"/><circle cy=\"-1.5\" r=\"5.5\" fill=\"#1c7a34\"/>", "#102818", "#8ed44e");
+    if (kind === "water") return wrap("<rect x=\"-8\" y=\"-8\" width=\"16\" height=\"16\" fill=\"#1c7484\"/><path d=\"M-7-1H7M-7 4H7\" stroke=\"#b4f0ff\" stroke-width=\"1.4\"/>", "#0c3038", "#9befff");
+    if (kind === "tank") return wrap("<rect x=\"-6\" y=\"-5\" width=\"12\" height=\"11\" fill=\"#c45c4a\"/><rect x=\"-2\" y=\"-9\" width=\"4\" height=\"5\" fill=\"#f3efe6\"/>", "#2a1210", "#ff9b92");
+    if (kind === "fast") return wrap("<polygon points=\"0,-8 7,6 -7,6\" fill=\"#e0b84a\"/>", "#2a2208", "#ffe7a0");
+    if (kind === "heavy") return wrap("<rect x=\"-7\" y=\"-7\" width=\"14\" height=\"14\" fill=\"#6a6a70\"/><rect x=\"-2.2\" y=\"-10\" width=\"4.4\" height=\"5\" fill=\"#e4e4e8\"/>", "#161618", "#c8c8cc");
+    if (kind === "elite") return wrap("<polygon points=\"0,-8 7,0 0,8 -7,0\" fill=\"#b989d6\"/>", "#241428", "#e6d0f2");
+    if (kind === "ship") return wrap("<path d=\"M0-8 L6.2-1.2 L5 6.2 L-5 6.2 L-6.2-1.2 Z\" fill=\"#c45c4a\"/><rect x=\"-1\" y=\"-3\" width=\"2\" height=\"7\" fill=\"#f3efe6\"/>", "#102028", "#9befff");
+    if (kind === "heli") return wrap("<rect x=\"-7\" y=\"-2.5\" width=\"14\" height=\"6\" rx=\"1\" fill=\"#d7dde6\"/><path d=\"M-9 0H9\" stroke=\"#f3efe6\" stroke-width=\"1.7\"/>", "#1a2430", "#d7dde6");
+    if (kind === "heal") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#fff\" font-family=\"IBM Plex Mono,monospace\">+</text>", "#e23b3b", "#ffd0d0");
+    if (kind === "shot") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"13\" font-weight=\"700\" fill=\"#062028\" font-family=\"IBM Plex Mono,monospace\">S</text>", "#7fd0ff", "#e8f7ff");
+    if (kind === "star") return wrap("<polygon points=\"0,-7.2 2.1,-2.2 7.2,-2.2 3.1,1.2 4.6,6.4 0,3.2 -4.6,6.4 -3.1,1.2 -7.2,-2.2 -2.1,-2.2\" fill=\"#ffe14a\"/>", "#2a2208", "#ffe7a0");
+    if (kind === "aa") return wrap("<circle r=\"6.2\" fill=\"none\" stroke=\"#e23b3b\" stroke-width=\"2\"/><path d=\"M-3.2 0H3.2M0-3.2V3.2\" stroke=\"#e23b3b\" stroke-width=\"1.4\"/>", "#1a0808", "#ff9b92");
     return wrap("", "#141416", "#3a3a40");
   }
   const HEROES = [
@@ -460,12 +478,12 @@
     tut9: "Options → Graphics: pick a look, then tap the hero in the preview to switch 2D / 3D.",
     tutBattle: "Battle tutorial",
     tutHold: "Hold the beach",
-    tutB1: "The stick moves your tank. The right side of the screen fires.",
+    tutB1: "On land you drive the tank. Sea battles put you in a ship — those maps keep water on at least two edges. The stick moves you. The right side of the screen fires.",
     tutB2: "You start with 3 hearts. Each hit empties one. Empty hearts means you lose. The citadel shield is separate — if it breaks, the island falls.",
-    tutB3: "Brick breaks. Metal does not. Trees block tanks and shots. Grass and dirt paths are open.",
-    tutB4: "One pickup at a time, every 5–15 seconds. + restores a heart, or adds a fourth if you are already full at 3. S speeds your shot. The star makes you untouchable for a moment.",
-    tutB5: "Helicopters ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
-    tutB6: "Enemies come in waves. KIA is how many you destroyed in this battle, over how many were sent."
+    tutB3: "Sand is beach. Grass and dirt paths are open. Brick breaks. Metal does not. Trees block movement and shots. Tanks cannot cross water. Ships sail on water and stop at land.",
+    tutB4: "One pickup at a time, every 5–15 seconds. It disappears 10 seconds after it spawns. + restores a heart, or adds a fourth if you are already full at 3. S speeds your shot. The star makes you untouchable for a moment.",
+    tutB5: "Some land battles send helicopters. They ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
+    tutB6: "Red tanks, gold fast tanks, gray heavy tanks and purple elites come in waves. Sea battles send ships instead. KIA is how many you destroyed in this battle, over how many were sent."
   };
   function t(k) {
     if (window.BZ && typeof BZ.t === "function") {
@@ -484,6 +502,19 @@
       + "<p class=\"donate-links\"><a href=\"lightning:" + ln + "\">Lightning</a> · <a href=\"bitcoin:" + btc + "\">Bitcoin</a></p>"
       + "</section>";
   }
+  function battleIcos(kinds){
+    return "<span class=\"help-icos\">" + kinds.map(badgeIco).join("") + "</span>";
+  }
+  function battleTutInner(){
+    const line = (icos, key) => "<p>" + icos + "<span>" + t(key) + "</span></p>";
+    return line(badgeIco("tank") + badgeIco("ship"), "tutB1")
+      + line(badgeIco("heart"), "tutB2")
+      + line(battleIcos(["sand", "grass", "dirt", "brick", "metal", "tree", "water"]), "tutB3")
+      + line(battleIcos(["heal", "shot", "star"]), "tutB4")
+      + line(battleIcos(["tank", "fast", "heavy", "elite", "ship"]), "tutB6")
+      + line(badgeIco("heli") + badgeIco("aa"), "tutB5");
+  }
+  function battleTutHtml(){ return "<div class=\"help battle-help\">" + battleTutInner() + "</div>"; }
   function battleTutParas() {
     return [t("tutB1"), t("tutB2"), t("tutB3"), t("tutB4"), t("tutB5"), t("tutB6")];
   }
@@ -506,7 +537,7 @@
       + "<p>" + badgeIco("cold") + " " + t("tut5") + "</p>"
       + "<p>" + badgeIco("laser") + " " + t("tut6") + "</p>"
       + (battleTutSeen()
-        ? "<p class=\"k\">" + t("tutBattle") + "</p>" + battleTutParas().map((p) => "<p>" + p + "</p>").join("")
+        ? "<p class=\"k\">" + t("tutBattle") + "</p>" + battleTutInner()
         : "")
       + "</div>";
   }
@@ -1253,7 +1284,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -3688,10 +3719,22 @@
     if(delta<25)return {waves:5,rate:1.08,enemy:.92};
     return {waves:4,rate:1.16,enemy:.84};
   }
-  function defenseUpgrades(){
-    const a=S.bcArmy||0;
-    return {mob:a>=40,armor1:a>=50,cannon1:a>=60,cannon2:a>=70,armor2:a>=80,cannon3:a>=90,wall:a>=100};
+  function armyBattleMods(a){
+    a=a|0;
+    let speed=0,shot=0,shield=0,power=1,medic=false,wall=false;
+    if(a>=10)speed=10;
+    if(a>=20)speed=20;
+    if(a>=30){speed=30;shield=10;}
+    if(a>=40){speed=40;shot=10;}
+    if(a>=50){speed=50;medic=true;}
+    if(a>=60){shot=20;shield=20;}
+    if(a>=70){shot=30;power=2;}
+    if(a>=80){shot=40;shield=30;}
+    if(a>=90){shot=50;shield=40;power=3;}
+    if(a>=100){shield=50;wall=true;}
+    return {speed,shot,shield,power,medic,wall};
   }
+  function defenseUpgrades(){return armyBattleMods(S.bcArmy||0);}
   function buyArmy(points){
     points=Math.max(1,Math.floor(points||10));if(!S.bcArmyUnlocked||S.bcVictory||S.bcArcClosed)return false;
     const room=Math.max(0,100-(S.bcArmy||0)),add=Math.min(room,points);if(!add)return false;
@@ -3710,238 +3753,409 @@
   const BC_TS=16,BC_C=30,BC_R=40;
   function bcAt(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
   function bcSet(m,x,y,t){if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;}
-  function makeIslandMap(level, fort){
-    level=Math.max(0,Math.min(8,level|0));
-    const m=new Uint8Array(BC_C*BC_R);m.fill(3);
-    const shapes=[
-      {cx:15,cy:22,rx:11.2,ry:13.4},
-      {cx:12,cy:18,rx:10.4,ry:12.2},
-      {cx:18,cy:20,rx:12.2,ry:11.6},
-      {cx:14,cy:24,rx:12.6,ry:10.8},
-      {cx:17,cy:16,rx:10.8,ry:14.2},
-      {cx:13,cy:21,rx:13.2,ry:11.4},
-      {cx:16,cy:19,rx:11.5,ry:15},
-      {cx:18,cy:23,rx:10.6,ry:12.8},
-      {cx:12.5,cy:17,rx:12.4,ry:13.2}
-    ][level];
-    const edges=[["s"],["w","s"],["n"],["e"],["n","e"],["w","s","e"],["n","w"],["s","e"],["n","s","w"]][level];
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      const dx=(x-shapes.cx)/shapes.rx, dy=(y-shapes.cy)/shapes.ry, e=dx*dx+dy*dy;
-      if(e<=1)m[y*BC_C+x]=e>0.86?0:6;
+// MAPGEN_START
+  const LAND_SKEL=["beach","bay","peninsula","harbor","docks","cove","headland","coastVillage"];
+  const NAVAL_SKEL=["openSea","channel","roadstead","twinPiers"];
+  const VILLAGE_SKEL={harbor:1,docks:1,coastVillage:1,cove:1,openSea:1,roadstead:1,twinPiers:1};
+  const SKEL_PAD={
+    beach:{x:12,y:26,gate:"n"},
+    bay:{x:12,y:24,gate:"n"},
+    peninsula:{x:12,y:33,gate:"n"},
+    harbor:{x:12,y:27,gate:"n"},
+    docks:{x:12,y:26,gate:"n"},
+    cove:{x:2,y:16,gate:"e"},
+    headland:{x:1,y:22,gate:"e"},
+    coastVillage:{x:18,y:26,gate:"n"},
+    openSea:{x:2,y:35,gate:"n"},
+    channel:{x:0,y:17,gate:"e"},
+    roadstead:{x:8,y:32,gate:"n"},
+    twinPiers:{x:13,y:31,gate:"n"}
+  };
+  function mapMulberry(seed){
+    let s=seed>>>0;
+    return function(){
+      s=(Math.imul(1664525,s)+1013904223)>>>0;
+      return s/4294967296;
+    };
+  }
+  function shuffleIds(rng,arr){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=(rng()*(i+1))|0;
+      const t=a[i];a[i]=a[j];a[j]=t;
     }
-    function bridge(edge){
-      if(edge==="s"||edge==="n"){
-        for(let x=0;x<BC_C;x++){
-          let land=-1;
-          for(let y=0;y<BC_R;y++)if(m[y*BC_C+x]!==3){land=y;break;}
-          if(land<0)continue;
-          if(edge==="n"){for(let y=0;y<=land;y++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;}
-          else{
-            let last=land;
-            for(let y=0;y<BC_R;y++)if(m[y*BC_C+x]!==3)last=y;
-            for(let y=last;y<BC_R;y++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
-          }
-        }
-      }else{
-        for(let y=0;y<BC_R;y++){
-          let land=-1;
-          for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3){land=x;break;}
-          if(land<0)continue;
-          if(edge==="w"){for(let x=0;x<=land;x++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;}
-          else{
-            let last=land;
-            for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3)last=x;
-            for(let x=last;x<BC_C;x++)if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
-          }
-        }
+    return a;
+  }
+  function ensureMapPlan(){
+    if(S.bcMapPlan&&S.bcMapPlan.length===9)return S.bcMapPlan;
+    if(!S.bcMapSeed)S.bcMapSeed=(Math.random()*0x7fffffff)|1;
+    const rng=mapMulberry(S.bcMapSeed);
+    const land=shuffleIds(rng,LAND_SKEL);
+    const naval=shuffleIds(rng,NAVAL_SKEL);
+    const mids=shuffleIds(rng,[0,1,3,4,6,7]);
+    const navalSet={};
+    mids.slice(0,3).forEach((n)=>{navalSet[n]=1;});
+    let li=0,ni=0;
+    const plan=[];
+    for(let level=0;level<9;level++){
+      const finale=(level%3)===2;
+      const isNaval=!finale&&!!navalSet[level];
+      plan.push({id:isNaval?naval[ni++]:land[li++],naval:isNaval,fx:rng()<0.5,fy:rng()<0.5});
+    }
+    S.bcMapPlan=plan;
+    return plan;
+  }
+  function mfill(m,x0,y0,x1,y1,t){
+    const xa=Math.max(0,Math.min(x0,x1)|0), xb=Math.min(BC_C-1,Math.max(x0,x1)|0);
+    const ya=Math.max(0,Math.min(y0,y1)|0), yb=Math.min(BC_R-1,Math.max(y0,y1)|0);
+    for(let y=ya;y<=yb;y++)for(let x=xa;x<=xb;x++)m[y*BC_C+x]=t;
+  }
+  function paintSkel(m,id){
+    if(id==="beach")mfill(m,0,12,29,39,6);
+    else if(id==="bay"){mfill(m,0,8,29,39,6);mfill(m,9,8,20,18,3);}
+    else if(id==="peninsula"){
+      for(let y=22;y<=39;y++){
+        const k=(y-22)/17, half=Math.round(3+k*6), cx=15;
+        mfill(m,cx-half,y,cx+half,y,6);
       }
-    }
-    edges.forEach(bridge);
-    let sx=0,sy=0,sn=0;
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]!==3){sx+=x;sy+=y;sn++;}
-    const ccx=sn?sx/sn:15, ccy=sn?sy/sn:20;
-    let pad=null,best=-1;
-    for(let y=2;y<BC_R-7;y++)for(let x=2;x<BC_C-8;x++){
-      let ok=true;
-      for(let dy=0;dy<5&&ok;dy++)for(let dx=0;dx<6;dx++)if(m[(y+dy)*BC_C+x+dx]===3)ok=false;
-      if(!ok)continue;
-      const score=1000-Math.abs(x+3-ccx)*4-Math.abs(y+3-ccy);
-      if(score>best){best=score;pad={x:x,y:y};}
-    }
-    if(!pad){
-      const px=Math.max(2,Math.min(BC_C-8,Math.round(ccx)-3));
-      const py=Math.max(2,Math.min(BC_R-7,Math.round(ccy)-2));
-      for(let dy=-1;dy<6;dy++)for(let dx=-1;dx<7;dx++){
-        const xx=px+dx,yy=py+dy;
-        if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3)m[yy*BC_C+xx]=6;
-      }
-      pad={x:px,y:py};
-    }
-    const spots=[];
-    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      if(m[y*BC_C+x]===3)continue;
-      let wet=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(m[(y+dy)*BC_C+(x+dx)]===3)wet=true;
-      if(!wet)continue;
-      const px=x*16+8,py=y*16+8;
-      const hx=(pad.x+3)*16, hy=(pad.y+2)*16;
-      const dist=Math.hypot(px-hx,py-hy);
-      if(dist<150)continue;
-      spots.push({x:px,y:py,d:dist,tx:x,ty:y});
-    }
-    spots.sort((a,b)=>b.d-a.d);
-    const spawns=[];
-    for(const s of spots){
-      if(spawns.length>=3)break;
-      if(spawns.some((p)=>Math.hypot(p.x-s.x,p.y-s.y)<70))continue;
-      spawns.push(s);
-    }
-    while(spawns.length<3){
-      const ang=spawns.length*2.1;
-      spawns.push({x:Math.max(24,Math.min(S.W-24,ccx*16+Math.cos(ang)*80)),y:Math.max(24,Math.min(S.H-24,ccy*16+Math.sin(ang)*80)),tx:8,ty:8});
-    }
-    const road={};
-    function carve(x0,y0,x1,y1){
-      let x=x0|0,y=y0|0,guard=0;
-      const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;
-      let err=dx-dy;
-      while(guard++<900){
-        for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
-          const xx=x+ox,yy=y+oy;
-          if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1)continue;
-          const ti=yy*BC_C+xx;
-          const tv=m[ti];
-          if(tv===3||tv===0||tv===6){m[ti]=7;road[ti]=1;}
-        }
-        if(x===x1&&y===y1)break;
-        const e2=2*err;
-        if(e2>-dy){err-=dy;x+=sx;}
-        if(e2<dx){err+=dx;y+=sy;}
-      }
-    }
-    const bx=pad.x+2, by=pad.y+2;
-    spawns.forEach((s)=>carve(s.tx||Math.floor(s.x/16), s.ty||Math.floor(s.y/16), bx, by));
-    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)m[(pad.y+dy)*BC_C+pad.x+dx]=6;
-    for(let x=pad.x;x<pad.x+6;x++){m[pad.y*BC_C+x]=1;m[(pad.y+4)*BC_C+x]=1;}
-    for(let y=pad.y;y<pad.y+5;y++){m[y*BC_C+pad.x]=1;m[y*BC_C+pad.x+5]=1;}
-    m[(pad.y+4)*BC_C+pad.x+2]=6;m[(pad.y+4)*BC_C+pad.x+3]=6;
-    m[(pad.y+1)*BC_C+pad.x+2]=5;m[(pad.y+1)*BC_C+pad.x+3]=5;
-    m[(pad.y+2)*BC_C+pad.x+2]=5;m[(pad.y+2)*BC_C+pad.x+3]=5;
-    if(fort){
-      for(let x=pad.x-1;x<=pad.x+6;x++)if(x>=0&&x<BC_C&&pad.y>0)m[(pad.y-1)*BC_C+x]=1;
-      if(pad.y>0){m[(pad.y-1)*BC_C+pad.x+2]=6;m[(pad.y-1)*BC_C+pad.x+3]=6;}
-    }
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      if(m[y*BC_C+x]!==6)continue;
-      let wet=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        const xx=x+dx,yy=y+dy;
-        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)wet=true;
-      }
-      if(wet&&!road[y*BC_C+x]&&!(x>=pad.x&&x<pad.x+6&&y>=pad.y&&y<pad.y+5))m[y*BC_C+x]=0;
-    }
-    function nearBase(x,y){
-      return x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
-    }
-    function landTile(x,y){
-      if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;
-      return m[y*BC_C+x];
-    }
-    function stampTree(x,y){
-      if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)return;
-      const i=y*BC_C+x;
-      if(m[i]!==6||road[i]||nearBase(x,y))return;
-      m[i]=4;
-    }
-    function grove(cx,cy){
-      [[0,0],[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1],[2,0],[-2,0],[0,2]].forEach(([dx,dy])=>stampTree(cx+dx,cy+dy));
-    }
-    const village=(level%3)===0;
-    if(village){
-      let placed=0;
-      function tryHouses(loose){
-        for(let y=2;y<BC_R-4 && placed<4;y++){
-          for(let x=2;x<BC_C-5 && placed<4;x++){
-            if(!loose && ((x*5+y*3+level*11)%19)!==0)continue;
-            let fit=true;
-            for(let dy=0;dy<2&&fit;dy++)for(let dx=0;dx<3;dx++){
-              const xx=x+dx,yy=y+dy,i=yy*BC_C+xx;
-              if(m[i]!==6||road[i]||nearBase(xx,yy))fit=false;
-            }
-            if(!fit)continue;
-            const south=landTile(x+1,y+2)===7, north=landTile(x+1,y-1)===7;
-            const west=landTile(x-1,y)===7||landTile(x-1,y+1)===7;
-            const east=landTile(x+3,y)===7||landTile(x+3,y+1)===7;
-            if(!south&&!north&&!west&&!east)continue;
-            for(let dy=0;dy<2;dy++)for(let dx=0;dx<3;dx++){
-              const door=(south&&dy===1&&dx===1)||(!south&&north&&dy===0&&dx===1)||(!south&&!north&&west&&dx===0&&dy===1)||(!south&&!north&&!west&&east&&dx===2&&dy===1);
-              if(door)continue;
-              m[(y+dy)*BC_C+(x+dx)]=1;
-            }
-            placed++;
-            x+=4;
-          }
-        }
-      }
-      tryHouses(false);
-      if(placed<2)tryHouses(true);
+    }else if(id==="harbor"){
+      mfill(m,0,14,29,39,6);
+      mfill(m,10,14,19,24,3);
+      mfill(m,6,6,6,14,7);
+      mfill(m,22,6,22,14,7);
+      mfill(m,10,16,10,23,7);
+      mfill(m,19,16,19,23,7);
+    }else if(id==="docks"){
+      mfill(m,0,12,29,39,6);
+      mfill(m,6,3,6,12,7);
+      mfill(m,14,3,14,12,7);
+      mfill(m,22,3,22,12,7);
+    }else if(id==="cove"){
+      mfill(m,0,0,18,39,6);
+      mfill(m,12,12,29,27,3);
+    }else if(id==="headland"){
+      mfill(m,0,12,12,28,6);
+      mfill(m,12,16,18,24,6);
+      mfill(m,3,19,12,20,2);
+    }else if(id==="coastVillage"){
+      mfill(m,0,11,29,39,6);
+      mfill(m,8,11,16,16,3);
+    }else if(id==="openSea"){
+      mfill(m,0,28,14,39,6);
+      mfill(m,3,28,10,34,3);
+    }else if(id==="channel"){
+      mfill(m,0,6,9,33,6);
+      mfill(m,6,15,9,24,3);
+    }else if(id==="roadstead"){
+      mfill(m,0,16,7,39,6);
+      mfill(m,0,31,16,39,6);
+      mfill(m,12,24,12,31,7);
     }else{
-      [[Math.round(ccx)-7, Math.round(ccy)-6],[Math.round(ccx)+6, Math.round(ccy)+2],[Math.round(ccx)-1, Math.round(ccy)+8]].forEach(([x,y],i)=>{
-        if(i===2&&(level%2))return;
-        grove(x+((level+i)%3)-1, y+((level*2+i)%3)-1);
-      });
-      const fy=Math.max(3, Math.min(BC_R-8, Math.round(ccy)+(level%2?7:-8)));
-      const fx=Math.max(2, Math.min(BC_C-8, Math.round(ccx)+(level%2?-9:4)));
-      let fenceOk=true;
-      for(let y=fy;y<fy+4&&fenceOk;y++)for(let x=fx;x<fx+5;x++){
-        if(x<1||y<1||x>=BC_C-1||y>=BC_R-1){fenceOk=false;break;}
-        const i=y*BC_C+x;
-        if(m[i]!==6||road[i]||nearBase(x,y))fenceOk=false;
-      }
-      if(fenceOk){
-        for(let y=fy;y<fy+4;y++)for(let x=fx;x<fx+5;x++){
-          const edge=x===fx||x===fx+4||y===fy||y===fy+3;
-          const gate=y===fy+3&&x===fx+2;
-          if(edge&&!gate)m[y*BC_C+x]=1;
-        }
-      }
-      const ridgeY=Math.max(2, Math.min(BC_R-3, Math.round(ccy)+(level%2?-4:5)));
-      let best=0,bestX=2,bestY=ridgeY;
-      for(let y=2;y<BC_R-2;y++){
-        if(Math.abs(y-ridgeY)>4)continue;
-        let run=0,sx=-1;
-        for(let x=2;x<BC_C-2;x++){
-          const i=y*BC_C+x;
-          const ok=m[i]===6&&!road[i]&&!nearBase(x,y);
-          if(ok){ if(sx<0)sx=x; run++; if(run>best){best=run;bestX=sx;bestY=y;} }
-          else {sx=-1;run=0;}
-        }
-      }
-      for(let k=0;k<Math.min(6,best);k++)m[bestY*BC_C+(bestX+k)]=2;
+      mfill(m,8,30,22,39,6);
+      mfill(m,10,22,10,30,7);
+      mfill(m,19,22,19,30,7);
     }
-    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      if(m[y*BC_C+x]!==6||road[y*BC_C+x]||nearBase(x,y))continue;
-      let beach=false, path=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        const tv=landTile(x+dx,y+dy);
-        if(tv===0)beach=true;
-        if(tv===7)path=true;
+  }
+  function padFits(m,x,y){
+    if(x<0||y<0||x+5>=BC_C||y+4>=BC_R)return false;
+    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)if(m[(y+dy)*BC_C+(x+dx)]===3)return false;
+    return true;
+  }
+  function fitPad(m,x,y){
+    if(padFits(m,x,y))return {x,y};
+    for(let r=1;r<22;r++){
+      for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+        if(Math.abs(dx)!==r&&Math.abs(dy)!==r)continue;
+        if(padFits(m,x+dx,y+dy))return {x:x+dx,y:y+dy};
       }
-      if(!beach||path)continue;
-      if(((x+y+level)%3)!==0)continue;
-      m[y*BC_C+x]=4;
+    }
+    return {x:Math.max(0,Math.min(BC_C-6,x)),y:Math.max(0,Math.min(BC_R-5,y))};
+  }
+  function stampCitadel(m,pad,gate){
+    const x=pad.x,y=pad.y;
+    const set=(xx,yy,t)=>{if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R)m[yy*BC_C+xx]=t;};
+    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)set(x+dx,y+dy,6);
+    for(let dx=0;dx<6;dx++){set(x+dx,y,1);set(x+dx,y+4,1);}
+    for(let dy=0;dy<5;dy++){set(x,y+dy,1);set(x+5,y+dy,1);}
+    if(gate==="n"){set(x+2,y,6);set(x+3,y,6);}
+    else if(gate==="s"){set(x+2,y+4,6);set(x+3,y+4,6);}
+    else if(gate==="w"){set(x,y+1,6);set(x,y+2,6);}
+    else {set(x+5,y+1,6);set(x+5,y+2,6);}
+    set(x+2,y+1,5);set(x+3,y+1,5);set(x+2,y+2,5);set(x+3,y+2,5);
+  }
+  function addFort(m,pad,gate){
+    const x0=pad.x-1,y0=pad.y-1,x1=pad.x+6,y1=pad.y+5;
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+      if(x!==x0&&x!==x1&&y!==y0&&y!==y1)continue;
+      if(x<0||y<0||x>=BC_C||y>=BC_R)continue;
+      const t=m[y*BC_C+x];
+      if(t===3||t===5||t===2)continue;
+      if(gate==="n"&&y===y0&&(x===pad.x+2||x===pad.x+3))continue;
+      if(gate==="s"&&y===y1&&(x===pad.x+2||x===pad.x+3))continue;
+      if(gate==="w"&&x===x0&&(y===pad.y+1||y===pad.y+2))continue;
+      if(gate==="e"&&x===x1&&(y===pad.y+1||y===pad.y+2))continue;
+      if(t===6||t===0||t===7)m[y*BC_C+x]=1;
+    }
+  }
+  function sandFringe(m,pad,depth){
+    const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
+    for(let pass=0;pass<depth;pass++){
+      const mark=[];
+      for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+        if(m[y*BC_C+x]!==6||prot(x,y))continue;
+        let wet=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+          const tv=m[yy*BC_C+xx];
+          if(tv===3||(pass&&tv===0))wet=true;
+        }
+        if(wet)mark.push(y*BC_C+x);
+      }
+      for(const i of mark)m[i]=0;
+    }
+  }
+  function layRoad(m,pad,gate,road){
+    const set=(x,y)=>{
+      if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)return;
+      const i=y*BC_C+x,t=m[i];
+      if(t===0||t===6){m[i]=7;road[i]=1;}
+    };
+    if(gate==="n"||gate==="s"){
+      const dir=gate==="n"?-1:1;
+      let y=gate==="n"?pad.y-1:pad.y+5;
+      for(let i=0;i<16;i++){
+        const t=mtile(m,pad.x+2,y);
+        if(t===3||t===0){y-=dir;break;}
+        y+=dir;
+        if(y<1||y>=BC_R-1)break;
+      }
+      for(let x=1;x<BC_C-1;x++)set(x,y);
+      const y0=gate==="n"?pad.y-1:pad.y+5;
+      for(let yy=Math.min(y0,y);yy<=Math.max(y0,y);yy++)set(pad.x+2,yy);
+    }else{
+      const dir=gate==="w"?-1:1;
+      let x=gate==="w"?pad.x-1:pad.x+6;
+      for(let i=0;i<16;i++){
+        const t=mtile(m,x,pad.y+2);
+        if(t===3||t===0){x-=dir;break;}
+        x+=dir;
+        if(x<1||x>=BC_C-1)break;
+      }
+      for(let y=1;y<BC_R-1;y++)set(x,y);
+      const x0=gate==="w"?pad.x-1:pad.x+6;
+      for(let xx=Math.min(x0,x);xx<=Math.max(x0,x);xx++)set(xx,pad.y+2);
+    }
+  }
+  function placeHouses(m,pad,road){
+    const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
+    const g=(x,y)=>x<0||y<0||x>=BC_C||y>=BC_R?3:m[y*BC_C+x];
+    let placed=0;
+    function pass(loose){
+      for(let y=2;y<BC_R-4&&placed<4;y++){
+        for(let x=2;x<BC_C-5&&placed<4;x++){
+          if(!loose&&((x*5+y*3)%11)!==0)continue;
+          let fit=true;
+          for(let dy=0;dy<2&&fit;dy++)for(let dx=0;dx<3;dx++){
+            const i=(y+dy)*BC_C+(x+dx);
+            if(m[i]!==6||road[i]||near(x+dx,y+dy))fit=false;
+          }
+          if(!fit)continue;
+          let door="s";
+          if(g(x+1,y+2)===7)door="s";
+          else if(g(x+1,y-1)===7)door="n";
+          else if(g(x-1,y)===7||g(x-1,y+1)===7)door="w";
+          else if(g(x+3,y)===7||g(x+3,y+1)===7)door="e";
+          else if(g(x+1,y+2)===0)door="s";
+          else if(!loose)continue;
+          for(let dy=0;dy<2;dy++)for(let dx=0;dx<3;dx++){
+            const gap=(door==="s"&&dy===1&&dx===1)||(door==="n"&&dy===0&&dx===1)||(door==="w"&&dx===0&&dy===0)||(door==="e"&&dx===2&&dy===0);
+            if(!gap)m[(y+dy)*BC_C+(x+dx)]=1;
+          }
+          placed++;
+          x+=4;
+        }
+      }
+    }
+    pass(false);
+    if(placed<2)pass(true);
+  }
+  function canTree(m,x,y,pad,road){
+    if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)return false;
+    const i=y*BC_C+x;
+    if(m[i]!==6||road[i])return false;
+    if(x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6)return false;
+    return true;
+  }
+  function putTree(m,x,y,pad,road){if(canTree(m,x,y,pad,road))m[y*BC_C+x]=4;}
+  function groveAt(m,cx,cy,pad,road){
+    [[0,0],[1,0],[0,1],[1,1],[-1,0],[0,-1],[2,0],[-1,1]].forEach(([dx,dy])=>putTree(m,cx+dx,cy+dy,pad,road));
+  }
+  function wildGroves(m,pad,road){
+    const spots=[];
+    for(let y=3;y<BC_R-3;y+=4)for(let x=3;x<BC_C-3;x+=5)if(canTree(m,x,y,pad,road))spots.push({x,y});
+    spots.filter((_,i)=>i%3===0).slice(0,3).forEach((s)=>groveAt(m,s.x,s.y,pad,road));
+  }
+  function beachTrees(m,pad,road){
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      if(!canTree(m,x,y,pad,road))continue;
+      let sand=false,path=false;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        if(landTile(x+dx,y+dy)!==0)continue;
-        const ix=x-dx,iy=y-dy;
-        const ii=iy*BC_C+ix;
-        if(ix<1||iy<1||ix>=BC_C-1||iy>=BC_R-1)break;
-        if(m[ii]===6&&!road[ii]&&!nearBase(ix,iy))m[ii]=4;
+        const t=m[(y+dy)*BC_C+(x+dx)];
+        if(t===0)sand=true;
+        if(t===7)path=true;
+      }
+      if(!sand||path||((x+y)%4)!==0)continue;
+      putTree(m,x,y,pad,road);
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        if(m[(y+dy)*BC_C+(x+dx)]!==0)continue;
+        putTree(m,x-dx,y-dy,pad,road);
         break;
       }
     }
-    const home={x:(pad.x+3)*16, y:(pad.y+4)*16+6};
-    return {map:m, home, spawns:spawns.map((s)=>({x:s.x,y:s.y}))};
   }
+  function countEdges(m){
+    let n=false,s=false,w=false,e=false;
+    for(let x=0;x<BC_C;x++){
+      if(m[x]!==3)n=true;
+      if(m[(BC_R-1)*BC_C+x]!==3)s=true;
+    }
+    for(let y=0;y<BC_R;y++){
+      if(m[y*BC_C]!==3)w=true;
+      if(m[y*BC_C+BC_C-1]!==3)e=true;
+    }
+    const land=(n?1:0)+(s?1:0)+(w?1:0)+(e?1:0);
+    return {n,s,w,e,land,water:4-land};
+  }
+  function scrubEdge(m,edge){
+    const kill=(i)=>{if(m[i]!==5)m[i]=3;};
+    if(edge==="n"){for(let x=0;x<BC_C;x++)kill(x);}
+    else if(edge==="s"){for(let x=0;x<BC_C;x++)kill((BC_R-1)*BC_C+x);}
+    else if(edge==="w"){for(let y=0;y<BC_R;y++)kill(y*BC_C);}
+    else {for(let y=0;y<BC_R;y++)kill(y*BC_C+BC_C-1);}
+  }
+  function repairEdges(m,naval){
+    let info=countEdges(m);
+    if(info.land>=4){scrubEdge(m,"n");info=countEdges(m);}
+    if(info.land>=4){scrubEdge(m,"e");info=countEdges(m);}
+    if(info.land===0){
+      mfill(m,11,BC_R-6,18,BC_R-1,6);
+      info=countEdges(m);
+    }
+    if(naval&&info.water<2){
+      if(info.n)scrubEdge(m,"n");
+      info=countEdges(m);
+      if(info.water<2&&info.e)scrubEdge(m,"e");
+    }
+  }
+  function mtile(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
+  function homeFrom(m,pad,gate,naval){
+    const step=gate==="n"?[0,-1]:gate==="s"?[0,1]:gate==="w"?[-1,0]:[1,0];
+    let x=(gate==="n"||gate==="s")?pad.x+2:(gate==="w"?pad.x-1:pad.x+6);
+    let y=(gate==="w"||gate==="e")?pad.y+2:(gate==="n"?pad.y-1:pad.y+5);
+    for(let i=0;i<14;i++){
+      const t=mtile(m,x,y);
+      const ok=naval?t===3:(t===0||t===6||t===7);
+      if(ok&&x>=0&&y>=0&&x<BC_C&&y<BC_R)return {x:x*BC_TS+8,y:y*BC_TS+8};
+      x+=step[0];y+=step[1];
+    }
+    let best=null,bd=1e9;
+    const gx=(pad.x+3)*BC_TS, gy=(pad.y+2)*BC_TS;
+    for(let y2=0;y2<BC_R;y2++)for(let x2=0;x2<BC_C;x2++){
+      const t=m[y2*BC_C+x2];
+      const ok=naval?t===3:(t===0||t===6||t===7);
+      if(!ok)continue;
+      const px=x2*BC_TS+8,py=y2*BC_TS+8,d=Math.hypot(px-gx,py-gy);
+      if(d<bd){bd=d;best={x:px,y:py};}
+    }
+    return best||{x:gx,y:gy};
+  }
+  function fortCenter(pad){return {x:(pad.x+2)*BC_TS+16,y:(pad.y+1)*BC_TS+16};}
+  function collectSpawns(m,home,naval){
+    const pts=[];
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const t=m[y*BC_C+x];
+      const px=x*BC_TS+8,py=y*BC_TS+8;
+      if(Math.hypot(px-home.x,py-home.y)<110)continue;
+      if(naval){
+        if(t!==3)continue;
+        let open=0;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)open++;
+        }
+        if(open<3)continue;
+        const edge=x<=3||y<=3||x>=BC_C-4||y>=BC_R-4;
+        pts.push({x:px,y:py,d:Math.hypot(px-home.x,py-home.y)+(edge?50:0)});
+      }else if(t===0||t===6||t===7){
+        let wet=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx,yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R||m[yy*BC_C+xx]===3)wet=true;
+        }
+        if(!wet)continue;
+        pts.push({x:px,y:py,d:Math.hypot(px-home.x,py-home.y)});
+      }
+    }
+    pts.sort((a,b)=>b.d-a.d);
+    const out=[];
+    for(const p of pts){
+      if(out.length>=4)break;
+      if(out.some((q)=>Math.hypot(q.x-p.x,q.y-p.y)<72))continue;
+      out.push({x:p.x,y:p.y});
+    }
+    if(out.length<3){
+      for(let y=1;y<BC_R-1&&out.length<3;y+=2)for(let x=1;x<BC_C-1&&out.length<3;x+=2){
+        const t=m[y*BC_C+x];
+        const ok=naval?t===3:(t===0||t===6||t===7);
+        if(!ok)continue;
+        const px=x*BC_TS+8,py=y*BC_TS+8;
+        if(Math.hypot(px-home.x,py-home.y)<70)continue;
+        if(out.some((q)=>Math.hypot(q.x-px,q.y-py)<48))continue;
+        out.push({x:px,y:py});
+      }
+    }
+    while(out.length<3)out.push({x:Math.max(24,Math.min(BC_C*BC_TS-24,home.x+90)),y:Math.max(24,Math.min(BC_R*BC_TS-24,home.y))});
+    return out;
+  }
+  function flipAll(built,fx,fy){
+    if(!fx&&!fy)return built;
+    const m=built.map,o=new Uint8Array(m.length);
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const nx=fx?BC_C-1-x:x, ny=fy?BC_R-1-y:y;
+      o[ny*BC_C+nx]=m[y*BC_C+x];
+    }
+    const pt=(p)=>({x:fx?BC_C*BC_TS-p.x:p.x,y:fy?BC_R*BC_TS-p.y:p.y});
+    return {map:o,home:pt(built.home),fort:pt(built.fort),spawns:built.spawns.map(pt),naval:built.naval,skel:built.skel};
+  }
+  function faceIn(p){
+    const dx=BC_C*BC_TS/2-p.x, dy=BC_R*BC_TS/2-p.y;
+    if(Math.abs(dx)>Math.abs(dy))return dx>0?1:3;
+    return dy>0?2:0;
+  }
+  function makeIslandMap(level, fort){
+    level=Math.max(0,Math.min(8,level|0));
+    const plan=ensureMapPlan()[level];
+    const m=new Uint8Array(BC_C*BC_R);
+    m.fill(3);
+    paintSkel(m,plan.id);
+    const pref=SKEL_PAD[plan.id]||SKEL_PAD.beach;
+    const pad=fitPad(m,pref.x,pref.y);
+    stampCitadel(m,pad,pref.gate);
+    sandFringe(m,pad,plan.naval?1:2);
+    if(fort)addFort(m,pad,pref.gate);
+    const road={};
+    if(!plan.naval)layRoad(m,pad,pref.gate,road);
+    if(VILLAGE_SKEL[plan.id])placeHouses(m,pad,road);
+    else wildGroves(m,pad,road);
+    beachTrees(m,pad,road);
+    repairEdges(m,!!plan.naval);
+    const home=homeFrom(m,pad,pref.gate,!!plan.naval);
+    const built=flipAll({map:m,home,fort:fortCenter(pad),spawns:collectSpawns(m,home,!!plan.naval),naval:!!plan.naval,skel:plan.id},!!plan.fx,!!plan.fy);
+    built.dir=faceIn(built.home);
+    return built;
+  }
+// MAPGEN_END
   function bcTileHp(t){return t===1?2:t===2?1:t===5?99:0;}
   function tankBlocked(d,x,y,sz,ignore){
     const hw=sz*.40;
@@ -3972,14 +4186,42 @@
     const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
     if(!tankBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
   }
+  function shipBlocked(d,x,y,sz,ignore){
+    const hw=sz*.42;
+    const x0=Math.floor((x-hw)/BC_TS),x1=Math.floor((x+hw)/BC_TS);
+    const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
+    for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
+      if(bcAt(d.map,tx,ty)!==3)return true;
+    }
+    const all=[d.player].concat(d.enemies);
+    for(const o of all){
+      if(!o||o===ignore||o.hp<=0||o.fly)continue;
+      if(Math.abs(o.x-x)<sz*.9&&Math.abs(o.y-y)<sz*.9)return true;
+    }
+    return false;
+  }
+  function moveShip(d,t,dir,spd,dt){
+    if(dir<0)return;
+    if(t.dir!==dir){
+      const ox=t.x,oy=t.y,g=8;
+      if(dir===0||dir===2)t.x=Math.round(t.x/g)*g;else t.y=Math.round(t.y/g)*g;
+      if(shipBlocked(d,t.x,t.y,t.sz,t)){t.x=ox;t.y=oy;}
+      t.dir=dir;
+    }
+    const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
+    const nx=Math.max(t.sz,Math.min(S.W-t.sz,t.x+vx*dt));
+    const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
+    if(!shipBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
+  }
   function fireTank(d,t){
     if(t.fire>0)return;
     const mine=t===d.player?d.shots.filter(s=>s.mine&&!s.hit).length:d.shots.filter(s=>s.owner===t&&!s.hit).length;
-    const cap=t===d.player?(d.up.cannon3?4:d.up.cannon2?2:1):1;
+    const cap=1;
     if(mine>=cap)return;
     t.fire=t===d.player?(d.shotT>0?.1:.22):.55;
-    const v=(t===d.player&&(d.up.cannon1||d.shotT>0)?280:t.bspd||180);
-    const dmg=(t===d.player&&(d.up.cannon3||d.shotT>0))?2:(t.dmg||1);
+    const shotMul=t===d.player?(1+((d.up&&d.up.shot)||0)/100)*(d.shotT>0?1.5:1):1;
+    const v=t===d.player?180*shotMul:(t.bspd||180);
+    const dmg=t===d.player?((d.up&&d.up.power)||1):(t.dmg||1);
     const dx=t.dir===1?1:t.dir===3?-1:0,dy=t.dir===2?1:t.dir===0?-1:0;
     d.shots.push({x:t.x+dx*14,y:t.y+dy*14,dx,dy,v,damage:dmg,mine:t===d.player,owner:t,hit:false});
     if(t===d.player)warSfx("warShot");
@@ -4010,6 +4252,18 @@
     }
     return {x:x,y:y};
   }
+  function placeShip(d,x,y,sz,ignore){
+    for(let rad=0;rad<=160;rad+=8){
+      const xs=rad? [0,rad,-rad] : [0];
+      const ys=rad? [0,rad,-rad] : [0];
+      for(const dx of xs)for(const dy of ys){
+        const nx=x+dx,ny=y+dy;
+        if(nx<20||ny<20||nx>S.W-20||ny>S.H-20)continue;
+        if(!shipBlocked(d,nx,ny,sz,ignore||null))return {x:nx,y:ny};
+      }
+    }
+    return {x:x,y:y};
+  }
   function startDefense(){
     const level=Math.max(0,Math.min(8,S.bcBattlesWon|0));
     const bloc=(level/3)|0;
@@ -4021,21 +4275,26 @@
     S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
     const base=7+((level/2)|0);
     const quota=base;
-    const heliN=(level%3===2)?2:0;
+    const naval=!!built.naval;
+    const heliN=(!naval && (level%3===2))?2:0;
     const delta=(S.bcArmy||0)-(S.bcWorld||20);
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
-    const hearts=3;
+    const hearts=u.medic?4:3;
     S.bcDefense={
-      map,hp,player:{x:built.home.x,y:built.home.y,dir:0,hp:hearts,hearts,maxHearts:hearts,sz:13,fire:0},
+      map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval},
       shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:base+(base+2)+(base+3)+heliN,
       integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,aaArmed:false,aaTap:0,reticle:null,
-      heliLeft:heliN,
+      heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
       home:built.home,
       spawns:built.spawns,
       pickIn:5+Math.random()*10
     };
+    if(naval){
+      const at=placeShip(S.bcDefense,built.home.x,built.home.y,14,S.bcDefense.player);
+      S.bcDefense.player.x=at.x;S.bcDefense.player.y=at.y;
+    }
     S.optPanel=null;S.arcHold=false;
     if(field){
       field.classList.remove("is-play","bull","bear","swan-bear");
@@ -4047,8 +4306,11 @@
   function scatterPickups(d,n){
     const kinds=["heal","shot","god"];
     const cells=[];
+    const naval=!!d.naval;
     for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      if(bcAt(d.map,x,y)!==6&&bcAt(d.map,x,y)!==0&&bcAt(d.map,x,y)!==7)continue;
+      const tile=bcAt(d.map,x,y);
+      if(naval){if(tile!==3)continue;}
+      else if(tile!==6&&tile!==0&&tile!==7)continue;
       const px=x*16+8,py=y*16+8;
       if(Math.hypot(px-d.home.x,py-d.home.y)<70)continue;
       cells.push({x:px,y:py});
@@ -4056,7 +4318,7 @@
     for(let i=0;i<n&&cells.length;i++){
       const k=(Math.random()*cells.length)|0;
       const c=cells.splice(k,1)[0];
-      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1});
+      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:10});
     }
   }
   function spawnHeli(d){
@@ -4086,8 +4348,9 @@
     }
     spd*=d.profile.enemy||1;
     const sp=d.spawns[d.spawnI%d.spawns.length];d.spawnI++;
-    const at=placeTank(d,sp.x,sp.y,13);
-    d.enemies.push({x:at.x,y:at.y,dir:2,hp,maxHp:hp,sz:13,spd,bspd,dmg,leak,type,fire:.25,think:.05});
+    const sz=d.naval?14:13;
+    const at=d.naval?placeShip(d,sp.x,sp.y,sz,null):placeTank(d,sp.x,sp.y,sz);
+    d.enemies.push({x:at.x,y:at.y,dir:2,hp,maxHp:hp,sz,spd,bspd,dmg,leak,type,fire:.25,think:.05,ship:!!d.naval});
   }
   function finishDefense(win){
     const d=S.bcDefense;if(!d||d.done)return;
@@ -4124,8 +4387,9 @@
   function hitBase(d,dmg){
     if(d.wall>0){d.wall=Math.max(0,d.wall-dmg*2);return;}
     if(d.inv>0)return;
-    d.integrity=Math.max(0,d.integrity-dmg);
-    if(d.up.armor1)d.inv=d.up.armor2?1.25:.65;
+    const resist=Math.max(0,Math.min(50,(d.up&&d.up.shield)||0));
+    d.integrity=Math.max(0,d.integrity-dmg*(1-resist/100));
+    d.inv=0.18;
     if(d.integrity<=0)finishDefense(false);
   }
   function smashTile(d,tx,ty,dmg){
@@ -4155,7 +4419,7 @@
       const dx=S.defStick.x,dy=S.defStick.y;
       if(dx*dx+dy*dy>0.12)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0);
     }
-    const pspd=d.up.mob?86:72;
+    const pspd=72*(1+((d.up&&d.up.speed)||0)/100);
     if(d.aaArmed&&d.reticle){
       const rspd=210;
       let rdx=0,rdy=0;
@@ -4163,7 +4427,7 @@
       d.reticle.x=Math.max(28,Math.min(S.W-28,d.reticle.x+rdx*rspd*dt));
       d.reticle.y=Math.max(28,Math.min(S.H-28,d.reticle.y+rdy*rspd*dt));
     }else{
-      moveTank(d,p,dir,pspd,dt);
+      if(d.naval)moveShip(d,p,dir,pspd,dt);else moveTank(d,p,dir,pspd,dt);
       if(h.f)fireTank(d,p);
     }
     const helis=d.enemies.some((e)=>e.type==="HELI"&&e.hp>0);
@@ -4202,6 +4466,16 @@
         if(e.think<=0 && Math.hypot(e.x-p.x,e.y-p.y)<220)e.want=true;
         if(Math.hypot(e.x-p.x,e.y-p.y)<190)e.want=true;
         if(Math.hypot(e.x-d.home.x,e.y-d.home.y)<28){hitBase(d,e.leak||12);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");}
+      }else if(e.ship){
+        moveShip(d,e,e.dir,e.spd,dt);
+        if(Math.abs(e.x-ox)<.25&&Math.abs(e.y-oy)<.25){
+          for(const nd of [0,1,2,3]){
+            const sx=nd===1?10:nd===3?-10:0,sy=nd===2?10:nd===0?-10:0;
+            if(!shipBlocked(d,e.x+sx,e.y+sy,e.sz,e)){e.dir=nd;break;}
+          }
+        }
+        const goal=d.fort||d.home;
+        if(Math.hypot(e.x-goal.x,e.y-goal.y)<36){hitBase(d,e.leak||8);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");}
       }else{
       moveTank(d,e,e.dir,e.spd,dt);
       if(Math.abs(e.x-ox)<.25&&Math.abs(e.y-oy)<.25){
@@ -4279,7 +4553,9 @@
     d.enemies=d.enemies.filter(e=>e.hp>0);
     if(d.picks){
       for(const pk of d.picks){
-        if(pk.got)continue;
+        if(pk.got||pk.dead)continue;
+        pk.ttl=(pk.ttl==null?10:pk.ttl)-dt;
+        if(pk.ttl<=0){pk.dead=true;continue;}
         if(Math.hypot(pk.x-p.x,pk.y-p.y)<18){
           pk.got=true;
           if(pk.kind==="heal"){
@@ -4292,7 +4568,7 @@
           warSfx("warPick");
         }
       }
-      d.picks=d.picks.filter((pk)=>!pk.got);
+      d.picks=d.picks.filter((pk)=>!pk.got&&!pk.dead);
     }
     if(!(d.picks&&d.picks.length)){
       d.pickIn=(d.pickIn==null?5+Math.random()*10:d.pickIn)-dt;
@@ -4338,6 +4614,20 @@
     d.shots.push({x:p.x,y:p.y-8,dx:Math.cos(ang),dy:Math.sin(ang),v:360,damage:3,mine:true,aa:true,hit:false});
     warSfx("warAa");
   }
+  function drawShip(ctx,t,col,mark){
+    ctx.save();ctx.translate(t.x,t.y);
+    const rot=[0,Math.PI/2,Math.PI,-Math.PI/2][t.dir]||0;ctx.rotate(rot);
+    ctx.fillStyle=col;ctx.strokeStyle=palRgba(PAL.ink,.55);ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(0,-13);ctx.lineTo(9,-2);ctx.lineTo(7,11);ctx.lineTo(-7,11);ctx.lineTo(-9,-2);ctx.closePath();
+    ctx.fill();ctx.stroke();
+    ctx.fillStyle="#f3efe6";ctx.fillRect(-1.5,-4,3,9);
+    ctx.fillStyle=palRgba(PAL.ink,.28);ctx.fillRect(-7,4,14,3);
+    ctx.rotate(-rot);
+    ctx.fillStyle=PAL.ink;ctx.font="700 9px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(mark,0,2);
+    ctx.restore();
+  }
   function drawTank(ctx,t,col,mark){
     ctx.save();ctx.translate(t.x,t.y);
     const rot=[0,Math.PI/2,Math.PI,-Math.PI/2][t.dir]||0;ctx.rotate(rot);
@@ -4376,19 +4666,33 @@
         }
         continue;
       }
-      if(k===7){ctx.fillStyle="#e2c56a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#c49a42";ctx.fillRect(px,py+6,BC_TS,3);ctx.fillStyle="#f0dc8c";ctx.fillRect(px+2,py+2,6,3);continue;}
+      if(k===7){
+        const pier=(bcAt(d.map,x-1,y)===3&&bcAt(d.map,x+1,y)===3)||(bcAt(d.map,x,y-1)===3&&bcAt(d.map,x,y+1)===3);
+        if(pier){
+          ctx.fillStyle="#8a5a2b";ctx.fillRect(px,py,BC_TS,BC_TS);
+          ctx.fillStyle="#c48a4a";
+          if(bcAt(d.map,x,y-1)===3||bcAt(d.map,x,y+1)===3){ctx.fillRect(px+2,py,3,BC_TS);ctx.fillRect(px+8,py,3,BC_TS);ctx.fillRect(px+12,py,2,BC_TS);}
+          else{ctx.fillRect(px,py+2,BC_TS,3);ctx.fillRect(px,py+8,BC_TS,3);ctx.fillRect(px,py+12,BC_TS,2);}
+        }else{
+          ctx.fillStyle="#e2c56a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#c49a42";ctx.fillRect(px,py+6,BC_TS,3);ctx.fillStyle="#f0dc8c";ctx.fillRect(px+2,py+2,6,3);
+        }
+        continue;
+      }
       if(k===1){ctx.fillStyle="#b07a3a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.strokeStyle="#6a4218";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);ctx.beginPath();ctx.moveTo(px,py+8);ctx.lineTo(px+16,py+8);ctx.stroke();continue;}
       if(k===2){ctx.fillStyle="#6d6a66";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#8a8680";ctx.fillRect(px+3,py+2,8,6);continue;}
       if(k===5){ctx.fillStyle="#c8960a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#1a1206";ctx.font="700 10px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("B",px+8,py+9);continue;}
     }
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
-    if(!blink)drawTank(ctx,d.player,d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC,"B");
+    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC;
+    if(!blink){if(d.naval)drawShip(ctx,d.player,pcol,"B");else drawTank(ctx,d.player,pcol,"B");}
     for(const e of d.enemies){
       if(e.type==="HELI"){drawHeli(ctx,e,t);continue;}
       const col=e.type==="FAST"?"#e0b84a":e.type==="HEAVY"?"#6a6a70":e.type==="ELITE"?"#b989d6":"#c45c4a";
-      drawTank(ctx,e,col,e.type==="FAST"?"▲":e.type==="HEAVY"?"■":e.type==="ELITE"?"◆":"●");
+      const mark=e.type==="FAST"?"▲":e.type==="HEAVY"?"■":e.type==="ELITE"?"◆":"●";
+      if(e.ship)drawShip(ctx,e,col,mark);else drawTank(ctx,e,col,mark);
     }
     for(const pk of d.picks||[]){
+      if(pk.ttl!=null&&pk.ttl<2.6&&Math.floor(t*8)%2===0)continue;
       ctx.beginPath();ctx.arc(pk.x,pk.y,7,0,Math.PI*2);
       ctx.fillStyle=pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":"#ffe14a";
       ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#120c02";ctx.stroke();
@@ -4417,6 +4721,7 @@
     const bname=bnames[d.bloc|0]||bnames[0];
     paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,52,PAL.fg);
     paintHaloText(ctx,bname,12,68,PAL.fg);
+    if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
     if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);}
     ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
@@ -6242,12 +6547,39 @@
     [ab,ab2].forEach((el)=>{if(!el)return;el.disabled=!canBuy;el.classList.toggle("hide",!S.bcArmyUnlocked||S.bcVictory);el.textContent=el.id==="bc-army-bar"?"+10 ARMY":lab;});
     const dec=$("bc-declare");if(dec){const ready=(S.bcNodes||0)>=100&&!S.bcIndependent&&!S.bcVictory;dec.classList.toggle("hide",!ready);}
     const ups=$("bc-ups");
+    const es=chanceLang();
     if(ups){
-      const a=S.bcArmy||0;
-      const bits=[["40 Mobility I",a>=40],["50 Armor I",a>=50],["60 Cannon I",a>=60],["70 Cannon II",a>=70],["80 Armor II",a>=80],["90 Cannon III",a>=90],["100 Citadel wall",a>=100]];
-      ups.textContent=S.bcArmyUnlocked?bits.map(([n,on])=>(on?"● ":"○ ")+n).join("  "):"Form a defense force to train Army.";
+      if(!S.bcArmyUnlocked){
+        ups.innerHTML="<p class=\"bc-note\">"+(es?"Formá una fuerza de defensa para entrenar el ejército.":"Form a defense force to train the army.")+"</p>";
+      }else{
+        const a=S.bcArmy||0;
+        const m=armyBattleMods(a);
+        const bits=[];
+        if(m.speed)bits.push((es?"Velocidad +":"Speed +")+m.speed+"%");
+        if(m.shot)bits.push((es?"Tiros +":"Shots +")+m.shot+"%"+(es?" más rápidos":" faster"));
+        if(m.power>1)bits.push((es?"Potencia ×":"Power ×")+m.power);
+        if(m.shield)bits.push((es?"Escudo −":"Shield −")+m.shield+"%"+(es?" de daño":" damage"));
+        if(m.medic)bits.push(es?"4 corazones al empezar":"Start on 4 hearts");
+        if(m.wall)bits.push(es?"Muro de ciudadela":"Citadel wall");
+        const now=(es?"En batalla: ":"In battle: ")+(bits.join(" · ")||(es?"sin bonus":"no bonuses"));
+        const steps=[
+          [10,es?"Velocidad +10%":"Speed +10%"],
+          [20,es?"Velocidad +20%":"Speed +20%"],
+          [30,es?"Velocidad +30% · escudo −10% de daño":"Speed +30% · shield −10% damage"],
+          [40,es?"Velocidad +40% · tiros +10% más rápidos":"Speed +40% · shots +10% faster"],
+          [50,es?"Velocidad +50% · empezás con 4 corazones":"Speed +50% · start with 4 hearts"],
+          [60,es?"Tiros +20% más rápidos · escudo −20%":"Shots +20% faster · shield −20%"],
+          [70,es?"Tiros +30% más rápidos · potencia ×2":"Shots +30% faster · power ×2"],
+          [80,es?"Tiros +40% más rápidos · escudo −30%":"Shots +40% faster · shield −30%"],
+          [90,es?"Tiros +50% más rápidos · escudo −40% · potencia ×3":"Shots +50% faster · shield −40% · power ×3"],
+          [100,es?"Escudo −50% de daño · muro de ciudadela":"Shield −50% damage · citadel wall"]
+        ];
+        const list=steps.map(([n,lab])=>"<li class=\""+(a>=n?"on":"")+"\">"+(a>=n?"●":"○")+" "+n+" · "+lab+"</li>").join("");
+        const hint=es?"Cada +10 de ejército alcanza la línea siguiente. Todo esto aplica en la batalla.":"Each +10 Army reaches the next line. All of this applies in battle.";
+        ups.innerHTML="<p class=\"bc-up-now\">"+now+"</p><ul class=\"bc-up-list\">"+list+"</ul><p class=\"bc-note\">"+hint+"</p>";
+      }
     }
-    setTxt("bc-note",S.bcVictory?"Independent. Keep playing.":S.bcArmyUnlocked?"Army purchases are permanent. World strength can keep rising.":"Army is trained here. Form a defense force (2%) if you skipped it.");
+    setTxt("bc-note",S.bcVictory?(es?"Independiente. Seguí jugando.":"Independent. Keep playing."):S.bcArmyUnlocked?(es?"Las compras de ejército son permanentes. La fuerza mundial puede seguir subiendo.":"Army purchases are permanent. World strength can keep rising."):(es?"El ejército se entrena acá. Formá una fuerza de defensa (2%) si te la salteaste.":"Army is trained here. Form a defense force (2%) if you skipped it."));
   }
   function renderHud() {
     try { renderBitcoinCountry(); } catch (e) {}
@@ -6957,6 +7289,8 @@
     S.bcDefense = null;
     S.bcDefensePending = false;
     S.bcBattlesWon = 0;
+    S.bcMapPlan = null;
+    S.bcMapSeed = 0;
     S.bcAssaultAt = 0;
     S.bcReactions = null;
     S.bcRepliesDone = false;
@@ -8118,7 +8452,7 @@
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
         overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
-          + arcStoryHtml(card, body)
+          + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       const tog = $("arc-tldr-tog");
