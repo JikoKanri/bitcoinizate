@@ -1286,7 +1286,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2032,9 +2032,41 @@
     speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"],
     unclemike: ["mike"]
   };
-  function weaveCast(text) {
-    return text;
+  function cleanCountryName(raw){
+    return String(raw||"").replace(/[<>&"'`]/g,"").replace(/\s+/g," ").trim().slice(0,24);
   }
+  function nationName(){
+    return cleanCountryName(S.bcCountryName) || "Bitcoin Country";
+  }
+  function stampNation(text){
+    const name=nationName();
+    if(!text) return "";
+    if(name==="Bitcoin Country") return String(text);
+    return String(text).replace(/Bitcoin Country/g, name);
+  }
+  function askCountryName(){
+    S.bcNameAsk=true;
+    S.optPanel=null;
+    S.arcHold=false;
+    S.optBack="play";
+    if(S.phase!=="chance") setPhase("chance");
+    else { try{ renderOverlay(); }catch(e){} }
+  }
+  function commitCountryName(raw){
+    const name=cleanCountryName(raw);
+    const input=$("bc-name-in");
+    if(!name){ if(input) input.classList.add("bad"); return; }
+    S.bcCountryName=name;
+    S.bcNameAsk=false;
+    S.bcIndependent=true;
+    if(!S.chanceUsed) S.chanceUsed={};
+    S.chanceUsed.theQuestion=true;
+    noteArcSeen("theQuestion");
+    S.optPanel=null;
+    const card=(S.chanceCard&&S.chanceCard.id==="theQuestion")?S.chanceCard:{id:"theQuestion"};
+    closeArc(card);
+  }
+  function weaveCast(text) { return text; }
   const CHANCE_TLDR = {
     justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una ley de emergencia amplía el poder del Estado cuando la economía se ve inestable. La llaman temporal. La definición parece cubrir casi todos los años." },
     nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un DNI digital opcional hace más fáciles los viajes y los bancos, y los trámites empiezan a mudarse ahí. No tenés nada que ocultar. La pregunta igual molesta." },
@@ -2110,7 +2142,7 @@
   };
   function cardTldr(card) {
     if (!card) return "";
-    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return warTldr(card.id);
+    if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return stampNation(warTldr(card.id));
     const row = CHANCE_TLDR[card.id];
     if (!row) return "";
     let line = chanceLang() ? (row.es || row.en) : row.en;
@@ -2124,7 +2156,7 @@
         : "Uncle Héctor wires you money and refuses to say why.";
       else line = line.replace(/\s*(It is|Son)\s*\{gift\}\.?/g, "").replace(/\s+/g, " ").trim();
     }
-    return line;
+    return stampNation(line);
   }
   function bodyIsLong(text) {
     const s = String(text || "");
@@ -2621,9 +2653,9 @@
     if(card.id==="ambassador")return say("Diplomatic contact unlocked.","");
     if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
     if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
-    if(card.id==="theQuestion"){if(S.bcVictory){return say("Bitcoin Country is already independent.","");}if(opt==="a"){S.bcIndependent=true;return say("You declare.","");}delete S.chanceUsed.theQuestion;return say("Not yet.","");}
-    if(card.id==="cabinet")return say("The posts are filled. Paco is Minister of Defense.","Los cargos quedan cubiertos. Paco es Ministro de Defensa.");
-    if(card.id==="declaration")return say("San Arnaldo recognizes Bitcoin Country in thirty-seven seconds.","");
+    if(card.id==="theQuestion"){if(S.bcVictory){return say(stampNation("Bitcoin Country is already independent."),"");}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declarás.":"You declare.","");}delete S.chanceUsed.theQuestion;return say(chanceLang()?"Todavía no.":"Not yet.","");}
+    if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
+    if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
     if(card.id==="theAnswer"){return say("The blocs already answered.","");}
     if(card.id==="blocReplies"){
       if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+money(p)+".","La carta se pone más cálida. Las flotas no. −"+money(p)+".");}
@@ -2633,7 +2665,7 @@
     if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
     if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
     if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
-    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING.","THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO.");}
+    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
     if(card.id==="notYet"){return say("Not yet.","");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
@@ -3012,8 +3044,10 @@
   }
   function chainArc(id){
     window.__arcForce=id;
-    S.phase="play";
-    setTimeout(()=>{ try{ dealChance(); } finally { window.__arcForce=""; } }, 80);
+    S.optPanel=null;
+    S.bcNameAsk=false;
+    if(S.phase!=="chance") S.phase="chance";
+    try{ dealChance(); } finally { window.__arcForce=""; }
   }
   function clearBattleField(){
     S.bcDefense=null;
@@ -3123,7 +3157,8 @@
   }
 
   function dealChance() {
-    if (S.phase !== "play") return;
+    const chaining = !!(window.__arcForce && S.phase === "chance");
+    if (S.phase !== "play" && !chaining) return;
     if (!S.chanceUsed) S.chanceUsed = {};
     const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && arcUnlocked(c) && arcInPool(c));
     const src = pool.length ? pool : CHANCE_CARDS.filter((c) => arcUnlocked(c) && !S.chanceUsed[c.id]);
@@ -3155,7 +3190,7 @@
     if (card.job) body = fillJob(body);
     if (card.kind === "report") {
       const before = bagSnap();
-      S.chanceReadyNote = resolveChance(card, "ok");
+      S.chanceReadyNote = stampNation(resolveChance(card, "ok"));
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
       const gift = formatBagDelta(before, S.arcPending);
@@ -3184,6 +3219,8 @@
       S.chanceBody = body;
     }
     const cue = (card.id === "blocAssault" || card.id === "theAnswer") ? "war" : "";
+    S.optPanel = null;
+    S.bcNameAsk = false;
     setPhase("chance");
     if (card.id === "blocTriumph") {
       try { if (A.playVictory) A.playVictory(); } catch (e) {}
@@ -3287,7 +3324,7 @@
       S.arcHold = false;
       S.optPanel = null;
       if (!intoBattle) {
-        try { setPhase("play"); } catch (e) { S.phase = "play"; }
+        S.phase = "chance";
         return;
       }
       S.phase = "play";
@@ -3324,6 +3361,10 @@
       closeArc(card);
       return;
     }
+    if (card.id==="theQuestion" && opt==="a" && !S.bcVictory) {
+      askCountryName();
+      return;
+    }
     if (!S.chanceNote) {
       if (card.kind === "report" || S.chanceSettled) {
         closeArc(card);
@@ -3331,7 +3372,7 @@
       }
       const before = bagSnap();
       let note = "";
-      try { note = resolveChance(card, opt) || ""; } catch (err) { note = ""; }
+      try { note = stampNation(resolveChance(card, opt) || ""); } catch (err) { note = ""; }
       if (!note) note = chanceLang() ? "Listo." : "Done.";
       S.chanceNote = note;
       S.arcPending = bagSnap();
@@ -4234,16 +4275,7 @@
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)wet=true;
       if(!wet)continue;
       const h=coastHash(x,y,salt+9);
-      if(h<12)marks.push(y*BC_C+x);
-      if(h<4){
-        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-          const xx=x+dx,yy=y+dy;
-          if(mtile(m,xx,yy)!==3||prot(xx,yy))continue;
-          let sea=0;
-          for(const [ax,ay] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,xx+ax,yy+ay)===3)sea++;
-          if(sea>=2){m[yy*BC_C+xx]=8;break;}
-        }
-      }
+      if(h<1)marks.push(y*BC_C+x);
     }
     for(const i of marks)m[i]=8;
   }
@@ -4301,8 +4333,7 @@
       const t=m[y*BC_C+x];
       if(t===5||t===9||t===1||t===2||t===4||t===8)return;
       if(!water&&(t===0||t===6||t===7)){m[y*BC_C+x]=t===7&&!edge(x,y)?8:4;return;}
-      if(!sideOpen(x,y,horiz,true))return;
-      if(t===3)m[y*BC_C+x]=8;
+      if(t===3)return;
     };
     const MAX=14;
     function scan(horiz){
@@ -4330,6 +4361,89 @@
       }
     }
     scan(true);scan(false);
+  }
+  function seaNeighbors(m,x,y){
+    let n=0;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)n++;
+    return n;
+  }
+  function thinSeaRocks(m){
+    const kill=[];
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const i=y*BC_C+x;
+      if(m[i]!==8)continue;
+      if(seaNeighbors(m,x,y)>=2)kill.push(i);
+    }
+    const keep=Math.floor(kill.length*0.05);
+    for(let i=keep;i<kill.length;i++)m[kill[i]]=3;
+  }
+  function unsealWater(m){
+    const N=BC_C*BC_R;
+    const seen=new Uint8Array(N);
+    const q=[];
+    const pushSea=(i)=>{ if(i<0||i>=N||seen[i]||m[i]!==3)return; seen[i]=1; q.push(i); };
+    for(let x=0;x<BC_C;x++){ pushSea(x); pushSea((BC_R-1)*BC_C+x); }
+    for(let y=0;y<BC_R;y++){ pushSea(y*BC_C); pushSea(y*BC_C+BC_C-1); }
+    for(let qi=0;qi<q.length;qi++){
+      const i=q[qi], x=i%BC_C, y=(i/BC_C)|0;
+      if(x>0)pushSea(i-1);
+      if(x<BC_C-1)pushSea(i+1);
+      if(y>0)pushSea(i-BC_C);
+      if(y<BC_R-1)pushSea(i+BC_C);
+    }
+    const comp=new Int32Array(N);
+    comp.fill(-1);
+    let cid=0;
+    for(let i=0;i<N;i++){
+      if(m[i]!==3||seen[i]||comp[i]>=0)continue;
+      const cells=[i];
+      comp[i]=cid;
+      for(let qi=0;qi<cells.length;qi++){
+        const c=cells[qi], x=c%BC_C, y=(c/BC_C)|0;
+        const nbs=[];
+        if(x>0)nbs.push(c-1);
+        if(x<BC_C-1)nbs.push(c+1);
+        if(y>0)nbs.push(c-BC_C);
+        if(y<BC_R-1)nbs.push(c+BC_C);
+        for(const j of nbs){
+          if(m[j]===3&&!seen[j]&&comp[j]<0){comp[j]=cid;cells.push(j);}
+        }
+      }
+      const inComp=new Uint8Array(N);
+      for(const c of cells)inComp[c]=1;
+      const prev=new Int32Array(N);
+      prev.fill(-2);
+      const vis=new Uint8Array(N);
+      const bfs=cells.slice();
+      for(const c of cells){vis[c]=1;prev[c]=-1;}
+      let hit=-1, from=-1;
+      for(let qi=0;qi<bfs.length&&hit<0;qi++){
+        const c=bfs[qi], x=c%BC_C, y=(c/BC_C)|0;
+        const nbs=[];
+        if(x>0)nbs.push(c-1);
+        if(x<BC_C-1)nbs.push(c+1);
+        if(y>0)nbs.push(c-BC_C);
+        if(y<BC_R-1)nbs.push(c+BC_C);
+        for(const j of nbs){
+          if(vis[j]||m[j]===5)continue;
+          if(seen[j]&&m[j]===3){hit=j;from=c;break;}
+          vis[j]=1;prev[j]=c;bfs.push(j);
+        }
+      }
+      if(hit<0){
+        for(const c of cells)m[c]=0;
+      }else{
+        let c=from;
+        let guard=0;
+        while(c>=0&&!inComp[c]&&guard++<N){
+          if(m[c]!==5)m[c]=3;
+          seen[c]=1;
+          c=prev[c];
+        }
+        for(const c of cells)seen[c]=1;
+      }
+      cid++;
+    }
   }
   function makeIslandMap(level, fort){
     level=Math.max(0,Math.min(8,level|0));
@@ -4361,6 +4475,8 @@
     if(wantLight)placeLighthouse(m,pad,rng);
     breakLanes(m,pad);
     repairEdges(m,!!plan.naval);
+    thinSeaRocks(m);
+    unsealWater(m);
     const home=homeFrom(m,pad,pref.gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -4607,7 +4723,7 @@
     S.dead=true;
     try{applyLaser(false);}catch(e){}
     S.power="NONE";S.powerT=0;
-    S.ticker=chanceLang()?"Bitcoin Country cayó.":"Bitcoin Country fell.";
+    S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
     try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
     try{if(A&&A.speak)A.speak(formatVoice(S.ticker),true);}catch(e){}
     if(!S.mp){try{S.best=saveBest(scoreSats());}catch(e){}try{snapshotRun();}catch(e){}}
@@ -4744,8 +4860,8 @@
       const rspd=210;
       let rdx=0,rdy=0;
       if(dir===0)rdy=-1;else if(dir===1)rdx=1;else if(dir===2)rdy=1;else if(dir===3)rdx=-1;
-      d.reticle.x=Math.max(28,Math.min(S.W-28,d.reticle.x+rdx*rspd*dt));
-      d.reticle.y=Math.max(28,Math.min(S.H-28,d.reticle.y+rdy*rspd*dt));
+      d.reticle.x=Math.max(-40,Math.min(S.W+40,d.reticle.x+rdx*rspd*dt));
+      d.reticle.y=Math.max(-40,Math.min(S.H+40,d.reticle.y+rdy*rspd*dt));
     }else{
       if(d.naval)moveShip(d,p,dir,pspd,dt);else moveTank(d,p,dir,pspd,dt);
       if(h.f)fireTank(d,p);
@@ -5093,11 +5209,14 @@
     drawCitadelShield(ctx,d,t);
     drawWarFx(ctx,d,t);
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
-    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":BTC;
+    const heroOrange="#ef6a12";
+    const blocPaint=["#3d4f2a","#7a2432","#6a4324"];
+    const ecol=blocPaint[Math.max(0,Math.min(2,d.bloc|0))];
+    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":heroOrange;
     if(!blink){if(d.naval)drawShip(ctx,d.player,pcol);else drawTank(ctx,d.player,pcol);}
     for(const e of d.enemies){
-      if(e.type==="HELI"){drawHeli(ctx,e,t);continue;}
-      if(e.ship)drawShip(ctx,e,null);else drawTank(ctx,e,null);
+      if(e.type==="HELI"){drawHeli(ctx,e,t,ecol);continue;}
+      if(e.ship)drawShip(ctx,e,ecol);else drawTank(ctx,e,ecol);
     }
     for(const pk of d.picks||[]){
       if(pk.ttl!=null&&pk.ttl<2.6&&Math.floor(t*8)%2===0)continue;
@@ -5271,12 +5390,12 @@
     }
     ctx.restore();
   }
-  function drawHeli(ctx,e,t){
+  function drawHeli(ctx,e,t,col){
     ctx.save();ctx.translate(e.x,e.y);
     ctx.fillStyle="rgba(0,0,0,.25)";ctx.beginPath();ctx.ellipse(0,10,10,4,0,0,Math.PI*2);ctx.fill();
     ctx.rotate(Math.sin(t*18)*.08);
-    ctx.fillStyle="#5c6b4a";ctx.fillRect(-12,-5,24,10);
-    ctx.fillStyle="#2e352c";ctx.fillRect(-4,-8,8,6);
+    ctx.fillStyle=col||"#3d4f2a";ctx.fillRect(-12,-5,24,10);
+    ctx.fillStyle="#1c140c";ctx.fillRect(-4,-8,8,6);
     ctx.strokeStyle="#f3efe6";ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(16,0);ctx.stroke();
     ctx.restore();
@@ -7017,6 +7136,10 @@
     const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
     bar.classList.toggle("hide",!unlocked);
     if(!unlocked){if(panel)panel.classList.add("hide");return;}
+    const named=cleanCountryName(S.bcCountryName);
+    const brand=named?named.toUpperCase():"BITCOIN COUNTRY";
+    const openBtn=$("bc-open"); if(openBtn) openBtn.textContent=brand;
+    const headB=document.querySelector("#bc-panel .bc-head b"); if(headB) headB.textContent=brand;
     const warBit=S.bcRepliesDone&&!S.bcVictory?(chanceLang()?" · EN GUERRA":" · AT WAR"):"";
     setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20)+warBit);
     setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",(S.bcArmy||0)+" / 100");setTxt("bc-world",String(S.bcWorld||20));
@@ -7781,6 +7904,8 @@
     S.bcReactions = null;
     S.bcRepliesDone = false;
     S.indepNoted = false;
+    S.bcCountryName = "";
+    S.bcNameAsk = false;
     if (!S.have) S.have = {};
     S.have.market = Math.max(S.have.market || 0, 1);
     S.have.chance = Math.max(S.have.chance || 0, 2);
@@ -8908,7 +9033,29 @@
     } else if (p === "count") {
       overlay.innerHTML = "<p class=\"count\">" + S.countN + "</p>";
     } else if (p === "chance") {
-      if (S.optPanel) {
+      if (S.bcNameAsk) {
+        overlay.classList.remove("chance-options");
+        const esN = chanceLang();
+        overlay.innerHTML = "<h1>" + (esN ? "El nombre" : "The name") + "</h1>"
+          + "<p class=\"k arc-title\">" + (esN ? "¿Cómo se llama el país?" : "What is the country called?") + "</p>"
+          + "<p class=\"arc-body\">" + (esN
+            ? "Ese nombre queda en la declaración, en las respuestas y en las cartas que siguen."
+            : "That name stays on the declaration, the replies, and the cards that follow.") + "</p>"
+          + "<form id=\"bc-name-form\" class=\"nation-ask\" autocomplete=\"off\">"
+          + "<input id=\"bc-name-in\" maxlength=\"24\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"" + (esN ? "País Bitcoin" : "Bitcoin Country") + "\">"
+          + "<button type=\"submit\" class=\"cta\">" + (esN ? "Declarar" : "Declare") + "</button>"
+          + "</form>";
+        const nameForm = $("bc-name-form");
+        const nameIn = $("bc-name-in");
+        if (nameIn) setTimeout(() => { try { nameIn.focus(); } catch (e) {} }, 40);
+        if (nameForm) nameForm.onsubmit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          commitCountryName(nameIn ? nameIn.value : "");
+        };
+        return;
+      }
+      if (S.optPanel && S.optPanel !== "off") {
         overlay.classList.add("chance-options");
         overlay.innerHTML = "<div class=\"chance-options-sheet\">" + pauseMarkup() + "</div>";
         bindPauseUi();
@@ -8922,7 +9069,8 @@
       if (S.chanceTitle) title = es ? (S.chanceTitle.es || S.chanceTitle.en || title) : (S.chanceTitle.en || title);
       if (S.battleTutOpen) title = t("tutBattle");
       if (card.job) title = fillJob(title);
-      const body = S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body));
+      title = stampNation(title);
+      const body = stampNation(S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body)));
       const pic = chanceArtHtml(card.id);
       let btns = "";
       if (S.chanceNote) {
@@ -9344,13 +9492,13 @@
   if(bcArmy10)bcArmy10.addEventListener("click",onBuyArmy);
   if(bcArmyBar)bcArmyBar.addEventListener("click",onBuyArmy);
   if(bcForm)bcForm.addEventListener("click",()=>{formArmy();renderBitcoinCountry();renderHud();});
-  if(bcDeclare)bcDeclare.addEventListener("click",()=>{
+  if(bcDeclare)bcDeclare.addEventListener("click",(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
     if((S.bcNodes||0)<100||S.bcIndependent||S.bcVictory)return;
     const p=$("bc-panel");if(p)p.classList.add("hide");
-    window.__arcForce="theQuestion";
-    if(S.phase!=="play")S.phase="play";
-    dealChance();
-    window.__arcForce="";
+    S.optPanel=null;
+    askCountryName();
   });
   (function bindDefensePad(){
     const stick=$("def-stick"), knob=$("def-knob"), fire=$("def-fire");
