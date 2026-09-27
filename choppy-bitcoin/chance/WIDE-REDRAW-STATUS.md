@@ -4,7 +4,7 @@ Target display: full game width (480 CSS px on desktop, responsive on smaller sc
 
 ## Wide compositions already reviewed (native 1920 × 800 requirement noted below)
 
-- `pieceWorld` — `pieceWorld-wide.jpg` — original panoramic scene, 1916 × 802 px; inspected at 480 × 201 px; requires a fresh native 1920 × 800 redraw before final completion; mapped with `wide-art` CSS.
+- `pieceWorld` — `pieceWorld-wide.jpg` — fresh native panoramic discovery scene, 1920 × 800 px; inspected at 480 × 200 px; Choppy's white ₿ emblem is complete and unobstructed, with red headband, saturated orange-gold body, low black sunglasses, orange limbs, white gloves, and brown-and-white sneakers; no Lena, Madame Luck, extra characters, visible text, implausible documents, or watermark; mapped with `wide-art` CSS.
 - `ortegaCalls` — `ortegaCalls-wide.jpg` — original panoramic office-call scene, 1939 × 811 px; inspected at 480 × 201 px; requires a fresh native 1920 × 800 redraw before final completion; plain coin reverse avoids a malformed emblem; papers are secondary, plausible, and unlabeled.
 - `ambassador` — `ambassador-wide.jpg` — original panoramic diplomatic-arrival scene, 1920 × 800 px; inspected at 480 × 200 px; Choppy emblem, sunglasses, orange limbs, gloves, and shoes verified; no visible text or implausible props.
 - `anOffer` — `anOffer-wide.jpg` — corrected panoramic private-offer scene, 1920 × 800 px; inspected at 480 × 200 px; no Lena or other woman is physically present on the island; Choppy has the required red headband, saturated orange-gold body, white ₿ symbol, low black sunglasses, no nose or mouth, orange limbs, white gloves, and brown-and-white shoes; no percentage, documents, screen text, or watermark.
