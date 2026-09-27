@@ -19,11 +19,12 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `extensionCord` — `extensionCord-wide.png` — new original panoramic island-grid blackout scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; overloaded mining equipment and a plausible power junction establish the outage while Choppy and male residents react; complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, two orange arms and legs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, women, documents, readable text, exposed dangerous wiring, or watermark.
 
+- `firstBloc` — `firstBloc-wide.png` — new original panoramic European bloc-formation scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; seven distinct male delegates make a coordinated formal vote while two security officers and severe institutional architecture imply compulsory administrative power; no Choppy because he is not physically present at the summit; no women, Lena, Madame Luck, flags, maps, documents, readable text, national emblems, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `firstBloc.jpg`
 - `fourthColor.jpg`
 - `nobodyKnows.jpg`
 - `notYet.jpg`
