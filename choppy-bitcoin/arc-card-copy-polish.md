@@ -39,6 +39,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `a296b5b5670f7e255d8ec7fc47f6878cdac3c01e`
   - Pull request: #9
 
+- [x] `citadelProblem` — “El problema de la ciudadela”
+  - Mission relation: turns the preceding sovereignty concerns into the explicit country plan and the checklist that drives the Bitcoin Country mission.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; 417 pages, 186 sovereignty mentions, checklist, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `5abba512594883c8e30b10961465a1cf6f3a7a4d`
+  - Pull request: #9
+
 ## Next priority
 
-- `citadelProblem`
+- `pieceWorld`
