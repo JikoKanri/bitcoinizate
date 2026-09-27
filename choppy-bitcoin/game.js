@@ -2813,8 +2813,8 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "extensionCord" || artId === "extensionCord" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
-    const jpg = (artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide") ? "chance/"+artId+"-wide.png?v=gpt2" : wide ? "chance/"+artId+"-wide.jpg?v=cin9" : "chance/"+artId+".jpg?v=mp86";
+    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "extensionCord" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
+    const jpg = (artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "extensionCord") ? "chance/"+artId+"-wide.png?v=gpt2" : wide ? "chance/"+artId+"-wide.jpg?v=cin9" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
