@@ -2796,7 +2796,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src=(id==="citadelQuestion"||id==="declaration"||id==="justInCase"||id==="nothingToHide")?"chance/"+id+"-wide.png?v=gpt2":(id==="citadelProblem"||id==="citadelQuestion"||id==="pieceWorld"||id==="islandInspection"||id==="paperwork"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin9":"chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=(id==="citadelQuestion"||id==="declaration"||id==="justInCase"||id==="nothingToHide"||id==="extensionCord")?"chance/"+id+"-wide.png?v=gpt2":(id==="citadelProblem"||id==="citadelQuestion"||id==="pieceWorld"||id==="islandInspection"||id==="paperwork"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin9":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2813,7 +2813,7 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
+    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "extensionCord" || artId === "extensionCord" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
     const jpg = (artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide") ? "chance/"+artId+"-wide.png?v=gpt2" : wide ? "chance/"+artId+"-wide.jpg?v=cin9" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
