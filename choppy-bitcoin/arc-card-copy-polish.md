@@ -53,6 +53,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `004c94c59f6237283c8dfaa228e6b0904cd27eb8`
   - Pull request: #9
 
+- [x] `islandInspection` — “Inspección de la isla”
+  - Mission relation: follows the trip chosen in `pieceWorld` and determines whether the player buys the island that physically enables Bitcoin Country.
+  - Updated: Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; dynamic island price, option keys, marketplace behavior, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `9d70c36657cfc5ae41ad0eacda778ba412ab25e4`
+  - Pull request: #9
+
 ## Next priority
 
-- `islandInspection`
+- `paperwork`
