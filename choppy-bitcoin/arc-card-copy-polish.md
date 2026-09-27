@@ -32,6 +32,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `0ee3f86a09d5b93e623ef3bbf6a1a690a1a0dfe5`
   - Pull request: #9
 
+- [x] `temporaryMeasures` — “Medidas temporales”
+  - Mission relation: follows `timeTraveler` and turns the sovereignty concern into a concrete financial emergency, feeding directly into `citadelProblem` and the Bitcoin Country plan.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; ninety-day promise, four-year contrast, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `a296b5b5670f7e255d8ec7fc47f6878cdac3c01e`
+  - Pull request: #9
+
 ## Next priority
 
-- `temporaryMeasures`
+- `citadelProblem`
