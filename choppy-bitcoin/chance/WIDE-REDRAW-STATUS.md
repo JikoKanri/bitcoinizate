@@ -12,11 +12,12 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 - `ambassador` — `ambassador-wide.jpg` — original panoramic diplomatic-arrival scene, 1920 × 800 px; inspected at 480 × 200 px; Choppy emblem, sunglasses, orange limbs, gloves, and shoes verified; no visible text or implausible props.
 - `anOffer` — `anOffer-wide.jpg` — corrected panoramic private-offer scene, 1920 × 800 px; inspected at 480 × 200 px; no Lena or other woman is physically present on the island; Choppy has the required red headband, saturated orange-gold body, white ₿ symbol, low black sunglasses, no nose or mouth, orange limbs, white gloves, and brown-and-white shoes; no percentage, documents, screen text, or watermark.
 
+- `citadelQuestion` — `citadelQuestion-wide.png` — new original island-ridge citadel scene, 1942 × 809 px (2.4005:1); inspected at 480 × 200 px; Marek and Choppy, no plans or text; Choppy design checked.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `citadelQuestion.jpg`
 - `declaration.jpg`
 - `extensionCord.jpg`
 - `firstBloc.jpg`

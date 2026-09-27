@@ -2764,7 +2764,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src=(id==="citadelProblem"||id==="pieceWorld"||id==="islandInspection"||id==="paperwork"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin9":"chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=(id==="citadelProblem"||id==="citadelQuestion"||id==="pieceWorld"||id==="islandInspection"||id==="paperwork"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin9":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2781,7 +2781,7 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const wide = artId === "citadelProblem" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
+    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
     const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin9" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
