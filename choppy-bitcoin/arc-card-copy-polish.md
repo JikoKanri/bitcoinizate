@@ -186,6 +186,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `e42e92e7d1747307509d229f11a99692b6b16aaa`
   - Pull request: #11
 
+- [x] `cabinet` — “El gabinete”
+  - Mission relation: follows `theQuestion` once independence is declared and forms Bitcoin Country’s first government before formal recognition.
+  - Updated: English and Spanish full text, title, and TL;DR; removed voseo from the Spanish copy.
+  - Mechanics: report card; no options; Head of State, Finance, Commerce, Defense, Lena’s refusal, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `c3a586e598af0018780f06fac4b7b93255060bc3`
+  - Pull request: #11
+
 ## Next priority
 
-- `cabinet`
+- `declaration`
