@@ -144,6 +144,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `3db145cd45264e847af112d5d2f7c4defb846ce4`
   - Pull request: #9
 
+- [x] `rearmament` — “Rearme”
+  - Mission relation: follows `citadelQuestion` and escalates the geopolitical threat around Bitcoin Country before the acquisition offer and later independence conflict.
+  - Updated: English and Spanish full text and TL;DR; replaced five fictional member states with Russia, Belarus, China, North Korea, and Cuba.
+  - Mechanics: report card; no options; `bcWorld +6`, bloc identity, leader, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `f14634e3511cb27ef385a8a98232f8d71c6fee80`
+  - Pull request: #9
+
 ## Next priority
 
-- `rearmament`
+- `anOffer`
