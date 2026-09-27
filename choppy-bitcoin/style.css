@@ -906,7 +906,7 @@ html[data-palette="flower"] #app {
     linear-gradient(180deg, var(--bg-top, var(--bg)) 0%, var(--bg) 48%, var(--bg-bot, var(--bg)) 100%);
 }
 
-/* Arc illustration framing: square art with the same rounded card language. */
+/* Arc illustration framing. Wide art is applied only to genuinely redrawn assets. */
 .chance-art{aspect-ratio:1/1;object-fit:cover;border-radius:18px;border:2px solid var(--border);box-shadow:0 12px 34px rgba(0,0,0,.28);background:var(--surface)}
 
 .bc-bar{max-width:480px;margin:5px auto 7px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;font:700 10px "IBM Plex Mono",monospace;color:var(--fg)}
@@ -1195,3 +1195,17 @@ html[data-arc-text="l"] .overlay.dock.chance-ui .arc-title { font-size: 24px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui .arc-body { font-size: 17px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
 #bc-panel, #bc-panel * { font-family: "IBM Plex Mono", monospace; }
+
+/* Native 2.39:1 arc compositions; square cards keep their original framing until redrawn. */
+.overlay.dock.chance-ui .chance-art.wide-art,
+.overlay.dock.chance-ui.fest-ui .chance-art.wide-art {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 2.39 / 1;
+  max-height: none;
+  object-fit: contain;
+  align-self: stretch;
+  margin: 0;
+}

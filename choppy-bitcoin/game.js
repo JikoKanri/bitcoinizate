@@ -2707,7 +2707,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=id==="pieceWorld"?"chance/pieceWorld-wide.jpg?v=cin1":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2724,11 +2724,12 @@
     if (id === "blocTriumph") {
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
-    const jpg="chance/"+artId+".jpg?v=mp86";
+    const wide = artId === "pieceWorld";
+    const jpg = wide ? "chance/pieceWorld-wide.jpg?v=cin1" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
-    return "<img class=\"chance-art\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
+    return "<img class=\"chance-art" + (wide ? " wide-art" : "") + "\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
   }
 
   const WAR_BLOCS = [
