@@ -151,6 +151,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `f14634e3511cb27ef385a8a98232f8d71c6fee80`
   - Pull request: #9
 
+- [x] `anOffer` — “Una oferta”
+  - Mission relation: follows `rearmament` and presents the decisive exit from the Bitcoin Country project: sell and close the arc or refuse and continue toward independence.
+  - Updated: English and Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; dynamic 135% total offer, +35% wealth sale outcome, `bcArcClosed`, +10 Liberty Nodes on refusal, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `67510ae8c0688c863dce7106da5305b96f319b4c`
+  - Pull request: #9
+
 ## Next priority
 
-- `anOffer`
+- `ambassador`
