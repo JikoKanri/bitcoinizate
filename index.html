@@ -117,7 +117,14 @@
     .faq details { border-top: 1px solid #2a2a2e; padding: 10px 0; }
     .faq details:first-of-type { border-top: 0; padding-top: 0; }
     .faq summary { cursor: pointer; color: var(--paper); font-size: 13px; }
-    .faq p { margin: 8px 0 0; color: #b4b0a8; font-size: 13px; line-height: 1.5; }
+    .discord-widget {
+      width: 100%;
+      height: 420px;
+      margin-top: 12px;
+      border: 1px solid #2a2a2e;
+      background: #111214;
+    }
+    .discord .play { text-decoration: none; }
     .faq a { color: var(--gold); }
     .donate-links { display: flex; gap: 16px; margin-top: 10px; }
     .donate-links a { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
@@ -221,6 +228,12 @@
       <p data-i18n="donateBody">Donations keep the game going. 70% of every donation is distributed as leaderboard prizes.</p>
       <p class="donate-links"><a href="lightning:lnbc1p4tdeq9pp5v39yyvsws5swurns2gpmj64m469548f64t2cqjsfyka574fj0dasdqqcqzzgxqyz5vqrzjqf0wu22xsefd8gzu0m9n93g2khea86l6yy26en9v46g9e6hk7v9z8lytgux50yx2zuqqqqryqqqqthqqpyrzjqfwdd2w9y5ra5z3m4qetfa5ccu6432xfuvk6zrvg9vxwltvukd48dlytgux50yx2zuqqqqryqqqqthqqpysp5zc5j4qd90hqxklpcy4skg9rfl5aypv9rsmrypjdt62td8869kx0s9qrsgq43tqd4ujehpvccxw5rzkk8z74mk7sdhgga3tqtk3uwvtlj3tl3s3yhrv5vy5x8t6x2zfursvw7z82rqu4fmuttaj57ukyspx35np6zgq6tutga">Lightning</a><a href="bitcoin:bc1q5yrmsvdh3m7ad03txs2h5ktw5zzdxwxrgeujsj0e25s83cffzauq4vgjez">Bitcoin</a></p>
     </section>
+    <section class="how discord" id="discord">
+      <h3 data-i18n="discordTitle">Discord</h3>
+      <p data-i18n="discordBody">The game chat is here. Questions, bugs, and the people who already play.</p>
+      <a class="play play-alt" href="https://discord.gg/CRtr5hFS5" target="_blank" rel="noopener noreferrer"><span data-i18n="discordJoin">Join the server</span></a>
+      <iframe class="discord-widget" title="Discord" src="https://discord.com/widget?id=1553686431791190126&theme=dark" width="350" height="420" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+    </section>
     <section class="how">
       <h3 data-i18n="how">How to play</h3>
       <p class="lead" data-i18n="playMoney">In-game cash, price and score are play money. They are not real bitcoin.</p>
@@ -244,7 +257,7 @@
         <p data-i18n="faqAccA">No. Play is free. Sign in only if you want the cloud leaderboard.</p>
       </details>
     </section>
-    <footer>© Bitcoinizate · <a href="/privacy.html" data-i18n="privacy">Privacy</a> · <a href="mailto:hello@bitcoinizate.com">hello@bitcoinizate.com</a> · <a href="https://bitcoinizate.com/choppy-bitcoin/" data-i18n="playLink">play Choppy Bitcoin</a></footer>
+    <footer>© Bitcoinizate · <a href="/privacy.html" data-i18n="privacy">Privacy</a> · <a href="https://discord.gg/CRtr5hFS5" target="_blank" rel="noopener noreferrer">Discord</a> · <a href="mailto:hello@bitcoinizate.com">hello@bitcoinizate.com</a> · <a href="https://bitcoinizate.com/choppy-bitcoin/" data-i18n="playLink">play Choppy Bitcoin</a></footer>
   </main>
   <div id="auth-modal" class="auth-modal hide" role="dialog" aria-labelledby="modal-auth-title">
     <div class="auth-card">
@@ -276,7 +289,7 @@
       <button type="button" class="text-btn" id="btn-close-profile" data-i18n="close">Close</button>
     </div>
   </div>
-  <script src="/i18n.js?v=mp67"></script>
+  <script src="/i18n.js?v=mp78"></script>
   <script src="/choppy-bitcoin/supabase-lib.js"></script>
   <script src="/choppy-bitcoin/auth.js?v=mp66"></script>
   <script src="/choppy-bitcoin/run-stats.js"></script>
