@@ -193,6 +193,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `c3a586e598af0018780f06fac4b7b93255060bc3`
   - Pull request: #11
 
+- [x] `declaration` — “La declaración”
+  - Mission relation: follows `cabinet`, formally proclaims Bitcoin Country’s independence, and leads directly into the three blocs’ response.
+  - Updated: English and Spanish full text, title, and TL;DR; removed voseo from the Spanish copy.
+  - Mechanics: report card; no options; San Arnaldo recognition after 37 seconds, 14-page attachment, independence condition, IDs, sequence, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `4b0789d004e1f6f3a66a93e53e64e3b10924fcf7`
+  - Pull request: #11
+
 ## Next priority
 
-- `declaration`
+- `theAnswer`
