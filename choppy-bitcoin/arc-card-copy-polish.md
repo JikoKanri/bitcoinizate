@@ -46,6 +46,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `5abba512594883c8e30b10961465a1cf6f3a7a4d`
   - Pull request: #9
 
+- [x] `pieceWorld` — “Un pedazo del mundo”
+  - Mission relation: follows `citadelProblem` and provides the first operational choice in the Bitcoin Country plan: inspect the island or reject the idea.
+  - Updated: Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; $1,800 travel cost, option keys, retry behavior, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `004c94c59f6237283c8dfaa228e6b0904cd27eb8`
+  - Pull request: #9
+
 ## Next priority
 
-- `pieceWorld`
+- `islandInspection`
