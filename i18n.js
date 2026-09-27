@@ -52,10 +52,10 @@
       tutHold: "Hold the beach",
       tutB1: "The stick moves your tank. The right side of the screen fires.",
       tutB2: "You start with 3 hearts. Each hit empties one. Empty hearts means you lose. The citadel shield is separate — if it breaks, the island falls.",
-      tutB3: "Brick breaks. Metal does not. Trees block tanks and shots. Grass and dirt paths are open.",
-      tutB4: "One pickup at a time, every 5–15 seconds. + restores a heart, or adds a fourth if you are already full at 3. S speeds your shot. The star makes you untouchable for a moment.",
-      tutB5: "Helicopters ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
-      tutB6: "Enemies come in waves. KIA is how many you destroyed in this battle, over how many were sent.",
+      tutB3: "Sand is beach. Grass and dirt are open. Brick breaks. Metal, rock and the lighthouse do not. Trees block too. The coast is jagged, except beside docks and roads. Tanks stay on land. Ships stay on water.",
+      tutB4: "One pickup at a time, every 5–15 seconds. It disappears 10 seconds after it spawns. + restores a heart, or adds a fourth if you are already full at 3. S speeds your shot. The star makes you untouchable for a moment.",
+      tutB5: "The long-range missile sits above the stick and is always ready. Press once, move the red circle with the stick, press again. It reaches helicopters, and troops on the wrong ground: a tank in a sea battle, a ship in a land battle.",
+      tutB6: "Light, medium and heavy hulls. Some units come for you. Some go for the citadel. Up to 15% of them use the other element. KIA is destroyed over sent. A higher World number sends more troops, and each battle fields more than the one before.",
       faq: "FAQ",
       faqWhat: "What is Bitcoinizate?",
       faqWhatA: "A site of free bitcoin-themed games. Now: Choppy Bitcoin. No token. In the browser.",
@@ -303,10 +303,10 @@
       tutHold: "Aguantar la playa",
       tutB1: "La palanca mueve el tanque. El lado derecho de la pantalla dispara.",
       tutB2: "Arrancás con 3 corazones. Cada golpe vacía uno. Si se vacían todos, perdés. El escudo de la ciudadela es aparte: si se rompe, cae la isla.",
-      tutB3: "El ladrillo se rompe. El metal no. Los árboles frenan tanques y tiros. El pasto y los caminos de tierra están abiertos.",
-      tutB4: "Los pickups salen de a uno, cada 5–15 segundos. + cura un corazón, o suma un cuarto si ya estás lleno en 3. S acelera el tiro. La estrella te hace intocable un rato.",
-      tutB5: "Los helicópteros ignoran los tiros normales. El botón antiaéreo está arriba de la palanca. Mantenelo 3 segundos hasta que se llene el anillo. Aparece un círculo rojo, unas diez veces el helicóptero. Movelo con la palanca hasta que el helicóptero quede adentro y apretá el antiaéreo una vez.",
-      tutB6: "Los enemigos vienen en oleadas. KIA es cuántos destruiste en esta batalla, sobre cuántos mandaron.",
+      tutB3: "La arena es playa. El pasto y la tierra están abiertos. El ladrillo se rompe. El metal, la roca y el faro no. Los árboles también frenan. La costa es irregular, salvo junto a muelles y caminos. Los tanques se quedan en tierra. Los barcos, en el agua.",
+      tutB4: "Los pickups salen de a uno, cada 5–15 segundos, y desaparecen a los 10 segundos de aparecer. + cura un corazón, o suma un cuarto si ya estás lleno en 3. S acelera el tiro. La estrella te hace intocable un rato.",
+      tutB5: "El misil de largo alcance está arriba de la palanca y siempre está listo. Apretá una vez, mové el círculo rojo con la palanca y apretá de nuevo. Alcanza helicópteros y tropas en el terreno equivocado: un tanque en una batalla de mar, un barco en una de tierra.",
+      tutB6: "Cascos livianos, medios y pesados. Algunos vienen por vos. Otros van a la ciudadela. Hasta el 15% usa el otro elemento. KIA es cuántos destruiste sobre cuántos mandaron. Un Mundo más alto manda más tropas, y cada batalla trae más que la anterior.",
       faq: "Preguntas",
       faqWhat: "¿Qué es Bitcoinizate?",
       faqWhatA: "Un sitio de juegos gratis de temática bitcoin. Ahora: Choppy Bitcoin. Sin token. En el navegador.",
@@ -432,126 +432,4 @@
       mpYou: "vos",
       mpMixNeed: "Tiene que sumar 100",
       mpColdW: "Cold",
-      mpMode: "Modo",
-      mpLast: "Último en pie",
-      mpWhale: "Ballena",
-      mpRace: "Carrera",
-      mpRaceN: "Vela de meta",
-      mpBestOf: "Al mejor de",
-      mpSpec: "Espectando",
-      mpRematch: "REVANCHA",
-      mpQuit: "SALIR",
-      mpNext: "Siguiente",
-      mpSeries: "Serie",
-      mpFinished: "META",
-      tryAgain: "Otra vez",
-      playAgain: "Jugar de nuevo",
-      keepPlaying: "Seguir jugando",
-      runStats: "STATS",
-      runChart: "CHART",
-      runRecap: "CINTA DE LA RUN",
-      rekt: "Rekt · patrimonio",
-      board: "Ranking",
-      boardBtc: "Más BTC",
-      boardInd: "Independencia más rápida",
-      eloBoard: "ELO Versus",
-      aliasMonth: "El alias se puede cambiar una vez cada 30 días.",
-      aliasWait: "Próximo cambio de alias después del ",
-      best: "Mejor",
-      congrats: "El float es tuyo",
-      stacked: "Llenaste el tope. Esta es la cinta de la partida.",
-      newPass: "Nueva contraseña",
-      savePass: "Guardar contraseña",
-      choosePass: "Elige una contraseña nueva.",
-      privacyH: "Política de privacidad",
-      privacyB1: "Bitcoinizate es un sitio de juegos en el navegador. No vendemos un token, no mostramos anuncios y no vendemos tus datos.",
-      privacyB2: "Si juegas como invitado, este dispositivo guarda tu mejor puntaje, premios de partida y ajustes como el aspecto, el sonido y el idioma. Eso queda en el almacenamiento local del dispositivo. No lo recibimos.",
-      privacyB3: "Si creas una cuenta guardamos tu correo, un hash de contraseña (lo maneja Supabase), tu alias, direcciones opcionales de Bitcoin y Lightning para cobros, tu puntaje en la nube, la cinta de una partida guardada, logros y tu rating de versus. El feedback que envías con la sesión iniciada se guarda con tu cuenta.",
-      privacyB4: "Eso sirve para iniciar sesión, mostrar un ranking público de alias y puntaje, pagar premios y leer el feedback. No vendemos listas. Las donaciones van a nuestra factura Lightning o a nuestra dirección Bitcoin. El pago en sí no nos dice quién eres.",
-      privacyB5: "Puedes cerrar sesión cuando quieras. Para borrar una cuenta escribe a hello@bitcoinizate.com desde el correo con el que te registraste. Borramos la cuenta y el perfil asociado.",
-      privacyB6: "Consultas: <a href=\"mailto:hello@bitcoinizate.com\">hello@bitcoinizate.com</a>",
-      lookUp: "Mira arriba!",
-      lookDown: "Mira abajo!",
-      welcome: "Bienvenido a Choppy Bitcoin: Sobrevive al mercado!",
-      liquidated: "Rekt! Te liquidaron",
-      floatYours: "Veintiún millones El float es tuyo",
-      bullSongs: "Canciones bull/bear",
-      gameFx: "FX del juego",
-      voices: "Voces",
-      language: "IDIOMA",
-      nextHalve: "PRÓX. HALVING",
-      halvings: "HALVINGS",
-      buyBtc: "COMPRAR BTC",
-      sellBtc: "VENDER BTC",
-      dcaOn: "DCA ACTIVADO",
-      dcaOff: "DCA APAGADO",
-      aiOn: "A.I. BUD ACTIVADO",
-      aiOff: "A.I. BUD APAGADO",
-      trendUp: "TENDENCIA ↑",
-      trendDown: "TENDENCIA ↓",
-      trendOff: "TENDENCIA OFF",
-      share: "Compartir",
-      saveAlias: "Guardar alias",
-      awards: "Premios",
-      howPlay: "Cómo se juega",
-      bullRun: "BULL",
-      bearCrash: "BEAR",
-      halvingNow: "HALVING",
-      laserNow: "LÁSER",
-      soundOn: "ON",
-      soundOff: "OFF",
-      noAiCalls: "Todavía no hay llamadas. Activá A.I. bud en el HUD.",
-      markedPl: "P/L marcado"
-    }
-  };
-
-  function detect() {
-    try {
-      const saved = localStorage.getItem(KEY);
-      if (saved === "es" || saved === "en") return saved;
-    } catch (e) {}
-    const list = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]).map((s) => String(s || "").toLowerCase());
-    return list.some((l) => l === "es" || l.indexOf("es-") === 0) ? "es" : "en";
-  }
-
-  let lang = detect();
-
-  function t(key) {
-    const pack = dict[lang] || dict.en;
-    return pack[key] != null ? pack[key] : (dict.en[key] != null ? dict.en[key] : key);
-  }
-
-  function apply(root) {
-    const box = root || document;
-    box.querySelectorAll("[data-i18n]").forEach((el) => {
-      el.textContent = t(el.getAttribute("data-i18n"));
-    });
-    box.querySelectorAll("[data-i18n-html]").forEach((el) => {
-      el.innerHTML = t(el.getAttribute("data-i18n-html"));
-    });
-    document.documentElement.lang = lang === "es" ? "es" : "en";
-    document.querySelectorAll("[data-lang]").forEach((btn) => {
-      btn.classList.toggle("on", btn.getAttribute("data-lang") === lang);
-    });
-    if (window.ArcadeAudio && typeof window.ArcadeAudio.setLang === "function") {
-      window.ArcadeAudio.setLang(lang);
-    }
-  }
-
-  function setLang(next) {
-    lang = next === "es" ? "es" : "en";
-    try { localStorage.setItem(KEY, lang); } catch (e) {}
-    apply(document);
-    window.dispatchEvent(new CustomEvent("bz-lang", { detail: lang }));
-  }
-
-  window.BZ = { t, setLang, apply, lang() { return lang; }, detect };
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-lang]");
-    if (!btn) return;
-    e.preventDefault();
-    setLang(btn.getAttribute("data-lang"));
-  });
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => apply(document));
-  else apply(document);
-})();
+    
