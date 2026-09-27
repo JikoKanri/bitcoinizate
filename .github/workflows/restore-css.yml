@@ -14,49 +14,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Restore stylesheet from last good commit
-        run: |
-          git show ca2e60acd8702e615b7d8b73315c30dc3cd53a96:choppy-bitcoin/style.css > choppy-bitcoin/style.css
-          python3 - << 'PY'
-          from pathlib import Path
-          p = Path('choppy-bitcoin/style.css')
-          s = p.read_text()
-          old = '''.def-aa{
-  position:absolute;left:42px;bottom:154px;width:72px;height:72px;z-index:27;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:50%;pointer-events:auto;touch-action:none;cursor:pointer;
-  color:#fff6e8;font:700 13px "IBM Plex Mono",monospace;letter-spacing:.06em;
-  border:3px solid #f0d0c8;-webkit-tap-highlight-color:transparent;user-select:none;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(18,10,8,.94) 0 56%, transparent 57%),
-    conic-gradient(from -90deg, #e23b3b var(--aa, 0deg), rgba(50,18,16,.72) var(--aa, 0deg));
-  box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 2px rgba(0,0,0,.35);
-}
-.def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
-.def-aa.hide{display:none}'''
-          new = '''.def-aa{
-  position:absolute;left:50%;bottom:16px;width:76px;height:76px;z-index:27;
-  transform:translateX(-50%);
-  display:flex;align-items:center;justify-content:center;
-  border-radius:50%;pointer-events:auto;touch-action:none;cursor:pointer;
-  color:#fff6e8;font:700 13px "IBM Plex Mono",monospace;letter-spacing:.06em;
-  border:3px solid #f0d0c8;-webkit-tap-highlight-color:transparent;user-select:none;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(18,10,8,.94) 0 56%, transparent 57%),
-    conic-gradient(from -90deg, #e23b3b var(--aa, 0deg), rgba(50,18,16,.72) var(--aa, 0deg));
-  box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 2px rgba(0,0,0,.35);
-}
-.def-aa.charging{border-color:#ffe14a;box-shadow:0 0 0 3px rgba(255,225,74,.4), 0 6px 14px rgba(0,0,0,.45);}
-.def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
-.def-aa.hide{display:none}'''
-          if old not in s:
-              raise SystemExit('def-aa block not found in restored css')
-          p.write_text(s.replace(old, new))
-          print('css bytes', p.stat().st_size)
-          PY
+      - name: Restore stylesheet
+        run: git show ca2e60acd8702e615b7d8b73315c30dc3cd53a96:choppy-bitcoin/style.css > choppy-bitcoin/style.css
+      - name: Move LRM button
+        run: python3 scripts/fix-lrm-css.py
       - name: Commit
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add choppy-bitcoin/style.css
-          if git diff --cached --quiet; then echo no change; else git commit -m "Restore full stylesheet and keep LRM button bottom-center" && git push; fi
+          git diff --cached --quiet || git commit -m "Restore full stylesheet and keep LRM button bottom-center"
+          git push
