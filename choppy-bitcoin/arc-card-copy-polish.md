@@ -123,6 +123,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `370e0a3a1d079ba0fa844b00fe8ced6d3affb96b`
   - Pull request: #9
 
+- [x] `protectIsland` — “¿Quién protege la isla?”
+  - Mission relation: follows `firstBloc` and introduces the island’s first explicit defense decision as the Bitcoin Country settlement grows in a more hostile geopolitical environment.
+  - Updated: English and Spanish full text, title, TL;DR, and all three options.
+  - Mechanics: choice card; 2% defense-force cost, $50,000 private-security cost, army unlock with minimum strength 10, Paco vest outcome, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `a683200eefaf443c2589c9129067a6bde7db3124`
+  - Pull request: #9
+
 ## Next priority
 
-- `protectIsland`
+- `placeNow`
