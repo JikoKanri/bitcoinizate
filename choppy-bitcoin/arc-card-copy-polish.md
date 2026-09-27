@@ -60,6 +60,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `9d70c36657cfc5ae41ad0eacda778ba412ab25e4`
   - Pull request: #9
 
+- [x] `paperwork` — “Los trámites”
+  - Mission relation: follows the island purchase and legally formalizes the land that anchors Bitcoin Country, while establishing that it is still only an island for now.
+  - Updated: Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; `bcIsland` condition, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `9ef6a5af72f1b78e294c4b04fa94b51c34b45c44`
+  - Pull request: #9
+
 ## Next priority
 
-- `paperwork`
+- `nobodyKnows`
