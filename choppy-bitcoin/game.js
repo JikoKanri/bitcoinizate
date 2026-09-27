@@ -2764,7 +2764,7 @@
         const im = new Image();
         im.decoding = "async";
         im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src=(id==="pieceWorld"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin5":"chance/"+id+".jpg?v=mp86";
+        const id=ids[i++]; im.src=(id==="pieceWorld"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin6":"chance/"+id+".jpg?v=mp86";
       }
     };
     kick(4);
@@ -2782,7 +2782,7 @@
       return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
     }
     const wide = artId === "pieceWorld" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
-    const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin5" : "chance/"+artId+".jpg?v=mp86";
+    const jpg = wide ? "chance/"+artId+"-wide.jpg?v=cin6" : "chance/"+artId+".jpg?v=mp86";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
