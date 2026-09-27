@@ -158,6 +158,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `67510ae8c0688c863dce7106da5305b96f319b4c`
   - Pull request: #9
 
+- [x] `ambassador` — “La embajadora”
+  - Mission relation: follows the rejected acquisition offer, unlocks at 75 nodes while the arc remains open, and establishes the diplomatic contact needed before independence.
+  - Updated: English and Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; 75-node threshold, `!bcArcClosed` condition, diplomatic-contact outcome, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `5c82ef4745143a30845af7e08727c25edfe24231`
+  - Pull request: #9
+
 ## Next priority
 
-- `ambassador`
+- `threeColors`
