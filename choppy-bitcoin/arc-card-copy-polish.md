@@ -67,6 +67,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `9ef6a5af72f1b78e294c4b04fa94b51c34b45c44`
   - Pull request: #9
 
+- [x] `nobodyKnows` — “Nadie sabe que existimos”
+  - Mission relation: follows `paperwork` and exposes the lack of citizens, recognition, and attention, leading to Madame Luck and the network growth required for Bitcoin Country.
+  - Updated: Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; $5,000 contact cost, option keys, retry behavior, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `4d1f38fa47e14c923609ec78d7b1b2f6167cf761`
+  - Pull request: #9
+
 ## Next priority
 
-- `nobodyKnows`
+- `theOg`
