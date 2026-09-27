@@ -151,6 +151,34 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit: `f14634e3511cb27ef385a8a98232f8d71c6fee80`
   - Pull request: #9
 
+- [x] `anOffer` — “Una oferta”
+  - Mission relation: follows `rearmament` and presents the decisive exit from the Bitcoin Country project: sell and close the arc or refuse and continue toward independence.
+  - Updated: English and Spanish full text, title, TL;DR, and both options.
+  - Mechanics: choice card; dynamic 135% total offer, +35% wealth sale outcome, `bcArcClosed`, +10 Liberty Nodes on refusal, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `67510ae8c0688c863dce7106da5305b96f319b4c`
+  - Pull request: #9
+
+- [x] `ambassador` — “La embajadora”
+  - Mission relation: follows the rejected acquisition offer, unlocks at 75 nodes while the arc remains open, and establishes the diplomatic contact needed before independence.
+  - Updated: English and Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; 75-node threshold, `!bcArcClosed` condition, diplomatic-contact outcome, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `5c82ef4745143a30845af7e08727c25edfe24231`
+  - Pull request: #9
+
+- [x] `threeColors` — “Tres colores”
+  - Mission relation: follows `ambassador`, completes the three-bloc geopolitical map around Bitcoin Country, and leads into Ortega & Gambette’s recognition advice.
+  - Updated: English and Spanish full text and TL;DR; replaced five fictional member states with Saudi Arabia, Jordan, Morocco, Thailand, and Brunei.
+  - Mechanics: report card; no options; `bcWorld +5`, bloc identity, leader, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit: `f92817aa7c1e513b8ae21c012cfc3cbf9706daa5`
+  - Pull request: #9
+
+- [x] `ortegaCalls` — “Llama el señor Ortega & Gambette”
+  - Mission relation: follows `threeColors` and provides recognition, treaty, fisheries, and protocol advice immediately before the independence decision.
+  - Updated: English and Spanish full text, title, TL;DR, and all three options.
+  - Mechanics: choice card; $25,000 full-package cost, +10 and +4 Liberty Nodes, 93-page fallback email, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `dedbbdba93e6e91b2d3fffd60a6ba5959e05e670`
+  - Delivery branch: `maingpt`
+
 ## Next priority
 
-- `anOffer`
+- `theQuestion`
