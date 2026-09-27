@@ -6,12 +6,12 @@ Target display: full game width (480 CSS px on desktop, responsive on smaller sc
 
 - `pieceWorld` — `pieceWorld-wide.jpg` — original panoramic scene, 1916 × 802 px; inspected at 480 × 201 px; mapped with `wide-art` CSS.
 - `ortegaCalls` — `ortegaCalls-wide.jpg` — original panoramic office-call scene, 1939 × 811 px; inspected at 480 × 201 px; plain coin reverse avoids a malformed emblem; papers are secondary, plausible, and unlabeled.
+- `ambassador` — `ambassador-wide.jpg` — original panoramic diplomatic-arrival scene, 1920 × 800 px; inspected at 480 × 200 px; Choppy emblem, sunglasses, orange limbs, gloves, and shoes verified; no visible text or implausible props.
 
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `ambassador.jpg`
 - `anOffer.jpg`
 - `citadelProblem.jpg`
 - `citadelQuestion.jpg`
