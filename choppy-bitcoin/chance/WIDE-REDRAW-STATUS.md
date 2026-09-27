@@ -13,12 +13,12 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 - `anOffer` — `anOffer-wide.jpg` — corrected panoramic private-offer scene, 1920 × 800 px; inspected at 480 × 200 px; no Lena or other woman is physically present on the island; Choppy has the required red headband, saturated orange-gold body, white ₿ symbol, low black sunglasses, no nose or mouth, orange limbs, white gloves, and brown-and-white shoes; no percentage, documents, screen text, or watermark.
 
 - `citadelQuestion` — `citadelQuestion-wide.png` — new original island-ridge citadel scene, 1942 × 809 px (2.4005:1); inspected at 480 × 200 px; Marek and Choppy, no plans or text; Choppy design checked.
+- `declaration` — `declaration-wide.png` — new original panoramic independence-and-recognition scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy addresses the island community as a male San Arnaldo envoy arrives at the harbor; complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, two orange arms and legs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, anonymous women, documents, readable text, invented emblems, weapons, or watermark.
 
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `declaration.jpg`
 - `extensionCord.jpg`
 - `firstBloc.jpg`
 - `fourthColor.jpg`
