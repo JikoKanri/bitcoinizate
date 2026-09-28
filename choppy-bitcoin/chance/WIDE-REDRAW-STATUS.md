@@ -33,13 +33,14 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `peopleAsking` — `peopleAsking-wide.png` — new original panoramic prospective-residents scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Nico welcomes three waiting boats while Marek indicates the island’s completely undeveloped clearings and Choppy considers the missing-housing problem; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; Lena and Madame Luck are absent; distant families remain secondary; no houses, screens, phones, spreadsheets, maps, blueprints, plans, papers, model houses, readable text, numbers, logos, weapons, or watermark.
 
+- `placeNow` — `placeNow-wide.png` — new original panoramic island-community scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; a compact harbor street now supports an active coffee counter, bakery window, and bar terrace while a skeptical resident addresses Choppy and Nico, making civic life and criticism visible without storefront text; Choppy’s complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct seated limbs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, women, flags, signs, logos, readable newspaper text, menus, documents, maps, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
 - `fourthColor.jpg`
 - `notYet.jpg`
-- `placeNow.jpg`
 - `principality.jpg`
 - `protectIsland.jpg`
 - `rearmament.jpg`
