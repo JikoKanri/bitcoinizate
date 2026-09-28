@@ -2100,7 +2100,7 @@
     fourthColor: { en: "All three blocs attacked and failed. The island still stands: Bitcoin Country is independent.", es: "Los tres bloques atacaron y fracasaron. La isla sigue en pie: Bitcoin Country es independiente." },
     notYet: { en: "The defense collapses, Bitcoin Country loses the island, and the run ends.", es: "La defensa colapsa, Bitcoin Country pierde la isla y la partida termina." },
     landfill: { en: "Nico asks you to risk 25% or 75% of your net worth on a search for a USB that supposedly held 8,000 BTC.", es: "Nico te pide arriesgar el 25% o el 75% de tu patrimonio para buscar una memoria USB que supuestamente contenía 8,000 BTC." },
-    taxbill: { en: "The quarterly tax bill arrives. You open it twice. The number has not changed. It is {gift}.", es: "Llega la factura trimestral de impuestos. La abres dos veces, pero el monto no cambia: {gift}." },
+    taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
     nicoWedding: { en: "Nico is getting married. You barely know the room. Lena asks you not to let him talk you into anything.", es: "Nico se casa. Apenas conoces a la gente del salón y Lena te pide que no permitas que él te convenza de nada. En la mesa de regalos debes decidir cuánto dar." },
     mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere pasar cinco días en Tulum. Reservar el viaje cuesta 8% del patrimonio y otorga unos segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
     flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
@@ -2173,9 +2173,9 @@
         { k: "c", label: "Stay out", labelEs: "No participar" }
       ] },
     { id: "taxbill", kind: "report",
-      title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
-      body: "Your quarterly tax bill arrives. You open it, stare at it, close it, then open it again as if the number might have changed. It has not.",
-      bodyEs: "Llega la factura trimestral de impuestos. La abres, la miras, la cierras y vuelves a abrirla por si el monto cambió. No cambió." },
+      title: "Quarterly Tax Bill", titleEs: "La factura trimestral",
+      body: "Your quarterly tax bill arrives in an official-looking envelope. You read the total, close it, then open it again in case the number has changed. The number has not changed.",
+      bodyEs: "La factura trimestral de impuestos llega en un sobre de aspecto oficial. Lees el total, la cierras y vuelves a abrirla por si el monto cambió. El monto no cambió." },
     { id: "nicoWedding", kind: "choice", after: ["landfill"],
       title: "Nico Gets Married", titleEs: "Se casa Nico",
       body: "Nico is getting married. He has always had too much energy and at least three things going on at once. You arrive with Lena and Paco, who has already decided he dislikes the venue. The salon holds 400 people. You recognize maybe twelve. The DJ is playing old CDs from 1998. Nico is near the bar explaining an extremely complicated idea to a stranger who did not ask. Lena looks at you. \"Please don't let your cousin talk you into anything tonight.\" At the envelope table, you have to decide how much to give.",
@@ -2460,7 +2460,7 @@
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
-      return say("It has not changed. −" + money(paid) + ".", "No cambió. −" + money(paid) + ".");
+      return say("The amount is unchanged. −" + money(paid) + ".", "El monto no cambió. −" + money(paid) + ".");
     }
     if (card.id === "nicoWedding") {
       if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "El resto de la noche evitás a Nico en la barra.");
@@ -3202,8 +3202,8 @@
       }
       if (card.id === "taxbill" && gift) {
         body = es0
-          ? body.replace("No cambió.", "No cambió. Son " + gift + ".")
-          : body.replace("It has not.", "It has not. It is " + gift + ".");
+          ? body.replace("El monto no cambió.", "El monto no cambió. Debes pagar " + gift + ".")
+          : body.replace("The number has not changed.", "The number has not changed. You owe " + gift + ".");
       }
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       S.invuln = before.invuln;
