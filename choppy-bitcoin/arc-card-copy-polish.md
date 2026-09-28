@@ -237,7 +237,7 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
 
 - [x] `fourthColor` — “Un cuarto color”
   - Mission relation: follows the defeat of all three blocs after nine victories and completes Bitcoin Country’s independence arc.
-  - Updated: English and Spanish full text, title, TL;DR, and victory outcome; generalized the bloc references and removed regional phrasing.
+  - Updated: English and Spanish full text, TL;DR, and victory outcome; generalized the bloc references and removed regional phrasing.
   - Mechanics: report card with no options; nine-victory threshold, `bcIndependent`, `bcVictory`, `noteIndependence`, the `"fourth"` award, IDs, sequence, conditions, and effects remain unchanged.
   - Confirmed remote commit on `maingpt`: `ebb9fe1cd2c44997d4021ca0c5cc583f3a4c9d49`
   - Pull request: #11
