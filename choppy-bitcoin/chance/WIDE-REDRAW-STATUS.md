@@ -37,6 +37,8 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `principality` — `principality-wide.png` — new original panoramic first-contact scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Mr Ortega & Gambette proposes relations from a warm office in San Arnaldo while Choppy and one male collaborator receive the remote contact in a moonlit island communications alcove; the two distinct coastlines and mirrored gestures make the separation and diplomatic intent clear without a literal email interface; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; Lena and Madame Luck are absent; no women, flags, anthem sheets, websites, email icons, screens, maps, documents, crowns, seals, readable text, numbers, logos, weapons, or watermark.
 
+- `stateVisit` — `stateVisit-wide.png` — new original panoramic state-visit scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy visits San Arnaldo’s former seaside restaurant turned government office while Mr Ortega & Gambette points to a deliberately empty network cabinet, presenting the request for Bitcoin infrastructure without assuming any choice; restaurant chairs, service counter, pendant lamps, blank chalkboard, compact harbor town, and green hills establish the location; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; Lena and Madame Luck are absent; no women, installed node, screens, diagrams, flags, maps, plans, documents, readable text, numbers, logos, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
@@ -45,7 +47,6 @@ The following existing square scene assets need original wide replacements and c
 - `notYet.jpg`
 - `protectIsland.jpg`
 - `rearmament.jpg`
-- `stateVisit.jpg`
 - `theAnswer.jpg`
 - `theQuestion.jpg`
 - `threeColors.jpg`
