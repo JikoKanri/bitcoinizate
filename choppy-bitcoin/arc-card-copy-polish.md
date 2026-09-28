@@ -207,6 +207,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `c60813a4b9f4767ea69aecd5eb5cc5387f89bfb5`
   - Pull request: #11
 
+- [x] `blocReplies` — “Las respuestas”
+  - Mission relation: follows the declaration response and generates the three blocs’ randomized diplomatic reactions before their fleets attack Bitcoin Country.
+  - Updated: English and Spanish dynamic full text, TL;DR, conditional payment options, and all outcomes; removed voseo and regionalisms.
+  - Mechanics: dynamic report/choice card; randomized accept/reject/time/money reactions, $40,000 payment, option keys, 210-candle assault scheduling, IDs, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `205048f2e0c730c3ee316725140b57c54b0f412a`
+  - Pull request: #11
+
 ## Next priority
 
-- `blocReplies`
+- `blocAssault`
