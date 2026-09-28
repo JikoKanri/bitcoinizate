@@ -2099,7 +2099,7 @@
     theAnswer: { en: "The three blocs use different words, but their answer is the same: Bitcoin Country will not be allowed to stand outside their map. Their fleets are already moving.", es: "Los tres bloques usan palabras distintas, pero su respuesta es la misma: no permitirán que Bitcoin Country permanezca fuera de su mapa. Sus flotas ya están en movimiento." },
     fourthColor: { en: "All three blocs attacked and failed. The island still stands: Bitcoin Country is independent.", es: "Los tres bloques atacaron y fracasaron. La isla sigue en pie: Bitcoin Country es independiente." },
     notYet: { en: "The defense collapses, Bitcoin Country loses the island, and the run ends.", es: "La defensa colapsa, Bitcoin Country pierde la isla y la partida termina." },
-    landfill: { en: "At 1:14 a.m. Nico wants a partner to dig for a USB that supposedly held 8,000 BTC.", es: "A la 1:14 a. m., Nico busca un socio para recuperar de un vertedero una memoria USB que supuestamente contenía 8,000 BTC." },
+    landfill: { en: "Nico asks you to risk 25% or 75% of your net worth on a search for a USB that supposedly held 8,000 BTC.", es: "Nico te pide arriesgar el 25% o el 75% de tu patrimonio para buscar una memoria USB que supuestamente contenía 8,000 BTC." },
     taxbill: { en: "The quarterly tax bill arrives. You open it twice. The number has not changed. It is {gift}.", es: "Llega la factura trimestral de impuestos. La abres dos veces, pero el monto no cambia: {gift}." },
     nicoWedding: { en: "Nico is getting married. You barely know the room. Lena asks you not to let him talk you into anything.", es: "Nico se casa. Apenas conoces a la gente del salón y Lena te pide que no permitas que él te convenza de nada. En la mesa de regalos debes decidir cuánto dar." },
     mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere pasar cinco días en Tulum. Reservar el viaje cuesta 8% del patrimonio y otorga unos segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
@@ -2164,13 +2164,13 @@
   }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
-      title: "The Landfill", titleEs: "The Landfill",
-      body: "At 1:14 a.m., Nico sends a voice message. The photo is dark: a truck, and a shovel leaning against the hood.\n\n\"I'm in Wales,\" he says. \"They let me dig Docksway. A USB with 8,000 BTC was supposedly lost there in 2009. I want a partner, not a spectator.\"\n\nFrom the other side of the bed, Lena opens one eye. \"If you put money into a treasure hunt at 1:14 a.m., the next time you're about to come I'm calling you Fartface.\"\n\nYou look at the photo again. The shovel does look surprisingly convincing.",
-      bodyEs: "A la 1:14 a. m., Nico envía un audio. La foto está oscura: un camión y una pala apoyada en el capó.\n\n\"Estoy en Gales\", dice. \"Me dejaron excavar Docksway. Al parecer, allí se perdió en 2009 una memoria USB con 8,000 BTC. Quiero un socio, no un espectador.\"\n\nDesde el otro lado de la cama, Lena abre un ojo. \"Si inviertes en una búsqueda del tesoro a la 1:14 a. m., la próxima vez que estés a punto de terminar te llamaré Fartface.\"\n\nMiras la foto otra vez. La pala resulta sorprendentemente convincente.",
+      title: "The Landfill", titleEs: "El vertedero",
+      body: "At 1:14 a.m., Nico sends a voice message with a dark photo of a truck and a shovel leaning against its hood.\n\n\"I'm in Wales,\" he says. \"They let me dig at Docksway. A USB that held 8,000 BTC was supposedly lost here in 2009. I need a partner, not a spectator.\"\n\nLena opens one eye from the other side of the bed. \"If you fund a treasure hunt at 1:14 a.m., the next time you're about to come, I'm calling you Fartface.\"\n\nYou look at the photo again. Somehow, the shovel makes the plan seem credible.",
+      bodyEs: "A la 1:14 a. m., Nico envía un audio con una foto oscura de un camión y una pala apoyada en el capó.\n\n\"Estoy en Gales\", dice. \"Me dejaron excavar en Docksway. Al parecer, aquí se perdió en 2009 una memoria USB que contenía 8,000 BTC. Necesito un socio, no un espectador.\"\n\nDesde el otro lado de la cama, Lena abre un ojo. \"Si financias una búsqueda del tesoro a la 1:14 a. m., la próxima vez que estés a punto de terminar te diré Fartface.\"\n\nMiras la foto otra vez. Por alguna razón, la pala hace que el plan parezca creíble.",
       opts: [
-        { k: "a", label: "Put in 25% of net worth", labelEs: "Aportar el 25% del patrimonio" },
-        { k: "b", label: "Put in 75% of net worth", labelEs: "Aportar el 75% del patrimonio" },
-        { k: "c", label: "Don't participate", labelEs: "No participar" }
+        { k: "a", label: "Risk 25% of net worth", labelEs: "Arriesgar el 25% del patrimonio" },
+        { k: "b", label: "Risk 75% of net worth", labelEs: "Arriesgar el 75% del patrimonio" },
+        { k: "c", label: "Stay out", labelEs: "No participar" }
       ] },
     { id: "taxbill", kind: "report",
       title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
@@ -2436,8 +2436,8 @@
     const es = chanceLang();
     const say = (en, esTxt) => (es && esTxt ? esTxt : en);
     if (card.id === "landfill") {
-      if (opt === "c") return say("You stay in bed. Nico can dig Docksway without you.",
-        "Te quedás en la cama. Nico puede excavar Docksway sin vos.");
+      if (opt === "c") return say("You stay in bed. Nico can dig at Docksway without you.",
+        "Te quedas en la cama. Nico puede excavar en Docksway sin ti.");
       const pct = opt === "b" ? 0.75 : 0.25;
       const cashCut = (S.cash || 0) * pct;
       const btcCut = (S.btc || 0) * pct;
@@ -2447,16 +2447,16 @@
       if (r < 0.00029) {
         const share = opt === "b" ? 4000 : (4000 / 3);
         creditBtc(share);
-        return say("Find the USB. +" + share.toFixed(2) + " BTC.",
-          "Find the USB. +" + share.toFixed(2) + " BTC.");
+        return say("You find the USB. +" + share.toFixed(2) + " BTC.",
+          "Encuentran la memoria USB. +" + share.toFixed(2) + " BTC.");
       }
       if (r < 0.00029 + 0.22) {
         arcPay(8);
-        return say("Find old Nokia. +$8.",
-          "Find old Nokia. +$8.");
+        return say("You find an old Nokia. +$8.",
+          "Encuentran un Nokia viejo. +$8.");
       }
-      return say("Three weeks digging through clay and nothing.",
-        "Three weeks digging through clay and nothing.");
+      return say("Three weeks of digging through clay turn up nothing.",
+        "Tres semanas excavando arcilla no dan ningún resultado.");
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
