@@ -25,12 +25,13 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `temporaryMeasures` — `temporaryMeasures-wide.png` — new original panoramic financial-restrictions scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; male citizens face dark payment kiosks while officials extend worn barriers at a bank entrance and Choppy remains stable in the open foreground; complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, two orange arms and legs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, women, phones, cards, cash, documents, maps, flags, visible text, numbers, calendars, charts, readable screens, weapons, or watermark.
 
+- `nobodyKnows` — `nobodyKnows-wide.png` — new original panoramic empty-island-harbor scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy and Nico face an empty sea from a finished dock while the ready but unused settlement and vacant moorings establish the island’s lack of citizens, recognition, and attention; Choppy’s complete white ₿, red headband, saturated orange-gold body, low black sunglasses in rear three-quarter view, no nose or mouth, correct limbs, gloves, and shoes verified; Madame Luck remains off-island; no Lena, women, extra people, boats, communication devices, documents, maps, signs, flags, readable text, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
 - `fourthColor.jpg`
-- `nobodyKnows.jpg`
 - `notYet.jpg`
 - `obviously.jpg`
 - `peopleAsking.jpg`
