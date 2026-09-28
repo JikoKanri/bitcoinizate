@@ -39,6 +39,12 @@ Reject an image if the emblem is gold, dark, malformed, partly hidden, or replac
 - Madame Luck remains off-island unless the card text explicitly says she travels there. A call, message, or implied remote conversation must not be turned into her physical presence on the island.
 - Use the card's current text, IDs, conditions, sequence, and approved character references to determine who is actually present. Do not add characters merely to fill the frame.
 
+## Scope exclusions
+
+- Do not select, edit, redraw, regenerate, retouch, remap, or change tracking status for any arc card related to `perk jobs`.
+- Exclude `perk jobs` cards from all triage levels, even when their art is missing, incorrect, basic, or otherwise pending.
+- If a card's relationship to `perk jobs` is uncertain, leave it untouched and choose a clearly unrelated card.
+
 ## Text, documents, and props
 
 - Avoid visible text, numbers, percentages, currency symbols, page counts, labels, captions, interface text, and invented logos.
