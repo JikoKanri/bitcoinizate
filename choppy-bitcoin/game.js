@@ -2101,7 +2101,7 @@
     notYet: { en: "The defense collapses, Bitcoin Country loses the island, and the run ends.", es: "La defensa colapsa, Bitcoin Country pierde la isla y la partida termina." },
     landfill: { en: "Nico asks you to risk 25% or 75% of your net worth on a search for a USB that supposedly held 8,000 BTC.", es: "Nico te pide arriesgar el 25% o el 75% de tu patrimonio para buscar una memoria USB que supuestamente contenía 8,000 BTC." },
     taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
-    nicoWedding: { en: "Nico is getting married. You barely know the room. Lena asks you not to let him talk you into anything.", es: "Nico se casa. Apenas conoces a la gente del salón y Lena te pide que no permitas que él te convenza de nada. En la mesa de regalos debes decidir cuánto dar." },
+    nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
     mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere pasar cinco días en Tulum. Reservar el viaje cuesta 8% del patrimonio y otorga unos segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
     flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
     phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
@@ -2177,12 +2177,12 @@
       body: "Your quarterly tax bill arrives in an official-looking envelope. You read the total, close it, then open it again in case the number has changed. The number has not changed.",
       bodyEs: "La factura trimestral de impuestos llega en un sobre de aspecto oficial. Lees el total, la cierras y vuelves a abrirla por si el monto cambió. El monto no cambió." },
     { id: "nicoWedding", kind: "choice", after: ["landfill"],
-      title: "Nico Gets Married", titleEs: "Se casa Nico",
-      body: "Nico is getting married. He has always had too much energy and at least three things going on at once. You arrive with Lena and Paco, who has already decided he dislikes the venue. The salon holds 400 people. You recognize maybe twelve. The DJ is playing old CDs from 1998. Nico is near the bar explaining an extremely complicated idea to a stranger who did not ask. Lena looks at you. \"Please don't let your cousin talk you into anything tonight.\" At the envelope table, you have to decide how much to give.",
-      bodyEs: "Nico se casa. Siempre ha tenido demasiada energía y al menos tres asuntos en marcha al mismo tiempo. Llegas con Lena y Paco, que ya decidió que el salón no le gusta. Hay 400 invitados y apenas reconoces a doce. El DJ pone discos de 1998. Cerca de la barra, Nico le explica una idea complicadísima a un desconocido que no preguntó. Lena te mira: \"Esta noche no dejes que tu primo te convenza de nada\". En la mesa de regalos debes decidir cuánto dar.",
+      title: "Nico Gets Married", titleEs: "La boda de Nico",
+      body: "Nico is getting married. You arrive with Lena and Paco, who has already decided he dislikes the venue. There are 400 guests, and you recognize about twelve. The DJ is playing CDs from 1998. Near the bar, Nico is pitching an elaborate idea to a stranger who did not ask. Lena looks at you. \"Do not let your cousin talk you into anything tonight.\" At the gift table, you decide how much to give.",
+      bodyEs: "Nico se casa. Llegas con Lena y Paco, que ya decidió que el lugar no le gusta. Hay 400 invitados y solo reconoces a unos doce. El DJ reproduce discos de 1998. Cerca de la barra, Nico le presenta una idea complicadísima a un desconocido que no preguntó. Lena te mira: \"No permitas que tu primo te convenza de nada esta noche\". En la mesa de regalos debes decidir cuánto dar.",
       opts: [
-        { k: "a", label: "Be generous · 4%", labelEs: "Dar un regalo generoso · 4%" },
-        { k: "b", label: "Give less · 0.6%", labelEs: "Dar un regalo modesto · 0.6%" },
+        { k: "a", label: "Give a generous gift", labelEs: "Dar un regalo generoso" },
+        { k: "b", label: "Give a modest gift", labelEs: "Dar un regalo modesto" },
         { k: "c", label: "Skip the gift", labelEs: "No dar regalo" }
       ] },
     { id: "mexico", kind: "choice", after: ["landfill"],
@@ -2463,16 +2463,16 @@
       return say("The amount is unchanged. −" + money(paid) + ".", "El monto no cambió. −" + money(paid) + ".");
     }
     if (card.id === "nicoWedding") {
-      if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "El resto de la noche evitás a Nico en la barra.");
+      if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "Pasas el resto de la noche evitando a Nico cerca de la barra.");
       if (opt === "a") {
         const paid = cutPct(0.04);
         S.cold += 1;
         return say("They toast you. −" + money(paid) + ". Nico hands you a cold-storage device. \"Part of the wedding experience.\"",
-          "Brindan por vos. −" + money(paid) + ". Nico te pasa un cold storage. \"Parte de la experiencia.\"");
+          "Brindan por ti. −" + money(paid) + ". Nico te entrega un dispositivo de almacenamiento en frío. \"Es parte de la experiencia.\"");
       }
       const paid = cutPct(0.006);
       return say("Nico looks at the envelope, then at you. \"Fair.\" −" + money(paid) + ".",
-        "Nico mira el sobre, después a vos. \"Justo.\" −" + money(paid) + ".");
+        "Nico mira el sobre y luego te mira a ti. \"Es justo.\" −" + money(paid) + ".");
     }
     if (card.id === "mexico") {
       if (opt === "b") return say("You stay home. Paco destroys a cushion.", "Se quedan. Paco destruye un almohadón.");
