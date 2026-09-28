@@ -2418,7 +2418,7 @@
     { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", titleEs:"La declaración", body:"The cabinet gathers around the final page. You sign the declaration and publish it to the world. For thirty-seven seconds, nothing happens. Then San Arnaldo recognizes Bitcoin Country. Mr Ortega & Gambette responds with a thumbs-up and a fourteen-page attachment on the proper protocol for receiving recognition.", bodyEs:"El gabinete se reúne alrededor de la última página. Firmas la declaración y la publicas para el mundo. Durante 37 segundos no ocurre nada. Entonces San Arnaldo reconoce a Bitcoin Country. El señor Ortega & Gambette responde con un pulgar arriba y un documento adjunto de 14 páginas sobre el protocolo adecuado para recibir un reconocimiento." },
     { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The statements arrive in different formats: a formal rejection, a request for time, a recognition with conditions. The wording changes from bloc to bloc. The consequence does not. None of them will accept Bitcoin Country outside the borders they drew, and their fleets are already leaving port.", bodyEs:"Los comunicados llegan en formatos distintos: un rechazo formal, una solicitud de tiempo, un reconocimiento sujeto a condiciones. Las palabras cambian de un bloque a otro. La consecuencia no. Ninguno aceptará a Bitcoin Country fuera de las fronteras que trazó, y sus flotas ya están saliendo de puerto." },
     { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The three blocs answer the declaration in different ways, but every response conceals the same military preparation.", bodyEs:"Los tres bloques responden a la declaración de maneras distintas, pero todas las respuestas ocultan la misma preparación militar." },
-    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
+    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming Fire", titleEs:"Fuego enemigo", body:"A bloc opens fire while its prepared communiqué declares the attack unavoidable. Bitcoin Country must hold the island.", bodyEs:"Un bloque abre fuego mientras su comunicado preparado declara que el ataque era inevitable. Bitcoin Country debe defender la isla." },
     { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails." },
     { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
@@ -2662,7 +2662,7 @@
       if(opt==="b")return say("You refuse the payment. The fleets were never waiting for your answer.","Rechazas el pago. Las flotas nunca estuvieron esperando tu respuesta.");
       return say("All three statements have arrived. Their ships are already moving.","Ya llegaron los tres comunicados. Sus barcos ya están en movimiento.");
     }
-    if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
+    if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The defense begins as the first ships enter range.","La defensa comienza cuando los primeros barcos entran en alcance.");}
     if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
     if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
     if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
@@ -2880,8 +2880,8 @@
       ? (slot===0?"Los barcos ya se ven desde el muelle.":slot===1?"Vuelven por otra cala, y no avisan la hora.":"El mar se vuelve a llenar de cascos.")
       : (slot===0?"The ships are already visible from the dock.":slot===1?"They come back through another cove, and they do not name the hour.":"The sea fills with hulls again.");
     return es
-      ? name+" abre fuego. "+who+" ya escribió el comunicado. No negocia bajo fuego.\n\n"+beat+"\n\nLa isla tiene que aguantar."
-      : "The "+name+" opens fire. "+who+" has already written the communiqué. There is no negotiation under fire.\n\n"+beat+"\n\nThe island has to hold.";
+      ? name+" abre fuego antes de que terminen los canales diplomáticos. "+who+" publica un comunicado preparado de antemano y afirma que el ataque era inevitable.\n\n"+beat+"\n\nLa flota se acerca. La isla debe resistir."
+      : "The "+name+" opens fire before the diplomatic channels have closed. "+who+" releases a communiqué prepared in advance and calls the attack unavoidable.\n\n"+beat+"\n\nThe fleet is closing in. The island must hold.";
   }
   function battleReportText(){
     const es=chanceLang();
@@ -2960,8 +2960,8 @@
       ? "Los tres bloques responden de forma distinta: reconocimiento, rechazo, demora o una exigencia de pago. Al final de la semana, los tres están movilizando sus flotas."
       : "The three blocs answer differently: recognition, rejection, delay, or a demand for payment. By the end of the week, all three are mobilizing their fleets.";
     if(id==="blocAssault") return es
-      ? "Abren fuego. El comunicado ya está escrito. La isla tiene que aguantar."
-      : "They open fire. The communiqué is already written. The island has to hold.";
+      ? "Un bloque abre fuego y publica un comunicado preparado de antemano. La flota se acerca; la isla debe resistir."
+      : "A bloc opens fire and releases a communiqué prepared in advance. The fleet is closing in; the island must hold.";
     if(id==="battleWon"){
       const i=Math.max(0,(S.bcBattlesWon||1)-1);
       const en=[
@@ -3014,8 +3014,8 @@
       if((S.bcBattlesWon||0)===0){
         card.kind="choice";
         card.opts=[
-          {k:"go", label:"Hold the beach", labelEs:"Aguantar la playa"},
-          {k:"tut", label:"Battle tutorial", labelEs:"Tutorial de batalla"}
+          {k:"go", label:"Defend the beach", labelEs:"Defender la playa"},
+          {k:"tut", label:"Review the battle tutorial", labelEs:"Revisar el tutorial de batalla"}
         ];
       }else{
         card.kind="report";
@@ -3351,7 +3351,7 @@
       S.chanceBody=battleTutPlain();
       S.chanceTitle={en:"Battle tutorial", es:"Tutorial de batalla"};
       card.kind="choice";
-      card.opts=[{k:"go", label:"Hold the beach", labelEs:"Aguantar la playa"}];
+      card.opts=[{k:"go", label:"Begin the defense", labelEs:"Iniciar la defensa"}];
       S.chanceNote="";
       renderOverlay();
       return;
