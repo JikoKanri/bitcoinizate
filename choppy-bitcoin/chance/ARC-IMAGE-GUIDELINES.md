@@ -47,6 +47,14 @@ Reject an image if the emblem is gold, dark, malformed, partly hidden, or replac
 - Documents and props are allowed only when required by the scene, and must be plausible, secondary, unlabeled, and free of legible text.
 - Prefer environmental storytelling, character blocking, gesture, lighting, and expression over signs or explanatory props.
 
+### Reusable world-news device
+
+- For cards whose central event is explicitly public news about the wider world, a folded fictional newspaper named **THE NEW FORK TIMES** may be the principal illustration.
+- Keep its identity consistent across the series: the exact masthead `THE NEW FORK TIMES`, restrained black-and-cream broadsheet design, one concise story-specific headline, and one strong editorial photograph.
+- The masthead and the single headline are intentional exceptions to the general no-text rule. Do not add subheads, captions, dates, prices, bylines, page numbers, charts, article columns, or fake filler copy.
+- Crop, fold, shadow, or defocus the lower page so no body text is visible or simulated.
+- Use this device only when the card describes public news; do not turn private conversations or local decisions into newspaper covers.
+
 ## Style and quality
 
 - Use polished cinematic stylized 3D illustration with coherent lighting, believable materials, and environmental depth.
