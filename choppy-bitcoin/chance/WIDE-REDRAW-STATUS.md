@@ -29,13 +29,14 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `theOg` — `theOg-wide.png` — new original panoramic split-location remote-call scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Madame Luck is clearly off-island in a separate city studio while Choppy and one male collaborator listen from the moonlit island communications room as abstract receiver lights signal new attention; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; no Lena, anonymous women, extra people, screens, phones, maps, documents, clocks, visible text, numbers, logos, weapons, or watermark.
 
+- `obviously` — `obviously-wide.png` — new original panoramic island-mining scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Nico presents a newly energized, plausibly wired mining shed to Choppy, communicating the cheap-power mining proposal through gesture and working infrastructure; Choppy’s complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, women, extra characters, documents, maps, signs, flags, visible text, numbers, charts, readable screens, unsafe wiring, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
 - `fourthColor.jpg`
 - `notYet.jpg`
-- `obviously.jpg`
 - `peopleAsking.jpg`
 - `placeNow.jpg`
 - `principality.jpg`
