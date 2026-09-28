@@ -43,6 +43,8 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `rearmament` — `rearmament-wide.png` — new original panoramic rival-shipyards scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; cool clinical and harsh red-orange shipyards simultaneously construct distinct warships across a central harbor channel, making the undeclared arms race immediately readable; Marshal Amina Kade observes from the right walkway as the only prominent woman, with a distinct middle-aged Black identity, short natural hair, severe profile, and plain structured coat unlike Lena; one distant male civilian administrator anchors the opposite yard; Choppy and Madame Luck are absent because neither is physically present; no flags, emblems, banners, propaganda, maps, blueprints, notebooks, documents, screens, readable text, numbers, logos, battle action, weapons firing, or watermark.
 
+- `theQuestion` — `theQuestion-wide.png` — new original panoramic pre-independence assembly scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy pauses before an expectant male community while the completed settlement, working harbor, protective walls, hardened center, and open sea establish that every practical condition is in place except the declaration itself; Choppy’s complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, gloves, and shoes verified; no Lena, Madame Luck, women, documents, declarations, maps, signs, flags, text, microphones, weapons, warships, premature celebration, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
@@ -50,7 +52,6 @@ The following existing square scene assets need original wide replacements and c
 - `fourthColor.jpg`
 - `notYet.jpg`
 - `theAnswer.jpg`
-- `theQuestion.jpg`
 - `threeColors.jpg`
 - `festival.jpg` (used by `blocTriumph`)
 
