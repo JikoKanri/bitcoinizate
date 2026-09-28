@@ -41,13 +41,14 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `protectIsland` — `protectIsland-wide.png` — new original panoramic missing-boat harbor scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy inspects a conspicuously empty berth while a simple camera points toward the wrong patch of dock and Paco sleeps beside the vacant watch shelter; other moored craft remain background context and the stolen boat and thief are absent; Choppy’s complete white ₿, red headband, saturated orange-gold body, low black sunglasses in profile, no nose or mouth, correct limbs, gloves, and shoes verified; no Lena, Madame Luck, women, other people, maps, reports, signs, flags, readable text, weapons, or watermark.
 
+- `rearmament` — `rearmament-wide.png` — new original panoramic rival-shipyards scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; cool clinical and harsh red-orange shipyards simultaneously construct distinct warships across a central harbor channel, making the undeclared arms race immediately readable; Marshal Amina Kade observes from the right walkway as the only prominent woman, with a distinct middle-aged Black identity, short natural hair, severe profile, and plain structured coat unlike Lena; one distant male civilian administrator anchors the opposite yard; Choppy and Madame Luck are absent because neither is physically present; no flags, emblems, banners, propaganda, maps, blueprints, notebooks, documents, screens, readable text, numbers, logos, battle action, weapons firing, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
 - `fourthColor.jpg`
 - `notYet.jpg`
-- `rearmament.jpg`
 - `theAnswer.jpg`
 - `theQuestion.jpg`
 - `threeColors.jpg`
