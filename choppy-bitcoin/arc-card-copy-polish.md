@@ -214,6 +214,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `205048f2e0c730c3ee316725140b57c54b0f412a`
   - Pull request: #11
 
+- [x] `blocAssault` — “Fuego enemigo”
+  - Mission relation: follows the blocs’ replies and launches each military assault against Bitcoin Country during the independence war.
+  - Updated: English and Spanish dynamic full text, title, TL;DR, first-assault options, tutorial-return option, and immediate outcome.
+  - Mechanics: dynamic report/choice card; bloc selection, `go`/`tut` keys, tutorial flow, `bcDefensePending`, defense launch, IDs, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `6fca665590b5b5f1498364309b171001f2e00443`
+  - Pull request: #11
+
 ## Next priority
 
-- `blocAssault`
+- `battleWon`
