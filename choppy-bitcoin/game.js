@@ -2419,7 +2419,7 @@
     { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The statements arrive in different formats: a formal rejection, a request for time, a recognition with conditions. The wording changes from bloc to bloc. The consequence does not. None of them will accept Bitcoin Country outside the borders they drew, and their fleets are already leaving port.", bodyEs:"Los comunicados llegan en formatos distintos: un rechazo formal, una solicitud de tiempo, un reconocimiento sujeto a condiciones. Las palabras cambian de un bloque a otro. La consecuencia no. Ninguno aceptará a Bitcoin Country fuera de las fronteras que trazó, y sus flotas ya están saliendo de puerto." },
     { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The three blocs answer the declaration in different ways, but every response conceals the same military preparation.", bodyEs:"Los tres bloques responden a la declaración de maneras distintas, pero todas las respuestas ocultan la misma preparación militar." },
     { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming Fire", titleEs:"Fuego enemigo", body:"A bloc opens fire while its prepared communiqué declares the attack unavoidable. Bitcoin Country must hold the island.", bodyEs:"Un bloque abre fuego mientras su comunicado preparado declara que el ataque era inevitable. Bitcoin Country debe defender la isla." },
-    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails." },
+    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa resiste", body:"The landing is repelled. Bitcoin Country holds the shore, but the campaign is not over.", bodyEs:"El desembarco es rechazado. Bitcoin Country conserva la costa, pero la campaña aún no ha terminado." },
     { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
     { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends." },
@@ -2663,7 +2663,7 @@
       return say("All three statements have arrived. Their ships are already moving.","Ya llegaron los tres comunicados. Sus barcos ya están en movimiento.");
     }
     if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The defense begins as the first ships enter range.","La defensa comienza cuando los primeros barcos entran en alcance.");}
-    if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
+    if(card.id==="battleWon"){return say("The island holds the line.","La isla mantiene la línea defensiva.");}
     if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
     if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
     if(card.id==="notYet"){return say("Not yet.","");}
@@ -2890,28 +2890,28 @@
     const slot=(won-1)%3;
     const packs=[
       [
-        { enT:"The Beach Holds", esT:"La playa aguanta",
-          en:"A landing dies in the sand. The occupation order was already stamped. Paco brings one stamp back and does not say where the clerk went.\n\nThe beach goes quiet enough to hear the bakery.",
-          es:"Un desembarco muere en la arena. La orden de ocupación ya estaba sellada. Paco vuelve con un sello y no dice dónde quedó el funcionario.\n\nLa playa se calla lo suficiente como para oír la panadería." },
+        { enT:"The Beach Holds", esT:"La playa resiste",
+          en:"The first landing collapses on the beach. The occupation order had already been stamped. Paco returns with one of its seals and does not explain what happened to the clerk.\n\nThe shore grows quiet enough to hear the bakery.",
+          es:"El primer desembarco fracasa en la playa. La orden de ocupación ya estaba sellada. Paco regresa con uno de sus sellos y no explica qué ocurrió con el funcionario.\n\nLa costa queda lo bastante silenciosa como para oír la panadería." },
         { enT:"The Other Cove", esT:"La otra cala",
-          en:"They try another cove before noon. The tanks that make the road do not make the hill. Marek watches what the tide returns and does not call it a victory. Nico opens the bar anyway.",
-          es:"Prueban otra cala antes del mediodía. Los tanques que llegan al camino no llegan a la loma. Marek mira lo que devuelve la marea y no lo llama victoria. Nico abre el bar igual." }
+          en:"A second landing reaches another cove before noon. The tanks make it to the road but never clear the hill. Marek watches what the tide returns and refuses to call it a victory. Nico opens the bar anyway.",
+          es:"Un segundo desembarco alcanza otra cala antes del mediodía. Los tanques llegan al camino, pero no superan la colina. Marek observa lo que devuelve la marea y se niega a llamarlo victoria. Nico abre el bar de todos modos." }
       ],
       [
-        { enT:"The Posters", esT:"Los afiches",
-          en:"The Ledger comes in shouting. The posters hit the water before the soldiers do. Marshal Kade is still on the radio when the radio goes into the sea.\n\nSomeone on the dock starts laughing and cannot stop.",
-          es:"El Libro entra gritando. Los afiches caen al agua antes que los soldados. La mariscal Kade sigue en la radio cuando la radio se va al mar.\n\nAlguien en el muelle se larga a reír y no puede parar." },
-        { enT:"The Line Breaks", esT:"La fila se corta",
-          en:"They come back thinner and louder. The line breaks at the wall. Paco sits on a turret that is no longer moving and eats an orange.\n\nThe island does not cheer. It exhales.",
-          es:"Vuelven más flacos y más ruidosos. La fila se corta en el muro. Paco se sienta en una torreta que ya no se mueve y se come una naranja.\n\nLa isla no festeja. Suelta el aire." }
+        { enT:"The Posters", esT:"Los carteles",
+          en:"The Red Ledger attacks under its own slogans. The posters reach the water before the soldiers. Marshal Kade is still speaking over the radio when the radio falls into the sea.\n\nSomeone on the dock begins laughing and cannot stop.",
+          es:"El Libro Rojo ataca bajo sus propias consignas. Los carteles llegan al agua antes que los soldados. La mariscal Kade todavía habla por radio cuando el aparato cae al mar.\n\nAlguien en el muelle comienza a reír y no puede detenerse." },
+        { enT:"The Line Breaks", esT:"La línea cede",
+          en:"They return with fewer troops and more noise. The assault line breaks against the wall. Paco sits on a disabled turret and eats an orange.\n\nThe island does not celebrate. It exhales.",
+          es:"Regresan con menos tropas y más ruido. La línea de ataque se rompe contra el muro. Paco se sienta sobre una torreta inmóvil y come una naranja.\n\nLa isla no celebra. Respira aliviada." }
       ],
       [
         { enT:"The Parade Stops", esT:"El desfile se detiene",
-          en:"The Lattice arrives as if this were a procession. It is not. The gray ships turn when the citadel does not kneel.\n\nSoren Pell does not speak. The silence, for once, is yours.",
-          es:"La Celosía llega como si esto fuera un desfile. No lo es. Los barcos grises giran cuando la ciudadela no se arrodilla.\n\nSoren Pell no habla. El silencio, por una vez, es de ustedes." },
+          en:"The Crown Lattice arrives as if the invasion were a procession. It is not. Its gray ships turn when the citadel refuses to kneel.\n\nSoren Pell says nothing. For once, the silence belongs to the island.",
+          es:"La Celosía de la Corona llega como si la invasión fuera una procesión. No lo es. Sus barcos grises retroceden cuando la ciudadela se niega a arrodillarse.\n\nSoren Pell no dice nada. Por una vez, el silencio pertenece a la isla." },
         { enT:"Ash on the Water", esT:"Ceniza en el agua",
-          en:"They return without the music. The hulls burn low and even. By dusk the eastern cliff is just a cliff again.\n\nLena watches the smoke and says nothing, which on this island counts as a toast.",
-          es:"Vuelven sin la música. Los cascos arden bajos y parejos. Al anochecer el acantilado del este vuelve a ser solo un acantilado.\n\nLena mira el humo y no dice nada, que en esta isla cuenta como un brindis." }
+          en:"The Crown Lattice returns without music. Its hulls burn in a low, even line. By dusk, the eastern cliff belongs to the island again.\n\nLena watches the smoke without speaking. On this island, that counts as a toast.",
+          es:"La Celosía de la Corona regresa sin música. Sus cascos arden en una línea baja y uniforme. Al anochecer, el acantilado oriental vuelve a pertenecer a la isla.\n\nLena observa el humo en silencio. En esta isla, eso cuenta como un brindis." }
       ]
     ];
     const row=packs[Math.max(0,Math.min(2,bloc))][slot===1?1:0];
@@ -2965,24 +2965,24 @@
     if(id==="battleWon"){
       const i=Math.max(0,(S.bcBattlesWon||1)-1);
       const en=[
-        "A landing dies in the sand. Paco brings one stamp back.",
-        "They try another cove. The tanks do not make the hill.",
+        "The first landing collapses on the beach. Paco returns with a stamp from the occupation order.",
+        "A second landing reaches another cove, but its tanks never clear the hill.",
         "",
-        "The posters hit the water before the soldiers do.",
-        "The line breaks at the wall. The island exhales.",
+        "The Red Ledger attacks under its own slogans. Its posters reach the water before its soldiers.",
+        "The assault line breaks against the wall. The island does not celebrate; it exhales.",
         "",
-        "The gray ships turn when the citadel does not kneel.",
-        "They return without the music. By dusk the cliff is just a cliff."
+        "The Crown Lattice arrives like a procession. Its gray ships turn when the citadel refuses to kneel.",
+        "The Crown Lattice returns without music. By dusk, the eastern cliff belongs to the island again."
       ];
       const sp=[
-        "Un desembarco muere en la arena. Paco vuelve con un sello.",
-        "Prueban otra cala. Los tanques no llegan a la loma.",
+        "El primer desembarco fracasa en la playa. Paco regresa con un sello de la orden de ocupación.",
+        "Un segundo desembarco alcanza otra cala, pero sus tanques no superan la colina.",
         "",
-        "Los afiches caen al agua antes que los soldados.",
-        "La fila se corta en el muro. La isla suelta el aire.",
+        "El Libro Rojo ataca bajo sus propias consignas. Sus carteles llegan al agua antes que sus soldados.",
+        "La línea de ataque se rompe contra el muro. La isla no celebra; respira aliviada.",
         "",
-        "Los barcos grises giran cuando la ciudadela no se arrodilla.",
-        "Vuelven sin la música. Al anochecer el acantilado vuelve a ser un acantilado."
+        "La Celosía de la Corona llega como una procesión. Sus barcos grises retroceden cuando la ciudadela se niega a arrodillarse.",
+        "La Celosía de la Corona regresa sin música. Al anochecer, el acantilado oriental vuelve a pertenecer a la isla."
       ];
       return (es?sp:en)[i] || (es?sp[0]:en[0]);
     }
