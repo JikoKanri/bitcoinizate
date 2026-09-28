@@ -27,6 +27,8 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `nobodyKnows` — `nobodyKnows-wide.png` — new original panoramic empty-island-harbor scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy and Nico face an empty sea from a finished dock while the ready but unused settlement and vacant moorings establish the island’s lack of citizens, recognition, and attention; Choppy’s complete white ₿, red headband, saturated orange-gold body, low black sunglasses in rear three-quarter view, no nose or mouth, correct limbs, gloves, and shoes verified; Madame Luck remains off-island; no Lena, women, extra people, boats, communication devices, documents, maps, signs, flags, readable text, weapons, or watermark.
 
+- `theOg` — `theOg-wide.png` — new original panoramic split-location remote-call scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Madame Luck is clearly off-island in a separate city studio while Choppy and one male collaborator listen from the moonlit island communications room as abstract receiver lights signal new attention; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; no Lena, anonymous women, extra people, screens, phones, maps, documents, clocks, visible text, numbers, logos, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
@@ -41,7 +43,6 @@ The following existing square scene assets need original wide replacements and c
 - `rearmament.jpg`
 - `stateVisit.jpg`
 - `theAnswer.jpg`
-- `theOg.jpg`
 - `theQuestion.jpg`
 - `threeColors.jpg`
 - `festival.jpg` (used by `blocTriumph`)
