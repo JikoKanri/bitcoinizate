@@ -263,6 +263,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `17e544d5d5f1d0b0a6da811e1bb9ae378ef0a70d`
   - Pull request: #11
 
+- [x] `nicoWedding` — “La boda de Nico”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, all three options, and outcome copy; removed voseo and translated the cold-storage reward naturally.
+  - Mechanics: choice card; 4% and 0.6% gift costs, cold-storage reward, option keys, prerequisite, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `3d1112e3fe474bc2d287bb550878259002263d91`
+  - Pull request: #11
+
 ## Next priority
 
-- `nicoWedding`
+- `mexico`
