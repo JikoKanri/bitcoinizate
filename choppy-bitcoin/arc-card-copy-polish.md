@@ -256,6 +256,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `23960ccc1193055f98ff1f4316d895ccf6aa8595`
   - Pull request: #11
 
+- [x] `taxbill` — “La factura trimestral”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, dynamic amount insertion, and outcome copy; neutralized the Spanish phrasing.
+  - Mechanics: report card with no options; 10% deduction, dynamic amount, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `17e544d5d5f1d0b0a6da811e1bb9ae378ef0a70d`
+  - Pull request: #11
+
 ## Next priority
 
-- `taxbill`
+- `nicoWedding`
