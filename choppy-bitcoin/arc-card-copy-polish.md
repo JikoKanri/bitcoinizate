@@ -249,6 +249,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `1dfde2797379e0cd0472ba33267fc3df91f739e0`
   - Pull request: #11
 
+- [x] `landfill` — “El vertedero”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, all three options, and outcome copy; added complete Spanish outcomes and removed voseo.
+  - Mechanics: choice card; 25% and 75% risk levels, 8,000 BTC premise, random probabilities, rewards, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `23960ccc1193055f98ff1f4316d895ccf6aa8595`
+  - Pull request: #11
+
 ## Next priority
 
-- `jobBadge`
+- `taxbill`
