@@ -45,6 +45,8 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `theQuestion` — `theQuestion-wide.png` — new original panoramic pre-independence assembly scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy pauses before an expectant male community while the completed settlement, working harbor, protective walls, hardened center, and open sea establish that every practical condition is in place except the declaration itself; Choppy’s complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, gloves, and shoes verified; no Lena, Madame Luck, women, documents, declarations, maps, signs, flags, text, microphones, weapons, warships, premature celebration, or watermark.
 
+- `threeColors` — `threeColors-wide.png` — new original panoramic Crown Lattice procession scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; High Warden Soren Pell walks at the front without waving while five distinct disciplined male delegations follow through a monumental controlled port with closed shutters, locked gates, silent cranes, and subdued background onlookers; hierarchy, port control, inherited authority, and imposed silence are conveyed through blocking and environment rather than explanatory graphics; Choppy, Lena, Madame Luck, and women are absent because none is physically required; no crowns, thrones, flags, banners, emblems, maps, glowing borders, diagrams, documents, screens, readable text, numbers, logos, weapons, cheering, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
@@ -52,7 +54,6 @@ The following existing square scene assets need original wide replacements and c
 - `fourthColor.jpg`
 - `notYet.jpg`
 - `theAnswer.jpg`
-- `threeColors.jpg`
 - `festival.jpg` (used by `blocTriumph`)
 
 The prior `pieceWorld.jpg` remains as the historic square asset, but the card now loads `pieceWorld-wide.jpg`.
