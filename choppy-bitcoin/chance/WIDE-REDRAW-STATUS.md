@@ -47,11 +47,12 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `threeColors` — `threeColors-wide.png` — new original panoramic Crown Lattice procession scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; High Warden Soren Pell walks at the front without waving while five distinct disciplined male delegations follow through a monumental controlled port with closed shutters, locked gates, silent cranes, and subdued background onlookers; hierarchy, port control, inherited authority, and imposed silence are conveyed through blocking and environment rather than explanatory graphics; Choppy, Lena, Madame Luck, and women are absent because none is physically required; no crowns, thrones, flags, banners, emblems, maps, glowing borders, diagrams, documents, screens, readable text, numbers, logos, weapons, cheering, or watermark.
 
+- `fourthColor` — `fourthColor-wide.png` — new original panoramic dawn-recovery scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy and Marek overlook the intact harbor as workers restore ordinary activity and a modest bakery reopens, communicating survival and independence through civilian life rather than military triumph; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, large low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and two coherent brown-and-white sneakers; no women, flags, maps, borders, documents, screens, trophies, confetti, crowns, weapons, warships, uniforms, readable text, extra logos, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `fourthColor.jpg`
 - `notYet.jpg`
 - `theAnswer.jpg`
 - `festival.jpg` (used by `blocTriumph`)
