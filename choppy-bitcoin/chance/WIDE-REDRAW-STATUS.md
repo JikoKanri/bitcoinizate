@@ -39,13 +39,14 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `stateVisit` — `stateVisit-wide.png` — new original panoramic state-visit scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy visits San Arnaldo’s former seaside restaurant turned government office while Mr Ortega & Gambette points to a deliberately empty network cabinet, presenting the request for Bitcoin infrastructure without assuming any choice; restaurant chairs, service counter, pendant lamps, blank chalkboard, compact harbor town, and green hills establish the location; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; Lena and Madame Luck are absent; no women, installed node, screens, diagrams, flags, maps, plans, documents, readable text, numbers, logos, weapons, or watermark.
 
+- `protectIsland` — `protectIsland-wide.png` — new original panoramic missing-boat harbor scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy inspects a conspicuously empty berth while a simple camera points toward the wrong patch of dock and Paco sleeps beside the vacant watch shelter; other moored craft remain background context and the stolen boat and thief are absent; Choppy’s complete white ₿, red headband, saturated orange-gold body, low black sunglasses in profile, no nose or mouth, correct limbs, gloves, and shoes verified; no Lena, Madame Luck, women, other people, maps, reports, signs, flags, readable text, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
 - `fourthColor.jpg`
 - `notYet.jpg`
-- `protectIsland.jpg`
 - `rearmament.jpg`
 - `theAnswer.jpg`
 - `theQuestion.jpg`
