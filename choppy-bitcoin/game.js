@@ -2417,7 +2417,7 @@
     { id:"cabinet", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent&&!S.bcVictory, title:"The Cabinet", titleEs:"El gabinete", body:"The declaration needs a government—and names beside every office.\n\nYou become Head of State. Marek takes Finance and asks you not to spend the first week proving why the job is necessary. Nico claims Commerce and repeats the title as if the ministry had been his idea. Paco is Minister of Defense. He says it once and laughs, then says it again. The second time, he does not.\n\nLena declines a ministry. She says the island already has enough titles and someone should remember why all of this began.", bodyEs:"La declaración necesita un gobierno y un nombre junto a cada cargo.\n\nAsumes la jefatura de Estado. Marek dirige Hacienda y te pide que no pases la primera semana demostrando por qué su cargo es necesario. Nico reclama Comercio y repite el título como si el ministerio hubiera sido idea suya. Paco es ministro de Defensa. Lo dice una vez y se ríe; después lo repite. La segunda vez ya no se ríe.\n\nLena rechaza un ministerio. Dice que la isla ya tiene suficientes títulos y que alguien debería recordar por qué comenzó todo esto." },
     { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", titleEs:"La declaración", body:"The cabinet gathers around the final page. You sign the declaration and publish it to the world. For thirty-seven seconds, nothing happens. Then San Arnaldo recognizes Bitcoin Country. Mr Ortega & Gambette responds with a thumbs-up and a fourteen-page attachment on the proper protocol for receiving recognition.", bodyEs:"El gabinete se reúne alrededor de la última página. Firmas la declaración y la publicas para el mundo. Durante 37 segundos no ocurre nada. Entonces San Arnaldo reconoce a Bitcoin Country. El señor Ortega & Gambette responde con un pulgar arriba y un documento adjunto de 14 páginas sobre el protocolo adecuado para recibir un reconocimiento." },
     { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The statements arrive in different formats: a formal rejection, a request for time, a recognition with conditions. The wording changes from bloc to bloc. The consequence does not. None of them will accept Bitcoin Country outside the borders they drew, and their fleets are already leaving port.", bodyEs:"Los comunicados llegan en formatos distintos: un rechazo formal, una solicitud de tiempo, un reconocimiento sujeto a condiciones. Las palabras cambian de un bloque a otro. La consecuencia no. Ninguno aceptará a Bitcoin Country fuera de las fronteras que trazó, y sus flotas ya están saliendo de puerto." },
-    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration." },
+    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The three blocs answer the declaration in different ways, but every response conceals the same military preparation.", bodyEs:"Los tres bloques responden a la declaración de maneras distintas, pero todas las respuestas ocultan la misma preparación militar." },
     { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
     { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails." },
     { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
@@ -2658,9 +2658,9 @@
     if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
     if(card.id==="theAnswer"){return say("The blocs already answered.","");}
     if(card.id==="blocReplies"){
-      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+money(p)+".","La carta se pone más cálida. Las flotas no. −"+money(p)+".");}
-      if(opt==="b")return say("You refuse. The fleets were never waiting on your answer.","Rechazás. Las flotas no estaban esperando tu respuesta.");
-      return say("The statements are in. The ships are already moving.","Los comunicados llegaron. Los barcos ya se mueven.");
+      if(opt==="a"){const p=cutBill(40000);return say("The recognition letter grows warmer. The fleets do not change course. −"+money(p)+".","La carta de reconocimiento adopta un tono más cordial. Las flotas no cambian de rumbo. −"+money(p)+".");}
+      if(opt==="b")return say("You refuse the payment. The fleets were never waiting for your answer.","Rechazas el pago. Las flotas nunca estuvieron esperando tu respuesta.");
+      return say("All three statements have arrived. Their ships are already moving.","Ya llegaron los tres comunicados. Sus barcos ya están en movimiento.");
     }
     if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
     if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
@@ -2849,16 +2849,16 @@
   function reactionLine(bloc, kind, es){
     const name=es?bloc.es:bloc.en, who=es?bloc.leaderEs:bloc.leader;
     if(kind==="accept") return es
-      ? name+" manda una nota fría de reconocimiento. "+who+" lo llama una cortesía provisional. El agregado que la trae no se sienta."
+      ? name+" envía una nota fría de reconocimiento. "+who+" la llama una cortesía provisional. El agregado que la entrega no toma asiento."
       : name+" sends a cold note of recognition. "+who+" calls it a provisional courtesy. The attaché who delivers it does not sit down.";
     if(kind==="reject") return es
-      ? name+" rechaza la declaración en una oración. "+who+" agrega una segunda sobre consecuencias."
+      ? name+" rechaza la declaración en una sola oración. "+who+" añade otra sobre las consecuencias."
       : name+" rejects the declaration in one sentence. "+who+" adds a second sentence about consequences.";
     if(kind==="time") return es
-      ? name+" pide tiempo para preparar un comunicado. "+who+" se refiere a tiempo para contar barcos."
+      ? name+" solicita tiempo para preparar un comunicado. "+who+" en realidad necesita tiempo para contar barcos."
       : name+" asks for time to prepare a statement. "+who+" means time to count ships.";
     return es
-      ? name+" ofrece reconocimiento político a cambio de un aporte a la estabilidad regional. "+who+" pone una cifra y no lo llama soborno."
+      ? name+" ofrece reconocimiento político a cambio de una contribución a la estabilidad regional. "+who+" fija una cifra y evita llamarla soborno."
       : name+" offers political recognition in exchange for a contribution to regional stability. "+who+" names a figure and does not call it a bribe.";
   }
   function repliesText(){
@@ -2866,8 +2866,8 @@
     const r=S.bcReactions||{pact:"reject",ledger:"time",lattice:"accept"};
     const lines=WAR_BLOCS.map((b)=>reactionLine(b, r[b.key], es));
     const tail=es
-      ? "Nada de eso importa al final de la semana. Los reconocimientos son notas al pie. Las demoras son calendarios de carga. La plata, si la pagás, compra una carta más linda. Los tres bloques igual arman la flota."
-      : "None of it matters by the end of the week. The recognitions are footnotes. The delays are loading schedules. The money, if you pay it, buys a nicer letter. All three blocs still arm.";
+      ? "Nada de eso cambia el final de la semana. Los reconocimientos quedan como notas al pie. Las demoras encubren calendarios de carga. El pago, si lo realizas, solo compra una carta más cordial. Los tres bloques continúan armando sus flotas."
+      : "None of it changes the end of the week. Recognition becomes a footnote. Delays conceal loading schedules. Payment, if you make it, only buys a warmer letter. All three blocs continue arming their fleets.";
     return lines.join("\n\n")+ "\n\n"+tail;
   }
   function assaultText(){
@@ -2957,8 +2957,8 @@
     const es=chanceLang();
     const n=(S.bcBattlesWon||0);
     if(id==="blocReplies") return es
-      ? "Los tres bloques no contestan igual. Para el fin de la semana, los tres están armando igual."
-      : "The three blocs do not answer the same way. By the end of the week, all three are arming anyway.";
+      ? "Los tres bloques responden de forma distinta: reconocimiento, rechazo, demora o una exigencia de pago. Al final de la semana, los tres están movilizando sus flotas."
+      : "The three blocs answer differently: recognition, rejection, delay, or a demand for payment. By the end of the week, all three are mobilizing their fleets.";
     if(id==="blocAssault") return es
       ? "Abren fuego. El comunicado ya está escrito. La isla tiene que aguantar."
       : "They open fire. The communiqué is already written. The island has to hold.";
@@ -3005,8 +3005,8 @@
       const report=blocReplyIsReport();
       card.kind=report?"report":"choice";
       card.opts=report?[]:[
-        {k:"a", label:"Pay for recognition", labelEs:"Pagar el reconocimiento"},
-        {k:"b", label:"Refuse", labelEs:"Rechazar"}
+        {k:"a", label:"Pay for formal recognition", labelEs:"Pagar por el reconocimiento formal"},
+        {k:"b", label:"Refuse the payment", labelEs:"Rechazar el pago"}
       ];
       return repliesText();
     }
