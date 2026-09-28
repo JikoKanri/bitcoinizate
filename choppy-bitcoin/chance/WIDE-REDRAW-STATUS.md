@@ -51,11 +51,12 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `notYet` — `notYet-wide.png` — new original panoramic failed-defense scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; exactly three exhausted male defenders retreat inland together while an unmarked hostile fleet takes the harbor, a bare flagpole shows that the flag is down, and the dark radio mast and communications shed show that the transmitters are silent; no Choppy because the card describes the collective collapse rather than his physical action; no Lena, Madame Luck, women, children, named characters, perk-job imagery, flags, emblems, readable text, numbers, maps, documents, screens, logos, active gunfire, explosions, blood, corpses, or watermark.
 
+- `theAnswer` — `theAnswer-wide.png` — new original panoramic three-bloc fleet-departure scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; three architecturally distinct ports—pale institutional, red industrial, and old fortified—launch separate unmarked fleets toward one shared open horizon, expressing different answers with the same military consequence without literal communiqués; also supplies the existing `blocAssault` and `battleWon` aliases through their established `artId` mapping; no Choppy because he is not physically present at the bloc ports; no Lena, Madame Luck, named leaders, women, children, perk-job imagery, offices, badges, documents, maps, screens, borders, newspapers, readable text, numbers, labels, flags, emblems, logos, active gunfire, explosions, battle damage, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `theAnswer.jpg`
 - `festival.jpg` (used by `blocTriumph`)
 
 The prior `pieceWorld.jpg` remains as the historic square asset, but the card now loads `pieceWorld-wide.jpg`.
