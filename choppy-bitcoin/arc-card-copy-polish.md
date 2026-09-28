@@ -200,6 +200,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `4b0789d004e1f6f3a66a93e53e64e3b10924fcf7`
   - Pull request: #11
 
+- [x] `theAnswer` — “La respuesta”
+  - Mission relation: follows `declaration` and bridges the independence proclamation into the three blocs’ military response.
+  - Updated: English and Spanish full text, title, and TL;DR.
+  - Mechanics: report card; no options; internal `when: false` activation, IDs, sequence, dynamic bloc-reaction flow, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `c60813a4b9f4767ea69aecd5eb5cc5387f89bfb5`
+  - Pull request: #11
+
 ## Next priority
 
-- `theAnswer`
+- `blocReplies`
