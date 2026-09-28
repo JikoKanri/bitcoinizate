@@ -228,6 +228,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `f2fdc5f557123eafb12b1984b9faa643147561d9`
   - Pull request: #11
 
+- [x] `blocTriumph` — “Bloque derrotado”
+  - Mission relation: follows each bloc’s third failed assault, records its withdrawal and recognition of Bitcoin Country, then advances to the next bloc or final victory.
+  - Updated: English and Spanish dynamic full text, titles, TL;DR variants, fallback text, and common outcome; removed voseo and regionalisms.
+  - Mechanics: report card; no options; bloc mapping, three-victory threshold per bloc, nine-victory transition, 210-candle next-assault scheduling, IDs, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `9e6291fad44744a2ce80f6b909b993d23b90294e`
+  - Pull request: #11
+
 ## Next priority
 
-- `blocTriumph`
+- `fourthColor`
