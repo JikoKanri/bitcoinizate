@@ -49,11 +49,12 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `fourthColor` — `fourthColor-wide.png` — new original panoramic dawn-recovery scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Choppy and Marek overlook the intact harbor as workers restore ordinary activity and a modest bakery reopens, communicating survival and independence through civilian life rather than military triumph; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, large low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and two coherent brown-and-white sneakers; no women, flags, maps, borders, documents, screens, trophies, confetti, crowns, weapons, warships, uniforms, readable text, extra logos, or watermark.
 
+- `notYet` — `notYet-wide.png` — new original panoramic failed-defense scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; exactly three exhausted male defenders retreat inland together while an unmarked hostile fleet takes the harbor, a bare flagpole shows that the flag is down, and the dark radio mast and communications shed show that the transmitters are silent; no Choppy because the card describes the collective collapse rather than his physical action; no Lena, Madame Luck, women, children, named characters, perk-job imagery, flags, emblems, readable text, numbers, maps, documents, screens, logos, active gunfire, explosions, blood, corpses, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
-- `notYet.jpg`
 - `theAnswer.jpg`
 - `festival.jpg` (used by `blocTriumph`)
 
