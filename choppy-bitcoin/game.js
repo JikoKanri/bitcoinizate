@@ -2420,7 +2420,7 @@
     { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The three blocs answer the declaration in different ways, but every response conceals the same military preparation.", bodyEs:"Los tres bloques responden a la declaración de maneras distintas, pero todas las respuestas ocultan la misma preparación militar." },
     { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming Fire", titleEs:"Fuego enemigo", body:"A bloc opens fire while its prepared communiqué declares the attack unavoidable. Bitcoin Country must hold the island.", bodyEs:"Un bloque abre fuego mientras su comunicado preparado declara que el ataque era inevitable. Bitcoin Country debe defender la isla." },
     { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa resiste", body:"The landing is repelled. Bitcoin Country holds the shore, but the campaign is not over.", bodyEs:"El desembarco es rechazado. Bitcoin Country conserva la costa, pero la campaña aún no ha terminado." },
-    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
+    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Defeated", titleEs:"Bloque derrotado", body:"After its third failed assault, a bloc withdraws and recognizes Bitcoin Country as a nation.", bodyEs:"Tras su tercer ataque fallido, un bloque se retira y reconoce a Bitcoin Country como nación." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
     { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends." },
     { id:"jobBadge", job:true, kind:"report", when:()=>(S.have.job||0)>=1, title:"The Badge", titleEs:"La credencial", body:"On the first morning they hand you a badge and ask you to say the title out loud. {title}. It sounds like it already belongs to someone else. A woman in the hallway nods as if she has heard worse. The wage, when you finally find it, is {pay}.", bodyEs:"La primera mañana te dan una credencial y te piden que digas el cargo en voz alta. {title}. Suena a alguien que ya hizo esto. Una mujer en el pasillo asiente como si hubiera oído peores. El sueldo, cuando por fin lo encontrás, es {pay}." },
@@ -2664,7 +2664,7 @@
     }
     if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The defense begins as the first ships enter range.","La defensa comienza cuando los primeros barcos entran en alcance.");}
     if(card.id==="battleWon"){return say("The island holds the line.","La isla mantiene la línea defensiva.");}
-    if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
+    if(card.id==="blocTriumph"){return say("The defeated bloc withdraws and recognizes the nation.","El bloque derrotado se retira y reconoce a la nación.");}
     if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
     if(card.id==="notYet"){return say("Not yet.","");}
     if (card.id === "honeymoon") {
@@ -2931,25 +2931,25 @@
     S.chanceTitle=titles[b.key]||titles.pact;
     const recog=es
       ? (b.key==="ledger"
-        ? "La firma de "+who+" queda en un papel que llama a la isla una nación y a la campaña un error de cálculo. En casa van a tener que reimprimir los afiches."
+        ? "La firma de "+who+" aparece en un documento que llama nación a la isla y error de cálculo a la campaña. En su país deberán volver a imprimir los carteles."
         : b.key==="lattice"
-        ? who+" no pide perdón. Lo hace un heraldo, una sola vez, en un puerto que la Celosía ya no controla. La palabra es reconocimiento. La dice como si fuera una corrección de archivo."
-        : who+" manda una nota de una línea. Usa la palabra reconocimiento. No usa la palabra rendición. Bitcoin Country queda escrito como un país, con la tipografía que usan para los países que no les gustan.")
+        ? who+" no ofrece disculpas. Un heraldo pronuncia una sola palabra en un puerto que la Celosía ya no controla: reconocimiento. La presenta como si fuera una corrección administrativa."
+        : who+" envía una nota de una línea. Incluye la palabra reconocimiento y evita la palabra rendición. Bitcoin Country aparece como país, con la tipografía reservada para los países que no les agradan.")
       : (b.key==="ledger"
         ? who+" signs a paper that calls the island a nation and the campaign a miscalculation. The posters at home will have to be reprinted."
         : b.key==="lattice"
         ? who+" does not apologize. A herald does it once, in a harbor the Lattice no longer holds. The word is recognition. He makes it sound like a clerical correction."
         : who+" sends a one-line note. It uses the word recognition. It does not use the word surrender. Bitcoin Country is set in the type they use for countries they dislike.");
     const holiday=es
-      ? "La panadería cierra al mediodía. Alguien apoya un parlante en un cajón junto al muelle. Los chicos corren la playa con banderas que no coinciden. Es día de celebración nacional. Nadie espera a que el calendario esté de acuerdo."
+      ? "La panadería cierra al mediodía. Alguien coloca un altavoz sobre una caja junto al muelle. Los niños recorren la playa con banderas diferentes. Es un día de celebración nacional. Nadie espera la aprobación del calendario."
       : "The bakery closes at noon. Someone sets a speaker on a crate by the dock. Children run the beach with flags that do not match. It is a national day of celebration. Nobody waits for the calendar to agree.";
     const tail=won>=9
-      ? (es?"La radio queda lo bastante quieta como para oír la panadería.":"The radio goes quiet enough to hear the bakery.")
+      ? (es?"La radio queda lo bastante silenciosa como para oír la panadería.":"The radio goes quiet enough to hear the bakery.")
       : won>=6
-      ? (es?"La Celosía todavía puede decidir que esta derrota fue de otro. Si vienen, va a ser dentro de 210 velas.":"The Lattice may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
-      : (es?"El mar no terminó con ustedes. Otro bloque puede decidir que esta derrota fue de otro. Si vienen, va a ser dentro de 210 velas.":"The sea is not finished with you. Another bloc may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.");
+      ? (es?"La Celosía aún puede decidir que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":"The Lattice may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
+      : (es?"La guerra en el mar aún no termina. Otro bloque puede considerar que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":"The sea is not finished with you. Another bloc may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.");
     const open=es
-      ? name+" está derrotado. Los barcos dan la vuelta con las banderas todavía arriba, porque bajarlas pediría un formulario que nadie quiere firmar."
+      ? name+" ha sido derrotado. Sus barcos regresan con las banderas aún izadas, porque bajarlas exigiría un formulario que nadie quiere firmar."
       : "The "+name+" is beaten. The ships turn for home with the flags still up, because taking them down would require a form nobody wants to sign.";
     return open+"\n\n"+recog+"\n\n"+holiday+"\n\n"+tail;
   }
@@ -2991,10 +2991,10 @@
       const b=warBloc(((won-1)/3)|0);
       const name=es?b.es:b.en;
       if(won>=9) return es
-        ? name+" reconoce a la nación. La panadería cierra. Es día de celebración nacional."
+        ? name+" reconoce a la nación. La panadería cierra y comienza la celebración nacional."
         : "The "+name+" recognizes the nation. The bakery closes. It is a national day of celebration.";
       return es
-        ? name+" reconoce a la nación. Es día de celebración nacional. Si vuelve otro bloque, va a ser dentro de 210 velas."
+        ? name+" reconoce a la nación. Comienza una celebración nacional. Si otro bloque ataca, lo hará dentro de 210 velas."
         : "The "+name+" recognizes the nation. It is a national day of celebration. If another bloc comes, it will be within 210 candles.";
     }
     return "";
