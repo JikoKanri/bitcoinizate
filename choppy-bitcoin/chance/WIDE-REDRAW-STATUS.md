@@ -31,13 +31,14 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `obviously` — `obviously-wide.png` — new original panoramic island-mining scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Nico presents a newly energized, plausibly wired mining shed to Choppy, communicating the cheap-power mining proposal through gesture and working infrastructure; Choppy’s complete centered white ₿, red headband, saturated orange-gold body, low black sunglasses, no nose or mouth, correct limbs, white gloves, and brown-and-white sneakers verified; no Lena, Madame Luck, women, extra characters, documents, maps, signs, flags, visible text, numbers, charts, readable screens, unsafe wiring, or watermark.
 
+- `peopleAsking` — `peopleAsking-wide.png` — new original panoramic prospective-residents scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; Nico welcomes three waiting boats while Marek indicates the island’s completely undeveloped clearings and Choppy considers the missing-housing problem; Choppy has a complete unobstructed centered white ₿, vivid red tied headband, saturated orange-gold body, low black sunglasses, no nose or mouth, exactly two orange arms and legs, two white gloves, and brown-and-white sneakers; Lena and Madame Luck are absent; distant families remain secondary; no houses, screens, phones, spreadsheets, maps, blueprints, plans, papers, model houses, readable text, numbers, logos, weapons, or watermark.
+
 ## Still pending
 
 The following existing square scene assets need original wide replacements and card-size review:
 
 - `fourthColor.jpg`
 - `notYet.jpg`
-- `peopleAsking.jpg`
 - `placeNow.jpg`
 - `principality.jpg`
 - `protectIsland.jpg`
