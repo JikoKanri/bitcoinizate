@@ -221,6 +221,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `6fca665590b5b5f1498364309b171001f2e00443`
   - Pull request: #11
 
+- [x] `battleWon` — “La playa resiste”
+  - Mission relation: follows each successful defense and provides six battle-specific reports across the three blocs before their eventual retreat.
+  - Updated: English and Spanish dynamic full text, titles, TL;DR variants, fallback text, and common outcome; removed regionalisms.
+  - Mechanics: report card; no options; bloc/slot mapping, battle count, 40-candle next-assault scheduling, IDs, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `f2fdc5f557123eafb12b1984b9faa643147561d9`
+  - Pull request: #11
+
 ## Next priority
 
-- `battleWon`
+- `blocTriumph`
