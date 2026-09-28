@@ -242,6 +242,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `ebb9fe1cd2c44997d4021ca0c5cc583f3a4c9d49`
   - Pull request: #11
 
+- [x] `notYet` — “Todavía no”
+  - Mission relation: follows `theAnswer`, belongs to `BC_ARC`, and represents the failed-defense ending of Bitcoin Country’s independence attempt.
+  - Updated: English and Spanish full text, TL;DR, and failure outcome; added the missing Spanish full text and removed placeholder wording.
+  - Mechanics: internal report card with no options; `after:["theAnswer"]`, `when: false`, IDs, sequence, conditions, and effects remain unchanged.
+  - Confirmed remote commit on `maingpt`: `1dfde2797379e0cd0472ba33267fc3df91f739e0`
+  - Pull request: #11
+
 ## Next priority
 
-- `notYet`
+- `jobBadge`
