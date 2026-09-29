@@ -3986,10 +3986,6 @@
     for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)set(x+dx,y+dy,6);
     for(let dx=0;dx<6;dx++){set(x+dx,y,1);set(x+dx,y+4,1);}
     for(let dy=0;dy<5;dy++){set(x,y+dy,1);set(x+5,y+dy,1);}
-    if(gate==="n"){set(x+2,y,6);set(x+3,y,6);}
-    else if(gate==="s"){set(x+2,y+4,6);set(x+3,y+4,6);}
-    else if(gate==="w"){set(x,y+1,6);set(x,y+2,6);}
-    else {set(x+5,y+1,6);set(x+5,y+2,6);}
     set(x+2,y+1,5);set(x+3,y+1,5);set(x+2,y+2,5);set(x+3,y+2,5);
   }
   function addFort(m,pad,gate){
@@ -3999,10 +3995,6 @@
       if(x<0||y<0||x>=BC_C||y>=BC_R)continue;
       const t=m[y*BC_C+x];
       if(t===3||t===5||t===2)continue;
-      if(gate==="n"&&y===y0&&(x===pad.x+2||x===pad.x+3))continue;
-      if(gate==="s"&&y===y1&&(x===pad.x+2||x===pad.x+3))continue;
-      if(gate==="w"&&x===x0&&(y===pad.y+1||y===pad.y+2))continue;
-      if(gate==="e"&&x===x1&&(y===pad.y+1||y===pad.y+2))continue;
       if(t===6||t===0||t===7)m[y*BC_C+x]=1;
     }
   }
@@ -4044,6 +4036,7 @@
   function placeHouses(m,pad,road){
     const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
     const g=(x,y)=>x<0||y<0||x>=BC_C||y>=BC_R?3:m[y*BC_C+x];
+    const walk=(x,y)=>{const t=g(x,y);return t===0||t===6||t===7;};
     let placed=0;
     function pass(loose){
       for(let y=2;y<BC_R-4&&placed<4;y++){
@@ -4055,6 +4048,10 @@
             if(m[i]!==6||road[i]||near(x+dx,y+dy))fit=false;
           }
           if(!fit)continue;
+          let lane=true;
+          for(let dx=0;dx<3&&lane;dx++)if(!walk(x+dx,y-1)||!walk(x+dx,y+2))lane=false;
+          for(let dy=0;dy<2&&lane;dy++)if(!walk(x-1,y+dy)||!walk(x+3,y+dy))lane=false;
+          if(!lane&&!loose)continue;
           let door="s";
           if(g(x+1,y+2)===7)door="s";
           else if(g(x+1,y-1)===7)door="n";
@@ -4067,7 +4064,7 @@
             if(!gap)m[(y+dy)*BC_C+(x+dx)]=1;
           }
           placed++;
-          x+=4;
+          x+=6;
         }
       }
     }
@@ -4379,21 +4376,25 @@
       return t===0||t===6;
     };
     const spots=[];
-    for(let y=2;y<BC_R-6;y++)for(let x=2;x<BC_C-7;x++){
+    for(let y=2;y<BC_R-6;y++)for(let x=2;x<BC_C-10;x++){
       if(near(x,y))continue;
       let ok=true;
-      for(let dy=0;dy<4&&ok;dy++)for(let dx=0;dx<5;dx++)if(!open(x+dx,y+dy))ok=false;
+      for(let dy=0;dy<5&&ok;dy++)for(let dx=0;dx<8;dx++)if(!open(x+dx,y+dy))ok=false;
       if(ok)spots.push({x,y});
     }
     if(!spots.length)return;
     const s=spots[(rng()*spots.length)|0];
     const set=(x,y,t)=>{if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;};
-    set(s.x,s.y,1);set(s.x+1,s.y,1);
-    set(s.x,s.y+1,1);set(s.x+1,s.y+1,7);
-    set(s.x+3,s.y,1);set(s.x+4,s.y,1);
-    set(s.x+3,s.y+1,7);set(s.x+4,s.y+1,1);
-    for(let i=0;i<5;i++)if(open(s.x+2,s.y+1+i))set(s.x+2,s.y+1+i,7);
-    if(open(s.x+2,s.y+2))set(s.x+2,s.y+2,7);
+    set(s.x,s.y,1);set(s.x+1,s.y,1);set(s.x+2,s.y,1);
+    set(s.x,s.y+1,1);set(s.x+1,s.y+1,1);set(s.x+2,s.y+1,7);
+    set(s.x+3,s.y,7);set(s.x+4,s.y,7);
+    set(s.x+3,s.y+1,7);set(s.x+4,s.y+1,7);
+    set(s.x+5,s.y,1);set(s.x+6,s.y,1);set(s.x+7,s.y,1);
+    set(s.x+5,s.y+1,7);set(s.x+6,s.y+1,1);set(s.x+7,s.y+1,1);
+    for(let i=0;i<4;i++){
+      if(open(s.x+3,s.y+2+i))set(s.x+3,s.y+2+i,7);
+      if(open(s.x+4,s.y+2+i))set(s.x+4,s.y+2+i,7);
+    }
   }
   function breakLanes(m,pad){
     const prot=(x,y)=>x>=pad.x&&x<=pad.x+5&&y>=pad.y&&y<=pad.y+4;
@@ -4606,6 +4607,20 @@
       else if(f>hi)want=hi-0.02;
     }
   }
+  function sealShield(m){
+    const hits=[];
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(m[y*BC_C+x]!==5)continue;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+        if(!dx&&!dy)continue;
+        const xx=x+dx,yy=y+dy;
+        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+        const i=yy*BC_C+xx;
+        if(m[i]!==5)hits.push(i);
+      }
+    }
+    for(const i of hits)m[i]=1;
+  }
   function makeIslandMap(level, fort){
     level=Math.max(0,Math.min(8,level|0));
     const plan=ensureMapPlan()[level];
@@ -4642,6 +4657,7 @@
     thinSeaRocks(m);
     unsealWater(m);
     fitCover(m,!!plan.naval,rng,pad);
+    sealShield(m);
     const home=homeFrom(m,pad,gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -4671,14 +4687,28 @@
     for(let i=0;i<list.length;i++)if(hit(list[i]))return true;
     return false;
   }
+  function beaconBase(tx,ty){
+    const cx=tx*BC_TS+8, by=ty*BC_TS+15;
+    return {x0:cx-11,y0:by-2,x1:cx+12,y1:by+4};
+  }
+  function hitsBeaconBase(x,y,hw,d){
+    const tx=Math.floor(x/BC_TS), ty=Math.floor(y/BC_TS);
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+      if(bcAt(d.map,tx+dx,ty+dy)!==9)continue;
+      const b=beaconBase(tx+dx,ty+dy);
+      if(x+hw>b.x0&&x-hw<b.x1&&y+hw>b.y0&&y-hw<b.y1)return true;
+    }
+    return false;
+  }
   function tankBlocked(d,x,y,sz,ignore){
     const hw=sz*.40;
     const x0=Math.floor((x-hw)/BC_TS),x1=Math.floor((x+hw)/BC_TS);
     const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
     for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
       const t=bcAt(d.map,tx,ty);
-      if(t===3||t===1||t===2||t===4||t===5||t===8||t===9)return true;
+      if(t===3||t===1||t===2||t===4||t===5||t===8)return true;
     }
+    if(hitsBeaconBase(x,y,hw,d))return true;
     return unitsOverlap(d,x,y,sz,ignore);
   }
   function snapTank(t,dir,d){
@@ -4856,27 +4886,46 @@
     warSfx("warPop");
   }
   function raiseAegis(d){
-    const base=[];
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(citadelSkin(d,x,y))base.push(y*BC_C+x);
-    if(!base.length)return;
-    const mark=new Uint8Array(d.map.length);
-    for(const i of base)mark[i]=1;
-    const hx=Math.floor(d.player.x/BC_TS),hy=Math.floor(d.player.y/BC_TS);
-    const ring=d.aegis?d.aegis.slice():[];
-    for(const i of base){
-      const x=i%BC_C,y=(i/BC_C)|0;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        const xx=x+dx,yy=y+dy;
-        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
-        const j=yy*BC_C+xx;
-        if(mark[j]||(xx===hx&&yy===hy))continue;
-        const t=d.map[j];
-        if(t===3||t===5||t===9||t===2)continue;
-        mark[j]=1;
-        d.map[j]=2;
-        if(d.seal)d.seal[j]=0;
-        ring.push(j);
+    let minx=BC_C,miny=BC_R,maxx=-1,maxy=-1;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(!citadelSkin(d,x,y))continue;
+      if(x<minx)minx=x;if(x>maxx)maxx=x;
+      if(y<miny)miny=y;if(y>maxy)maxy=y;
+    }
+    if(maxx<0)return;
+    const p=d.player;
+    const c=shieldCenter(d);
+    const onRing=(x,y)=>x>=minx&&x<=maxx&&y>=miny&&y<=maxy&&(x===minx||x===maxx||y===miny||y===maxy);
+    if(p){
+      const tx=Math.floor(p.x/BC_TS),ty=Math.floor(p.y/BC_TS);
+      if(onRing(tx,ty)){
+        const dx=p.x-c.x,dy=p.y-c.y,len=Math.hypot(dx,dy)||1;
+        for(let step=1;step<=10;step++){
+          const nx=p.x+(dx/len)*step*BC_TS,ny=p.y+(dy/len)*step*BC_TS;
+          if(onRing(Math.floor(nx/BC_TS),Math.floor(ny/BC_TS)))continue;
+          const blocked=p.ship?shipBlocked(d,nx,ny,p.sz,p):tankBlocked(d,nx,ny,p.sz,p);
+          if(!blocked){p.x=nx;p.y=ny;break;}
+        }
       }
+    }
+    const hx=p?Math.floor(p.x/BC_TS):-1,hy=p?Math.floor(p.y/BC_TS):-1;
+    const ring=[];
+    const seen=new Uint8Array(d.map.length);
+    const put=(x,y)=>{
+      if(x<0||y<0||x>=BC_C||y>=BC_R||(x===hx&&y===hy))return;
+      const j=y*BC_C+x;
+      if(seen[j])return;
+      const t=d.map[j];
+      if(t===5||t===9)return;
+      seen[j]=1;
+      if(t!==2){d.map[j]=2;if(d.seal)d.seal[j]=0;}
+      ring.push(j);
+    };
+    for(let y=miny;y<=maxy;y++)for(let x=minx;x<=maxx;x++){
+      if(citadelSkin(d,x,y)&&d.map[y*BC_C+x]===1)put(x,y);
+    }
+    for(let y=miny;y<=maxy;y++)for(let x=minx;x<=maxx;x++){
+      if(x===minx||x===maxx||y===miny||y===maxy)put(x,y);
     }
     d.aegis=ring;
     d.aegisT=7.5;
@@ -4937,27 +4986,27 @@
   }
   function spawnHeli(d){
     const sp=d.spawns[(Math.random()*d.spawns.length)|0]||{x:240,y:80};
-    d.enemies.push({x:sp.x,y:Math.max(28,sp.y-20),dir:2,hp:3,maxHp:3,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.8,think:.2,fly:true,role:Math.random()<0.5?"hero":"shield"});
+    d.enemies.push({x:sp.x,y:Math.max(28,sp.y-20),dir:2,hp:1,maxHp:1,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.8,think:.2,fly:true,role:Math.random()<0.5?"hero":"shield"});
     warSfx("warHeli");
   }
   function defenseEnemy(d){
     const r=Math.random(),bloc=d.bloc|0;
-    let type="STANDARD",hp=1,spd=62,bspd=168,dmg=1,leak=10;
+    let type="STANDARD",hp=2,spd=62,bspd=168,dmg=1,leak=10;
     const heavy=bloc===0,fast=bloc===1;
     if(heavy){
       if(r<.46){type="HEAVY";hp=3;spd=42;bspd=150;dmg=2;leak=18;}
-      else if(r<.72){type="STANDARD";}
-      else if(r<.88){type="FAST";spd=96;bspd=200;leak=8;}
+      else if(r<.72){type="STANDARD";hp=2;}
+      else if(r<.88){type="FAST";hp=1;spd=96;bspd=200;leak=8;}
       else {type="ELITE";hp=2;spd=74;bspd=210;leak=14;}
     }else if(fast){
-      if(r<.5){type="FAST";spd=100;bspd=210;leak=8;}
-      else if(r<.74){type="STANDARD";}
+      if(r<.5){type="FAST";hp=1;spd=100;bspd=210;leak=8;}
+      else if(r<.74){type="STANDARD";hp=2;}
       else if(r<.9){type="ELITE";hp=2;spd=76;bspd=220;leak=14;}
       else {type="HEAVY";hp=3;spd=40;bspd=148;dmg=2;leak=18;}
     }else{
       if(r<.44){type="ELITE";hp=2;spd=78;bspd=226;leak=15;}
-      else if(r<.7){type="STANDARD";}
-      else if(r<.86){type="FAST";spd=94;bspd=200;leak=8;}
+      else if(r<.7){type="STANDARD";hp=2;}
+      else if(r<.86){type="FAST";hp=1;spd=94;bspd=200;leak=8;}
       else {type="HEAVY";hp=3;spd=40;bspd=150;dmg=2;leak=18;}
     }
     spd*=d.profile.enemy||1;
@@ -5042,14 +5091,26 @@
     }
     return false;
   }
-  function smashTile(d,tx,ty,dmg,friendly){
+  function smashTile(d,tx,ty,dmg,friendly,dx,dy){
     const t=bcAt(d.map,tx,ty);
     if(t===5){
       if(friendly)return false;
       hitBase(d,10);warSfx("warHit");return true;
     }
     if(t===4){
-      igniteTree(d,tx,ty,!!(friendly&&(d.shotTier|0)>=3));
+      const kill=!!(friendly&&(d.shotTier|0)>=3);
+      igniteTree(d,tx,ty,kill);
+      if(friendly&&(dx||dy)){
+        const p=d.player;
+        const alongX=Math.abs(dx)>=Math.abs(dy);
+        const perp=alongX?(p?p.y:ty*BC_TS+8):(p?p.x:tx*BC_TS+8);
+        const hw=(p&&p.sz||13)*0.4+8;
+        const a0=Math.floor((perp-hw)/BC_TS), a1=Math.floor((perp+hw)/BC_TS);
+        for(let a=a0;a<=a1;a++){
+          const x=alongX?tx:a, y=alongX?a:ty;
+          if((x!==tx||y!==ty)&&bcAt(d.map,x,y)===4)igniteTree(d,x,y,kill);
+        }
+      }
       warSfx(bcAt(d.map,tx,ty)===4?"warHit":"warBrick");
       return true;
     }
@@ -5277,7 +5338,7 @@
       s.x+=s.dx*s.v*dt;s.y+=s.dy*s.v*dt;
       if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
       const tx=Math.floor(s.x/BC_TS),ty=Math.floor(s.y/BC_TS);
-      let hit=smashTile(d,tx,ty,s.damage,!!s.mine);
+      let hit=smashTile(d,tx,ty,s.damage,!!s.mine,s.dx,s.dy);
       if(!(s.mine&&bcAt(d.map,tx,ty)===5)){
         const mate=laneMate(tx);
         if(mate>=0&&bcAt(d.map,mate,ty)===1){smashTile(d,mate,ty,s.damage,!!s.mine);hit=true;}
@@ -5362,6 +5423,11 @@
     if(e.hull==="light"||e.type==="FAST"||e.type==="HELI")return "light";
     return "medium";
   }
+  function crossHits(x,y,r,rx,ry){
+    const dx=Math.abs(x-rx), dy=Math.abs(y-ry);
+    const arm=AA_R+8, thick=r+2;
+    return (dy<=thick&&dx<=arm)||(dx<=thick&&dy<=arm);
+  }
   function scorchTrees(d,rx,ry){
     let n=0;
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
@@ -5374,31 +5440,70 @@
     }
     return n;
   }
+  function razeBuilding(d,x,y){
+    const i=y*BC_C+x;
+    const cx=x*BC_TS+8, cy=y*BC_TS+8;
+    d.map[i]=6;
+    d.hp[i]=0;
+    if(d.bHits)d.bHits[i]=0;
+    if(d.seal)d.seal[i]=0;
+    addFx(d,{kind:"lrmKill",x:cx,y:cy,life:.5});
+  }
+  function lrmBuildings(d,rx,ry){
+    if(!d.bHits)d.bHits=new Uint8Array(d.map.length);
+    let burned=0, wrecked=0;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const t=bcAt(d.map,x,y);
+      const i=y*BC_C+x;
+      const house=t===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
+      if(t!==9&&!house)continue;
+      const b=t===9?beaconBase(x,y):null;
+      const cx=b?(b.x0+b.x1)/2:x*BC_TS+8;
+      const cy=b?(b.y0+b.y1)/2:y*BC_TS+8;
+      const dist=Math.hypot(cx-rx,cy-ry);
+      if(crossHits(cx,cy,10,rx,ry)){razeBuilding(d,x,y);wrecked++;}
+      else if(dist<=AA_R){
+        d.bHits[i]=(d.bHits[i]||0)+1;
+        if(t===9)d.hp[i]=Math.max(d.hp[i]||0,1);
+        addFx(d,{kind:"treeBurn",x:cx,y:cy,life:.4,hot:2});
+        if(d.bHits[i]>=2){razeBuilding(d,x,y);wrecked++;}
+        else burned++;
+      }
+    }
+    return {burned,wrecked};
+  }
   function fireReticle(d){
     if(!d||!d.aaArmed||!d.reticle)return;
     const rx=d.reticle.x,ry=d.reticle.y;
-    const inner=AA_R*0.10;
     const hits=[];
     for(const e of d.enemies){
       if(e.hp<=0)continue;
       const dist=Math.hypot(e.x-rx,e.y-ry);
       const r=unitRadius(e);
       const cls=lrmClass(e);
+      const onCross=crossHits(e.x,e.y,r,rx,ry);
+      const inArea=circleOverlapFrac(dist,AA_R,r)>=0.5;
       let ok=false;
-      if(cls==="heavy")ok=dist<=inner+r;
-      else ok=circleOverlapFrac(dist,AA_R,r)>=0.5;
+      if(cls==="light")ok=onCross||inArea;
+      else if(onCross)ok=true;
+      else if(inArea){
+        e.lrm=(e.lrm|0)+1;
+        addFx(d,{kind:"treeBurn",x:e.x,y:e.y,life:.4,hot:2});
+        if(e.lrm>=2)ok=true;
+      }
       if(ok)hits.push(e);
     }
     addFx(d,{kind:"lrmFire",x:rx,y:ry,life:.45});
     const burned=scorchTrees(d,rx,ry);
+    const lamps=lrmBuildings(d,rx,ry);
     d.aaArmed=false;d.aa=0;d.aaCharge=0;d.aaCharging=false;d.reticle=null;
-    if(hits.length){
+    if(hits.length||lamps.wrecked){
       for(const hit of hits){
         hit.hp=0;d.kills++;
         addFx(d,{kind:"lrmKill",x:hit.x,y:hit.y,life:.5});
       }
       warSfx("warPop");
-    }else if(burned)warSfx("warHit");
+    }else if(burned||lamps.burned)warSfx("warHit");
     else warSfx("warClank");
   }
   function addFx(d,fx){
@@ -5465,25 +5570,20 @@
     const r=ch((n>>16)&255),g=ch((n>>8)&255),b=ch(n&255);
     return "#"+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1);
   }
-  function drawHeroBulk(ctx,tier){
+  function drawHeroBulk(ctx,tier,fill){
     if(tier<=0)return;
-    ctx.fillStyle="#2a2218";
-    ctx.fillRect(-9.2,-7,2,14);
-    ctx.fillRect(7.2,-7,2,14);
+    const dark=tone(fill,-34);
+    ctx.fillStyle=dark;
+    const skirt=2.2+tier*0.7;
+    ctx.fillRect(-11.2-tier*0.6,-9-tier,skirt,18+tier*2);
+    ctx.fillRect(11.2-skirt+tier*0.2,-9-tier,skirt,18+tier*2);
+    ctx.fillStyle=fill;
+    ctx.fillRect(-8.2,-8.4-tier*0.5,16.4,3.2+tier*0.6);
     ctx.fillStyle="#10140c";
-    ctx.fillRect(-1.8,-17.5,3.6,4);
+    ctx.fillRect(-1.5-tier*0.4,-16.5-tier*1.5,3+tier*0.8,5+tier);
     if(tier>=2){
-      ctx.fillRect(-3.4,-16.5,1.5,5);
-      ctx.fillRect(1.9,-16.5,1.5,5);
-      ctx.fillStyle="#3d3428";
-      ctx.fillRect(-7.2,5.2,14.4,2.2);
-    }
-    if(tier>=3){
-      ctx.fillStyle="#16120e";
-      ctx.fillRect(-11.4,-10,2.8,20);
-      ctx.fillRect(8.6,-10,2.8,20);
-      ctx.fillStyle="#efe2c4";
-      ctx.fillRect(-2.2,-19,4.4,1.8);
+      ctx.fillRect(-3.5,-16-tier,1.7,5);
+      ctx.fillRect(1.8,-16-tier,1.7,5);
     }
   }
   function drawShip(ctx,t,col){
@@ -5525,7 +5625,7 @@
         ctx.fillStyle="#fff6ea";ctx.font="700 8px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";
         ctx.fillText("B",0,3);
       }
-      if(hero)drawHeroBulk(ctx,tier);
+      if(hero)drawHeroBulk(ctx,tier,fill);
     }
     ctx.restore();
   }
@@ -5578,7 +5678,7 @@
         ctx.fillStyle="#fff6ea";ctx.font="700 7px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";
         ctx.fillText("B",0,0);
       }
-      if(hero)drawHeroBulk(ctx,tier);
+      if(hero)drawHeroBulk(ctx,tier,fill);
     }
     ctx.restore();
   }
@@ -5593,7 +5693,7 @@
       const k=bcAt(d.map,x,y),px=x*BC_TS,py=y*BC_TS;
       if(k===3){
         const wob=Math.sin(t*2+x*.4+y*.3)*1.2;
-        ctx.fillStyle=(x+y)%2?"#166270":"#115868";ctx.fillRect(px,py,BC_TS,BC_TS);
+        ctx.fillStyle="#136272";ctx.fillRect(px,py,BC_TS,BC_TS);
         ctx.fillStyle="rgba(180,240,255,.07)";ctx.fillRect(px+2,py+6+wob,10,1);
         continue;
       }
@@ -5661,11 +5761,11 @@
           ctx.fillRect(px+1,py+3,14,2);ctx.fillRect(px+1,py+8,14,2);ctx.fillRect(px+1,py+13,14,2);
           ctx.fillStyle="#3d2814";ctx.fillRect(px,py,2,BC_TS);ctx.fillRect(px+14,py,2,BC_TS);
         }else{
-          ctx.fillStyle="#c4a06a";ctx.fillRect(px,py+6,BC_TS,10);
-          ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px-1,py+7);ctx.lineTo(px+8,py-1);ctx.lineTo(px+17,py+7);ctx.closePath();ctx.fill();
-          ctx.fillStyle="#f2e2c4";ctx.fillRect(px+3,py+1,3,3);
-          ctx.fillStyle="#5c3a22";ctx.fillRect(px+6,py+10,4,6);
-          ctx.fillStyle="#9fd0e6";ctx.fillRect(px+2,py+9,3,3);
+          ctx.fillStyle="#c4a06a";ctx.fillRect(px-2,py+3,BC_TS+4,14);
+          ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px-4,py+5);ctx.lineTo(px+8,py-5);ctx.lineTo(px+20,py+5);ctx.closePath();ctx.fill();
+          ctx.fillStyle="#f2e2c4";ctx.fillRect(px+2,py-1,4,4);
+          ctx.fillStyle="#5c3a22";ctx.fillRect(px+5,py+8,6,8);
+          ctx.fillStyle="#9fd0e6";ctx.fillRect(px,py+7,4,4);
           if(((x+y)%4)===0){
             ctx.fillStyle="#6b4423";ctx.fillRect(px+13,py+8,1.4,8);
             ctx.fillStyle="#f7f1e4";ctx.fillRect(px+14,py+6,5,4);
@@ -5691,9 +5791,6 @@
         continue;
       }
     }
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      if(bcAt(d.map,x,y)===9)drawBeacon(ctx,x*BC_TS,y*BC_TS,t);
-    }
     drawCitadelShield(ctx,d,t);
     drawWarFx(ctx,d,t);
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
@@ -5704,7 +5801,10 @@
     d.player.tier=d.shotTier|0;
     if(!blink){if(d.naval)drawShip(ctx,d.player,pcol);else drawTank(ctx,d.player,pcol);}
     for(const e of d.enemies){
-      const paint=(d.freeze||0)>0?"#b7e4ff":ecol;
+      const freeze=d.freeze||0;
+      const thaw=freeze>0&&freeze<2;
+      const hz=freeze<0.7?14:8;
+      const paint=freeze<=0?ecol:(thaw&&Math.floor((d.t||0)*hz)%2===0?ecol:"#b7e4ff");
       if(e.type==="HELI"){drawHeli(ctx,e,t,paint);continue;}
       if(e.ship)drawShip(ctx,e,paint);else drawTank(ctx,e,paint);
     }
@@ -5721,6 +5821,9 @@
     for(const s of d.shots){
       if(s.aa){ctx.fillStyle="#ffe14a";ctx.fillRect(s.x-3,s.y-7,6,14);}
       else{ctx.fillStyle=s.mine?BTC:"#f3efe6";ctx.fillRect(s.x-3,s.y-3,6,6);}
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(bcAt(d.map,x,y)===9)drawBeacon(ctx,x*BC_TS,y*BC_TS,t,d.hp[y*BC_C+x]||0);
     }
     if(d.aaArmed&&d.reticle&&!d.frozen){
       const rx=d.reticle.x,ry=d.reticle.y;
@@ -5775,7 +5878,7 @@
     ctx.stroke();
     ctx.restore();
   }
-  function drawBeacon(ctx,px,py,t){
+  function drawBeacon(ctx,px,py,t,burn){
     ctx.save();
     ctx.translate(px+8,py+15);
     ctx.fillStyle="rgba(0,0,0,.28)";
@@ -5802,6 +5905,17 @@
     ctx.rotate(Math.PI);
     ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(34,-4);ctx.lineTo(34,4);ctx.closePath();ctx.fill();
     ctx.restore();
+    if(burn){
+      const flick=0.55+0.45*Math.sin((t||0)*16);
+      ctx.globalAlpha=flick;
+      ctx.fillStyle="#e25822";
+      ctx.beginPath();ctx.ellipse(0,1,7,3.2,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#ffb020";
+      ctx.beginPath();ctx.moveTo(0,-12);ctx.lineTo(3.4,2);ctx.lineTo(-3.4,2);ctx.closePath();ctx.fill();
+      ctx.fillStyle="#ffe08a";
+      ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(1.6,0);ctx.lineTo(-1.6,0);ctx.closePath();ctx.fill();
+      ctx.globalAlpha=1;
+    }
     ctx.restore();
   }
   function drawCitadelShield(ctx,d,t){
@@ -5989,7 +6103,7 @@
         }
         else {
           if (A.stopMusic) A.stopMusic();
-          if (A.battleMusic) A.battleMusic(p === "defense");
+          if (A.battleMusic) A.battleMusic(false);
         }
       }
     } catch (e) {}

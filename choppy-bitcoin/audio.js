@@ -283,25 +283,8 @@
     A.startMusic(getPower, isPlaying, jukePlaying);
   };
   let battleTimer = null;
-  let battleStep = 0;
-  const BATTLE_LEAD = [523,659,784,659,880,784,659,587,523,0,440,523,587,659,784,659];
-  const BATTLE_BASS = [110,0,110,0,87,0,98,0,110,0,131,0,87,0,98,0];
-  A.battleMusic = (on) => {
+  A.battleMusic = () => {
     if (battleTimer != null) { clearInterval(battleTimer); battleTimer = null; }
-    if (!on) return;
-    battleStep = 0;
-    if (ctx && ctx.state === "suspended") try { ctx.resume(); } catch (e) {}
-    battleTimer = setInterval(() => {
-      if (muteTheme) { battleStep++; return; }
-      if (ctx && ctx.state === "suspended") try { ctx.resume(); } catch (e) {}
-      const i = battleStep % 16;
-      const bass = BATTLE_BASS[i];
-      const lead = BATTLE_LEAD[i];
-      if (bass) beep(bass, 0.14, "square", 0.045, null, 0, "theme");
-      if (lead) beep(lead, 0.11, "square", 0.038, null, 0, "theme");
-      if (i % 2 === 1) beep(1960, 0.03, "square", 0.012, null, 0, "theme");
-      battleStep++;
-    }, 155);
   };
 
 
