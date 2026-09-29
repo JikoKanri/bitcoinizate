@@ -5473,10 +5473,14 @@
     if(d&&tankBlocked(d,t.x,t.y,t.sz,t)){t.x=ox;t.y=oy;}
     t.dir=dir;
   }
-  function moveTank(d,t,dir,spd,dt){
-    if(dir<0)return;
-    if(t.dir!==dir)snapTank(t,dir,d);
-    const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
+  function moveTank(d,t,dir,spd,dt,back){
+    let m=dir;
+    if(back)m=(t.dir+2)&3;
+    else{
+      if(dir<0)return;
+      if(t.dir!==dir)snapTank(t,dir,d);
+    }
+    const vx=m===1?spd:m===3?-spd:0,vy=m===2?spd:m===0?-spd:0;
     const slack=edgeSlack(t.sz);
     const nx=Math.max(slack,Math.min(S.W-slack,t.x+vx*dt));
     const ny=Math.max(slack,Math.min(S.H-slack,t.y+vy*dt));
@@ -5495,15 +5499,19 @@
     if(n&&land/n>0.5)return true;
     return unitsOverlap(d,x,y,sz,ignore);
   }
-  function moveShip(d,t,dir,spd,dt){
-    if(dir<0)return;
-    if(t.dir!==dir){
-      const ox=t.x,oy=t.y,g=8;
-      if(dir===0||dir===2)t.x=Math.round(t.x/g)*g;else t.y=Math.round(t.y/g)*g;
-      if(shipBlocked(d,t.x,t.y,t.sz,t)){t.x=ox;t.y=oy;}
-      t.dir=dir;
+  function moveShip(d,t,dir,spd,dt,back){
+    let m=dir;
+    if(back)m=(t.dir+2)&3;
+    else{
+      if(dir<0)return;
+      if(t.dir!==dir){
+        const ox=t.x,oy=t.y,g=8;
+        if(dir===0||dir===2)t.x=Math.round(t.x/g)*g;else t.y=Math.round(t.y/g)*g;
+        if(shipBlocked(d,t.x,t.y,t.sz,t)){t.x=ox;t.y=oy;}
+        t.dir=dir;
+      }
     }
-    const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
+    const vx=m===1?spd:m===3?-spd:0,vy=m===2?spd:m===0?-spd:0;
     const slack=edgeSlack(t.sz);
     const nx=Math.max(slack,Math.min(S.W-slack,t.x+vx*dt));
     const ny=Math.max(slack,Math.min(S.H-slack,t.y+vy*dt));
@@ -6134,14 +6142,10 @@
         if((a.jam||0)<0.1&&(b.jam||0)<0.1&&dist>need*0.7)continue;
         const da=Math.hypot(a.x-goal.x,a.y-goal.y), db=Math.hypot(b.x-goal.x,b.y-goal.y);
         const lead=da<=db?a:b, back=lead===a?b:a;
-        if((back.yield||0)>0.2)continue;
-        const vx=back.x-lead.x, vy=back.y-lead.y;
-        const rev=Math.abs(vx)+Math.abs(vy)<1?(back.dir+2)&3:(Math.abs(vx)>Math.abs(vy)?(vx>0?1:3):(vy>0?2:0));
-        back.yield=0.7;
-        back.yieldDir=rev;
+        if((back.backup||0)>0.15)continue;
+        back.backup=0.55;
         back.slip=lead;
         back.jam=0;
-        back.dir=rev;
         if(lead.slip===back)lead.slip=null;
       }
     }
@@ -6178,7 +6182,6 @@
       const dx=S.defStick.x,dy=S.defStick.y;
       if(dx*dx+dy*dy>0.12)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0);
     }
-    if(h.rev)dir=dir>=0?(dir+2)&3:(p.dir+2)&3;
     const pspd=72*(1+((d.up&&d.up.speed)||0)/100);
     if(d.aaArmed&&d.reticle){
       const rspd=220;
@@ -6194,7 +6197,10 @@
       d.reticle.x=Math.max(-40,Math.min(S.W+40,d.reticle.x+rdx*rspd*dt));
       d.reticle.y=Math.max(-40,Math.min(S.H+40,d.reticle.y+rdy*rspd*dt));
     }else{
-      if(d.naval)moveShip(d,p,dir,pspd,dt);else moveTank(d,p,dir,pspd,dt);
+      if(h.rev){
+        if(d.naval)moveShip(d,p,p.dir,pspd,dt,true);else moveTank(d,p,p.dir,pspd,dt,true);
+      }else if(d.naval)moveShip(d,p,dir,pspd,dt);
+      else moveTank(d,p,dir,pspd,dt);
       if(h.f)fireTank(d,p);
     }
     if(d.aaTap){
@@ -6209,8 +6215,9 @@
       e.think-=dt;
       const goal=e.role==="shield"?(d.fort||d.home):p;
       const other=e.role==="shield"?p:(d.fort||d.home);
-      if(e.think<=0 && !(e.yield>0)){
-        e.think=.24+Math.random()*.2;
+      if(e.think<=0){
+        e.think=.28+Math.random()*.22;
+        e.want=false;
         if(los(d,e,goal.x,goal.y)){facePoint(e,goal.x,goal.y);e.want=true;}
         else if(los(d,e,other.x,other.y)){facePoint(e,other.x,other.y);e.want=true;}
         else if(e.type!=="HELI"){
@@ -6228,29 +6235,28 @@
         const ram=e.role==="shield"?(d.fort||d.home):p;
         if(e.role==="shield"&&Math.hypot(e.x-ram.x,e.y-ram.y)<28){hitBase(d,e.leak||12);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");}
       }else{
-        if((e.yield||0)>0){
-          e.yield-=dt;
-          if(e.yieldDir!=null)e.dir=e.yieldDir;
-          if(e.yield<=0){
-            const side=(e.dir+1)&3, other=(e.dir+3)&3;
-            e.dir=openStep(d,e,side)?side:openStep(d,e,other)?other:(e.dir+2)&3;
-            e.yieldDir=null;e.slip=null;e.think=0.4;e.jam=0;
-          }
+        const backing=(e.backup||0)>0;
+        if(backing){
+          e.backup-=dt;
+          if(e.backup<=0)e.slip=null;
         }
-        if(!(e.yield>0))laneCenter(d,e);
-        if(e.ship)moveShip(d,e,e.dir,e.spd,dt);
-        else moveTank(d,e,e.dir,e.spd,dt);
-        if(Math.hypot(e.x-ox,e.y-oy)<1.4){
+        laneCenter(d,e);
+        if(e.ship)moveShip(d,e,e.dir,e.spd,dt,backing);
+        else moveTank(d,e,e.dir,e.spd,dt,backing);
+        if(Math.hypot(e.x-ox,e.y-oy)<0.4){
           const tx=Math.floor((e.x+(e.dir===1?12:e.dir===3?-12:0))/BC_TS);
           const ty=Math.floor((e.y+(e.dir===2?12:e.dir===0?-12:0))/BC_TS);
           const kt=bcAt(d.map,tx,ty);
           if(kt===1||kt===5){facePoint(e,(d.fort||d.home).x,(d.fort||d.home).y);e.want=true;e.jam=0;}
           else if(kt===4&&!e.ship&&(e.fell||e.jam>0.35)){e.want=true;e.jam=0;}
-          else{
+          else if(!backing){
             e.jam=(e.jam||0)+dt;
-            if(e.jam>0.22){
-              for(const nd of [(e.dir+1)&3,(e.dir+3)&3,(e.dir+2)&3])if(openStep(d,e,nd)){aimDir(e,nd);break;}
-              e.jam=0;e.think=0;
+            if(e.jam>0.35){
+              const bias=e.bias||(e.bias=Math.random()<0.5?1:3);
+              const opts=[(e.dir+bias)&3,(e.dir+(bias===1?3:1))&3];
+              for(const nd of opts)if(openStep(d,e,nd)){aimDir(e,nd);break;}
+              e.jam=0;
+              e.think=0.32;
             }
           }
         }else e.jam=0;
@@ -6258,7 +6264,7 @@
           hitBase(d,e.leak||8);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");
         }
       }
-      if(e.want){fireTank(d,e);e.want=false;}
+      if(e.want&&!(e.fire>0)){fireTank(d,e);e.want=false;}
     }
     separateUnits(d);
     function shotHits(s,t){return Math.abs(t.x-s.x)<t.sz+3&&Math.abs(t.y-s.y)<t.sz+3;}
@@ -11608,6 +11614,7 @@
       rev.addEventListener("pointerdown",revOn);
       rev.addEventListener("pointerup",revOff);
       rev.addEventListener("pointercancel",revOff);
+      rev.addEventListener("lostpointercapture",revOff);
     }
     fire.addEventListener("pointerdown",(e)=>{
       e.preventDefault();e.stopPropagation();
