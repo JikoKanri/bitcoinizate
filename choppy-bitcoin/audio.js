@@ -145,6 +145,17 @@
     warHeli: () => { beep(90, 0.16, "sawtooth", 0.04, 140); beep(70, 0.18, "square", 0.03, 110, 0.08); },
     warCharge: () => beep(480, 0.04, "square", 0.025, 720),
     warAa: () => { beep(280, 0.1, "sawtooth", 0.06, 90); beep(740, 0.16, "square", 0.05, 180, 0.06); },
+    warEnemy: () => beep(380, 0.03, "square", 0.018, 210),
+    warShield: () => { beep(150, 0.08, "square", 0.05, 70); beep(80, 0.12, "sawtooth", 0.04, 36, 0.04); },
+    warLrm: () => { beep(160, 0.14, "sawtooth", 0.06, 60); beep(480, 0.2, "square", 0.05, 120, 0.06); },
+    warIce: () => { beep(880, 0.07, "sine", 0.035, 1400); beep(1400, 0.1, "triangle", 0.03, 1860, 0.06); },
+    warWall: () => { beep(130, 0.08, "square", 0.05, 240); beep(260, 0.12, "square", 0.04, 380, 0.07); },
+    warGod: () => { beep(660, 0.07, "triangle", 0.04); beep(880, 0.09, "triangle", 0.035, null, 0.06); beep(1320, 0.14, "sine", 0.03, null, 0.12); },
+    warHeal: () => { beep(520, 0.06, "sine", 0.04, 780); beep(780, 0.08, "triangle", 0.03, null, 0.05); },
+    warCrack: () => { beep(100, 0.08, "sawtooth", 0.06, 40); beep(220, 0.05, "square", 0.04, 80, 0.04); },
+    warWave: () => { beep(330, 0.09, "square", 0.04); beep(494, 0.12, "triangle", 0.04, null, 0.08); },
+    warWin: () => { beep(523, 0.09, "triangle", 0.045); beep(659, 0.09, "triangle", 0.04, null, 0.08); beep(784, 0.16, "triangle", 0.05, null, 0.16); },
+    warBoom: () => { if (A.sfx && A.sfx.boom) A.sfx.boom(); },
   };
   A.stopMusic = () => { if (musicInterval != null) { clearInterval(musicInterval); musicInterval = null; } };
   A.musicOn = () => musicInterval != null;
