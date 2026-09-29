@@ -97,7 +97,7 @@
   let PAL = PALETTES.classic;
   let PALETTE_ID = "classic";
   const HERO_SKINS = {
-    classic: { fill:"#f2a900", rim:"#ffe7a0", dark:"#c48400", edge:"#8a5a00", ink:"#1a0c06", btc:"#9a9aa2", band:"#e02420", halo:"#fff4d6", lensF:"#0a0a0c", lensB:"#1a1a1e", limb:"#1a0c06", mark:"₿", style:"coin" },
+    classic: { fill:"#f2a900", rim:"#ffe7a0", dark:"#c48400", edge:"#8a5a00", ink:"#1a0c06", btc:"#f7f7f8", band:"#e02420", halo:"#fff4d6", lensF:"#0a0a0c", lensB:"#1a1a1e", limb:"#1a0c06", mark:"₿", style:"coin" },
     midnight:{ fill:"#9ec4ff", rim:"#e8f0ff", dark:"#4a6aa0", edge:"#2a4068", ink:"#041018", btc:"#e8eefc", band:"#3d6adf", halo:"#d6e8ff", lensF:"#0a1428", lensB:"#1a2848", limb:"#c5d8ff", mark:"₿", style:"rocket", glow:"rgba(126,182,255,0.4)" },
     terminal:{ fill:"#163416", rim:"#5dff6a", dark:"#0a200a", edge:"#082008", ink:"#021004", btc:"#5dff6a", band:"#3adf5a", halo:"#c8ffc4", lensF:"#021004", lensB:"#0a280a", limb:"#5dff6a", mark:"₿", style:"pixel", glow:"rgba(93,255,106,0.28)" },
     paper:   { fill:"#e6c24a", rim:"#1a1610", dark:"#d4a06a", edge:"#b8aa90", ink:"#1a1610", btc:"#1a1610", band:"#e07a8a", halo:"#fff8ee", lensF:"#1a1610", lensB:"#3a3228", limb:"#1a1610", mark:"₿", style:"pencil" },
@@ -135,10 +135,7 @@
   function loadPalette() {
     let id = "";
     try { id = localStorage.getItem("choppy-palette") || ""; } catch (e) { id = ""; }
-    if (!id || !PALETTES[id]) {
-      const keys = Object.keys(PALETTES);
-      id = keys[(Math.random() * keys.length) | 0];
-    }
+    if (!id || !PALETTES[id]) id = "classic";
     applyPalette(id);
   }
   let SHOW_GAIN = true;
@@ -446,7 +443,7 @@
     testNoneRevealed: "(none yet)",
     testNonePool: "(pool is empty)",
     testPreInd: "Pre-independence",
-    testPreIndHint: "Nodes 100 and cards through Ortega. Army and the enemy follow the battle you pick. Does not count for the board.",
+    testPreIndHint: "Starts the battle now. Easy is a full army, moderate is half, hard is none. Does not count for the board.",
     testBattle: "BATTLE",
     testEasy: "EASY",
     testMod: "MODERATE",
@@ -966,10 +963,12 @@
     return S.have.ff > 0 ? (S.speedMul || 1) : 1;
   }
 
-  function burst(x, y, color, n) {
+  function burst(x, y, color, n, solid) {
     n = n || 10;
-    for (let i = 0; i < n; i++) S.particles.push({ x, y, vx: (Math.random() - 0.5) * 180, vy: (Math.random() - 0.5) * 180 - 20, life: 0.35 + Math.random() * 0.3, color });
+    for (let i = 0; i < n; i++) S.particles.push({ x, y, vx: (Math.random() - 0.5) * 180, vy: (Math.random() - 0.5) * 180 - 20, life: 0.35 + Math.random() * 0.3, color, solid: !!solid });
   }
+  function heroFill() { return heroSkin(HERO_SKIN).fill || "#f2a900"; }
+  const CASH_GREEN = "#3ecf73";
 
   function candyMul(tier) {
     const t = Math.max(0, Number(tier != null ? tier : S.have.candy) || 0);
@@ -1011,7 +1010,7 @@
       } else {
         S.cash += n;
       }
-      pop(px, py, wholeUsd(n), "#fffaf4", "gain");
+      pop(px, py, wholeUsd(n), CASH_GREEN, "gain");
       return n;
     }
     const usdPop = (v) => "+" + fmtAmt(v, "usd");
@@ -1043,7 +1042,7 @@
       x, y, text: shown, color, kind: kind || "",
       life: gain || power ? 0.825 : 1.1,
       vy: gain || power ? -32 : -38,
-      size: flowerTalk ? 16 : (gain || power ? 7.35 * 1.05 : 13),
+      size: flowerTalk ? 16 : (gain ? 7.35 * 1.05 * 1.1 : (power ? 7.35 * 1.05 : 13)),
       maxA: flowerTalk ? 1 : (gain || power ? 0.75 : 0.875),
     });
   }
@@ -1277,7 +1276,7 @@
       S.price = gauss(20000, 0, 40000);
       S.startCash = S.cash; S.startPrice = S.price;
       S.peakNet = netBtc(); S.candles = 0; S.shownCandles = 0; S.buys = 0; S.sells = 0; S.swans = 0; S.lasers = 0;
-      S.halvings = 0; S.halveMiss = 0; S.halveSpawned = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
+      S.halvings = 0; S.halveMiss = 0; S.halveSpawned = 0; S.lasers = 0; S.perkPick = ""; S.perkHint = ""; S.perkChain = 0; S.dcaOn = false; S.trend = "off"; S.perkOffers = []; S.speedMul = 1;
       S.have = { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 };
       S.poolTier = { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 };
       S.offerSeq = S.ranked ? fibSeq(16) : [10, 20, 30];
@@ -1301,7 +1300,7 @@
       if (!keepWallet) S.msig = 0;
       S.btcColdAt = 0;
     }
-    S.power = "NONE"; S.powerT = 0;
+    S.power = "NONE"; S.powerT = 0; S.powerUntil = 0;
     applyLaser(false);
     S.widthMul = S.heightMul = 1;
     S.bg = 0; S.ticker = ""; S.tickerT = 0;
@@ -1340,6 +1339,17 @@
   }
 
   function waveDur() { return WAVE_UP + WAVE_BACK; }
+  function bankGain(n, remain) {
+    const add = waveDur();
+    if (n <= 1) return add;
+    const tax = 1 - 1 / (n - 1);
+    const room = Math.max(0, add - remain);
+    const overflow = Math.max(0, add - room);
+    return room + overflow * (1 - tax);
+  }
+  function streakLeft(now) {
+    return Math.max(0, (S.powerUntil || 0) - (now != null ? now : S.lifeT));
+  }
   function waveAge(w, now) { return (now != null ? now : S.lifeT) - w.t0; }
   function waveLive(w, now) { return waveAge(w, now) < waveDur(); }
   function liveWaves(now) { return (S.waves || []).filter((w) => waveLive(w, now)); }
@@ -1368,12 +1378,12 @@
     S.halveBull = live.some((w) => w.kind === "HALVE");
     S.swanBear = live.some((w) => w.kind === "SWAN");
     S.cycleStacks = (S.waves || []).length;
-    let left = 0;
-    for (const w of live) left = Math.max(left, w.t0 + waveDur() - now);
-    S.powerT = Math.max(0, left);
-    const last = live.length ? live[live.length - 1] : null;
-    S.power = last ? last.type : ((S.waves || []).length ? S.power : "NONE");
-    if (!live.length && !(S.waves || []).length) { S.power = "NONE"; S.powerT = 0; }
+    S.powerT = streakLeft(now);
+    const last = (S.waves || []).length ? S.waves[S.waves.length - 1] : null;
+    S.power = S.powerT > 0 && last ? last.type : ((S.waves || []).length ? S.power : "NONE");
+    if (!((S.waves || []).length) || S.powerT <= 0) {
+      if (!((S.waves || []).length)) { S.power = "NONE"; S.powerT = 0; }
+    }
   }
 
   function beginCycle(type, kind) {
@@ -1393,6 +1403,10 @@
       S.waves = [];
     }
     S.waves.push({ type: type, kind: k, dir: dir, amp: amp, resid: resid, t0: S.lifeT, marked: false });
+    const now = S.lifeT;
+    const n = S.waves.length;
+    const remain = n <= 1 ? 0 : Math.max(0, (S.powerUntil || now) - now);
+    S.powerUntil = now + remain + bankGain(n, remain);
     S.power = type;
     S.tapeLive = { kind: dir > 0 ? "peak" : "bottom", price: S.price, i: S.tape.length };
     if (k === "HALVE") S.halveBull = true;
@@ -1411,6 +1425,7 @@
     S.priceBase = S.price;
     if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + sum * 0.45) * (S.cycleManip || 1));
     S.waves = [];
+    S.powerUntil = 0;
     S.power = "NONE"; S.powerT = 0; S.halveBull = false; S.swanBear = false;
     S.cycleStacks = 0; S.cycleManip = 1; S.cycleEnv = 0; S.tapeLive = null;
   }
@@ -1578,6 +1593,9 @@
       beginCycle("BULL", "HALVE");
       say("Halving number " + S.halvings, true, "halve");
       A.sfx.cap();
+      S.perkChain = 3;
+      openPerkOffer("halve", true);
+      if (S.phase !== "perk") S.perkChain = 0;
       return;
     }
     beginCycle(it.type);
@@ -1679,7 +1697,7 @@
       if (buyLine) say(buyLine, false, "trade");
       if (S.aibudLit) { S.aibudLit.buy = false; S.aibudLit.sell = false; }
     }
-    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), BTC, "trade");
+    pop(S.bird.x + 28, S.bird.y - 12, "+" + fmtAmt(got, "btc"), CASH_GREEN, "trade");
     pop(S.bird.x + 28, S.bird.y + 8, "-" + fmtAmt(spent, "usd"), RED, "trade");
     markTrade("buy");
   }
@@ -1740,10 +1758,18 @@
 
   function confirmPerk() {
     if (S.phase !== "perk" || !S.perkPick) return;
+    const chained = (S.perkChain | 0) > 0;
     grantPerk(S.perkPick);
     S.perkPick = "";
     S.perkOffers = [];
-    bumpOffer();
+    if (chained) {
+      S.perkChain = (S.perkChain | 0) - 1;
+      if (S.perkChain > 0) {
+        openPerkOffer("halve", true);
+        if (S.phase === "perk") return;
+      }
+      S.perkChain = 0;
+    } else bumpOffer();
     S.perkResume = null;
     S.optPanel = null;
     S.optBack = "play";
@@ -5489,23 +5515,19 @@
     if (S.invuln > 0) S.invuln -= dt;
 
     let speed = m.speed * scrollMul();
-    if (S.laserOn || liveWaves(S.lifeT).length) speed *= 1.28;
+    if (S.laserOn || streakLeft(S.lifeT) > 0) speed *= 1.28;
     for (const f of S.floats) f.x -= speed * dt;
     if ((S.waves || []).length) {
       S.cycleManip = Math.max(0.15, (S.cycleManip || 1) * (1 + trendBias() * dt));
       const now = S.lifeT;
       let sum = 0;
-      let live = false;
-      for (const w of S.waves) {
-        sum += waveK(w, now);
-        if (waveLive(w, now)) live = true;
-      }
+      for (const w of S.waves) sum += waveK(w, now);
       S.price = clampPx((S.priceBase || S.cycleStart || S.price) * waveMul(sum) * S.cycleManip);
       if (S.level >= 2 && S.vtCycle > 0) S.vtPrice = Math.max(1, S.vtCycle * (1 + sum * 0.45) * S.cycleManip);
       noteCyclePrice();
       updateTapeLive(now);
       syncWaveFlags();
-      if (!live) endCycle();
+      if (streakLeft(now) <= 0) endCycle();
     } else {
       const bias = trendBias();
       const mid = bias > 0.001 ? 0.42 : bias < -0.001 ? 0.58 : 0.48;
@@ -5598,7 +5620,8 @@
       if (inX && !p.finish && !watching) {
         const ends = pipeEnds(p);
         if (S.bird.y - hitR < ends.top + 2 || S.bird.y + hitR > ends.bot - 2) {
-          if (S.power === "BULL") { burst(p.x + pw * 0.5, S.bird.y, GREEN, 8); A.sfx.wave(); grantUsd(200, p.x + pw * 0.5, S.bird.y - 66, "gain"); S.pipes.splice(i, 1); continue; }
+          burst(p.x + pw * 0.5, S.bird.y, heroFill(), 8, true);
+          if (S.power === "BULL") { A.sfx.wave(); grantUsd(200, p.x + pw * 0.5, S.bird.y - 66, "gain"); S.pipes.splice(i, 1); continue; }
           else if (S.invuln <= 0) hitFatal();
         }
       }
@@ -5760,6 +5783,18 @@
     return { o: o, h: h, l: l, c: data[end - 1] };
   }
 
+  function paintSharpText(ctx, text, x, y, fill) {
+    const px = Math.round(x), py = Math.round(y);
+    ctx.save();
+    ctx.lineJoin = "miter";
+    ctx.miterLimit = 2;
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = (PALETTE_ID === "paper" || PALETTE_ID === "simple") ? "#ffffff" : "#000000";
+    ctx.strokeText(text, px, py);
+    ctx.fillStyle = fill;
+    ctx.fillText(text, px, py);
+    ctx.restore();
+  }
   function paintHaloText(ctx, text, x, y, fill) {
     ctx.save();
     ctx.lineJoin = "round";
@@ -7049,14 +7084,14 @@
     }
     for (const pt of S.particles) {
       ctx.globalAlpha = Math.max(0, pt.life / 0.5);
-      ctx.fillStyle = wash || pt.color; ctx.fillRect(pt.x, pt.y, 3, 3);
+      ctx.fillStyle = pt.solid ? pt.color : (wash || pt.color); ctx.fillRect(pt.x, pt.y, 3, 3);
     }
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     for (const f of S.floats) {
       ctx.font = "700 " + f.size + "px \"IBM Plex Mono\", monospace";
       ctx.globalAlpha = f.maxA * Math.max(0, Math.min(1, f.life / 0.28));
       const label = f.kind === "gain" ? usdIntLabel(f.text) : f.text;
-      if (PALETTE_ID === "flower" && f.kind === "trade") paintFlowerFloat(ctx, label, f.x, f.y);
+      if (f.kind === "trade") paintSharpText(ctx, label, f.x, f.y, f.color || PAL.fg);
       else paintHaloText(ctx, label, f.x, f.y, f.color || PAL.fg);
     }
     ctx.globalAlpha = 1;
@@ -7858,9 +7893,9 @@
     "citadelQuestion", "rearmament", "anOffer", "ambassador", "threeColors", "ortegaCalls"
   ];
   function battlePreset(id) {
-    if (id === "easy") return { army: 80, world: 50 };
-    if (id === "hard") return { army: 30, world: 75 };
-    return { army: 55, world: 55 };
+    if (id === "easy") return { army: 100, world: 20 };
+    if (id === "hard") return { army: 0, world: 20 };
+    return { army: 50, world: 20 };
   }
   function testBattleNote() {
     const p = battlePreset(S.testBattle);
@@ -7926,14 +7961,11 @@
       S.testIndepQueued = true;
       S.optPanel = null;
       startGame(false);
-      return;
+    } else {
+      applyPreIndependence();
+      S.optPanel = null;
     }
-    applyPreIndependence();
-    testLogHold = false;
-    testLogDraft = null;
-    try { renderHud(); } catch (e) {}
-    try { layoutStage(); } catch (e) {}
-    try { renderOverlay(); } catch (e) {}
+    startDefense();
   }
   function testGrantPerk(kind) {
     if (!kind || !PERK_MAX[kind]) return;
