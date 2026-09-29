@@ -445,12 +445,14 @@
     testCopied: "Copied",
     testNoneRevealed: "(none yet)",
     testNonePool: "(pool is empty)",
-    testPreInd: "Pre-independence",
-    testPreIndHint: "Starts the battle now. Easy is a full army, moderate is half, hard is none. Does not count for the board.",
+    testPreInd: "Independence",
+    testPreIndHint: "The country is already independent. Starts the battle now. Easy is a full army, moderate is half, hard is none. Does not count for the board.",
     testBattle: "BATTLE",
     testEasy: "EASY",
     testMod: "MODERATE",
     testHard: "HARD",
+    retryBattle: "Restart battle",
+    retryBattleNote: "The beach fell. Build another map and hold it again.",
     testArmy: "YOUR ARMY",
     testWorld: "ENEMY",
     howPlay: "HOW TO PLAY", market: "MARKETPLACE",
@@ -5154,6 +5156,15 @@
     }
     clearBattleField();
     S.bcAssaultAt=0;
+    if(!S.ranked){
+      S.trainBattleLose=true;
+      S.dead=false;
+      S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
+      try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
+      if(field)field.classList.remove("is-play");
+      try{setPhase("over");}catch(e){try{renderOverlay();}catch(err){}}
+      return;
+    }
     S.bcIndependent=false;S.bcVictory=false;S.bcArcClosed=true;
     if(S.dead)return;
     S.dead=true;
@@ -6303,6 +6314,7 @@
     resetWorld(false);
     applyTestLoadout();
     S.dead = false;
+    S.trainBattleLose = false;
     S.phase = "play";
     if (field) field.classList.add("is-play");
     if (overlay) hideOverlay();
@@ -6318,8 +6330,18 @@
     setPhase("play");
   }
 
+  function retryLostBattle(){
+    S.trainBattleLose=false;
+    S.dead=false;
+    S.runTab=null;
+    S.bcMapPlan=null;
+    S.bcMapSeed=(Math.random()*0x7fffffff)|1;
+    if(field)field.classList.add("is-play");
+    startDefense();
+  }
   function replay() {
     A.cancelSpeech();
+    S.trainBattleLose = false;
     resetWorld(false);
     applyTestLoadout();
     setPhase("play");
@@ -8745,7 +8767,7 @@
     S.familyClosed = true;
     S.familyPath = false;
     S.engaged = false;
-    S.arcBias = "theQuestion";
+    S.arcBias = "";
     S.bcBook = true;
     S.bcBookOffer = false;
     S.chanceMet.islandTrip = true;
@@ -8761,7 +8783,15 @@
     S.bcArmy = fight.army;
     S.bcWorld = fight.world;
     S.bcNodes = 100;
-    S.bcIndependent = false;
+    ["theQuestion","cabinet","declaration","theAnswer","blocReplies"].forEach((id) => {
+      S.chanceUsed[id] = true;
+      noteArcSeen(id);
+    });
+    S.bcIndependent = true;
+    S.bcNameAsk = false;
+    if (!cleanCountryName(S.bcCountryName)) S.bcCountryName = "Bitcoin Country";
+    if (!S.bcReactions) rollBlocReactions();
+    S.bcRepliesDone = true;
     S.bcVictory = false;
     S.bcArcClosed = false;
     S.bcDefense = null;
@@ -8770,11 +8800,9 @@
     S.bcMapPlan = null;
     S.bcMapSeed = 0;
     S.bcAssaultAt = 0;
-    S.bcReactions = null;
-    S.bcRepliesDone = false;
+    if (!S.bcReactions) rollBlocReactions();
+    S.bcRepliesDone = true;
     S.indepNoted = false;
-    S.bcCountryName = "";
-    S.bcNameAsk = false;
     if (!S.have) S.have = {};
     S.have.market = Math.max(S.have.market || 0, 1);
     S.have.chance = Math.max(S.have.chance || 0, 2);
@@ -9087,7 +9115,7 @@
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-gfx\">" + t("graphics") + "</button>"
-      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-test\">" + t("testing") + "</button>"
+      + (S.ranked ? "" : "<button type=\"button\" class=\"cta opt-item\" id=\"opt-test\">" + t("testing") + "</button>")
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.juke || 0) > 0 ? "" : " dim") + "\" id=\"opt-juke\">" + t("jukebox") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item" + ((S.have.aibud || 0) > 0 ? "" : " dim") + "\" id=\"opt-aibud\">" + t("aiLog") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-help\">" + t("tutorial") + "</button>"
@@ -10011,7 +10039,17 @@
         const ids = runAwardIds(S.stats);
         mergeAwards(ids);
       } catch (e) {}
-      if (S.runTab) {
+      if (S.trainBattleLose && !S.ranked) {
+        overlay.innerHTML = "<p class=\"k\">" + t("trainCamp") + "</p><h1>" + t("retryBattle") + "</h1><p>" + t("retryBattleNote") + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"retry-battle\">" + t("retryBattle") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"go\">" + t("tryAgain") + "</button></div>";
+        if ($("retry-battle")) {
+          $("retry-battle").onclick = (e) => { e.stopPropagation(); retryLostBattle(); };
+          $("retry-battle").onpointerdown = (e) => { e.stopPropagation(); retryLostBattle(); };
+        }
+        if ($("go")) {
+          $("go").onclick = replay;
+          $("go").onpointerdown = (e) => { e.stopPropagation(); replay(); };
+        }
+      } else if (S.runTab) {
         overlay.innerHTML = runRecapHtml();
         bindRunRecap();
       } else {
