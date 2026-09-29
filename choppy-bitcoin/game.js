@@ -140,6 +140,7 @@
   }
   let SHOW_GAIN = true;
   let SHOW_TRADE = true;
+  let PRICE_MODE = "dyn";
   let ARC_TEXT = "m";
   function applyArcTextAttr() {
     try { document.documentElement.setAttribute("data-arc-text", ARC_TEXT); } catch (e) {}
@@ -150,6 +151,8 @@
       if (s === "s" || s === "m" || s === "l") ARC_TEXT = s;
       if (localStorage.getItem("choppy-show-gain") === "0") SHOW_GAIN = false;
       if (localStorage.getItem("choppy-show-trade") === "0") SHOW_TRADE = false;
+      const pm = localStorage.getItem("choppy-price-mode");
+      if (pm === "usd" || pm === "btc" || pm === "dyn") PRICE_MODE = pm;
     } catch (e) {}
     applyArcTextAttr();
   }
@@ -165,6 +168,15 @@
   function setShowTrade(on) {
     SHOW_TRADE = !!on;
     try { localStorage.setItem("choppy-show-trade", SHOW_TRADE ? "1" : "0"); } catch (e) {}
+  }
+  function cyclePriceMode() {
+    PRICE_MODE = PRICE_MODE === "dyn" ? "usd" : PRICE_MODE === "usd" ? "btc" : "dyn";
+    try { localStorage.setItem("choppy-price-mode", PRICE_MODE); } catch (e) {}
+  }
+  function priceModeLabel() {
+    if (PRICE_MODE === "usd") return t("priceUsd");
+    if (PRICE_MODE === "btc") return t("priceBtc");
+    return t("priceDyn");
   }
   function setHero(skin, anim) {
     HERO_SKIN = HERO_SKINS[skin] ? skin : "classic";
@@ -469,6 +481,10 @@
     textLarge: "LARGE",
     candleText: "CANDLE INCOME",
     tradeText: "BUY / SELL",
+    priceShow: "PRICES",
+    priceDyn: "DYNAMIC",
+    priceUsd: "USD",
+    priceBtc: "BTC",
     tut1: "You are the ₿. Tap or press space to flap through the candle gaps. A wick liquidates you. The floor only counts when you fully leave the screen.",
     tut2: "Candles pay cash. Buy BTC on the dip, sell on the rip. Score is play-money net worth in BTC at the live in-game price.",
     tut3a: "Bull pumps price.",
@@ -1290,7 +1306,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1900,28 +1916,69 @@
   function wealthUsd() {
     return Math.max(0, (S.cash || 0) + (S.btc || 0) * clampPx(S.price));
   }
+  function holdMoreBtc() {
+    const px = clampPx(S.price);
+    return px > 0 && Math.max(0, (S.btc || 0) * px) > Math.max(0, S.cash || 0);
+  }
+  function preferBtcDisplay() {
+    if (PRICE_MODE === "btc") return true;
+    if (PRICE_MODE === "usd") return false;
+    return holdMoreBtc();
+  }
+  function fmtCostUsd(n) {
+    const v = Number(n) || 0;
+    const sign = v < 0 ? "-" : "";
+    return sign + "$" + Math.round(Math.abs(v)).toLocaleString("en-US");
+  }
+  function fmtCostBtc(n) {
+    const x = Number(n) || 0;
+    const a = Math.abs(x);
+    const sign = x < 0 ? "-" : "";
+    if (a >= 1e12) return sign + (a / 1e12).toFixed(2) + "T BTC";
+    if (a >= 1e9) return sign + (a / 1e9).toFixed(2) + "B BTC";
+    if (a >= 1e6) return sign + (a / 1e6).toFixed(2) + "M BTC";
+    if (a > 0 && a < 0.01) return sign + a.toFixed(4) + " BTC";
+    return sign + a.toFixed(2) + " BTC";
+  }
+  let costAsBtc = null;
+  function costLabel(usd) {
+    const n = Math.max(0, Number(usd) || 0);
+    const px = clampPx(S.price);
+    const asBtc = costAsBtc == null ? preferBtcDisplay() : costAsBtc;
+    if (asBtc) return fmtCostBtc(px > 0 ? n / px : n);
+    return fmtCostUsd(n);
+  }
+  function payUsd(usdNeed) {
+    if (costAsBtc == null) costAsBtc = preferBtcDisplay();
+    const asBtc = costAsBtc;
+    let left = Math.max(0, Number(usdNeed) || 0);
+    const start = left;
+    const px = clampPx(S.price);
+    const takeBtc = () => {
+      if (left <= 1e-6 || px <= 0 || !(S.btc > 0)) return;
+      const b = Math.min(S.btc, left / px);
+      S.btc = Math.max(0, S.btc - b);
+      left -= b * px;
+    };
+    const takeCash = () => {
+      if (left <= 1e-6 || !(S.cash > 0)) return;
+      const c = Math.min(S.cash, left);
+      S.cash = Math.max(0, S.cash - c);
+      left -= c;
+    };
+    if (asBtc) { takeBtc(); takeCash(); }
+    else { takeCash(); takeBtc(); }
+    return Math.max(0, start - Math.max(0, left));
+  }
   function takeWealthPct(p) {
-    const w = wealthUsd();
-    let need = w * Math.max(0, Math.min(1, p));
-    const fromCash = Math.min(S.cash, need);
-    S.cash -= fromCash;
-    need -= fromCash;
-    if (need > 0 && S.price > 0 && S.btc > 0) {
-      const b = Math.min(S.btc, need / S.price);
-      S.btc -= b;
-      need -= b * S.price;
-    }
-    return w * p - Math.max(0, need);
+    const need = wealthUsd() * Math.max(0, Math.min(1, p));
+    return payUsd(need);
   }
   function takeCash(n) {
     const got = Math.min(S.cash, Math.max(0, n)); S.cash -= got; return got;
   }
   function takeUsdEquivalent(n) {
-    let need=Math.max(0,Number(n)||0), paid=0;
-    const cash=Math.min(Math.max(0,S.cash||0),need); S.cash-=cash; need-=cash; paid+=cash;
-    const px=clampPx(S.price);
-    if(need>0&&px>0&&S.btc>0){const btc=Math.min(S.btc,need/px);S.btc-=btc;need-=btc*px;paid+=btc*px;}
-    return paid;
+    return payUsd(n);
   }
   function grantWealthPct(p) {
     const n = wealthUsd() * Math.max(0, p);
@@ -1949,21 +2006,10 @@
     return { cash: cash, btc: px > 0 ? Math.min(btc, Math.max(0, need - cash) / px) : 0 };
   }
   function formatPayCost(usdNeed) {
-    const p = payPlan(usdNeed);
-    const bits = [];
-    if (p.cash > 0.49) bits.push(money(p.cash));
-    if (p.btc > 1e-8) bits.push(fmtBtcAmt(p.btc) + " BTC");
-    if (!bits.length) bits.push(money(usdNeed));
-    return bits.join(" + ");
+    return costLabel(usdNeed);
   }
   function formatSlicePct(p) {
-    const cash = Math.max(0, (S.cash || 0) * p);
-    const btc = Math.max(0, (S.btc || 0) * p);
-    const bits = [];
-    if (cash > 0.49) bits.push(money(cash));
-    if (btc > 1e-8) bits.push(fmtBtcAmt(btc) + " BTC");
-    if (!bits.length) bits.push(money(wealthUsd() * p));
-    return bits.join(" + ");
+    return costLabel(wealthUsd() * Math.max(0, p));
   }
   function formatBagDelta(before, after) {
     const dCash = (after.cash || 0) - (before.cash || 0);
@@ -2491,41 +2537,41 @@
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
-      return say("It has not changed. −" + money(paid) + ".", "No cambió. −" + money(paid) + ".");
+      return say("It has not changed. −" + costLabel(paid) + ".", "No cambió. −" + costLabel(paid) + ".");
     }
     if (card.id === "nicoWedding") {
       if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "El resto de la noche evitás a Nico en la barra.");
       if (opt === "a") {
         const paid = cutPct(0.04);
         S.cold += 1;
-        return say("They toast you. −" + money(paid) + ". Nico hands you a cold-storage device. \"Part of the wedding experience.\"",
-          "Brindan por vos. −" + money(paid) + ". Nico te pasa un cold storage. \"Parte de la experiencia.\"");
+        return say("They toast you. −" + costLabel(paid) + ". Nico hands you a cold-storage device. \"Part of the wedding experience.\"",
+          "Brindan por vos. −" + costLabel(paid) + ". Nico te pasa un cold storage. \"Parte de la experiencia.\"");
       }
       const paid = cutPct(0.006);
-      return say("Nico looks at the envelope, then at you. \"Fair.\" −" + money(paid) + ".",
-        "Nico mira el sobre, después a vos. \"Justo.\" −" + money(paid) + ".");
+      return say("Nico looks at the envelope, then at you. \"Fair.\" −" + costLabel(paid) + ".",
+        "Nico mira el sobre, después a vos. \"Justo.\" −" + costLabel(paid) + ".");
     }
     if (card.id === "mexico") {
       if (opt === "b") return say("You stay home. Paco destroys a cushion.", "Se quedan. Paco destruye un almohadón.");
       const paid = cutPct(0.08);
       S.invuln = Math.max(S.invuln || 0, 4);
-      return say("Five days in Tulum. −" + money(paid) + ". About four seconds of feeling untouchable.",
-        "Cinco días en Tulum. −" + money(paid) + ". Unos cuatro segundos de sentirte intocable.");
+      return say("Five days in Tulum. −" + costLabel(paid) + ". About four seconds of feeling untouchable.",
+        "Cinco días en Tulum. −" + costLabel(paid) + ". Unos cuatro segundos de sentirte intocable.");
     }
     if (card.id === "flu") {
       const paid = cutBill(120);
-      return say("Soup, medicine, half eaten by Paco. −" + money(paid) + ".", "Sopa, remedio, la mitad se la comió Paco. −" + money(paid) + ".");
+      return say("Soup, medicine, half eaten by Paco. −" + costLabel(paid) + ".", "Sopa, remedio, la mitad se la comió Paco. −" + costLabel(paid) + ".");
     }
     if (card.id === "phish") {
       if (opt === "b") return say("Deleted. You stare at the empty inbox for thirty seconds anyway.", "Borrado. Igual mirás la bandeja treinta segundos.");
       const paid = cutPct(0.18);
-      return say("The site looked convincing. So did the transaction. −" + money(paid) + ".",
-        "El sitio se veía convincente. La transacción también. −" + money(paid) + ".");
+      return say("The site looked convincing. So did the transaction. −" + costLabel(paid) + ".",
+        "El sitio se veía convincente. La transacción también. −" + costLabel(paid) + ".");
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
-      return say("Nobody was hurt. The bumper still wants money. −" + money(paid) + ".",
-        "Nadie se lastimó. El paragolpes igual quiere plata. −" + money(paid) + ".");
+      return say("Nobody was hurt. The bumper still wants money. −" + costLabel(paid) + ".",
+        "Nadie se lastimó. El paragolpes igual quiere plata. −" + costLabel(paid) + ".");
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
@@ -2544,10 +2590,10 @@
       const stake = cutPct(opt === "b" ? 0.3 : 0.1);
       if (Math.random() < 0.46) {
         arcPay(stake * 2);
-        return say("The number hits. +" + money(stake * 2) + " on " + money(stake) + ".",
-          "Sale el número. +" + money(stake * 2) + " sobre " + money(stake) + ".");
+        return say("The number hits. +" + money(stake * 2) + " on " + costLabel(stake) + ".",
+          "Sale el número. +" + money(stake * 2) + " sobre " + costLabel(stake) + ".");
       }
-      return say("The table does not know you. −" + money(stake) + ".", "La mesa no te conoce. −" + money(stake) + ".");
+      return say("The table does not know you. −" + costLabel(stake) + ".", "La mesa no te conoce. −" + costLabel(stake) + ".");
     }
     if (card.id === "poker") {
       if (opt === "c") return say("Marek joins you ten minutes later. \"Probably better.\" He says it without looking at you.",
@@ -2555,9 +2601,9 @@
       const stake = cutPct(opt === "b" ? 0.25 : 0.08);
       const r = Math.random();
       if (r < 0.06) { arcPay(stake * 8); return say("You scoop the table. +" + money(stake * 8) + ".", "Te llevás la mesa. +" + money(stake * 8) + "."); }
-      if (r < 0.28) { arcPay(stake * 3); return say("+" + money(stake * 3) + " on a " + money(stake) + " buy-in.", "+" + money(stake * 3) + " sobre " + money(stake) + "."); }
+      if (r < 0.28) { arcPay(stake * 3); return say("+" + money(stake * 3) + " on a " + costLabel(stake) + " buy-in.", "+" + money(stake * 3) + " sobre " + costLabel(stake) + "."); }
       if (r < 0.52) { arcPay(stake * 1.4); return say("Min-cash. +" + money(stake * 1.4) + ".", "Min-cash. +" + money(stake * 1.4) + "."); }
-      return say("Busted. −" + money(stake) + ".", "Afuera. −" + money(stake) + ".");
+      return say("Busted. −" + costLabel(stake) + ".", "Afuera. −" + costLabel(stake) + ".");
     }
     if (card.id === "uncle") {
       if (Math.random() < 0.55) {
@@ -2572,12 +2618,12 @@
     if (card.id === "school") {
       if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Se arreglan. Sofi igual manda una foto que no entendés.");
       const paid = cutBill(300);
-      return say("Sofi sends a photo from the museum. You have no idea what is in it. −" + money(paid) + ".",
-        "Sofi manda una foto del museo. No sabés qué hay en la foto. −" + money(paid) + ".");
+      return say("Sofi sends a photo from the museum. You have no idea what is in it. −" + costLabel(paid) + ".",
+        "Sofi manda una foto del museo. No sabés qué hay en la foto. −" + costLabel(paid) + ".");
     }
     if (card.id === "roof") {
       const paid = cutBill(900);
-      return say("Paco found it first. −" + money(paid) + ".", "Paco lo encontró primero. −" + money(paid) + ".");
+      return say("Paco found it first. −" + costLabel(paid) + ".", "Paco lo encontró primero. −" + costLabel(paid) + ".");
     }
     if (card.id === "lotto") {
       const r = Math.random();
@@ -2587,7 +2633,7 @@
     }
     if (card.id === "hospital") {
       const paid = cutBill(250);
-      return say("Four stitches. Try not to bleed on anything. −" + money(paid) + ".", "Cuatro puntos. Tratá de no sangrar sobre nada. −" + money(paid) + ".");
+      return say("Four stitches. Try not to bleed on anything. −" + costLabel(paid) + ".", "Cuatro puntos. Tratá de no sangrar sobre nada. −" + costLabel(paid) + ".");
     }
     if (card.id === "startup") {
       if (opt === "b") return say("Nico says: \"Your loss.\" You are fairly sure that is not how losses work.",
@@ -2595,13 +2641,13 @@
       const paid = cutPct(0.2);
       if (Math.random() < 0.28) {
         arcPay(paid * 4);
-        return say("They actually ship. 4× on " + money(paid) + ".", "De verdad publican. 4× sobre " + money(paid) + ".");
+        return say("They actually ship. 4× on " + costLabel(paid) + ".", "De verdad publican. 4× sobre " + costLabel(paid) + ".");
       }
-      return say("The domain expired. " + money(paid) + " is a case study.", "Venció el dominio. " + money(paid) + " es un caso de estudio.");
+      return say("The domain expired. " + costLabel(paid) + " is a case study.", "Venció el dominio. " + costLabel(paid) + " es un caso de estudio.");
     }
     if (card.id === "tow") {
       const paid = cutBill(85);
-      return say("Nine minutes. The sign was very clear. −" + money(paid) + ".", "Nueve minutos. El cartel estaba muy claro. −" + money(paid) + ".");
+      return say("Nine minutes. The sign was very clear. −" + costLabel(paid) + ".", "Nueve minutos. El cartel estaba muy claro. −" + costLabel(paid) + ".");
     }
     if (card.id === "courage") {
       if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","");}
@@ -2609,20 +2655,20 @@
       if (opt === "b") return say("You go home. Lena asks why you are quiet. You say you are tired. \"Sure, Fartface.\"",
         "Volvés. Lena pregunta por qué estás callado. Decís que estás cansado. \"Claro, Fartface.\"");
       const paid = cutPct(0.06);
-      return say("You are officially doing this. −" + money(paid) + ".", "Oficialmente lo estás haciendo. −" + money(paid) + ".");
+      return say("You are officially doing this. −" + costLabel(paid) + ".", "Oficialmente lo estás haciendo. −" + costLabel(paid) + ".");
     }
     if (card.id === "ring") {
       const paid = cutPct(opt === "b" ? 0.03 : 0.08);
-      if (opt === "b") return say("You still have a ring. Lena later finds the receipt. She says nothing. She just looks at you. −" + money(paid) + ".",
-        "Igual hay anillo. Lena después encuentra el ticket. No dice nada. Solo te mira. −" + money(paid) + ".");
-      return say("You now have a ring. −" + money(paid) + ".", "Ahora hay anillo. −" + money(paid) + ".");
+      if (opt === "b") return say("You still have a ring. Lena later finds the receipt. She says nothing. She just looks at you. −" + costLabel(paid) + ".",
+        "Igual hay anillo. Lena después encuentra el ticket. No dice nada. Solo te mira. −" + costLabel(paid) + ".");
+      return say("You now have a ring. −" + costLabel(paid) + ".", "Ahora hay anillo. −" + costLabel(paid) + ".");
     }
     if (card.id === "date") {
       if (opt === "c") { delete S.chanceUsed.date; return say("Tomorrow is probably better.", "Mañana probablemente esté mejor."); }
       const paid = cutBill(opt === "a" ? 180 : 60);
-      if (opt === "a") return say("Everything goes according to plan. That still feels suspicious. −" + money(paid) + ".",
-        "Todo sale según el plan. Sigue sintiéndose sospechoso. −" + money(paid) + ".");
-      return say("Dinner is good anyway. −" + money(paid) + ".", "La cena está bien igual. −" + money(paid) + ".");
+      if (opt === "a") return say("Everything goes according to plan. That still feels suspicious. −" + costLabel(paid) + ".",
+        "Todo sale según el plan. Sigue sintiéndose sospechoso. −" + costLabel(paid) + ".");
+      return say("Dinner is good anyway. −" + costLabel(paid) + ".", "La cena está bien igual. −" + costLabel(paid) + ".");
     }
     if (card.id === "proposal") {
       if (opt === "b") {
@@ -2635,61 +2681,61 @@
         delete S.chanceUsed.proposal;
         S.engaged = false;
         const paid = cutPct(0.01);
-        return say("You make a joke and start walking. She lets you go. The question is still there. The ring is still in your pocket. −" + money(paid) + ".",
-          "Hacés un chiste y arrancás. Te deja ir. La pregunta sigue ahí. El anillo sigue en el bolsillo. −" + money(paid) + ".");
+        return say("You make a joke and start walking. She lets you go. The question is still there. The ring is still in your pocket. −" + costLabel(paid) + ".",
+          "Hacés un chiste y arrancás. Te deja ir. La pregunta sigue ahí. El anillo sigue en el bolsillo. −" + costLabel(paid) + ".");
       }
       S.engaged = true;
       const paid = cutPct(0.02);
-      return say("You put the ring on her finger. \"Yes, Fartface.\" There will be a wedding. −" + money(paid) + ".",
-        "Le ponés el anillo. \"Sí, Fartface.\" Va a haber una boda. −" + money(paid) + ".");
+      return say("You put the ring on her finger. \"Yes, Fartface.\" There will be a wedding. −" + costLabel(paid) + ".",
+        "Le ponés el anillo. \"Sí, Fartface.\" Va a haber una boda. −" + costLabel(paid) + ".");
     }
     if (card.id === "wedding") {
-      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;S.arcBias="timeTraveler";return say("You look at Lena. Then at the room. The flowers, the tables, the relatives, the life waiting on the other side of the ceremony. It is a good life. That's the problem. For months, another thought has been getting harder to ignore. That conversation with Marek. Building something. Not a company. Not a charity. Something else. You still don't know what. You tell Lena. There is a very long silence. Then she looks at you. “I'll miss you, Fartface.” You leave. Paco comes with you. You are not entirely sure whether that was his decision. FAMILY ARC CLOSED. Something else is now possible. −"+money(p)+".","Miras a Lena. Después el salón: las flores, las mesas, los parientes, la vida que espera del otro lado de la ceremonia. Es una buena vida. Ese es el problema. Hace meses que otra idea se hace más difícil de ignorar. Aquella conversación con Marek. Construir algo. No una empresa. No una ONG. Otra cosa. Todavía no sabés qué. Se lo decís a Lena. Hay un silencio muy largo. Después te mira. “Te voy a extrañar, Fartface.” Te vas. Paco se va con vos. No estás del todo seguro de que haya sido decisión de él. ARCO FAMILIAR CERRADO. Ahora es posible otra cosa. −"+money(p)+".");}
+      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;S.arcBias="timeTraveler";return say("You look at Lena. Then at the room. The flowers, the tables, the relatives, the life waiting on the other side of the ceremony. It is a good life. That's the problem. For months, another thought has been getting harder to ignore. That conversation with Marek. Building something. Not a company. Not a charity. Something else. You still don't know what. You tell Lena. There is a very long silence. Then she looks at you. “I'll miss you, Fartface.” You leave. Paco comes with you. You are not entirely sure whether that was his decision. FAMILY ARC CLOSED. Something else is now possible. −"+costLabel(p)+".","Miras a Lena. Después el salón: las flores, las mesas, los parientes, la vida que espera del otro lado de la ceremonia. Es una buena vida. Ese es el problema. Hace meses que otra idea se hace más difícil de ignorar. Aquella conversación con Marek. Construir algo. No una empresa. No una ONG. Otra cosa. Todavía no sabés qué. Se lo decís a Lena. Hay un silencio muy largo. Después te mira. “Te voy a extrañar, Fartface.” Te vas. Paco se va con vos. No estás del todo seguro de que haya sido decisión de él. ARCO FAMILIAR CERRADO. Ahora es posible otra cosa. −"+costLabel(p)+".");}
       S.familyPath=true;
       S.arcBias="honeymoon";
       if (opt === "a") {
         const paid = cutPct(0.12);
-        return say("Everyone has a good time. Even Nico. His speech lasts eleven minutes. −" + money(paid) + ".",
-          "Todos la pasan bien. Hasta Nico. El discurso dura once minutos. −" + money(paid) + ".");
+        return say("Everyone has a good time. Even Nico. His speech lasts eleven minutes. −" + costLabel(paid) + ".",
+          "Todos la pasan bien. Hasta Nico. El discurso dura once minutos. −" + costLabel(paid) + ".");
       }
       if (opt === "b") {
         const paid = cutPct(0.05);
-        return say("Fewer people. Less noise. Paco is not allowed to attend. He does not know why. −" + money(paid) + ".",
-          "Menos gente. Menos ruido. Paco no puede entrar. No sabe por qué. −" + money(paid) + ".");
+        return say("Fewer people. Less noise. Paco is not allowed to attend. He does not know why. −" + costLabel(paid) + ".",
+          "Menos gente. Menos ruido. Paco no puede entrar. No sabe por qué. −" + costLabel(paid) + ".");
       }
       const paid = cutPct(0.01);
-      return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + money(paid) + ".",
-        "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + money(paid) + ".");
+      return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + costLabel(paid) + ".",
+        "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + costLabel(paid) + ".");
     }
     if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","");
-    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for $666.","");}
+    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","");}
     if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","");
     if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","");
-    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+money(p)+".","Viaje reservado. −"+money(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Nico te manda el aviso otra vez mañana.");}
-    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+money(p)+".","");}return say("The island remains in the Marketplace at "+money(S.bcIslandOffer)+".","");}
+    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Nico te manda el aviso otra vez mañana.");}
+    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+costLabel(p)+".","");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","");}
     if(card.id==="paperwork")return say("Country. Island. For now.","");
-    if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+money(p)+".","");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","");}
+    if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+costLabel(p)+".","");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","");}
     if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","");}
-    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. -"+money(p)+".","");}delete S.chanceUsed.peopleAsking;return say("Not yet.","");}
-    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+money(p)+".","");}delete S.chanceUsed.extensionCord;return say("More extension cords.","");}
-    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. -"+money(p)+".","");}delete S.chanceUsed.obviously;return say("Not yet.","");}
+    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. -"+costLabel(p)+".","");}delete S.chanceUsed.peopleAsking;return say("Not yet.","");}
+    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+costLabel(p)+".","");}delete S.chanceUsed.extensionCord;return say("More extension cords.","");}
+    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. -"+costLabel(p)+".","");}delete S.chanceUsed.obviously;return say("Not yet.","");}
     if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","");
-    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("+10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+money(p)+".","");}return say("Nico takes some stamps.","");}
+    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("+10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+costLabel(p)+".","");}return say("Nico takes some stamps.","");}
     if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;S.bcArmy=Math.max(10,S.bcArmy);return say("Army unlocked: "+S.bcArmy+". -"+money(p)+".","");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now. -"+money(p)+".","");}return say("Paco gets a SECURITY vest.","");}
+    if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;return say("Army unlocked. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now. -"+costLabel(p)+".","");}return say("Paco gets a SECURITY vest.","");}
     if(card.id==="placeNow"){S.bcNodes=Math.min(100,S.bcNodes+5);return say("+5 Liberty Nodes.","");}
-    if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built. -"+money(p)+".","");}return say("The plans stay on the table.","");}
+    if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built. -"+costLabel(p)+".","");}return say("The plans stay on the table.","");}
     if(card.id==="rearmament"){S.bcWorld+=6;return say("World Military Strength: "+S.bcWorld+".","");}
     if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed. +35% net worth.","");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","");}
     if(card.id==="ambassador")return say("Diplomatic contact unlocked.","");
     if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+money(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
+    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
     if(card.id==="theQuestion"){if(S.bcVictory){return say(stampNation("Bitcoin Country is already independent."),"");}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declarás.":"You declare.","");}delete S.chanceUsed.theQuestion;return say(chanceLang()?"Todavía no.":"Not yet.","");}
     if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
     if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
     if(card.id==="theAnswer"){return say("The blocs already answered.","");}
     if(card.id==="blocReplies"){
-      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+money(p)+".","La carta se pone más cálida. Las flotas no. −"+money(p)+".");}
+      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+costLabel(p)+".","La carta se pone más cálida. Las flotas no. −"+costLabel(p)+".");}
       if(opt==="b")return say("You refuse. The fleets were never waiting on your answer.","Rechazás. Las flotas no estaban esperando tu respuesta.");
       return say("The statements are in. The ships are already moving.","Los comunicados llegaron. Los barcos ya se mueven.");
     }
@@ -2701,28 +2747,28 @@
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
       const paid = cutPct(map[opt] || 0.04);
-      if (opt === "a") return say("Tokyo, Kyoto, too many trains. The system works better than you do. −" + money(paid) + ".",
-        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que vos. −" + money(paid) + ".");
-      if (opt === "b") return say("Rome, Florence, long dinners. Lena buys something she refuses to explain until dinner. −" + money(paid) + ".",
-        "Roma, Florencia, cenas largas. Lena compra algo que no explica hasta la cena. −" + money(paid) + ".");
-      return say("Mountains, lakes, fewer people. You miss Paco after two days. He does not appear to miss you. −" + money(paid) + ".",
-        "Montañas, lagos, menos gente. Extrañás a Paco a los dos días. Él no parece extrañarte. −" + money(paid) + ".");
+      if (opt === "a") return say("Tokyo, Kyoto, too many trains. The system works better than you do. −" + costLabel(paid) + ".",
+        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que vos. −" + costLabel(paid) + ".");
+      if (opt === "b") return say("Rome, Florence, long dinners. Lena buys something she refuses to explain until dinner. −" + costLabel(paid) + ".",
+        "Roma, Florencia, cenas largas. Lena compra algo que no explica hasta la cena. −" + costLabel(paid) + ".");
+      return say("Mountains, lakes, fewer people. You miss Paco after two days. He does not appear to miss you. −" + costLabel(paid) + ".",
+        "Montañas, lagos, menos gente. Extrañás a Paco a los dos días. Él no parece extrañarte. −" + costLabel(paid) + ".");
     }
     if (card.id === "pregnancy") {
       const paid = cutBill(450);
-      return say("Two lines. Then the planning. −" + money(paid) + ".", "Dos rayas. Después la planificación. −" + money(paid) + ".");
+      return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos rayas. Después la planificación. −" + costLabel(paid) + ".");
     }
     if (card.id === "baby") {
       if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.", "Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.");
       if (opt === "a") {
         const paid = cutPct(0.05);
         S.cold += 1;
-        return say("Money aside, and a cold-storage device in the house. −" + money(paid) + ".",
-          "Plata de lado y un cold storage en casa. −" + money(paid) + ".");
+        return say("Money aside, and a cold-storage device in the house. −" + costLabel(paid) + ".",
+          "Plata de lado y un cold storage en casa. −" + costLabel(paid) + ".");
       }
       const paid = cutPct(0.02);
-      return say("You buy what you need and figure out the rest later. −" + money(paid) + ".",
-        "Compran lo que hace falta y el resto después. −" + money(paid) + ".");
+      return say("You buy what you need and figure out the rest later. −" + costLabel(paid) + ".",
+        "Compran lo que hace falta y el resto después. −" + costLabel(paid) + ".");
     }
     if (card.id === "cousin") {
       if (opt === "b") return say("Three hours later Nico texts. The token is already down 40%. \"Temporary.\"",
@@ -2730,35 +2776,35 @@
       const paid = cutPct(0.4);
       if (Math.random() < 0.5) {
         arcPay(paid * 2.2);
-        return say("Friday arrives early. 2.2× on " + money(paid) + ".", "El viernes llega temprano. 2.2× sobre " + money(paid) + ".");
+        return say("Friday arrives early. 2.2× on " + costLabel(paid) + ".", "El viernes llega temprano. 2.2× sobre " + costLabel(paid) + ".");
       }
-      return say("Halted. " + money(paid) + " is a screenshot now.", "Suspendido. " + money(paid) + " ahora es un screenshot.");
+      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendido. " + costLabel(paid) + " ahora es un screenshot.");
     }
     if (card.id === "speeding") {
       const paid = cutBill(75);
-      return say("Same corner. Same officer. −" + money(paid) + ".", "La misma esquina. El mismo oficial. −" + money(paid) + ".");
+      return say("Same corner. Same officer. −" + costLabel(paid) + ".", "La misma esquina. El mismo oficial. −" + costLabel(paid) + ".");
     }
     if (card.id === "wallet") {
       const paid = cutBill(40);
-      return say("Cash gone. Cards still there. Partial victory. −" + money(paid) + ".",
-        "El efectivo no está. Las tarjetas sí. Victoria parcial. −" + money(paid) + ".");
+      return say("Cash gone. Cards still there. Partial victory. −" + costLabel(paid) + ".",
+        "El efectivo no está. Las tarjetas sí. Victoria parcial. −" + costLabel(paid) + ".");
     }
     if (card.id === "potluck") {
       if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Sos increíble.\"");
       const paid = cutPct(0.05);
-      return say("People remember your name. Paco remembers the food. −" + money(paid) + ".",
-        "La gente se acuerda de tu nombre. Paco, de la comida. −" + money(paid) + ".");
+      return say("People remember your name. Paco remembers the food. −" + costLabel(paid) + ".",
+        "La gente se acuerda de tu nombre. Paco, de la comida. −" + costLabel(paid) + ".");
     }
     if (card.id === "usedcar") {
       if (opt === "b") return say("You walk. Nico buys it anyway.", "Te vas. Nico lo compra igual.");
       const paid = cutPct(0.12);
       if (Math.random() < 0.3) {
         const back = grantWealthPct(0.03);
-        return say("It works. −" + money(paid) + " then +" + money(back) + ".", "Anda. −" + money(paid) + " y después +" + money(back) + ".");
+        return say("It works. −" + costLabel(paid) + " then +" + money(back) + ".", "Anda. −" + costLabel(paid) + " y después +" + money(back) + ".");
       }
       const extra = cutPct(0.04);
-      return say("Lemon. The Sharpie was the honest part. −" + money(paid + extra) + ".",
-        "Limón. Lo honesto era el Sharpie. −" + money(paid + extra) + ".");
+      return say("Lemon. The Sharpie was the honest part. −" + costLabel(paid + extra) + ".",
+        "Limón. Lo honesto era el Sharpie. −" + costLabel(paid + extra) + ".");
     }
     if (card.id === "tetris") {
       if (opt === "b") return say("Marek gets to level 18. Then loses. He nods. \"Good enough.\"",
@@ -2768,7 +2814,7 @@
         arcPay(stake * 3);
         return say("The well stays clean. +" + money(stake * 3) + ".", "El pozo queda limpio. +" + money(stake * 3) + ".");
       }
-      return say("A long bar would have saved you. −" + money(stake) + ".", "Una barra larga te salvaba. −" + money(stake) + ".");
+      return say("A long bar would have saved you. −" + costLabel(stake) + ".", "Una barra larga te salvaba. −" + costLabel(stake) + ".");
     }
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
@@ -3794,44 +3840,78 @@
     if(delta<25)return {waves:5,rate:1.08,enemy:.92};
     return {waves:4,rate:1.16,enemy:.84};
   }
-  function armyBattleMods(a){
-    a=a|0;
-    let speed=0,shot=0,shield=0,power=1,medic=false,wall=false;
-    if(a>=10)speed=10;
-    if(a>=20)speed=20;
-    if(a>=30){speed=30;shield=10;}
-    if(a>=40){speed=40;shot=10;}
-    if(a>=50){speed=50;medic=true;}
-    if(a>=60){shot=20;shield=20;}
-    if(a>=70){shot=30;power=2;}
-    if(a>=80){shot=40;shield=30;}
-    if(a>=90){shot=50;shield=40;power=3;}
-    if(a>=100){shield=50;wall=true;}
-    return {speed,shot,shield,power,medic,wall};
+  function armyBattleMods(tier){
+    tier=Math.max(0,Math.min(7,tier|0));
+    const lives=Math.floor(tier/2);
+    return {speed:tier*5,shot:0,shield:tier*5,power:1,medic:lives>0,wall:false,lives,hearts:3+lives};
   }
-  function defenseUpgrades(){return armyBattleMods(S.bcArmy||0);}
-  function buyArmy(points){
-    points=Math.max(1,Math.floor(points||10));if(!S.bcArmyUnlocked||S.bcVictory||S.bcArcClosed)return false;
-    const room=Math.max(0,100-(S.bcArmy||0)),add=Math.min(room,points);if(!add)return false;
-    const pct=add*.0025,p=cutPct(pct);S.bcArmy=(S.bcArmy||0)+add;S.bcArmySpend=(S.bcArmySpend||0)+p;
-    say("Army "+S.bcArmy+"/100 · -"+money(p),false,"ui");return true;
+  function armyTier(){
+    let tier=S.bcArmyTier|0;
+    if(S.bcArmyTier==null && (S.bcArmy|0)>0) tier=Math.round((S.bcArmy||0)/100*7);
+    if((S.bcArmy|0)>=100) tier=Math.max(tier,7);
+    return Math.max(0,Math.min(7,tier));
+  }
+  function defenseUpgrades(){return armyBattleMods(armyTier());}
+  function armyTierQuote(){
+    const px=clampPx(S.price);
+    const net=Math.max(0,netUsd());
+    const usd=Math.max(1000*px, net*0.05);
+    const cash=Math.max(0,S.cash||0);
+    const btcUsd=Math.max(0,(S.btc||0)*px);
+    const preferBtc=preferBtcDisplay();
+    const btc=px>0?usd/px:1000;
+    const liquid=cash+btcUsd;
+    return {usd,btc,preferBtc,label:costLabel(usd),affordable:liquid+1e-4>=usd};
+  }
+  function payArmyTier(){
+    const q=armyTierQuote();
+    if(!q.affordable) return null;
+    payUsd(q.usd);
+    return q;
+  }
+  function buyArmy(){
+    if(!S.bcArmyUnlocked||S.bcVictory||S.bcArcClosed) return false;
+    const tier=armyTier();
+    if(tier>=7) return false;
+    const q=payArmyTier();
+    if(!q) return false;
+    S.bcArmyTier=tier+1;
+    S.bcArmy=Math.round(S.bcArmyTier*100/7);
+    S.bcArmySpend=(S.bcArmySpend||0)+q.usd;
+    const m=armyBattleMods(S.bcArmyTier);
+    say("Army tier "+S.bcArmyTier+"/7 · speed +"+m.speed+"% · shield -"+m.shield+"% · −"+q.label,false,"ui");
+    return true;
   }
   window.ChoppyBitcoinCountry=window.ChoppyBitcoinCountry||{};
   window.ChoppyBitcoinCountry.buyArmy=buyArmy;
   window.ChoppyBitcoinCountry.status=()=>({nodes:S.bcNodes||0,army:S.bcArmy||0,world:S.bcWorld||20,citadel:!!S.bcCitadel,independent:!!S.bcIndependent});
   function formArmy(){
     if(S.bcArmyUnlocked||S.bcVictory||S.bcArcClosed)return false;
-    const p=cutPct(.02);S.bcArmyUnlocked=true;S.bcArmy=Math.max(10,S.bcArmy||0);S.bcArmySpend=(S.bcArmySpend||0)+p;
-    say("Defense force formed. Army "+S.bcArmy+"/100 · −"+money(p),false,"ui");return true;
+    const p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;S.bcArmySpend=(S.bcArmySpend||0)+p;
+    say("Defense force formed. −"+costLabel(p),false,"ui");return true;
   }
   window.ChoppyBitcoinCountry.formArmy=formArmy;
   const BC_TS=16,BC_C=30,BC_R=40;
   function bcAt(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
   function bcSet(m,x,y,t){if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;}
 // MAPGEN_START
-  const LAND_SKEL=["beach","bay","peninsula","harbor","docks","cove","headland","coastVillage"];
-  const NAVAL_SKEL=["openSea","channel","roadstead","twinPiers"];
-  const VILLAGE_SKEL={harbor:1,docks:1,coastVillage:1,cove:1,openSea:1,roadstead:1,twinPiers:1};
+  const MAP_TYPES=[
+    {id:"harbor", naval:false, theme:"docks"},
+    {id:"docks", naval:false, theme:"docks"},
+    {id:"riverWoods", naval:false, theme:"woods", river:true},
+    {id:"peninsula", naval:false, theme:"wild"},
+    {id:"beachAirport", naval:false, theme:"airport"},
+    {id:"cliffs", naval:false, theme:"cliffs"},
+    {id:"seatown", naval:false, theme:"village"},
+    {id:"bay", naval:false, theme:"wild"},
+    {id:"cove", naval:false, theme:"wild"},
+    {id:"headland", naval:false, theme:"cliffs"},
+    {id:"caribbean", naval:true, theme:"caribbean"},
+    {id:"openSea", naval:true, theme:"sea"},
+    {id:"channel", naval:true, theme:"sea"},
+    {id:"roadstead", naval:true, theme:"docks"},
+    {id:"twinPiers", naval:true, theme:"docks"}
+  ];
   const SKEL_PAD={
     beach:{x:12,y:26,gate:"n"},
     bay:{x:12,y:24,gate:"n"},
@@ -3841,6 +3921,11 @@
     cove:{x:2,y:16,gate:"e"},
     headland:{x:1,y:22,gate:"e"},
     coastVillage:{x:18,y:26,gate:"n"},
+    seatown:{x:14,y:26,gate:"n"},
+    riverWoods:{x:12,y:24,gate:"n"},
+    beachAirport:{x:8,y:28,gate:"n"},
+    cliffs:{x:12,y:26,gate:"n"},
+    caribbean:{x:10,y:22,gate:"s"},
     openSea:{x:2,y:35,gate:"n"},
     channel:{x:0,y:17,gate:"e"},
     roadstead:{x:8,y:32,gate:"n"},
@@ -3865,8 +3950,8 @@
     if(S.bcMapPlan&&S.bcMapPlan.length===9)return S.bcMapPlan;
     if(!S.bcMapSeed)S.bcMapSeed=(Math.random()*0x7fffffff)|1;
     const rng=mapMulberry(S.bcMapSeed);
-    const land=shuffleIds(rng,LAND_SKEL);
-    const naval=shuffleIds(rng,NAVAL_SKEL);
+    const land=shuffleIds(rng,MAP_TYPES.filter((t)=>!t.naval));
+    const naval=shuffleIds(rng,MAP_TYPES.filter((t)=>t.naval));
     const mids=shuffleIds(rng,[0,1,3,4,6,7]);
     const navalSet={};
     mids.slice(0,3).forEach((n)=>{navalSet[n]=1;});
@@ -3875,16 +3960,14 @@
     for(let level=0;level<9;level++){
       const finale=(level%3)===2;
       const isNaval=!finale&&!!navalSet[level];
-      const id=isNaval?naval[ni++]:land[li++];
-      let dress="wild";
-      if(!isNaval){
-        const r=rng();
-        if(id==="harbor"||id==="docks"||id==="coastVillage")dress=r<0.72?"village":"farm";
-        else if(r<0.34)dress="wild";
-        else if(r<0.67)dress="farm";
-        else dress="village";
-      }
-      plan.push({id:id,naval:isNaval,fx:rng()<0.5,fy:rng()<0.5,dress:dress,islets:rng()<0.78,light:rng()<0.55});
+      const pool=isNaval?naval:land;
+      const idx=isNaval?ni++:li++;
+      const type=pool[idx%pool.length];
+      plan.push({
+        id:type.id, naval:isNaval, theme:type.theme, river:!!type.river,
+        fx:rng()<0.5, fy:rng()<0.5,
+        dress:type.theme, light:type.theme==="caribbean"?rng()<0.85:rng()<0.5
+      });
     }
     S.bcMapPlan=plan;
     return plan;
@@ -3921,9 +4004,23 @@
       mfill(m,0,12,12,28,6);
       mfill(m,12,16,18,24,6);
       mfill(m,3,19,12,20,2);
-    }else if(id==="coastVillage"){
+    }else if(id==="coastVillage"||id==="seatown"){
       mfill(m,0,11,29,39,6);
       mfill(m,8,11,16,16,3);
+    }else if(id==="riverWoods"){
+      mfill(m,0,9,29,39,6);
+    }else if(id==="beachAirport"){
+      mfill(m,0,16,29,39,6);
+    }else if(id==="cliffs"){
+      mfill(m,0,15,29,39,6);
+      mfill(m,0,15,7,20,3);
+      mfill(m,21,15,29,19,3);
+    }else if(id==="caribbean"){
+      for(let y=16;y<=34;y++){
+        const k=Math.sin(((y-16)/18)*Math.PI);
+        const half=Math.round(3+k*7);
+        mfill(m,15-half,y,15+half,y,6);
+      }
     }else if(id==="openSea"){
       mfill(m,0,28,14,39,6);
       mfill(m,3,28,10,34,3);
@@ -4113,38 +4210,82 @@
       }
     }
   }
-  function countEdges(m){
-    let n=false,s=false,w=false,e=false;
-    for(let x=0;x<BC_C;x++){
-      if(m[x]!==3)n=true;
-      if(m[(BC_R-1)*BC_C+x]!==3)s=true;
-    }
-    for(let y=0;y<BC_R;y++){
-      if(m[y*BC_C]!==3)w=true;
-      if(m[y*BC_C+BC_C-1]!==3)e=true;
-    }
-    const land=(n?1:0)+(s?1:0)+(w?1:0)+(e?1:0);
-    return {n,s,w,e,land,water:4-land};
+  function edgeLine(edge){
+    const cells=[];
+    if(edge==="n"){for(let x=0;x<BC_C;x++)cells.push([x,0]);}
+    else if(edge==="s"){for(let x=0;x<BC_C;x++)cells.push([x,BC_R-1]);}
+    else if(edge==="w"){for(let y=0;y<BC_R;y++)cells.push([0,y]);}
+    else {for(let y=0;y<BC_R;y++)cells.push([BC_C-1,y]);}
+    return cells;
   }
-  function scrubEdge(m,edge){
-    const kill=(i)=>{if(m[i]!==5)m[i]=3;};
-    if(edge==="n"){for(let x=0;x<BC_C;x++)kill(x);}
-    else if(edge==="s"){for(let x=0;x<BC_C;x++)kill((BC_R-1)*BC_C+x);}
-    else if(edge==="w"){for(let y=0;y<BC_R;y++)kill(y*BC_C);}
-    else {for(let y=0;y<BC_R;y++)kill(y*BC_C+BC_C-1);}
+  function edgeBand(edge,depth){
+    const cells=[];
+    const d=Math.max(1,depth|0);
+    if(edge==="n"){for(let y=0;y<d;y++)for(let x=0;x<BC_C;x++)cells.push([x,y]);}
+    else if(edge==="s"){for(let y=BC_R-d;y<BC_R;y++)for(let x=0;x<BC_C;x++)cells.push([x,y]);}
+    else if(edge==="w"){for(let x=0;x<d;x++)for(let y=0;y<BC_R;y++)cells.push([x,y]);}
+    else {for(let x=BC_C-d;x<BC_C;x++)for(let y=0;y<BC_R;y++)cells.push([x,y]);}
+    return cells;
+  }
+  function fortGuard(m){
+    const o=shieldCorner(m);
+    if(!o)return ()=>false;
+    const x0=o.x-1,y0=o.y-1,x1=o.x+2,y1=o.y+2;
+    return (x,y)=>x>=x0&&x<=x1&&y>=y0&&y<=y1;
+  }
+  function edgeReport(m){
+    return ["n","s","w","e"].map((e)=>{
+      const cells=edgeLine(e);
+      let water=0;
+      for(const [x,y] of cells)if(m[y*BC_C+x]===3)water++;
+      const n=cells.length||1;
+      return {e, water, n, waterFrac:water/n, landFrac:(n-water)/n};
+    });
   }
   function repairEdges(m,naval){
-    let info=countEdges(m);
-    if(info.land>=4){scrubEdge(m,"n");info=countEdges(m);}
-    if(info.land>=4){scrubEdge(m,"e");info=countEdges(m);}
-    if(info.land===0){
-      mfill(m,11,BC_R-6,18,BC_R-1,6);
-      info=countEdges(m);
-    }
-    if(naval&&info.water<2){
-      if(info.n)scrubEdge(m,"n");
-      info=countEdges(m);
-      if(info.water<2&&info.e)scrubEdge(m,"e");
+    const guard=fortGuard(m);
+    const box=shieldCorner(m);
+    const far=(e)=>{
+      if(!box)return e==="n"?0:e==="s"?BC_R:e==="w"?0:BC_C;
+      const cx=box.x+1, cy=box.y+1;
+      if(e==="n")return cy;
+      if(e==="s")return (BC_R-1)-cy;
+      if(e==="w")return cx;
+      return (BC_C-1)-cx;
+    };
+    const waterN=()=>edgeReport(m).filter((s)=>s.waterFrac>=0.62).length;
+    const landN=()=>edgeReport(m).filter((s)=>s.landFrac>=0.62).length;
+    const openWater=(e)=>{
+      for(const [x,y] of edgeBand(e,3)){
+        if(guard(x,y))continue;
+        const t=m[y*BC_C+x];
+        if(t!==5&&t!==9)m[y*BC_C+x]=3;
+      }
+    };
+    const layLand=(e)=>{
+      for(const [x,y] of edgeBand(e,3)){
+        if(guard(x,y))continue;
+        if(m[y*BC_C+x]===3)m[y*BC_C+x]=6;
+      }
+    };
+    for(let pass=0;pass<3;pass++){
+      if(naval){
+        if(waterN()>=2)break;
+        const pick=edgeReport(m).filter((s)=>s.waterFrac<0.62).sort((a,b)=>far(b.e)-far(a.e))[0];
+        if(!pick)break;
+        openWater(pick.e);
+      }else{
+        if(waterN()>=1&&landN()>=1&&landN()<4)break;
+        if(waterN()<1||landN()>=4){
+          const pick=edgeReport(m).filter((s)=>s.waterFrac<0.62).sort((a,b)=>far(b.e)-far(a.e))[0];
+          if(!pick)break;
+          openWater(pick.e);
+        }else if(landN()<1){
+          const pick=edgeReport(m).slice().sort((a,b)=>far(a.e)-far(b.e))[0];
+          if(!pick)break;
+          layLand(pick.e);
+        }else break;
+      }
     }
   }
   function mtile(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
@@ -4310,19 +4451,27 @@
       }
     }
     const blocked=new Uint8Array(main);
-    const count=1+(rng()*3|0)+(rng()<0.28?1:0);
+    const count=3+(rng()*3|0)+(rng()<0.4?1:0);
     const islands=[];
     let guard=0;
-    while(islands.length<count&&guard++<90){
+    while(islands.length<count&&guard++<160){
       const x=2+(rng()*(BC_C-6)|0), y=2+(rng()*(BC_R-6)|0);
       if(m[y*BC_C+x]!==3)continue;
       let near=false;
       for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){
         const xx=x+dx, yy=y+dy;
-        if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1||blocked[yy*BC_C+xx])near=true;
+        if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1){near=true;break;}
+        if(main[yy*BC_C+xx])near=true;
+      }
+      if(!near){
+        for(let dy=-1;dy<=1&&!near;dy++)for(let dx=-1;dx<=1;dx++){
+          const xx=x+dx, yy=y+dy;
+          const j=yy*BC_C+xx;
+          if(blocked[j]&&!main[j])near=true;
+        }
       }
       if(near)continue;
-      const size=rng()<0.7?(2+(rng()*3|0)):(5+(rng()*6|0));
+      const size=rng()<0.55?(2+(rng()*3|0)):(5+(rng()*4|0));
       const cells=[{x:x,y:y}];
       const mark=new Uint8Array(N);
       mark[y*BC_C+x]=1;
@@ -4406,6 +4555,38 @@
         m[j]=7;
       }
     });
+    let links=0;
+    for(let a=0;a<islands.length&&links<2;a++){
+      for(let b=a+1;b<islands.length&&links<2;b++){
+        if(rng()>0.5)continue;
+        let best=1e9, ia=islands[a][0], ib=islands[b][0];
+        for(const i of islands[a])for(const j of islands[b]){
+          const dx=(i%BC_C)-(j%BC_C), dy=((i/BC_C)|0)-((j/BC_C)|0);
+          const d=dx*dx+dy*dy;
+          if(d<best){best=d;ia=i;ib=j;}
+        }
+        if(best<9||best>10*10)continue;
+        const own={};
+        for(const id of islands[a])own[id]=1;
+        for(const id of islands[b])own[id]=1;
+        let x=ia%BC_C, y=(ia/BC_C)|0;
+        const gx=ib%BC_C, gy=(ib/BC_C)|0;
+        let laid=0;
+        for(let s=0;s<16;s++){
+          const dx=gx-x, dy=gy-y;
+          if(!dx&&!dy)break;
+          if(Math.abs(dx)>=Math.abs(dy))x+=dx>0?1:-1;
+          else y+=dy>0?1:-1;
+          if(x<0||y<0||x>=BC_C||y>=BC_R)break;
+          const j=y*BC_C+x;
+          if(own[j])continue;
+          if(m[j]!==3)break;
+          m[j]=7;
+          laid++;
+        }
+        if(laid)links++;
+      }
+    }
     return islands;
   }
   function openTransit(m,pad){
@@ -4467,6 +4648,23 @@
       cand.push({i:i,s:s});
     }
     if(!cand.length)return;
+    const plant=(i)=>{
+      m[i]=9;
+      const x=i%BC_C, y=(i/BC_C)|0;
+      const dry=(t)=>t===0||t===6||t===8;
+      const water=[];
+      let n=0;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+        if(!dx&&!dy)continue;
+        const xx=x+dx, yy=y+dy;
+        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+        const t=m[yy*BC_C+xx];
+        if(dry(t))n++;
+        else if(t===3)water.push(yy*BC_C+xx);
+      }
+      const fill=[0,6,8];
+      for(let k=0;n<3&&k<water.length;k++){m[water[k]]=fill[k%3];n++;}
+    };
     cand.sort((a,b)=>b.s-a.s);
     const top=cand.slice(0,Math.min(5,cand.length));
     let sum=0;
@@ -4474,9 +4672,9 @@
     let r=rng()*sum;
     for(const c of top){
       r-=c.s;
-      if(r<=0){m[c.i]=9;return;}
+      if(r<=0){plant(c.i);return;}
     }
-    m[top[0].i]=9;
+    plant(top[0].i);
   }
   function placeFarm(m,pad){
     const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
@@ -4522,6 +4720,34 @@
     for(let i=0;i<4;i++){
       if(open(s.x+3,s.y+2+i))set(s.x+3,s.y+2+i,7);
       if(open(s.x+4,s.y+2+i))set(s.x+4,s.y+2+i,7);
+    }
+  }
+  function placeBuildings(m,pad,rng,maxN){
+    const near=(x,y)=>x>=pad.x-3&&x<=pad.x+8&&y>=pad.y-3&&y<=pad.y+7;
+    const spots=[];
+    for(let y=3;y<BC_R-5;y++)for(let x=3;x<BC_C-5;x++){
+      if(near(x,y)||near(x+1,y)||near(x,y+1)||near(x+1,y+1))continue;
+      let ok=true;
+      for(let dy=-1;dy<=2&&ok;dy++)for(let dx=-1;dx<=2;dx++){
+        const xx=x+dx,yy=y+dy;
+        if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1){ok=false;break;}
+        const t=m[yy*BC_C+xx];
+        const core=dx>=0&&dx<=1&&dy>=0&&dy<=1;
+        if(core){if(t!==0&&t!==6)ok=false;}
+        else if(t===1||t===2||t===5||t===9)ok=false;
+      }
+      if(ok)spots.push({x,y});
+    }
+    let left=Math.max(1,Math.min(2,maxN|0));
+    if(left>1&&rng()<0.45)left=1;
+    let placed=0;
+    while(placed<left&&spots.length){
+      const s=spots.splice((rng()*spots.length)|0,1)[0];
+      for(let k=spots.length-1;k>=0;k--){
+        if(Math.abs(spots[k].x-s.x)+Math.abs(spots[k].y-s.y)<8)spots.splice(k,1);
+      }
+      for(let dy=0;dy<2;dy++)for(let dx=0;dx<2;dx++)m[(s.y+dy)*BC_C+(s.x+dx)]=1;
+      placed++;
     }
   }
   function breakLanes(m,pad){
@@ -4744,6 +4970,125 @@
       if(m[i]!==5)m[i]=1;
     });
   }
+  function woodsGroves(m,pad,road){
+    const spots=[];
+    for(let y=3;y<BC_R-3;y+=3)for(let x=3;x<BC_C-3;x+=4)if(canTree(m,x,y,pad,road))spots.push({x,y});
+    spots.filter((_,i)=>i%2===0).slice(0,6).forEach((s)=>groveAt(m,s.x,s.y,pad,road));
+  }
+  function placeRunway(m,pad,rng){
+    const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
+    const spans=[];
+    for(let y=4;y<BC_R-4;y++){
+      let run=0,sx=0;
+      for(let x=2;x<BC_C-2;x++){
+        const t=m[y*BC_C+x];
+        if((t===6||t===0)&&!near(x,y)){
+          if(!run)sx=x;
+          run++;
+        }else{
+          if(run>=12)spans.push({x:sx,y,n:run});
+          run=0;
+        }
+      }
+      if(run>=12)spans.push({x:sx,y,n:run});
+    }
+    if(!spans.length)return;
+    const s=spans[(rng()*spans.length)|0];
+    const n=Math.min(s.n,14+(rng()*4|0));
+    const x0=s.x+(((s.n-n)/2)|0);
+    for(let i=0;i<n;i++)m[s.y*BC_C+(x0+i)]=7;
+    const tx=x0+n-2, ty=s.y+2;
+    if(ty<BC_R-1&&tx>1){
+      for(let dy=0;dy<2;dy++)for(let dx=0;dx<2;dx++){
+        const t=m[(ty+dy)*BC_C+(tx+dx)];
+        if(t===6||t===0)m[(ty+dy)*BC_C+(tx+dx)]=1;
+      }
+    }
+  }
+  function cliffShore(m,pad,rng){
+    const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
+    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+      const t=m[y*BC_C+x];
+      if((t!==0&&t!==6)||prot(x,y))continue;
+      let wet=0, pier=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const tv=mtile(m,x+dx,y+dy);
+        if(tv===3)wet++;
+        if(tv===7)pier=true;
+      }
+      if(pier||wet!==1)continue;
+      if(rng()<0.22)m[y*BC_C+x]=8;
+    }
+  }
+  function carveRiver(m,rng,pad){
+    const prot=(x,y)=>x<2||y<2||x>=BC_C-2||y>=BC_R-2||(x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5);
+    const dry=(t)=>t===0||t===6||t===4||t===7||t===8;
+    const mouths=[], inland=[];
+    for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
+      if(prot(x,y))continue;
+      const t=m[y*BC_C+x];
+      if(!dry(t))continue;
+      let wet=0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===3)wet++;
+      if(wet)mouths.push({x,y});
+      else inland.push({x,y});
+    }
+    if(mouths.length<4||inland.length<8)return;
+    let start=null, score=0;
+    const sample=inland.length>80?inland.filter((_,i)=>i%3===0):inland;
+    for(const c of sample){
+      let sea=1e9;
+      for(let i=0;i<mouths.length;i+=2){
+        const dx=c.x-mouths[i].x, dy=c.y-mouths[i].y;
+        const d=dx*dx+dy*dy;
+        if(d<sea)sea=d;
+      }
+      if(sea<36)continue;
+      const dp=(c.x-(pad.x+2))**2+(c.y-(pad.y+2))**2;
+      const sc=sea+dp*0.15;
+      if(sc>score){score=sc;start=c;}
+    }
+    if(!start)return;
+    let mouth=mouths[0], md=1e9;
+    for(const c of mouths){
+      const d=(c.x-start.x)**2+(c.y-start.y)**2;
+      if(d<md){md=d;mouth=c;}
+    }
+    let x=start.x, y=start.y;
+    const path=[];
+    let reached=false;
+    for(let step=0;step<70;step++){
+      if(prot(x,y))break;
+      const t=m[y*BC_C+x];
+      if(t===3){reached=true;break;}
+      if(dry(t)){m[y*BC_C+x]=3;path.push({x,y});}
+      else break;
+      if(rng()<0.28){
+        if(Math.abs(mouth.x-x)>=Math.abs(mouth.y-y))y+=rng()<0.5?1:-1;
+        else x+=rng()<0.5?1:-1;
+      }else if(Math.abs(mouth.x-x)>=Math.abs(mouth.y-y))x+=mouth.x>x?1:-1;
+      else y+=mouth.y>y?1:-1;
+      if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)break;
+    }
+    if(!reached){
+      for(const p of path)if(m[p.y*BC_C+p.x]===3)m[p.y*BC_C+p.x]=6;
+      return;
+    }
+    const spans=[];
+    for(const p of path){
+      const left=dry(mtile(m,p.x-1,p.y)), right=dry(mtile(m,p.x+1,p.y));
+      const up=dry(mtile(m,p.x,p.y-1)), down=dry(mtile(m,p.x,p.y+1));
+      if((left&&right)||(up&&down))spans.push(p);
+    }
+    const want=spans.length>6&&rng()<0.55?2:1;
+    const used=[];
+    for(let n=0;n<want&&spans.length;n++){
+      const p=spans[(rng()*spans.length)|0];
+      if(used.some((u)=>Math.abs(u.x-p.x)+Math.abs(u.y-p.y)<5))continue;
+      m[p.y*BC_C+p.x]=7;
+      used.push(p);
+    }
+  }
   function makeIslandMap(level, fort){
     level=Math.max(0,Math.min(8,level|0));
     const plan=ensureMapPlan()[level];
@@ -4752,8 +5097,8 @@
     paintSkel(m,plan.id);
     const pref=SKEL_PAD[plan.id]||SKEL_PAD.beach;
     const salt=(((S.bcMapSeed||1)>>>0)+level*17)>>>0;
-    const dress=plan.dress||(plan.naval?"wild":"wild");
-    const keepTown=!plan.naval&&(dress==="village"||dress==="farm"||plan.id==="harbor"||plan.id==="docks"||plan.id==="coastVillage");
+    const dress=plan.theme||plan.dress||"wild";
+    const keepTown=dress==="village"||dress==="docks";
     jaggedCoast(m,{x:pref.x,y:pref.y},salt,keepTown);
     const rng=mapMulberry((salt*131+level*97)>>>0);
     const edgePad=pickEdgePad(m,rng);
@@ -4765,18 +5110,31 @@
     openTransit(m,pad);
     if(fort)addFort(m,pad,gate);
     const road={};
-    if(!plan.naval&&dress==="village")layRoad(m,pad,gate,road);
-    if(!plan.naval&&dress==="village")placeHouses(m,pad,road);
-    else if(!plan.naval&&dress==="farm")placeFarm(m,pad);
-    else if(!plan.naval)wildGroves(m,pad,road);
-    if(!plan.naval&&rng()<(dress==="village"?0.35:0.48))placeHamlet(m,pad,rng);
-    beachTrees(m,pad,road);
+    if(dress==="village"||dress==="docks"){
+      layRoad(m,pad,gate,road);
+      placeHouses(m,pad,road);
+      if(rng()<0.4)placeHamlet(m,pad,rng);
+      placeBuildings(m,pad,rng,2);
+    }else if(dress==="woods"){
+      woodsGroves(m,pad,road);
+    }else if(dress==="airport"){
+      placeRunway(m,pad,rng);
+    }else if(dress==="caribbean"){
+      if(rng()<0.6)placeHamlet(m,pad,rng);
+      placeBuildings(m,pad,rng,1);
+    }else if(dress!=="cliffs"&&dress!=="sea"){
+      wildGroves(m,pad,road);
+    }
+    if(dress!=="airport"&&dress!=="sea")beachTrees(m,pad,road);
     breakLanes(m,pad);
     repairEdges(m,!!plan.naval);
     thinSeaRocks(m);
     unsealWater(m);
     fitCover(m,!!plan.naval,rng,pad);
     sealShield(m);
+    if(dress==="cliffs")cliffShore(m,pad,rng);
+    if(plan.river)carveRiver(m,rng,pad);
+    repairEdges(m,!!plan.naval);
     const isles=seedIslands(m,rng);
     const wantLight=plan.light!=null?!!plan.light:rng()<0.62;
     if(wantLight)placeLighthouse(m,pad,rng,isles);
@@ -4822,14 +5180,20 @@
     }
     return false;
   }
+  function edgeSlack(sz){return -(sz||12)*0.4;}
   function tankBlocked(d,x,y,sz,ignore){
     const hw=sz*.40;
-    const x0=Math.floor((x-hw)/BC_TS),x1=Math.floor((x+hw)/BC_TS);
-    const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
-    for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
+    let n=0,wet=0,solid=false;
+    for(let iy=0;iy<4;iy++)for(let ix=0;ix<4;ix++){
+      const px=x-hw+(hw*2)*ix/3, py=y-hw+(hw*2)*iy/3;
+      const tx=Math.floor(px/BC_TS), ty=Math.floor(py/BC_TS);
+      n++;
+      if(tx<0||ty<0||tx>=BC_C||ty>=BC_R)continue;
       const t=bcAt(d.map,tx,ty);
-      if(t===3||t===1||t===2||t===4||t===5||t===8)return true;
+      if(t===1||t===2||t===4||t===5||t===8)solid=true;
+      else if(t===3)wet++;
     }
+    if(solid||(n&&wet/n>0.5))return true;
     if(hitsBeaconBase(x,y,hw,d))return true;
     return unitsOverlap(d,x,y,sz,ignore);
   }
@@ -4843,17 +5207,22 @@
     if(dir<0)return;
     if(t.dir!==dir)snapTank(t,dir,d);
     const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
-    const nx=Math.max(t.sz,Math.min(S.W-t.sz,t.x+vx*dt));
-    const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
+    const slack=edgeSlack(t.sz);
+    const nx=Math.max(slack,Math.min(S.W-slack,t.x+vx*dt));
+    const ny=Math.max(slack,Math.min(S.H-slack,t.y+vy*dt));
     if(!tankBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
   }
   function shipBlocked(d,x,y,sz,ignore){
     const hw=sz*.42;
-    const x0=Math.floor((x-hw)/BC_TS),x1=Math.floor((x+hw)/BC_TS);
-    const y0=Math.floor((y-hw)/BC_TS),y1=Math.floor((y+hw)/BC_TS);
-    for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
-      if(bcAt(d.map,tx,ty)!==3)return true;
+    let n=0,land=0;
+    for(let iy=0;iy<4;iy++)for(let ix=0;ix<4;ix++){
+      const px=x-hw+(hw*2)*ix/3, py=y-hw+(hw*2)*iy/3;
+      const tx=Math.floor(px/BC_TS), ty=Math.floor(py/BC_TS);
+      n++;
+      if(tx<0||ty<0||tx>=BC_C||ty>=BC_R)continue;
+      if(bcAt(d.map,tx,ty)!==3)land++;
     }
+    if(n&&land/n>0.5)return true;
     return unitsOverlap(d,x,y,sz,ignore);
   }
   function moveShip(d,t,dir,spd,dt){
@@ -4865,8 +5234,9 @@
       t.dir=dir;
     }
     const vx=dir===1?spd:dir===3?-spd:0,vy=dir===2?spd:dir===0?-spd:0;
-    const nx=Math.max(t.sz,Math.min(S.W-t.sz,t.x+vx*dt));
-    const ny=Math.max(t.sz,Math.min(S.H-t.sz,t.y+vy*dt));
+    const slack=edgeSlack(t.sz);
+    const nx=Math.max(slack,Math.min(S.W-slack,t.x+vx*dt));
+    const ny=Math.max(slack,Math.min(S.H-slack,t.y+vy*dt));
     if(!shipBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
   }
   function fireTank(d,t){
@@ -4941,8 +5311,9 @@
           if(dist>=min)continue;
           if(dist<0.01){dx=(n%2?1:-1);dy=0;dist=1;}
           const push=(min-dist)+0.4;
-          const nx=Math.max(a.sz,Math.min(S.W-a.sz,a.x+dx/dist*push));
-          const ny=Math.max(a.sz,Math.min(S.H-a.sz,a.y+dy/dist*push));
+          const slack=edgeSlack(a.sz);
+          const nx=Math.max(slack,Math.min(S.W-slack,a.x+dx/dist*push));
+          const ny=Math.max(slack,Math.min(S.H-slack,a.y+dy/dist*push));
           const blocked=a.ship?shipBlocked(d,nx,ny,a.sz,a):tankBlocked(d,nx,ny,a.sz,a);
           if(!blocked){a.x=nx;a.y=ny;moved=true;}
         }
@@ -4971,11 +5342,11 @@
     const ground=battleWaveQuota(level,1,world)+battleWaveQuota(level,2,world)+battleWaveQuota(level,3,world);
     const delta=(S.bcArmy||0)-world;
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
-    const hearts=u.medic?4:3;
+    const hearts=u.hearts||3;
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
-      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:0,freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,lrmAng:90,fx:[],shards:[],
+      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,S.bcShotTier|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,lrmAng:90,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
@@ -5219,7 +5590,7 @@
     if(t===4){
       const kill=!!(friendly&&(d.shotTier|0)>=3);
       igniteTree(d,tx,ty,kill);
-      if(friendly&&(dx||dy)){
+      if(friendly&&(d.shotTier|0)>=2&&(dx||dy)){
         const p=d.player;
         const alongX=Math.abs(dx)>=Math.abs(dy);
         const perp=alongX?(p?p.y:ty*BC_TS+8):(p?p.x:tx*BC_TS+8);
@@ -5233,7 +5604,7 @@
       warSfx(bcAt(d.map,tx,ty)===4?"warHit":"warBrick");
       return true;
     }
-    if(t===2||t===8||t===9){
+    if(t===2||t===9){
       if(friendly&&(d.shotTier|0)>=3&&t!==9){
         const i=ty*BC_C+tx;
         d.map[i]=6;
@@ -5242,6 +5613,20 @@
         return true;
       }
       warSfx("warClank");return true;
+    }
+    if(t===8){
+      let wet=0;
+      for(const [ox,oy] of [[1,0],[-1,0],[0,1],[0,-1]])if(bcAt(d.map,tx+ox,ty+oy)===3)wet++;
+      if(wet>=2)return false;
+      if(friendly&&(d.shotTier|0)>=3){
+        const i=ty*BC_C+tx;
+        d.map[i]=6;
+        if(d.seal)d.seal[i]=0;
+        warSfx("warBrick");
+        return true;
+      }
+      warSfx("warClank");
+      return true;
     }
     if(t===1){
       const i=ty*BC_C+tx;
@@ -5354,10 +5739,10 @@
     if(d.aaCharging&&!d.aaArmed){
       if(!(S.defHeld&&S.defHeld.aa)){d.aaCharging=false;d.aaCharge=0;}
       else{
-        d.aaCharge=Math.min(1,(d.aaCharge||0)+dt/1.5);
+        d.aaCharge=Math.min(1,(d.aaCharge||0)+dt/1.2);
         if(d.aaCharge>=1){
           d.aaCharging=false;d.aaArmed=true;d.aa=1;
-          d.reticle={x:d.player.x,y:Math.max(36,d.player.y-78)};
+          d.reticle={x:S.W*0.5,y:S.H*0.5};
           addFx(d,{kind:"scopeOn",x:d.reticle.x,y:d.reticle.y,life:.4});
           warSfx("warAa");
         }
@@ -5476,8 +5861,11 @@
           if(p.hearts<=0){finishDefense(false);return;}
           d.playerInv=0.85;
         }else{
+          t.shots=(t.shots|0)+1;
           t.hp-=s.damage;
+          t.hurt=1;
           if(s.mine&&(d.shotTier|0)>=3&&(t.hull==="heavy"||t.type==="HEAVY"))t.hp=0;
+          else if(woundKill(t))t.hp=0;
           warSfx("warHit");
           if(t.hp<=0){d.kills++;warSfx("warPop");}
         }
@@ -5503,7 +5891,7 @@
             if((p.hearts|0)>=max && max===3){p.maxHearts=4;p.hearts=4;}
             else p.hearts=Math.min(p.maxHearts||3,(p.hearts|0)+1);
           }
-          else if(pk.kind==="shot")d.shotTier=Math.min(3,(d.shotTier|0)+1);
+          else if(pk.kind==="shot"){d.shotTier=Math.min(3,(d.shotTier|0)+1);S.bcShotTier=d.shotTier;}
           else if(pk.kind==="freeze")d.freeze=7.5;
           else if(pk.kind==="bomb")blastEnemies(d);
           else if(pk.kind==="wall")raiseAegis(d);
@@ -5563,6 +5951,13 @@
     if(dist+r<=R)return 1;
     if(dist>=R+r)return 0;
     return Math.max(0,Math.min(1,(R+r-dist)/(2*r)));
+  }
+  function woundKill(e){
+    const cls=lrmClass(e);
+    const b=e.shots|0, a=e.lrm|0;
+    if(cls==="light")return b>=1||a>=1;
+    if(cls==="heavy")return b>=3||a>=2||(a>=1&&b>=2);
+    return b>=2||a>=2||(a>=1&&b>=1);
   }
   function lrmClass(e){
     if(e.hull==="heavy"||e.type==="HEAVY")return "heavy";
@@ -5648,8 +6043,9 @@
       else if(onCross)ok=true;
       else if(inArea){
         e.lrm=(e.lrm|0)+1;
+        e.hurt=1;
         addFx(d,{kind:"treeBurn",x:e.x,y:e.y,life:.4,hot:2});
-        if(e.lrm>=2)ok=true;
+        if(woundKill(e))ok=true;
       }
       if(ok)hits.push(e);
     }
@@ -5720,10 +6116,11 @@
       const on=show&&(d.shotTier|0)>=3;
       arc.classList.toggle("hide",!on);
       const knob=$("def-arc-knob");
-      if(knob){
+      if(knob&&on){
         const deg=d.lrmAng==null?90:d.lrmAng;
         const t=Math.max(0,Math.min(1,(90-deg)/45));
-        knob.style.top=(t*54)+"px";
+        const travel=Math.max(20,arc.clientHeight-46);
+        knob.style.top=(18+t*travel)+"px";
       }
     }
   }
@@ -5931,15 +6328,40 @@
           ctx.fillStyle="#c48a4a";
           ctx.fillRect(px+1,py+3,14,2);ctx.fillRect(px+1,py+8,14,2);ctx.fillRect(px+1,py+13,14,2);
           ctx.fillStyle="#3d2814";ctx.fillRect(px,py,2,BC_TS);ctx.fillRect(px+14,py,2,BC_TS);
+        }else if(blockOf(d.map,x,y)){
+          ctx.fillStyle="#c4a06a";ctx.fillRect(px,py,BC_TS,BC_TS);
+          ctx.fillStyle="#8d6840";ctx.fillRect(px,py+BC_TS-3,BC_TS,3);
         }else{
-          ctx.fillStyle="#c4a06a";ctx.fillRect(px-2,py+3,BC_TS+4,14);
-          ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px-4,py+5);ctx.lineTo(px+8,py-5);ctx.lineTo(px+20,py+5);ctx.closePath();ctx.fill();
-          ctx.fillStyle="#f2e2c4";ctx.fillRect(px+2,py-1,4,4);
-          ctx.fillStyle="#5c3a22";ctx.fillRect(px+5,py+8,6,8);
-          ctx.fillStyle="#9fd0e6";ctx.fillRect(px,py+7,4,4);
-          if(((x+y)%4)===0){
-            ctx.fillStyle="#6b4423";ctx.fillRect(px+13,py+8,1.4,8);
-            ctx.fillStyle="#f7f1e4";ctx.fillRect(px+14,py+6,5,4);
+          const kind=(((x/3)|0)*5+((y/2)|0)*3)%5;
+          if(kind===0){
+            ctx.fillStyle="#f2e2c4";ctx.fillRect(px-1,py+5,BC_TS+2,11);
+            ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px-3,py+6);ctx.lineTo(px+8,py-3);ctx.lineTo(px+19,py+6);ctx.closePath();ctx.fill();
+            ctx.fillStyle="#5c3a22";ctx.fillRect(px+6,py+10,4,6);
+            ctx.fillStyle="#9fd0e6";ctx.fillRect(px+1,py+8,3,3);ctx.fillRect(px+11,py+8,3,3);
+          }else if(kind===1){
+            ctx.fillStyle="#e7d3a1";ctx.fillRect(px+2,py+2,12,14);
+            ctx.fillStyle="#3d5c8a";ctx.beginPath();ctx.moveTo(px+1,py+4);ctx.lineTo(px+8,py-4);ctx.lineTo(px+15,py+4);ctx.closePath();ctx.fill();
+            ctx.fillStyle="#1c140e";ctx.fillRect(px+10,py-2,3,4);
+            ctx.fillStyle="#5c3a22";ctx.fillRect(px+6,py+9,4,7);
+            ctx.fillStyle="#9fd0e6";ctx.fillRect(px+3,py+6,3,3);
+          }else if(kind===2){
+            ctx.fillStyle="#c4a06a";ctx.fillRect(px,py+7,BC_TS,9);
+            ctx.fillStyle="#6b4423";ctx.beginPath();ctx.moveTo(px-1,py+8);ctx.quadraticCurveTo(px+8,py-2,px+17,py+8);ctx.fill();
+            ctx.fillStyle="#3d2814";ctx.beginPath();ctx.arc(px+8,py+12,2.2,0,Math.PI*2);ctx.fill();
+            ctx.fillStyle="#efe6d4";ctx.fillRect(px+2,py+9,3,3);
+          }else if(kind===3){
+            ctx.fillStyle="#8a5a32";ctx.fillRect(px,py+5,BC_TS,11);
+            ctx.fillStyle="#5c3a22";ctx.fillRect(px,py+7,BC_TS,2);ctx.fillRect(px,py+11,BC_TS,2);
+            ctx.fillStyle="#2f5d50";ctx.beginPath();ctx.moveTo(px-2,py+6);ctx.lineTo(px+8,py-2);ctx.lineTo(px+18,py+6);ctx.closePath();ctx.fill();
+            ctx.fillStyle="#6b4423";ctx.fillRect(px+12,py-1,2,6);
+            ctx.fillStyle="#3d2814";ctx.fillRect(px+6,py+10,4,6);
+          }else{
+            ctx.fillStyle="#f6efe2";ctx.fillRect(px-1,py+6,BC_TS+2,10);
+            ctx.fillStyle="#9a3412";ctx.fillRect(px-2,py+5,BC_TS+4,3);
+            ctx.fillStyle="#f2a900";ctx.fillRect(px+1,py+2,10,3);
+            ctx.fillStyle="#1c140e";ctx.fillRect(px+2,py+3,8,1);
+            ctx.fillStyle="#5c3a22";ctx.fillRect(px+6,py+10,4,6);
+            ctx.fillStyle="#9fd0e6";ctx.fillRect(px+1,py+9,3,3);ctx.fillRect(px+12,py+9,3,3);
           }
         }
         continue;
@@ -5963,6 +6385,7 @@
       }
     }
     drawCitadelShield(ctx,d,t);
+    drawTownBuildings(ctx,d);
     drawWarFx(ctx,d,t);
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
     const heroOrange="#ef6a12";
@@ -5976,8 +6399,10 @@
       const thaw=freeze>0&&freeze<2;
       const hz=freeze<0.7?14:8;
       const paint=freeze<=0?ecol:(thaw&&Math.floor((d.t||0)*hz)%2===0?ecol:"#b7e4ff");
-      if(e.type==="HELI"){drawHeli(ctx,e,t,paint);continue;}
-      if(e.ship)drawShip(ctx,e,paint);else drawTank(ctx,e,paint);
+      if(e.type==="HELI")drawHeli(ctx,e,t,paint);
+      else if(e.ship)drawShip(ctx,e,paint);
+      else drawTank(ctx,e,paint);
+      if(!e.hero&&e.hp>0&&((e.shots|0)>0||(e.lrm|0)>0))drawUnitSmoke(ctx,e,t);
     }
     for(const pk of d.picks||[]){
       if(pk.ttl!=null&&pk.ttl<2.6&&Math.floor(t*8)%2===0)continue;
@@ -6046,8 +6471,10 @@
     if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
     if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);}
     if((d.shotTier|0)>0){ctx.textAlign="right";paintHaloText(ctx,"S"+(d.shotTier|0),S.W-12,78,"#9befff");}
-    ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
-    paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
+    if(!d.frozen){
+      ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
+      paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
+    }
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
     ctx.restore();
   }
@@ -6107,6 +6534,74 @@
       ctx.fillStyle="#ffe08a";
       ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(1.6,0);ctx.lineTo(-1.6,0);ctx.closePath();ctx.fill();
       ctx.globalAlpha=1;
+    }
+    ctx.restore();
+  }
+  function cleanBlock(m,x,y){
+    if(x<0||y<0||x+1>=BC_C||y+1>=BC_R)return false;
+    for(let dy=0;dy<2;dy++)for(let dx=0;dx<2;dx++)if(bcAt(m,x+dx,y+dy)!==1)return false;
+    const edge=[[-1,0],[-1,1],[2,0],[2,1],[0,-1],[1,-1],[0,2],[1,2]];
+    for(const [dx,dy] of edge)if(bcAt(m,x+dx,y+dy)===1)return false;
+    for(let dy=-2;dy<=3;dy++)for(let dx=-2;dx<=3;dx++)if(bcAt(m,x+dx,y+dy)===5)return false;
+    return true;
+  }
+  function blockOf(m,x,y){
+    for(let oy=y-1;oy<=y;oy++)for(let ox=x-1;ox<=x;ox++){
+      if(!cleanBlock(m,ox,oy))continue;
+      if(x>=ox&&x<=ox+1&&y>=oy&&y<=oy+1)return true;
+    }
+    return false;
+  }
+  function drawTownBuildings(ctx,d){
+    const m=d.map;
+    for(let y=0;y<BC_R-1;y++)for(let x=0;x<BC_C-1;x++){
+      if(!cleanBlock(m,x,y))continue;
+      const px=x*BC_TS, py=y*BC_TS;
+      const kind=(x*5+y*3)%4;
+      ctx.save();
+      if(kind===0){
+        ctx.fillStyle="#d7c4a2";ctx.fillRect(px+1,py+10,30,20);
+        ctx.fillStyle="#6d5434";ctx.fillRect(px,py+8,32,4);
+        ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px-2,py+10);ctx.lineTo(px+16,py-2);ctx.lineTo(px+34,py+10);ctx.closePath();ctx.fill();
+        ctx.fillStyle="#5c3a22";ctx.fillRect(px+13,py+18,6,12);
+        ctx.fillStyle="#9fd0e6";ctx.fillRect(px+4,py+16,5,4);ctx.fillRect(px+23,py+16,5,4);
+      }else if(kind===1){
+        ctx.fillStyle="#e6d3b0";ctx.fillRect(px+2,py+12,28,18);
+        ctx.fillStyle="#4a4038";ctx.fillRect(px+1,py+8,30,6);
+        ctx.fillStyle="#f4efe4";ctx.fillRect(px+14,py-6,4,16);
+        ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px+12,py+2);ctx.lineTo(px+16,py-8);ctx.lineTo(px+20,py+2);ctx.closePath();ctx.fill();
+        ctx.fillStyle="#3d5c8a";ctx.fillRect(px+5,py+16,4,5);ctx.fillRect(px+23,py+16,4,5);
+        ctx.fillStyle="#5c3a22";ctx.fillRect(px+13,py+20,6,10);
+      }else if(kind===2){
+        ctx.fillStyle="#b08968";ctx.fillRect(px+1,py+8,30,22);
+        ctx.fillStyle="#6b4423";ctx.fillRect(px,py+6,32,3);
+        ctx.fillStyle="#3d2814";ctx.fillRect(px+2,py+14,28,2);ctx.fillRect(px+2,py+20,28,2);
+        ctx.fillStyle="#1c140e";ctx.fillRect(px+12,py+16,8,14);
+        ctx.fillStyle="#f2a900";ctx.fillRect(px+4,py+10,6,3);
+      }else{
+        ctx.fillStyle="#d9cfc2";ctx.fillRect(px+1,py+4,30,26);
+        ctx.fillStyle="#4a4038";ctx.fillRect(px,py+2,32,4);
+        ctx.fillStyle="#6d5434";ctx.fillRect(px+1,py+16,30,2);
+        ctx.fillStyle="#9fd0e6";
+        ctx.fillRect(px+4,py+8,5,4);ctx.fillRect(px+13,py+8,5,4);ctx.fillRect(px+22,py+8,5,4);
+        ctx.fillRect(px+4,py+20,5,4);ctx.fillRect(px+22,py+20,5,4);
+        ctx.fillStyle="#5c3a22";ctx.fillRect(px+13,py+20,6,10);
+      }
+      ctx.restore();
+    }
+  }
+  function drawUnitSmoke(ctx,e,t){
+    const n=(e.maxHp||2)>=3?3:2;
+    ctx.save();
+    for(let i=0;i<n;i++){
+      const ph=(t*0.7+i*0.41)%1;
+      const sx=e.x+Math.sin(t*2.4+i*2)*3;
+      const sy=e.y-8-ph*18;
+      ctx.globalAlpha=(1-ph)*0.5;
+      ctx.fillStyle=i%2?"#b7b7b7":"#ececec";
+      ctx.beginPath();
+      ctx.arc(sx,sy,1.8+ph*2.6,0,Math.PI*2);
+      ctx.fill();
     }
     ctx.restore();
   }
@@ -6214,19 +6709,22 @@
     }
   }
   function drawHearts(ctx,hearts,max){
-    const n=Math.max(3,Math.min(4,max|0));
+    const n=Math.max(1,Math.min(6,max|0||3));
     const filled=Math.max(0,Math.min(n,hearts|0));
-    const gap=22,s=8;
+    const gap=n>4?16:20, s=n>4?6.4:7.6;
+    const label=filled+"/"+n;
     ctx.save();
+    ctx.font='700 12px "IBM Plex Mono",monospace';
+    const lw=ctx.measureText(label).width;
+    const w=14+n*gap+lw+10, h=30, px=6, py=6;
     ctx.fillStyle="rgba(10,8,4,.72)";
     ctx.strokeStyle="rgba(243,239,230,.35)";
     ctx.lineWidth=1.5;
-    const w=10+n*gap,h=30,px=6,py=6;
     ctx.beginPath();
     ctx.roundRect(px,py,w,h,8);
     ctx.fill();ctx.stroke();
     for(let i=0;i<n;i++){
-      const x=px+16+i*gap,y=py+15,on=i<filled;
+      const x=px+14+i*gap, y=py+15, on=i<filled;
       ctx.beginPath();
       ctx.moveTo(x,y+s*0.55);
       ctx.bezierCurveTo(x-s*0.15,y+s*0.25,x-s*0.95,y+s*0.2,x-s*0.95,y-s*0.15);
@@ -6241,9 +6739,13 @@
       ctx.stroke();
       if(on){
         ctx.fillStyle="rgba(255,255,255,.55)";
-        ctx.beginPath();ctx.arc(x-s*0.38,y-s*0.22,1.5,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.arc(x-s*0.38,y-s*0.22,1.4,0,Math.PI*2);ctx.fill();
       }
     }
+    ctx.fillStyle="#f3efe6";
+    ctx.textAlign="left";
+    ctx.textBaseline="middle";
+    ctx.fillText(label, px+10+n*gap, py+h/2+0.5);
     ctx.restore();
   }
   function drawHeli(ctx,e,t,col){
@@ -6473,9 +6975,9 @@
       if (inX && !p.finish && !watching) {
         const ends = pipeEnds(p);
         if (S.bird.y - hitR < ends.top + 2 || S.bird.y + hitR > ends.bot - 2) {
-          if (!p.spark || S.lifeT - p.spark > 0.16) {
+          if (!p.spark || S.lifeT - p.spark > 0.22) {
             p.spark = S.lifeT;
-            burst(p.x + pw * 0.5, S.bird.y, heroFill(), 3, true);
+            burst(p.x + pw * 0.5, S.bird.y, heroFill(), 2, true);
           }
           if (S.power === "BULL") { A.sfx.wave(); grantUsd(200, p.x + pw * 0.5, S.bird.y - 66, "gain"); S.pipes.splice(i, 1); continue; }
           else if (S.invuln <= 0) hitFatal();
@@ -8023,6 +8525,7 @@
   }
 
   function renderBitcoinCountry(){
+    costAsBtc = null;
     const bar=$("bc-bar"),panel=$("bc-panel");if(!bar)return;
     const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
     bar.classList.toggle("hide",!unlocked);
@@ -8032,50 +8535,44 @@
     const openBtn=$("bc-open"); if(openBtn) openBtn.textContent=brand;
     const headB=document.querySelector("#bc-panel .bc-head b"); if(headB) headB.textContent=brand;
     const warBit=S.bcRepliesDone&&!S.bcVictory?(chanceLang()?" · EN GUERRA":" · AT WAR"):"";
-    setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+(S.bcArmy||0)+" · WORLD "+(S.bcWorld||20)+warBit);
-    setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",(S.bcArmy||0)+" / 100");setTxt("bc-world",String(S.bcWorld||20));
+    setTxt("bc-mini","NODES "+(S.bcNodes||0)+"/100 · ARMY "+armyTier()+"/7 · WORLD "+(S.bcWorld||20)+warBit);
+    setTxt("bc-nodes",(S.bcNodes||0)+" / 100");setTxt("bc-army",armyTier()+" / 7");setTxt("bc-world",String(S.bcWorld||20));
     setTxt("bc-citadel",S.bcCitadel?"BUILT":"NOT BUILT");setTxt("bc-mine",S.bcMine?"ONLINE":"OFFLINE");
     setTxt("bc-status",S.bcVictory?"INDEPENDENT":S.bcIndependent?"DECLARED":S.bcIsland?"PROJECT":"SEARCHING");
     const form=$("bc-form-army");
     if(form){
       const show=!S.bcArmyUnlocked&&!S.bcVictory&&!S.bcArcClosed&&!!(S.chanceUsed&&S.chanceUsed.citadelProblem);
       form.classList.toggle("hide",!show);
+      if(show) form.textContent=(chanceLang()?"FORMAR DEFENSA · ":"FORM DEFENSE · ")+costLabel(wealthUsd()*0.02);
     }
     const ab=$("bc-army10"),ab2=$("bc-army-bar");
-    const canBuy=!!S.bcArmyUnlocked&&!S.bcVictory&&!S.bcArcClosed&&(S.bcArmy||0)<100;
-    const lab="+10 ARMY · "+(((Math.min(10,100-(S.bcArmy||0)))*.25).toFixed(1))+"%";
-    [ab,ab2].forEach((el)=>{if(!el)return;el.disabled=!canBuy;el.classList.toggle("hide",!S.bcArmyUnlocked||S.bcVictory);el.textContent=el.id==="bc-army-bar"?"+10 ARMY":lab;});
+    const tier=armyTier();
+    const quote=armyTierQuote();
+    const canBuy=!!S.bcArmyUnlocked&&!S.bcVictory&&!S.bcArcClosed&&tier<7&&quote.affordable;
+    const es=chanceLang();
+    const nextLab=tier>=7?(es?"MÁXIMO":"MAX"):("TIER "+(tier+1)+"/7 · "+quote.label);
+    [ab,ab2].forEach((el)=>{if(!el)return;el.disabled=!canBuy;el.classList.toggle("hide",!S.bcArmyUnlocked||S.bcVictory);el.textContent=el.id==="bc-army-bar"?(tier>=7?"MAX":"T"+(tier+1)+" · "+quote.label):nextLab;});
     const dec=$("bc-declare");if(dec){const ready=(S.bcNodes||0)>=100&&!S.bcIndependent&&!S.bcVictory;dec.classList.toggle("hide",!ready);}
     const ups=$("bc-ups");
-    const es=chanceLang();
     if(ups){
       if(!S.bcArmyUnlocked){
         ups.innerHTML="<p class=\"bc-note\">"+(es?"Formá una fuerza de defensa para entrenar el ejército.":"Form a defense force to train the army.")+"</p>";
       }else{
-        const a=S.bcArmy||0;
-        const m=armyBattleMods(a);
+        const tierNow=armyTier();
+        const m=armyBattleMods(tierNow);
         const bits=[];
         if(m.speed)bits.push((es?"Velocidad +":"Speed +")+m.speed+"%");
-        if(m.shot)bits.push((es?"Tiros +":"Shots +")+m.shot+"%"+(es?" más rápidos":" faster"));
-        if(m.power>1)bits.push((es?"Potencia ×":"Power ×")+m.power);
         if(m.shield)bits.push((es?"Escudo −":"Shield −")+m.shield+"%"+(es?" de daño":" damage"));
-        if(m.medic)bits.push(es?"4 corazones al empezar":"Start on 4 hearts");
-        if(m.wall)bits.push(es?"Muro de ciudadela":"Citadel wall");
-        const now=(es?"En batalla: ":"In battle: ")+(bits.join(" · ")||(es?"sin bonus":"no bonuses"));
-        const steps=[
-          [10,es?"Velocidad +10%":"Speed +10%"],
-          [20,es?"Velocidad +20%":"Speed +20%"],
-          [30,es?"Velocidad +30% · escudo −10% de daño":"Speed +30% · shield −10% damage"],
-          [40,es?"Velocidad +40% · tiros +10% más rápidos":"Speed +40% · shots +10% faster"],
-          [50,es?"Velocidad +50% · empezás con 4 corazones":"Speed +50% · start with 4 hearts"],
-          [60,es?"Tiros +20% más rápidos · escudo −20%":"Shots +20% faster · shield −20%"],
-          [70,es?"Tiros +30% más rápidos · potencia ×2":"Shots +30% faster · power ×2"],
-          [80,es?"Tiros +40% más rápidos · escudo −30%":"Shots +40% faster · shield −30%"],
-          [90,es?"Tiros +50% más rápidos · escudo −40% · potencia ×3":"Shots +50% faster · shield −40% · power ×3"],
-          [100,es?"Escudo −50% de daño · muro de ciudadela":"Shield −50% damage · citadel wall"]
-        ];
-        const list=steps.map(([n,lab])=>"<li class=\""+(a>=n?"on":"")+"\">"+(a>=n?"●":"○")+" "+n+" · "+lab+"</li>").join("");
-        const hint=es?"Cada +10 de ejército alcanza la línea siguiente. Todo esto aplica en la batalla.":"Each +10 Army reaches the next line. All of this applies in battle.";
+        bits.push((m.hearts)+" "+(es?"vidas":"lives"));
+        const now=(es?"En batalla: ":"In battle: ")+bits.join(" · ");
+        const steps=[];
+        for(let n=1;n<=7;n++){
+          const life=n%2===0;
+          const lab=(es?"Velocidad +":"Speed +")+(n*5)+"% · "+(es?"escudo −":"shield −")+(n*5)+"%"+(life?(es?" · +1 vida":" · +1 life"):"");
+          steps.push([n,lab]);
+        }
+        const list=steps.map(([n,lab])=>"<li class=\""+(tierNow>=n?"on":"")+"\">"+(tierNow>=n?"●":"○")+" "+n+" · "+lab+"</li>").join("");
+        const hint=es?"Cada tier suma 5% de velocidad y 5% de defensa del escudo. Los pares suman 1 vida. El precio es el más caro entre 1000 BTC y el 5% del patrimonio, en la moneda que más tenés.":"Each tier adds 5% speed and 5% shield defense. Even tiers add 1 life. The price is the higher of 1000 BTC and 5% of net worth, shown in whichever you hold more of.";
         ups.innerHTML="<p class=\"bc-up-now\">"+now+"</p><ul class=\"bc-up-list\">"+list+"</ul><p class=\"bc-note\">"+hint+"</p>";
       }
     }
@@ -8227,7 +8724,8 @@
       pauseBtn.classList.toggle("arc-resume", !!(S.arcHold && S.phase === "paused"));
     }
     if (S.have.ff <= 0) S.speedMul = 1;
-    $("trades").classList.toggle("hide", !playing);
+    const battleFreeze = !!(S.bcDefense && S.bcDefense.frozen);
+    $("trades").classList.toggle("hide", !playing || battleFreeze);
     $("pause-btn").classList.toggle("hide", !playing || !!S.mp || S.phase === "chance");
     let powers = "";
     const now = S.lifeT;
@@ -8781,6 +9279,7 @@
     S.bcArmyUnlocked = true;
     const fight = battlePreset(S.testBattle);
     S.bcArmy = fight.army;
+    S.bcArmyTier = fight.army>=100?7:fight.army<=0?0:Math.max(1,Math.min(6,Math.round(fight.army/100*7)));
     S.bcWorld = fight.world;
     S.bcNodes = 100;
     ["theQuestion","cabinet","declaration","theAnswer","blocReplies"].forEach((id) => {
@@ -8799,6 +9298,7 @@
     S.bcBattlesWon = 0;
     S.bcMapPlan = null;
     S.bcMapSeed = 0;
+    S.bcShotTier = 0;
     S.bcAssaultAt = 0;
     if (!S.bcReactions) rollBlocReactions();
     S.bcRepliesDone = true;
@@ -9010,13 +9510,13 @@
     if (panel === "market") {
       const mul = S.ranked ? 10 : 1;
       const cold = 1200 * mul, laser = 1800 * mul, msig = 9000 * mul;
-      const book = S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">THE BITCOIN STATE · $666</button>" : "";
-      const island = S.bcIslandOffer&&!S.bcIsland&&S.chanceMet&&S.chanceMet.islandTrip ? "<button class=\"cta\" data-buy=\"bcisland\">The Island · "+money(S.bcIslandOffer)+"</button>" : "";
+      const book = S.bcBookOffer&&!S.bcBook ? "<button class=\"cta\" data-buy=\"bcbook\">THE BITCOIN STATE · "+costLabel(666)+"</button>" : "";
+      const island = S.bcIslandOffer&&!S.bcIsland&&S.chanceMet&&S.chanceMet.islandTrip ? "<button class=\"cta\" data-buy=\"bcisland\">The Island · "+costLabel(S.bcIslandOffer)+"</button>" : "";
       return "<div class=\"opt-head\">" + optHead(t("market")) + "</div>"
-        + "<p class=\"k\">" + money(S.cash) + "</p>" + book + island
-        + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + money(cold) + "</button>"
-        + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + money(laser) + "</button>"
-        + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + money(msig) + "</button>";
+        + "<p class=\"k\">" + fmtCostUsd(S.cash) + " · " + fmtCostBtc(S.btc) + "</p>" + book + island
+        + "<button class=\"cta\" data-buy=\"cold\">Cold storage · " + costLabel(cold) + "</button>"
+        + "<button class=\"cta\" data-buy=\"laser\">Laser eyes · " + costLabel(laser) + "</button>"
+        + "<button class=\"cta\" data-buy=\"msig\">Multisig · " + costLabel(msig) + "</button>";
     }
     if (panel === "feed") {
       return "<div class=\"opt-head\">" + optHead(t("feedback")) + "</div>"
@@ -9113,6 +9613,7 @@
     return "<div class=\"opt-head\">" + optHead(fromPlay ? t("paused") : t("options")) + "</div>"
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-price\">" + t("priceShow") + " · " + priceModeLabel() + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-gfx\">" + t("graphics") + "</button>"
       + (S.ranked ? "" : "<button type=\"button\" class=\"cta opt-item\" id=\"opt-test\">" + t("testing") + "</button>")
@@ -9157,18 +9658,18 @@
         const kind = btn.getAttribute("data-buy");
         const mul = S.ranked ? 10 : 1;
         if(kind==="bcbook"){
-          if(wealthUsd()<666){say("You cannot cover the $666 yet.",false);renderOverlay();return;}
-          takeUsdEquivalent(666);S.bcBook=true;A.sfx.coin();renderOverlay();renderHud();return;
+          if(wealthUsd()+1e-4<666){say("You cannot cover "+costLabel(666)+" yet.",false);renderOverlay();return;}
+          payUsd(666);S.bcBook=true;A.sfx.coin();renderOverlay();renderHud();return;
         }
         if(kind==="bcisland"){
           const cost=S.bcIslandOffer||0;
           if(!cost||S.bcIsland){renderOverlay();return;}
-          if(wealthUsd()<cost){say("You cannot cover "+money(cost)+" yet.",false);renderOverlay();return;}
-          takeUsdEquivalent(cost);S.bcIsland=true;A.sfx.coin();renderOverlay();renderHud();return;
+          if(wealthUsd()+1e-4<cost){say("You cannot cover "+costLabel(cost)+" yet.",false);renderOverlay();return;}
+          payUsd(cost);S.bcIsland=true;A.sfx.coin();renderOverlay();renderHud();return;
         }
         const cost = (kind === "cold" ? 1200 : kind === "laser" ? 1800 : 9000) * mul;
-        if (S.cash < cost) { say("Not enough cash", false); renderOverlay(); return; }
-        S.cash -= cost;
+        if (wealthUsd()+1e-4 < cost) { say("You cannot cover "+costLabel(cost)+" yet.", false); renderOverlay(); return; }
+        payUsd(cost);
         if (kind === "cold") { S.cold += 1; packCold(); }
         else if (kind === "laser") {
           S.lasers += 1;
@@ -9233,6 +9734,8 @@
     };
     const optLang = $("opt-lang");
     if (optLang) optLang.onclick = (e) => { e.stopPropagation(); S.optPanel = "lang"; renderOverlay(); };
+    const optPrice = $("opt-price");
+    if (optPrice) optPrice.onclick = (e) => { e.stopPropagation(); cyclePriceMode(); renderOverlay(); renderHud(); };
     const optSound = $("opt-sound");
     if (optSound) optSound.onclick = (e) => { e.stopPropagation(); S.optPanel = "sound"; renderOverlay(); };
     const optAi = $("opt-aibud");
@@ -9839,6 +10342,7 @@
   }
 
   function renderOverlay() {
+    costAsBtc = null;
     const p = S.phase;
     if (p === "defense") {
       hideOverlay();

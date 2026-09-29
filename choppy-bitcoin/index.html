@@ -27,7 +27,7 @@
   <meta name="twitter:title" content="Play Choppy Bitcoin">
   <meta name="twitter:image" content="https://bitcoinizate.com/choppy-bitcoin/og-icon.png">
   <meta name="twitter:image:alt" content="Choppy Bitcoin hero">
-  <link rel="stylesheet" href="style.css?v=mp107">
+  <link rel="stylesheet" href="style.css?v=mp110">
   <script src="nozoom.js"></script>
 </head>
 <body>
@@ -73,7 +73,7 @@
     <div id="bc-bar" class="bc-bar hide" aria-label="Bitcoin Country">
       <button type="button" id="bc-open" class="bc-open">BITCOIN COUNTRY</button>
       <span id="bc-mini">NODES 0/100 · ARMY 0 · WORLD 20</span>
-      <button type="button" id="bc-army-bar" class="bc-open hide">+10 ARMY</button>
+      <button type="button" id="bc-army-bar" class="bc-open hide">TIER</button>
     </div>
     <div id="field" class="field">
       <canvas id="c"></canvas>
@@ -85,6 +85,7 @@
           <div id="def-knob" class="def-knob"></div>
         </div>
         <div id="def-arc" class="def-arc hide" aria-label="Missile angle">
+          <span class="def-arc-lab">AIM</span>
           <div class="def-arc-slot"></div>
           <div id="def-arc-knob" class="def-arc-knob"></div>
         </div>
@@ -120,7 +121,7 @@
         <div class="bc-head"><b>BITCOIN COUNTRY</b><button type="button" id="bc-close">×</button></div>
         <div class="bc-grid">
           <div><span>LIBERTY NODES</span><b id="bc-nodes">0 / 100</b></div>
-          <div><span>ARMY</span><b id="bc-army">0 / 100</b></div>
+          <div><span>ARMY</span><b id="bc-army">0 / 7</b></div>
           <div><span>WORLD</span><b id="bc-world">20</b></div>
           <div><span>CITADEL</span><b id="bc-citadel">NOT BUILT</b></div>
           <div><span>MINE</span><b id="bc-mine">OFFLINE</b></div>
@@ -128,7 +129,7 @@
         </div>
         <div class="bc-actions">
           <button type="button" id="bc-form-army" class="hide">FORM DEFENSE FORCE · 2%</button>
-          <button type="button" id="bc-army10">+10 ARMY · 2.5%</button>
+          <button type="button" id="bc-army10">TIER 1/7</button>
           <button type="button" id="bc-declare" class="hide">DECLARE INDEPENDENCE</button>
         </div>
         <div id="bc-ups" class="bc-ups"></div>
@@ -170,13 +171,13 @@
       <button type="button" class="text-btn" id="btn-close-profile">Close</button>
     </div>
   </div>
-  <script src="/i18n.js?v=mp109"></script>
+  <script src="/i18n.js?v=mp110"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.7.0/abcjs-basic-min.js" integrity="sha384-QEx1pDqNtno80p4xYN5Cqm5JcAAtUDUCHqFLq0UBhWRFoFzzNHumh20zFGG/9XMi" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="supabase-lib.js"></script>
   <script src="auth.js?v=mp66"></script>
   <script src="run-stats.js"></script>
   <script src="audio.js?v=mp101"></script>
   <script src="mp.js?v=mp8"></script>
-  <script src="game.js?v=mp109"></script>
+  <script src="game.js?v=mp118"></script>
 </body>
 </html>
