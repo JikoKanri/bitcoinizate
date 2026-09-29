@@ -990,6 +990,24 @@ html[data-palette="flower"] #app {
 .def-aa.charging{border-color:#ffe14a;box-shadow:0 0 0 3px rgba(255,225,74,.4), 0 6px 14px rgba(0,0,0,.45);}
 .def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
 .def-aa.hide{display:none}
+.def-arc{
+  position:absolute;left:calc(50% - 78px);bottom:16px;width:28px;height:76px;z-index:28;
+  pointer-events:auto;touch-action:none;
+}
+.def-arc.hide{display:none}
+.def-arc-slot{
+  position:absolute;left:50%;top:6px;bottom:6px;width:8px;transform:translateX(-50%);
+  border-radius:4px;background:rgba(18,10,8,.82);
+  border:2px solid rgba(240,208,200,.75);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.45);
+}
+.def-arc-knob{
+  position:absolute;left:50%;top:0;width:22px;height:22px;margin-left:-11px;
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 35% 30%, #fff6d0, #e23b3b 55%, #6a1414);
+  border:2px solid #fff6e8;
+  box-shadow:0 3px 6px rgba(0,0,0,.45);
+}
 [data-palette="sunset"] #clock,
 [data-palette="sunset"] #h-candles {
   color: #fff8f2;

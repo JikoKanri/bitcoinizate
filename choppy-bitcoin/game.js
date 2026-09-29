@@ -3980,23 +3980,29 @@
     for(const c of cand){r-=c.w;if(r<=0)return {x:c.x,y:c.y};}
     return {x:cand[0].x,y:cand[0].y};
   }
-  function stampCitadel(m,pad,gate){
-    const x=pad.x,y=pad.y;
-    const set=(xx,yy,t)=>{if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R)m[yy*BC_C+xx]=t;};
-    for(let dy=0;dy<5;dy++)for(let dx=0;dx<6;dx++)set(x+dx,y+dy,6);
-    for(let dx=0;dx<6;dx++){set(x+dx,y,1);set(x+dx,y+4,1);}
-    for(let dy=0;dy<5;dy++){set(x,y+dy,1);set(x+5,y+dy,1);}
-    set(x+2,y+1,5);set(x+3,y+1,5);set(x+2,y+2,5);set(x+3,y+2,5);
-  }
-  function addFort(m,pad,gate){
-    const x0=pad.x-1,y0=pad.y-1,x1=pad.x+6,y1=pad.y+5;
-    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
-      if(x!==x0&&x!==x1&&y!==y0&&y!==y1)continue;
-      if(x<0||y<0||x>=BC_C||y>=BC_R)continue;
-      const t=m[y*BC_C+x];
-      if(t===3||t===5||t===2)continue;
-      if(t===6||t===0||t===7)m[y*BC_C+x]=1;
+  function shieldCorner(map){
+    let ox=BC_C,oy=BC_R,n=0;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(map[y*BC_C+x]!==5)continue;
+      if(x<ox)ox=x;if(y<oy)oy=y;n++;
     }
+    return n?{x:ox,y:oy}:null;
+  }
+  function eachShieldRing(ox,oy,fn){
+    for(let dy=-1;dy<=2;dy++)for(let dx=-1;dx<=2;dx++){
+      if(dx>=0&&dx<=1&&dy>=0&&dy<=1)continue;
+      fn(ox+dx,oy+dy);
+    }
+  }
+  function stampCitadel(m,pad){
+    const ox=pad.x+2,oy=pad.y+1;
+    const set=(x,y,t)=>{if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;};
+    for(let dy=-1;dy<=2;dy++)for(let dx=-1;dx<=2;dx++)set(ox+dx,oy+dy,6);
+    set(ox,oy,5);set(ox+1,oy,5);set(ox,oy+1,5);set(ox+1,oy+1,5);
+    eachShieldRing(ox,oy,(x,y)=>set(x,y,1));
+  }
+  function addFort(m,pad){
+    stampCitadel(m,pad);
   }
   function sandFringe(m,pad,depth){
     const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
@@ -4281,23 +4287,124 @@
       if(land===1&&coastHash(x,y,salt+3)<12)m[y*BC_C+x]=6;
     }
   }
-  function sprinkleIslets(m,rng,n){
-    let made=0,tries=0;
-    while(made<n&&tries<48){
-      tries++;
-      const x=3+(rng()*(BC_C-8)|0), y=3+(rng()*(BC_R-8)|0);
-      if(m[y*BC_C+x]!==3)continue;
-      let clear=true;
-      for(let dy=-2;dy<=3&&clear;dy++)for(let dx=-2;dx<=3;dx++)if(mtile(m,x+dx,y+dy)!==3)clear=false;
-      if(!clear)continue;
-      const blob=[[0,0],[1,0]];
-      if(rng()<0.4)blob.push([0,1]);
-      for(const [dx,dy] of blob){
-        const xx=x+dx,yy=y+dy;
-        if(xx>0&&yy>0&&xx<BC_C-1&&yy<BC_R-1)m[yy*BC_C+xx]=6;
+  function seedIslands(m,rng){
+    const N=BC_C*BC_R;
+    const main=new Uint8Array(N);
+    const landish=(t)=>t&&t!==3;
+    let start=-1;
+    for(let i=0;i<N;i++)if(m[i]===5){start=i;break;}
+    if(start<0){for(let i=0;i<N;i++)if(landish(m[i])){start=i;break;}}
+    if(start>=0){
+      const q=[start]; main[start]=1;
+      while(q.length){
+        const i=q.pop(), x=i%BC_C, y=(i/BC_C)|0;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const xx=x+dx, yy=y+dy;
+          if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+          const j=yy*BC_C+xx;
+          if(main[j]||!landish(m[j]))continue;
+          main[j]=1; q.push(j);
+        }
       }
-      made++;
     }
+    const blocked=new Uint8Array(main);
+    const count=1+(rng()*3|0)+(rng()<0.28?1:0);
+    const islands=[];
+    let guard=0;
+    while(islands.length<count&&guard++<90){
+      const x=2+(rng()*(BC_C-6)|0), y=2+(rng()*(BC_R-6)|0);
+      if(m[y*BC_C+x]!==3)continue;
+      let near=false;
+      for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){
+        const xx=x+dx, yy=y+dy;
+        if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1||blocked[yy*BC_C+xx])near=true;
+      }
+      if(near)continue;
+      const size=rng()<0.7?(2+(rng()*3|0)):(5+(rng()*6|0));
+      const cells=[{x:x,y:y}];
+      const mark=new Uint8Array(N);
+      mark[y*BC_C+x]=1;
+      let grow=0;
+      while(cells.length<size&&grow++<48){
+        const c=cells[(rng()*cells.length)|0];
+        const dir=[[1,0],[-1,0],[0,1],[0,-1]][(rng()*4)|0];
+        const xx=c.x+dir[0], yy=c.y+dir[1];
+        if(xx<2||yy<2||xx>=BC_C-2||yy>=BC_R-2)continue;
+        const j=yy*BC_C+xx;
+        if(mark[j]||m[j]!==3)continue;
+        let touch=false;
+        for(let dy=-1;dy<=1&&!touch;dy++)for(let dx=-1;dx<=1;dx++){
+          if(blocked[(yy+dy)*BC_C+(xx+dx)])touch=true;
+        }
+        if(touch)continue;
+        mark[j]=1;
+        cells.push({x:xx,y:yy});
+      }
+      if(cells.length<2)continue;
+      for(const c of cells)m[c.y*BC_C+c.x]=6;
+      const rim=[];
+      for(const c of cells){
+        let wet=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,c.x+dx,c.y+dy)===3)wet=true;
+        if(wet){m[c.y*BC_C+c.x]=0;rim.push(c);}
+      }
+      if(cells.length>3){
+        const inn=cells.filter((c)=>m[c.y*BC_C+c.x]===0);
+        if(inn.length===cells.length){
+          const k=cells[(rng()*cells.length)|0];
+          m[k.y*BC_C+k.x]=6;
+        }
+      }
+      const rocks=Math.min(rim.length,1+(rng()*3|0));
+      const used={};
+      for(let r=0;r<rocks;r++){
+        const c=rim[(rng()*rim.length)|0];
+        const k=c.y*BC_C+c.x;
+        if(used[k])continue;
+        used[k]=1;
+        m[k]=8;
+      }
+      let stand=false;
+      for(const c of cells)if(m[c.y*BC_C+c.x]!==8)stand=true;
+      if(!stand)m[cells[0].y*BC_C+cells[0].x]=0;
+      const ids=cells.map((c)=>c.y*BC_C+c.x);
+      for(const id of ids)blocked[id]=1;
+      islands.push(ids);
+    }
+    islands.forEach((cells,idx)=>{
+      let link;
+      if(islands.length===1)link=rng()<0.55;
+      else if(idx%2===0)link=true;
+      else link=rng()<0.4;
+      if(!link)return;
+      let from=cells[0], best=-1, bd=1e9;
+      for(const i of cells){
+        const x=i%BC_C, y=(i/BC_C)|0;
+        for(let j=0;j<N;j+=2){
+          if(!main[j])continue;
+          const dx=x-(j%BC_C), dy=y-((j/BC_C)|0);
+          const d=dx*dx+dy*dy;
+          if(d<bd){bd=d;best=j;from=i;}
+        }
+      }
+      if(best<0||bd>16*16)return;
+      let x=from%BC_C, y=(from/BC_C)|0;
+      const gx=best%BC_C, gy=(best/BC_C)|0;
+      const own={};
+      for(const id of cells)own[id]=1;
+      for(let s=0;s<22;s++){
+        const dx=gx-x, dy=gy-y;
+        if(!dx&&!dy)break;
+        if(Math.abs(dx)>=Math.abs(dy))x+=dx>0?1:-1;
+        else y+=dy>0?1:-1;
+        if(x<0||y<0||x>=BC_C||y>=BC_R)break;
+        const j=y*BC_C+x;
+        if(own[j])continue;
+        if(m[j]!==3)break;
+        m[j]=7;
+      }
+    });
+    return islands;
   }
   function openTransit(m,pad){
     const prot=(x,y)=>x>=pad.x-1&&x<=pad.x+6&&y>=pad.y-1&&y<=pad.y+5;
@@ -4333,22 +4440,41 @@
     }
     for(const i of marks)m[i]=8;
   }
-  function placeLighthouse(m,pad,rng){
+  function placeLighthouse(m,pad,rng,isles){
+    const small=new Uint8Array(m.length);
+    for(const cells of isles||[]){
+      if(cells.length>14)continue;
+      for(const i of cells)small[i]=1;
+    }
     const cand=[];
     for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
       if(x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6)continue;
-      const t=m[y*BC_C+x];
-      if(t!==0&&t!==6&&t!==8)continue;
-      let wet=false,pier=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const i=y*BC_C+x, t=m[i];
+      if(t!==0&&t!==6)continue;
+      let wet=0, rock=0, pier=false;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
         const tv=mtile(m,x+dx,y+dy);
-        if(tv===3)wet=true;
+        if(tv===3)wet++;
+        if(tv===8)rock++;
         if(tv===7)pier=true;
       }
-      if(wet&&!pier)cand.push(y*BC_C+x);
+      if(pier||!wet)continue;
+      let s=wet+(rock?8+rock*4:0);
+      if(small[i])s+=14;
+      else if(rock)s+=2;
+      cand.push({i:i,s:s});
     }
     if(!cand.length)return;
-    m[cand[(rng()*cand.length)|0]]=9;
+    cand.sort((a,b)=>b.s-a.s);
+    const top=cand.slice(0,Math.min(5,cand.length));
+    let sum=0;
+    for(const c of top)sum+=c.s;
+    let r=rng()*sum;
+    for(const c of top){
+      r-=c.s;
+      if(r<=0){m[c.i]=9;return;}
+    }
+    m[top[0].i]=9;
   }
   function placeFarm(m,pad){
     const near=(x,y)=>x>=pad.x-2&&x<=pad.x+7&&y>=pad.y-2&&y<=pad.y+6;
@@ -4608,18 +4734,13 @@
     }
   }
   function sealShield(m){
-    const hits=[];
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      if(m[y*BC_C+x]!==5)continue;
-      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
-        if(!dx&&!dy)continue;
-        const xx=x+dx,yy=y+dy;
-        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
-        const i=yy*BC_C+xx;
-        if(m[i]!==5)hits.push(i);
-      }
-    }
-    for(const i of hits)m[i]=1;
+    const o=shieldCorner(m);
+    if(!o)return;
+    eachShieldRing(o.x,o.y,(x,y)=>{
+      if(x<0||y<0||x>=BC_C||y>=BC_R)return;
+      const i=y*BC_C+x;
+      if(m[i]!==5)m[i]=1;
+    });
   }
   function makeIslandMap(level, fort){
     level=Math.max(0,Math.min(8,level|0));
@@ -4637,8 +4758,6 @@
     const pad=edgePad||fitPad(m,pref.x,pref.y);
     const gate=edgePad?inlandGate(pad):pref.gate;
     stampCitadel(m,pad,gate);
-    const wantIslets=plan.islets!=null?!!plan.islets:rng()<0.78;
-    if(wantIslets && rng()<0.35)sprinkleIslets(m,rng,1);
     sandFringe(m,pad,plan.naval?1:2);
     rockyCoast(m,pad,salt);
     openTransit(m,pad);
@@ -4650,14 +4769,15 @@
     else if(!plan.naval)wildGroves(m,pad,road);
     if(!plan.naval&&rng()<(dress==="village"?0.35:0.48))placeHamlet(m,pad,rng);
     beachTrees(m,pad,road);
-    const wantLight=plan.light!=null?!!plan.light:rng()<0.55;
-    if(wantLight)placeLighthouse(m,pad,rng);
     breakLanes(m,pad);
     repairEdges(m,!!plan.naval);
     thinSeaRocks(m);
     unsealWater(m);
     fitCover(m,!!plan.naval,rng,pad);
     sealShield(m);
+    const isles=seedIslands(m,rng);
+    const wantLight=plan.light!=null?!!plan.light:rng()<0.62;
+    if(wantLight)placeLighthouse(m,pad,rng,isles);
     const home=homeFrom(m,pad,gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -4853,7 +4973,7 @@
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
-      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:0,freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,fx:[],shards:[],
+      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:0,freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,lrmAng:90,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
@@ -4886,16 +5006,13 @@
     warSfx("warPop");
   }
   function raiseAegis(d){
-    let minx=BC_C,miny=BC_R,maxx=-1,maxy=-1;
-    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      if(!citadelSkin(d,x,y))continue;
-      if(x<minx)minx=x;if(x>maxx)maxx=x;
-      if(y<miny)miny=y;if(y>maxy)maxy=y;
-    }
-    if(maxx<0)return;
+    const o=shieldCorner(d.map);
+    if(!o)return;
+    const ring=[];
+    eachShieldRing(o.x,o.y,(x,y)=>{if(x>=0&&y>=0&&x<BC_C&&y<BC_R)ring.push(y*BC_C+x);});
+    const onRing=(x,y)=>ring.indexOf(y*BC_C+x)>=0;
     const p=d.player;
     const c=shieldCenter(d);
-    const onRing=(x,y)=>x>=minx&&x<=maxx&&y>=miny&&y<=maxy&&(x===minx||x===maxx||y===miny||y===maxy);
     if(p){
       const tx=Math.floor(p.x/BC_TS),ty=Math.floor(p.y/BC_TS);
       if(onRing(tx,ty)){
@@ -4909,25 +5026,16 @@
       }
     }
     const hx=p?Math.floor(p.x/BC_TS):-1,hy=p?Math.floor(p.y/BC_TS):-1;
-    const ring=[];
-    const seen=new Uint8Array(d.map.length);
-    const put=(x,y)=>{
-      if(x<0||y<0||x>=BC_C||y>=BC_R||(x===hx&&y===hy))return;
-      const j=y*BC_C+x;
-      if(seen[j])return;
-      const t=d.map[j];
-      if(t===5||t===9)return;
-      seen[j]=1;
-      if(t!==2){d.map[j]=2;if(d.seal)d.seal[j]=0;}
-      ring.push(j);
-    };
-    for(let y=miny;y<=maxy;y++)for(let x=minx;x<=maxx;x++){
-      if(citadelSkin(d,x,y)&&d.map[y*BC_C+x]===1)put(x,y);
+    const placed=[];
+    for(const j of ring){
+      const x=j%BC_C,y=(j/BC_C)|0;
+      if(x===hx&&y===hy)continue;
+      if(d.map[j]===5)continue;
+      d.map[j]=2;
+      if(d.seal)d.seal[j]=0;
+      placed.push(j);
     }
-    for(let y=miny;y<=maxy;y++)for(let x=minx;x<=maxx;x++){
-      if(x===minx||x===maxx||y===miny||y===maxy)put(x,y);
-    }
-    d.aegis=ring;
+    d.aegis=placed;
     d.aegisT=7.5;
   }
   function settleAegis(d){
@@ -5412,6 +5520,33 @@
     syncAaButton(d);
   }
   const AA_R=52;
+  function lrmScale(d){
+    const tier=d?d.shotTier|0:0;
+    return tier>=3?1.25:tier>=2?1:0.75;
+  }
+  function lrmR(d){return AA_R*lrmScale(d);}
+  function lrmDeg(d){
+    if(!d||(d.shotTier|0)<3)return 360;
+    const a=d.lrmAng==null?90:d.lrmAng;
+    return Math.max(45,Math.min(90,a));
+  }
+  function lrmAim(d,rx,ry){
+    const p=d&&d.player;
+    let dx=rx-(p?p.x:rx), dy=ry-(p?p.y:ry);
+    if(!p||dx*dx+dy*dy<36){
+      const dir=p?p.dir|0:0;
+      dx=dir===1?1:dir===3?-1:0;
+      dy=dir===2?1:dir===0?-1:0;
+    }
+    return Math.atan2(dy,dx);
+  }
+  function inLrmWedge(d,x,y,rx,ry){
+    if(!d||(d.shotTier|0)<3)return true;
+    const aim=lrmAim(d,rx,ry);
+    const ang=Math.atan2(y-ry,x-rx);
+    const dlt=Math.atan2(Math.sin(ang-aim),Math.cos(ang-aim));
+    return Math.abs(dlt)<=(lrmDeg(d)*Math.PI/180)/2;
+  }
   function unitRadius(e){return Math.max(6,(e.sz||12)*0.55);}
   function circleOverlapFrac(dist,R,r){
     if(dist+r<=R)return 1;
@@ -5423,9 +5558,15 @@
     if(e.hull==="light"||e.type==="FAST"||e.type==="HELI")return "light";
     return "medium";
   }
-  function crossHits(x,y,r,rx,ry){
-    const dx=Math.abs(x-rx), dy=Math.abs(y-ry);
-    const arm=AA_R+8, thick=r+2;
+  function crossHits(x,y,r,rx,ry,R,rot){
+    let dx=x-rx, dy=y-ry;
+    if(rot){
+      const c=Math.cos(rot), s=Math.sin(rot);
+      const nx=dx*c+dy*s, ny=-dx*s+dy*c;
+      dx=nx; dy=ny;
+    }
+    dx=Math.abs(dx); dy=Math.abs(dy);
+    const arm=(R==null?AA_R:R)+8, thick=r+2;
     return (dy<=thick&&dx<=arm)||(dx<=thick&&dy<=arm);
   }
   function scorchTrees(d,rx,ry){
@@ -5433,9 +5574,13 @@
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       if(bcAt(d.map,x,y)!==4)continue;
       const cx=x*BC_TS+BC_TS/2, cy=y*BC_TS+BC_TS/2;
+      const R=lrmR(d);
       const dist=Math.hypot(cx-rx,cy-ry);
-      if(dist>AA_R)continue;
-      const u=1-dist/AA_R;
+      const rot=(d.shotTier|0)>=3?lrmAim(d,rx,ry):0;
+      const onCross=crossHits(cx,cy,6,rx,ry,R,rot);
+      if(dist>R&&!onCross)continue;
+      if(!onCross&&!inLrmWedge(d,cx,cy,rx,ry))continue;
+      const u=1-Math.min(1,dist/R);
       if(igniteTree(d,x,y,Math.random()<u*u))n++;
     }
     return n;
@@ -5461,8 +5606,10 @@
       const cx=b?(b.x0+b.x1)/2:x*BC_TS+8;
       const cy=b?(b.y0+b.y1)/2:y*BC_TS+8;
       const dist=Math.hypot(cx-rx,cy-ry);
-      if(crossHits(cx,cy,10,rx,ry)){razeBuilding(d,x,y);wrecked++;}
-      else if(dist<=AA_R){
+      const R=lrmR(d);
+      const rot=(d.shotTier|0)>=3?lrmAim(d,rx,ry):0;
+      if(crossHits(cx,cy,10,rx,ry,R,rot)){razeBuilding(d,x,y);wrecked++;}
+      else if(dist<=R&&inLrmWedge(d,cx,cy,rx,ry)){
         d.bHits[i]=(d.bHits[i]||0)+1;
         if(t===9)d.hp[i]=Math.max(d.hp[i]||0,1);
         addFx(d,{kind:"treeBurn",x:cx,y:cy,life:.4,hot:2});
@@ -5481,8 +5628,10 @@
       const dist=Math.hypot(e.x-rx,e.y-ry);
       const r=unitRadius(e);
       const cls=lrmClass(e);
-      const onCross=crossHits(e.x,e.y,r,rx,ry);
-      const inArea=circleOverlapFrac(dist,AA_R,r)>=0.5;
+      const R=lrmR(d);
+      const rot=(d.shotTier|0)>=3?lrmAim(d,rx,ry):0;
+      const onCross=crossHits(e.x,e.y,r,rx,ry,R,rot);
+      const inArea=circleOverlapFrac(dist,R,r)>=0.5&&inLrmWedge(d,e.x,e.y,rx,ry);
       let ok=false;
       if(cls==="light")ok=onCross||inArea;
       else if(onCross)ok=true;
@@ -5555,6 +5704,17 @@
     btn.style.setProperty("--aa",(pct*360)+"deg");
     btn.classList.toggle("armed",!!(d&&d.aaArmed));
     btn.classList.toggle("charging",!!(d&&d.aaCharging&&!d.aaArmed));
+    const arc=$("def-arc");
+    if(arc){
+      const on=show&&(d.shotTier|0)>=3;
+      arc.classList.toggle("hide",!on);
+      const knob=$("def-arc-knob");
+      if(knob){
+        const deg=d.lrmAng==null?90:d.lrmAng;
+        const t=Math.max(0,Math.min(1,(90-deg)/45));
+        knob.style.top=(t*54)+"px";
+      }
+    }
   }
   function fireAa(d){
     const p=d.player;
@@ -5827,21 +5987,42 @@
     }
     if(d.aaArmed&&d.reticle&&!d.frozen){
       const rx=d.reticle.x,ry=d.reticle.y;
+      const R=lrmR(d);
+      const tier=d.shotTier|0;
+      const wedge=tier>=3;
+      const aim=wedge?lrmAim(d,rx,ry):0;
+      const half=wedge?(lrmDeg(d)*Math.PI/180)/2:Math.PI;
       ctx.save();
       ctx.fillStyle="rgba(4,8,6,.28)";
-      ctx.beginPath();ctx.rect(0,0,S.W,S.H);ctx.arc(rx,ry,AA_R+18,0,Math.PI*2,true);ctx.fill("evenodd");
+      ctx.beginPath();
+      ctx.rect(0,0,S.W,S.H);
+      if(wedge){ctx.moveTo(rx,ry);ctx.arc(rx,ry,R+18,aim-half,aim+half);ctx.closePath();}
+      else ctx.arc(rx,ry,R+18,0,Math.PI*2,true);
+      ctx.fill("evenodd");
       ctx.strokeStyle="rgba(226,59,59,.95)";ctx.lineWidth=2.4;
-      ctx.beginPath();ctx.arc(rx,ry,AA_R,0,Math.PI*2);ctx.stroke();
-      ctx.strokeStyle="rgba(226,59,59,.55)";ctx.lineWidth=1.2;
-      ctx.beginPath();ctx.arc(rx,ry,AA_R*0.62,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();
+      if(wedge){ctx.moveTo(rx,ry);ctx.arc(rx,ry,R,aim-half,aim+half);ctx.closePath();}
+      else ctx.arc(rx,ry,R,0,Math.PI*2);
+      ctx.stroke();
+      if(!wedge){
+        ctx.strokeStyle="rgba(226,59,59,.55)";ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.arc(rx,ry,R*0.62,0,Math.PI*2);ctx.stroke();
+      }else{
+        ctx.strokeStyle="rgba(226,59,59,.8)";ctx.lineWidth=1.4;
+        ctx.beginPath();
+        ctx.moveTo(rx,ry);ctx.lineTo(rx+Math.cos(aim-half)*(R+8),ry+Math.sin(aim-half)*(R+8));
+        ctx.moveTo(rx,ry);ctx.lineTo(rx+Math.cos(aim+half)*(R+8),ry+Math.sin(aim+half)*(R+8));
+        ctx.stroke();
+      }
       ctx.strokeStyle="#ffe14a";ctx.lineWidth=1.6;
-      ctx.beginPath();ctx.arc(rx,ry,AA_R*0.10,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.arc(rx,ry,Math.max(4,R*0.10),0,Math.PI*2);ctx.stroke();
       ctx.strokeStyle="#e23b3b";ctx.lineWidth=1.4;
       ctx.beginPath();
-      ctx.moveTo(rx-AA_R-8,ry);ctx.lineTo(rx-AA_R*0.12,ry);
-      ctx.moveTo(rx+AA_R*0.12,ry);ctx.lineTo(rx+AA_R+8,ry);
-      ctx.moveTo(rx,ry-AA_R-8);ctx.lineTo(rx,ry-AA_R*0.12);
-      ctx.moveTo(rx,ry+AA_R*0.12);ctx.lineTo(rx,ry+AA_R+8);
+      const ux=Math.cos(aim), uy=Math.sin(aim), px=-uy, py=ux;
+      ctx.moveTo(rx-ux*(R+8),ry-uy*(R+8));ctx.lineTo(rx-ux*R*0.12,ry-uy*R*0.12);
+      ctx.moveTo(rx+ux*R*0.12,ry+uy*R*0.12);ctx.lineTo(rx+ux*(R+8),ry+uy*(R+8));
+      ctx.moveTo(rx-px*(R+8),ry-py*(R+8));ctx.lineTo(rx-px*R*0.12,ry-py*R*0.12);
+      ctx.moveTo(rx+px*R*0.12,ry+py*R*0.12);ctx.lineTo(rx+px*(R+8),ry+py*(R+8));
       ctx.stroke();
       ctx.restore();
     }
@@ -5924,56 +6105,37 @@
     const col=hp>.66?"#f2a900":hp>.33?"#d07a14":"#9a3a18";
     ctx.save();
     ctx.translate(c.x,c.y);
-    const pulse=1+Math.sin((t||0)*5)*0.015*hp;
-    ctx.scale(pulse,pulse);
     ctx.beginPath();
-    ctx.moveTo(0,-18);
-    ctx.bezierCurveTo(14,-18,18,-6,18,2);
-    ctx.bezierCurveTo(18,13,8,20,0,24);
-    ctx.bezierCurveTo(-8,20,-18,13,-18,2);
-    ctx.bezierCurveTo(-18,-6,-14,-18,0,-18);
-    ctx.closePath();
-    const rim=ctx.createLinearGradient(0,-18,0,24);
-    rim.addColorStop(0,"#fff1c2");
-    rim.addColorStop(0.45,"#f2a900");
-    rim.addColorStop(1,"#8a4e08");
-    ctx.fillStyle=rim;
-    ctx.fill();
-    ctx.strokeStyle="#6a3e08";
-    ctx.lineWidth=1.4;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0,-14);
-    ctx.bezierCurveTo(11,-14,14,-5,14,2);
-    ctx.bezierCurveTo(14,11,6,17,0,20);
-    ctx.bezierCurveTo(-6,17,-14,11,-14,2);
-    ctx.bezierCurveTo(-14,-5,-11,-14,0,-14);
-    ctx.closePath();
-    ctx.fillStyle="#1a1208";
-    ctx.fill();
-    ctx.save();
+    ctx.rect(-16,-16,32,32);
     ctx.clip();
-    const wash=ctx.createLinearGradient(0,20,0,-14);
+    const plate=ctx.createLinearGradient(-16,-16,16,16);
+    plate.addColorStop(0,"#fff4c8");
+    plate.addColorStop(0.42,"#f2a900");
+    plate.addColorStop(1,"#8a4e08");
+    ctx.fillStyle=plate;
+    ctx.fillRect(-16,-16,32,32);
+    ctx.fillStyle="#2a1c0c";
+    ctx.fillRect(-13,-13,26,26);
+    ctx.strokeStyle="#ffe7a0";
+    ctx.lineWidth=1.2;
+    ctx.strokeRect(-13.5,-13.5,27,27);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-12,-12,24,24);
+    ctx.clip();
+    const wash=ctx.createLinearGradient(0,12,0,-12);
     wash.addColorStop(0,col);
     wash.addColorStop(1,hp>.66?"#ffe08a":col);
     ctx.fillStyle=wash;
-    const h=36*hp;
-    ctx.fillRect(-16,20-h,32,h+2);
-    ctx.fillStyle="rgba(255,255,255,.18)";
-    ctx.fillRect(-12,-12,5,26*hp);
-    if(hp<0.85){
-      ctx.strokeStyle="rgba(20,10,4,.75)";ctx.lineWidth=1.3;
-      ctx.beginPath();ctx.moveTo(-8,-6);ctx.lineTo(-2,4);ctx.lineTo(-7,12);ctx.stroke();
-    }
-    if(hp<0.55){
-      ctx.beginPath();ctx.moveTo(6,-8);ctx.lineTo(1,2);ctx.lineTo(8,10);ctx.stroke();
-    }
-    if(hp<0.3){
-      ctx.beginPath();ctx.moveTo(-12,2);ctx.lineTo(10,8);ctx.stroke();
-    }
+    ctx.fillRect(-12,12-24*hp,24,24*hp+1);
+    ctx.fillStyle="rgba(255,255,255,.2)";
+    ctx.fillRect(-10,-10,4,16*hp);
     ctx.restore();
-    ctx.strokeStyle="#fff6d8";ctx.lineWidth=1.3;ctx.stroke();
-    paintBtcSign(ctx,15,"#fff6d0");
+    ctx.fillStyle="#6a3e08";
+    [[-14,-14],[12,-14],[-14,12],[12,12]].forEach(([x,y])=>{
+      ctx.beginPath();ctx.arc(x+1,y+1,1.3,0,Math.PI*2);ctx.fill();
+    });
+    paintBtcSign(ctx,11,"#fff6d0");
     ctx.restore();
     if(d.shards){
       for(const sh of d.shards){
@@ -10274,6 +10436,33 @@
       };
       aa.addEventListener("pointerup",endAa);
       aa.addEventListener("pointercancel",endAa);
+    }
+    const arc=$("def-arc");
+    if(arc){
+      let arcDrag=0;
+      const setAng=(clientY)=>{
+        const d=S.bcDefense;
+        if(!d||(d.shotTier|0)<3)return;
+        const box=arc.getBoundingClientRect();
+        const travel=Math.max(1,box.height-22);
+        let t=(clientY-box.top-11)/travel;
+        t=Math.max(0,Math.min(1,t));
+        d.lrmAng=90-45*t;
+        syncAaButton(d);
+      };
+      arc.addEventListener("pointerdown",(e)=>{
+        e.preventDefault();e.stopPropagation();
+        try{arc.setPointerCapture(e.pointerId);}catch(err){}
+        arcDrag=e.pointerId;
+        setAng(e.clientY);
+      });
+      arc.addEventListener("pointermove",(e)=>{
+        if(arcDrag!==e.pointerId)return;
+        setAng(e.clientY);
+      });
+      const endArc=(e)=>{if(arcDrag===e.pointerId)arcDrag=0;};
+      arc.addEventListener("pointerup",endArc);
+      arc.addEventListener("pointercancel",endArc);
     }
   })();
   window.startChoppy = startGame;
