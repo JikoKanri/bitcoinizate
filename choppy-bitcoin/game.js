@@ -1306,7 +1306,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; shotKeep.tier=0; shotKeep.spread=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -3027,7 +3027,7 @@
     const open=es
       ? name+" está derrotado. Los barcos dan la vuelta con las banderas todavía arriba, porque bajarlas pediría un formulario que nadie quiere firmar."
       : "The "+name+" is beaten. The ships turn for home with the flags still up, because taking them down would require a form nobody wants to sign.";
-    return open+"\n\n"+recog+"\n\n"+holiday+"\n\n"+tail;
+    return open+"\n\n"+recog+"\n\n"+holiday+"\n\n"+rebuildNote()+"\n\n"+tail;
   }
   function warTldr(id){
     const es=chanceLang();
@@ -3067,11 +3067,11 @@
       const b=warBloc(((won-1)/3)|0);
       const name=es?b.es:b.en;
       if(won>=9) return es
-        ? name+" reconoce a la nación. La panadería cierra. Es día de celebración nacional."
-        : "The "+name+" recognizes the nation. The bakery closes. It is a national day of celebration.";
+        ? name+" reconoce a la nación. La panadería cierra. Es día de celebración nacional.\n\n"+rebuildNote()
+        : "The "+name+" recognizes the nation. The bakery closes. It is a national day of celebration.\n\n"+rebuildNote();
       return es
-        ? name+" reconoce a la nación. Es día de celebración nacional. Si vuelve otro bloque, va a ser dentro de 210 velas."
-        : "The "+name+" recognizes the nation. It is a national day of celebration. If another bloc comes, it will be within 210 candles.";
+        ? name+" reconoce a la nación. Es día de celebración nacional. Si vuelve otro bloque, va a ser dentro de 210 velas.\n\n"+rebuildNote()
+        : "The "+name+" recognizes the nation. It is a national day of celebration. If another bloc comes, it will be within 210 candles.\n\n"+rebuildNote();
     }
     return "";
   }
@@ -5429,7 +5429,7 @@
   function unitsOverlap(d,x,y,sz,ignore){
     const needOf=(u)=>(sz+(u.sz||12))*0.8;
     const hit=(u)=>{
-      if(!unitAlive(u)||u===ignore)return false;
+      if(!unitAlive(u)||u===ignore||(ignore&&ignore.slip===u))return false;
       return Math.hypot(u.x-x,u.y-y)<needOf(u);
     };
     if(hit(d.player))return true;
@@ -5513,14 +5513,17 @@
     if(t.fire>0)return;
     const tier=t===d.player?(d.shotTier|0):0;
     const mine=t===d.player?d.shots.filter(s=>s.mine&&!s.hit).length:d.shots.filter(s=>s.owner===t&&!s.hit).length;
-    if(tier>=2){if(mine>0)return;}
+    let n=tier>=2?2:1;
+    if(tier>=3){
+      if(mine>=2)return;
+      n=2-mine;
+    }else if(tier>=2){if(mine>0)return;}
     else if(mine>=1)return;
     t.fire=t===d.player?(tier>=1?.1:.22):.55;
     const shotMul=t===d.player?(1+((d.up&&d.up.shot)||0)/100)*(tier>=1?1.5:1):1;
     const v=t===d.player?180*shotMul:(t.bspd||180);
     const dmg=t===d.player?((d.up&&d.up.power)||1):(t.dmg||1);
     const dx=t.dir===1?1:t.dir===3?-1:0,dy=t.dir===2?1:t.dir===0?-1:0;
-    const n=tier>=2?2:1;
     const base=Math.atan2(dy,dx);
     const spread=n>1&&t===d.player?((d.shotSpread==null?0:d.shotSpread)*Math.PI/180):0;
     for(let i=0;i<n;i++){
@@ -5609,8 +5612,26 @@
     if(d.shotSpread!=null)shotKeep.spread=Math.max(0,Math.min(45,+d.shotSpread||0));
     S.bcShotTier=shotKeep.tier;
     S.bcShotSpread=shotKeep.spread;
+    try{sessionStorage.setItem("bc-shot",JSON.stringify({tier:shotKeep.tier,spread:shotKeep.spread}));}catch(e){}
+  }
+  function recallShot(){
+    try{
+      const o=JSON.parse(sessionStorage.getItem("bc-shot")||"null");
+      if(o){
+        if((o.tier|0)>shotKeep.tier)shotKeep.tier=o.tier|0;
+        if(o.spread!=null)shotKeep.spread=Math.max(0,Math.min(45,+o.spread||0));
+      }
+    }catch(e){}
+    S.bcShotTier=shotKeep.tier;
+    S.bcShotSpread=shotKeep.spread;
+  }
+  function wipeShotKeep(){
+    shotKeep.tier=0;shotKeep.spread=0;
+    S.bcShotTier=0;S.bcShotSpread=0;
+    try{sessionStorage.removeItem("bc-shot");}catch(e){}
   }
   function startDefense(){
+    recallShot();
     const level=Math.max(0,Math.min(8,S.bcBattlesWon|0));
     const bloc=(level/3)|0;
     const u=defenseUpgrades();
@@ -5652,6 +5673,7 @@
       S.bcDefense.player.x=at.x;S.bcDefense.player.y=at.y;
     }
     S.optPanel=null;S.arcHold=false;
+    markBuildings(S.bcDefense);
     if(field){
       field.classList.remove("is-play","bull","bear","swan-bear");
       field.classList.add("defense-mode");
@@ -5809,8 +5831,10 @@
     const pad=$("def-pad");if(pad)pad.classList.add("hide");
     const aa=$("def-aa");if(aa)aa.classList.add("hide");
     if(win){
+      addRuin(d);
       S.bcBattlesWon=(S.bcBattlesWon||0)+1;
       const won=S.bcBattlesWon;
+      if(won%3===0)chargeRebuild();
       if(won>=9){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}}
       warSfx("warWin");
       window.__arcForce=(won%3===0)?"blocTriumph":"battleWon";
@@ -5861,6 +5885,64 @@
       if(bcAt(d.map,tx+dx,ty+dy)===5)return true;
     }
     return false;
+  }
+  function markBuildings(d){
+    const n=d.map.length;
+    const mark=new Uint8Array(n);
+    let tiles=0;
+    for(let i=0;i<n;i++){
+      const t=d.map[i];
+      const x=i%BC_C, y=(i/BC_C)|0;
+      const house=t===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
+      if(t===9||house){mark[i]=1;tiles++;}
+    }
+    d.buildMark=mark;
+    d.buildTiles=tiles;
+  }
+  function addRuin(d){
+    if(!d||!d.buildMark)return;
+    let gone=0;
+    for(let i=0;i<d.buildMark.length;i++){
+      if(!d.buildMark[i])continue;
+      const t=d.map[i];
+      if(t!==1&&t!==9)gone++;
+    }
+    S.bcRuinTiles=(S.bcRuinTiles|0)+(d.buildTiles|0);
+    S.bcRuinGone=(S.bcRuinGone|0)+gone;
+  }
+  function chargeRebuild(){
+    const tiles=S.bcRuinTiles|0;
+    const gone=Math.max(0,S.bcRuinGone|0);
+    const pct=tiles?Math.max(0,Math.min(100,Math.round(gone*100/tiles))):0;
+    const net=Math.max(0,netUsd());
+    const usd=net*pct/100;
+    if(usd>0){
+      const paid=payUsd(usd);
+      let left=usd-paid;
+      const vtPx=S.vtPrice||0;
+      if(left>1e-4&&vtPx>0&&S.vt>0){
+        const take=Math.min(S.vt,left/vtPx);
+        S.vt=Math.max(0,S.vt-take);
+      }
+    }
+    S.bcRebuild={pct,usd,tiles,gone};
+    S.bcRuinTiles=0;
+    S.bcRuinGone=0;
+  }
+  function rebuildNote(){
+    const b=S.bcRebuild;
+    const es=chanceLang();
+    if(!b)return "";
+    const pct=b.pct|0;
+    if(pct<=0){
+      return es
+        ? "En los tres mapas, las casas y el faro siguen en pie. La reconstrucción sale cero."
+        : "Across the three maps, the houses and the lighthouse are still standing. Reconstruction costs nothing.";
+    }
+    const label=costLabel(b.usd||0);
+    return es
+      ? "En los tres mapas, el "+pct+"% de las casas y del faro quedó destruido. La reconstrucción se cobra al mismo porcentaje del patrimonio: "+label+". Ya salió de las cuentas."
+      : "Across the three maps, "+pct+"% of the house and lighthouse tiles are destroyed. Reconstruction is billed at the same share of net worth: "+label+". It is already off the books.";
   }
   function groundUnder(d,i){
     if(d.bedSet&&d.bedSet[i])return d.bed[i]===0?0:6;
@@ -6039,6 +6121,31 @@
     if(cut){if(cut.tree)e.fell=true;return cut.dir;}
     return e.dir;
   }
+  function sortTraffic(d){
+    const live=[];
+    const goal=d.fort||d.home||{x:0,y:0};
+    for(const e of d.enemies)if(unitAlive(e)&&e.type!=="HELI")live.push(e);
+    for(let i=0;i<live.length;i++){
+      for(let j=i+1;j<live.length;j++){
+        const a=live[i], b=live[j];
+        const dist=Math.hypot(a.x-b.x,a.y-b.y);
+        const need=(a.sz+b.sz)*0.92;
+        if(dist>need)continue;
+        if((a.jam||0)<0.1&&(b.jam||0)<0.1&&dist>need*0.7)continue;
+        const da=Math.hypot(a.x-goal.x,a.y-goal.y), db=Math.hypot(b.x-goal.x,b.y-goal.y);
+        const lead=da<=db?a:b, back=lead===a?b:a;
+        if((back.yield||0)>0.2)continue;
+        const vx=back.x-lead.x, vy=back.y-lead.y;
+        const rev=Math.abs(vx)+Math.abs(vy)<1?(back.dir+2)&3:(Math.abs(vx)>Math.abs(vy)?(vx>0?1:3):(vy>0?2:0));
+        back.yield=0.7;
+        back.yieldDir=rev;
+        back.slip=lead;
+        back.jam=0;
+        back.dir=rev;
+        if(lead.slip===back)lead.slip=null;
+      }
+    }
+  }
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done||d.frozen)return;
     d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.playerInv=Math.max(0,(d.playerInv||0)-dt);d.god=Math.max(0,(d.god||0)-dt);d.freeze=Math.max(0,(d.freeze||0)-dt);d.spawn-=dt;
@@ -6071,6 +6178,7 @@
       const dx=S.defStick.x,dy=S.defStick.y;
       if(dx*dx+dy*dy>0.12)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0);
     }
+    if(h.rev)dir=dir>=0?(dir+2)&3:(p.dir+2)&3;
     const pspd=72*(1+((d.up&&d.up.speed)||0)/100);
     if(d.aaArmed&&d.reticle){
       const rspd=220;
@@ -6094,13 +6202,14 @@
       if(d.aaArmed)fireReticle(d);
     }
     const iced=(d.freeze||0)>0;
+    sortTraffic(d);
     for(const e of d.enemies){
       e.fire=Math.max(0,e.fire-dt);
       if(iced){e.want=false;continue;}
       e.think-=dt;
       const goal=e.role==="shield"?(d.fort||d.home):p;
       const other=e.role==="shield"?p:(d.fort||d.home);
-      if(e.think<=0){
+      if(e.think<=0 && !(e.yield>0)){
         e.think=.24+Math.random()*.2;
         if(los(d,e,goal.x,goal.y)){facePoint(e,goal.x,goal.y);e.want=true;}
         else if(los(d,e,other.x,other.y)){facePoint(e,other.x,other.y);e.want=true;}
@@ -6119,10 +6228,19 @@
         const ram=e.role==="shield"?(d.fort||d.home):p;
         if(e.role==="shield"&&Math.hypot(e.x-ram.x,e.y-ram.y)<28){hitBase(d,e.leak||12);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");}
       }else{
-        laneCenter(d,e);
+        if((e.yield||0)>0){
+          e.yield-=dt;
+          if(e.yieldDir!=null)e.dir=e.yieldDir;
+          if(e.yield<=0){
+            const side=(e.dir+1)&3, other=(e.dir+3)&3;
+            e.dir=openStep(d,e,side)?side:openStep(d,e,other)?other:(e.dir+2)&3;
+            e.yieldDir=null;e.slip=null;e.think=0.4;e.jam=0;
+          }
+        }
+        if(!(e.yield>0))laneCenter(d,e);
         if(e.ship)moveShip(d,e,e.dir,e.spd,dt);
         else moveTank(d,e,e.dir,e.spd,dt);
-        if(Math.hypot(e.x-ox,e.y-oy)<0.35){
+        if(Math.hypot(e.x-ox,e.y-oy)<1.4){
           const tx=Math.floor((e.x+(e.dir===1?12:e.dir===3?-12:0))/BC_TS);
           const ty=Math.floor((e.y+(e.dir===2?12:e.dir===0?-12:0))/BC_TS);
           const kt=bcAt(d.map,tx,ty);
@@ -7316,6 +7434,7 @@
   function startGame(ranked) {
     if (!S.mp) { S.worldSeed = 0; S.worldRand = null; S.mpOver = false; S.mpPlayAt = 0; }
     S.ranked = ranked !== false;
+    wipeShotKeep();
     if (A && A.unlock) try { A.unlock(); } catch (e) {}
     if (A && A.sfx && A.sfx.start) try { A.sfx.start(); } catch (e) {}
     S.humanInput = true;
@@ -7349,6 +7468,7 @@
   }
 
   function retryLostBattle(){
+    recallShot();
     const tier=shotKeep.tier, spread=shotKeep.spread;
     S.trainBattleLose=false;
     S.dead=false;
@@ -7365,6 +7485,7 @@
   function replay() {
     A.cancelSpeech();
     S.trainBattleLose = false;
+    wipeShotKeep();
     resetWorld(false);
     applyTestLoadout();
     setPhase("play");
@@ -9823,6 +9944,10 @@
     S.bcShotSpread = 0;
     shotKeep.tier = 0;
     shotKeep.spread = 0;
+    try{sessionStorage.removeItem("bc-shot");}catch(e){}
+    S.bcRuinTiles = 0;
+    S.bcRuinGone = 0;
+    S.bcRebuild = null;
     S.bcAssaultAt = 0;
     if (!S.bcReactions) rollBlocReactions();
     S.bcRepliesDone = true;
@@ -11439,7 +11564,7 @@
     askCountryName();
   });
   (function bindDefensePad(){
-    const stick=$("def-stick"), knob=$("def-knob"), fire=$("def-fire");
+    const stick=$("def-stick"), knob=$("def-knob"), fire=$("def-fire"), rev=$("def-rev");
     if(!stick||!fire)return;
     const fireIds=new Set();
     function held(){return S.defHeld||(S.defHeld={u:0,d:0,l:0,r:0,f:0});}
@@ -11472,6 +11597,18 @@
     });
     stick.addEventListener("pointerup",resetStick);
     stick.addEventListener("pointercancel",resetStick);
+    if(rev){
+      const revOn=(e)=>{
+        e.preventDefault();e.stopPropagation();
+        try{rev.setPointerCapture(e.pointerId);}catch(err){}
+        held().rev=1;
+        rev.classList.add("on");
+      };
+      const revOff=()=>{held().rev=0;rev.classList.remove("on");};
+      rev.addEventListener("pointerdown",revOn);
+      rev.addEventListener("pointerup",revOff);
+      rev.addEventListener("pointercancel",revOff);
+    }
     fire.addEventListener("pointerdown",(e)=>{
       e.preventDefault();e.stopPropagation();
       try{fire.setPointerCapture(e.pointerId);}catch(err){}
@@ -11545,7 +11682,7 @@
       const d=S.bcDefense;
       if(S.phase!=="defense"||!d||d.done||d.frozen||!d.aaArmed||!d.reticle)return;
       const t=e.target;
-      if(t&&t.closest&&t.closest("#def-stick,#def-aa,#def-arc"))return;
+      if(t&&t.closest&&t.closest("#def-stick,#def-aa,#def-arc,#def-rev"))return;
       e.preventDefault();
       e.stopPropagation();
       const p=aimPoint(e);

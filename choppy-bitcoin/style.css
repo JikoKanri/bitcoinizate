@@ -988,6 +988,15 @@ html[data-palette="flower"] #app {
   pointer-events:auto;touch-action:none;
   background:linear-gradient(90deg, transparent 0%, rgba(242,169,0,.05) 100%);
 }
+.def-rev{
+  position:absolute;left:46px;bottom:152px;width:64px;height:36px;z-index:27;
+  pointer-events:auto;touch-action:none;cursor:pointer;
+  border-radius:10px;border:2px solid rgba(242,169,0,.7);
+  background:radial-gradient(circle at 50% 30%, rgba(60,48,20,.9), rgba(12,10,8,.92));
+  color:#ffe7a0;font:700 12px "IBM Plex Mono",monospace;letter-spacing:.08em;
+  box-shadow:0 4px 10px rgba(0,0,0,.45);-webkit-tap-highlight-color:transparent;user-select:none;
+}
+.def-rev.on{background:#f2a900;color:#1a1204;border-color:#fff6d0}
 .def-stick{
   position:absolute;left:14px;bottom:16px;width:128px;height:128px;
   pointer-events:auto;touch-action:none;z-index:26;
