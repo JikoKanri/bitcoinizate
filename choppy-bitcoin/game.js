@@ -1306,7 +1306,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; shotKeep.tier=0; shotKeep.spread=0;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -4349,6 +4349,10 @@
         }else break;
       }
     }
+    if(landN()<1){
+      const edges=edgeReport(m).slice().sort((a,b)=>b.landFrac-a.landFrac);
+      for(let i=0;i<edges.length&&landN()<1;i++)layLand(edges[i].e);
+    }
   }
   function mtile(m,x,y){if(x<0||y<0||x>=BC_C||y>=BC_R)return 3;return m[y*BC_C+x];}
   function homeFrom(m,pad,gate,naval){
@@ -4720,6 +4724,9 @@
     }
     if(!cand.length)return;
     const plant=(i)=>{
+      if(!m.bed){m.bed=new Uint8Array(m.length);m.bedSet=new Uint8Array(m.length);}
+      const prev=m[i];
+      if((prev===0||prev===6)&&!m.bedSet[i]){m.bed[i]=prev;m.bedSet[i]=1;}
       m[i]=9;
       const x=i%BC_C, y=(i/BC_C)|0;
       const dry=(t)=>t===0||t===6||t===8;
@@ -5515,11 +5522,13 @@
     const dx=t.dir===1?1:t.dir===3?-1:0,dy=t.dir===2?1:t.dir===0?-1:0;
     const n=tier>=2?2:1;
     const base=Math.atan2(dy,dx);
-    const spread=n>1&&t===d.player?((d.shotSpread==null?36:d.shotSpread)*Math.PI/180):0;
+    const spread=n>1&&t===d.player?((d.shotSpread==null?0:d.shotSpread)*Math.PI/180):0;
     for(let i=0;i<n;i++){
-      const ang=n===1?base:base+(i===0?-1:1)*spread*0.5;
+      const side=n===1?0:(i===0?-1:1);
+      const ang=base+side*spread;
       const sdx=Math.cos(ang), sdy=Math.sin(ang);
-      d.shots.push({x:t.x+sdx*14,y:t.y+sdy*14,dx:sdx,dy:sdy,v,damage:dmg,mine:t===d.player,owner:t,hit:false,pierce:tier>=3});
+      const off=side*6;
+      d.shots.push({x:t.x+sdx*14-sdy*off,y:t.y+sdy*14+sdx*off,dx:sdx,dy:sdy,v,damage:dmg,mine:t===d.player,owner:t,hit:false,pierce:tier>=3});
     }
     if(t===d.player)warSfx("warShot");
     else warSfx("warEnemy");
@@ -5592,6 +5601,15 @@
     const base=6+level*2+boost;
     return base+(wave<=1?0:wave===2?2:4);
   }
+  const shotKeep={tier:0,spread:0};
+  function rememberShot(d){
+    if(!d)return;
+    const tier=d.shotTier|0;
+    if(tier>shotKeep.tier)shotKeep.tier=tier;
+    if(d.shotSpread!=null)shotKeep.spread=Math.max(0,Math.min(45,+d.shotSpread||0));
+    S.bcShotTier=shotKeep.tier;
+    S.bcShotSpread=shotKeep.spread;
+  }
   function startDefense(){
     const level=Math.max(0,Math.min(8,S.bcBattlesWon|0));
     const bloc=(level/3)|0;
@@ -5609,10 +5627,12 @@
     const delta=(S.bcArmy||0)-world;
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
     const hearts=u.hearts||3;
+    const spread0=shotKeep.spread;
+    const tier0=shotKeep.tier;
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
-      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,S.bcShotTier|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,shotSpread:36,fx:[],shards:[],
+      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,tier0|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,shotSpread:spread0,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
@@ -5780,6 +5800,7 @@
   }
   function finishDefense(win){
     const d=S.bcDefense;if(!d||d.done)return;
+    rememberShot(d);
     d.done=true;
     d.frozen=!!win;
     try{if(A&&A.battleMusic)A.battleMusic(false);}catch(e){}
@@ -5800,24 +5821,10 @@
     }
     clearBattleField();
     S.bcAssaultAt=0;
-    if(!S.ranked){
-      S.trainBattleLose=true;
-      S.dead=false;
-      S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
-      try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
-      if(field)field.classList.remove("is-play");
-      try{setPhase("over");}catch(e){try{renderOverlay();}catch(err){}}
-      return;
-    }
-    S.bcIndependent=false;S.bcVictory=false;S.bcArcClosed=true;
-    if(S.dead)return;
-    S.dead=true;
-    try{applyLaser(false);}catch(e){}
-    S.power="NONE";S.powerT=0;
+    S.trainBattleLose=true;
+    S.dead=false;
     S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
     try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
-    try{if(A&&A.speak)A.speak(formatVoice(S.ticker),true);}catch(e){}
-    if(!S.mp){try{S.best=saveBest(scoreSats());}catch(e){}try{snapshotRun();}catch(e){}}
     if(field)field.classList.remove("is-play");
     try{setPhase("over");}catch(e){try{renderOverlay();}catch(err){}}
   }
@@ -5859,11 +5866,11 @@
     if(d.bedSet&&d.bedSet[i])return d.bed[i]===0?0:6;
     return 6;
   }
-  function layRubble(d,i){
+  function layRubble(d,i,kind){
     d.map[i]=groundUnder(d,i);
     d.hp[i]=0;
     if(!d.rubble)d.rubble=new Uint8Array(d.map.length);
-    d.rubble[i]=1;
+    d.rubble[i]=kind||1;
   }
   function smashTile(d,tx,ty,dmg,friendly,dx,dy){
     const t=bcAt(d.map,tx,ty);
@@ -6169,6 +6176,7 @@
         if(t===p){
           if(d.god>0||d.playerInv>0)break;
           p.hearts=Math.max(0,(p.hearts|0)-1);
+          rememberShot(d);
           warSfx("warHurt");
           if(p.hearts<=0){finishDefense(false);return;}
           d.playerInv=0.85;
@@ -6203,7 +6211,7 @@
             if((p.hearts|0)>=max && max===3){p.maxHearts=4;p.hearts=4;}
             else p.hearts=Math.min(p.maxHearts||3,(p.hearts|0)+1);
           }
-          else if(pk.kind==="shot"){d.shotTier=Math.min(3,(d.shotTier|0)+1);S.bcShotTier=d.shotTier;}
+          else if(pk.kind==="shot"){d.shotTier=Math.min(3,(d.shotTier|0)+1);rememberShot(d);}
           else if(pk.kind==="freeze")d.freeze=7.5;
           else if(pk.kind==="bomb")blastEnemies(d);
           else if(pk.kind==="wall")raiseAegis(d);
@@ -6306,7 +6314,8 @@
   function razeBuilding(d,x,y){
     const i=y*BC_C+x;
     const cx=x*BC_TS+8, cy=y*BC_TS+8;
-    if(d.map[i]===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]))layRubble(d,i);
+    if(d.map[i]===9)layRubble(d,i,2);
+    else if(d.map[i]===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]))layRubble(d,i,1);
     else d.map[i]=6;
     d.hp[i]=0;
     if(d.bHits)d.bHits[i]=0;
@@ -6394,6 +6403,7 @@
     if(heroHearts){
       const p=d.player;
       p.hearts=Math.max(0,(p.hearts|0)-heroHearts);
+      rememberShot(d);
       addFx(d,{kind:"shieldHit",x:p.x,y:p.y,life:.4});
       warSfx("warHurt");
       if(p.hearts<=0){finishDefense(false);return;}
@@ -6463,8 +6473,8 @@
       arc.classList.toggle("hide",!on);
       const knob=$("def-arc-knob");
       if(knob&&on){
-        const deg=d.shotSpread==null?36:d.shotSpread;
-        const t=Math.max(0,Math.min(1,(80-deg)/72));
+        const deg=d.shotSpread==null?0:d.shotSpread;
+        const t=Math.max(0,Math.min(1,deg/45));
         const travel=Math.max(20,arc.clientHeight-46);
         knob.style.top=(18+t*travel)+"px";
       }
@@ -6604,6 +6614,50 @@
     ctx.fillStyle="#3a2a22";
     ctx.fillRect(px+2,py+8,2,1);
   }
+  function drawHouseFire(ctx,px,py,t,x,y,sc){
+    sc=sc||1;
+    const flick=0.45+0.55*Math.sin((t||0)*16+x*2.1+y);
+    ctx.save();
+    ctx.translate(px+8,py+8);
+    ctx.scale(sc,sc);
+    ctx.translate(-8,-8);
+    ctx.globalAlpha=0.9;
+    ctx.fillStyle="#5a2414";
+    ctx.beginPath();ctx.ellipse(8,12,5,1.6,0,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=flick;
+    ctx.fillStyle="#e25822";
+    ctx.beginPath();ctx.moveTo(5,12);ctx.lineTo(7,4);ctx.lineTo(9,12);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(9,12);ctx.lineTo(12,6);ctx.lineTo(13,12);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#ffb020";
+    ctx.beginPath();ctx.moveTo(6,12);ctx.lineTo(7.5,7);ctx.lineTo(9,12);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#ffe08a";
+    ctx.beginPath();ctx.moveTo(7,12);ctx.lineTo(7.6,9);ctx.lineTo(8.4,12);ctx.closePath();ctx.fill();
+    ctx.restore();
+  }
+  function drawLampRuin(ctx,px,py,x,y){
+    const h=(x*9+y*5)&7;
+    ctx.save();
+    ctx.translate(px+8,py+8);
+    ctx.rotate(-0.5+(h%3)*0.15);
+    ctx.fillStyle="rgba(0,0,0,.28)";
+    ctx.beginPath();ctx.ellipse(1,6,14,4,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#8a8680";
+    ctx.beginPath();ctx.moveTo(-12,6);ctx.lineTo(-8,-1);ctx.lineTo(-2,3);ctx.lineTo(4,-2);ctx.lineTo(12,5);ctx.lineTo(13,7);ctx.lineTo(-13,7);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#f4efe4";
+    ctx.fillRect(-13,-2,22,6);
+    ctx.fillStyle="#c4372c";
+    ctx.fillRect(-4,-2,6,6);
+    ctx.fillStyle="#2c261e";
+    ctx.fillRect(7,-4,6,4);
+    ctx.fillStyle="#f2d56a";
+    ctx.beginPath();ctx.arc(10,-1,3.2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#fff6c8";
+    ctx.fillRect(9,-2,2,2);
+    ctx.fillStyle="#5e5c58";
+    ctx.fillRect(-15,2,5,4);
+    ctx.fillRect(4,3,4,3);
+    ctx.restore();
+  }
   function drawDefense(ctx){
     const d=S.bcDefense;if(!d)return;
     const t=d.t||0;
@@ -6622,7 +6676,7 @@
       }
       if(k===0){
         ctx.fillStyle="#c9ae6c";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#b08c4e";ctx.fillRect(px+2,py+9,12,3);
-        if(d.rubble&&d.rubble[y*BC_C+x])drawRubble(ctx,px,py,x,y);
+        if(d.rubble&&d.rubble[y*BC_C+x]===1)drawRubble(ctx,px,py,x,y);
         continue;
       }
       if(k===6||k===4){
@@ -6634,7 +6688,7 @@
         if(g%4===1)ctx.fillRect(px+10,py+8,1,3);
         if(g%5===2){ctx.fillStyle="rgba(186,214,110,.32)";ctx.fillRect(px+7,py+2,1,3);}
         if(k===6&&((x*7+y*3)%11)===0){ctx.fillStyle="#c6b15a";ctx.fillRect(px+6,py+11,2,2);}
-        if(k===6&&d.rubble&&d.rubble[y*BC_C+x])drawRubble(ctx,px,py,x,y);
+        if(k===6&&d.rubble&&d.rubble[y*BC_C+x]===1)drawRubble(ctx,px,py,x,y);
         if(k===4){
           const burn=d.hp[y*BC_C+x]||0;
           ctx.fillStyle=burn? "#4a3018" : "#6b4423";ctx.fillRect(px+7,py+8,2,7);
@@ -6675,7 +6729,11 @@
           ctx.fillStyle="#b07a3a";ctx.fillRect(px,py,BC_TS,BC_TS);
           ctx.strokeStyle="#6a4218";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);
           ctx.beginPath();ctx.moveTo(px,py+8);ctx.lineTo(px+16,py+8);ctx.stroke();
-        }else drawHouseCell(ctx,d.map,x,y,px,py,houseMemo);
+        }else{
+          drawHouseCell(ctx,d.map,x,y,px,py,houseMemo);
+          const hi=y*BC_C+x;
+          if((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0))drawHouseFire(ctx,px,py,t,x,y,1);
+        }
         continue;
       }
       if(k===8){
@@ -6695,6 +6753,16 @@
         ctx.fillStyle="#2a2218";ctx.fillRect(px+1,py+1,BC_TS-2,BC_TS-2);
         continue;
       }
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(bcAt(d.map,x,y)!==1)continue;
+      if(d.seal&&d.seal[y*BC_C+x])continue;
+      const info=houseInfo(d.map,x,y,houseMemo);
+      if(x!==info.x0||y!==info.y0||!houseStruck(d,info))continue;
+      let fort=false;
+      for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
+      if(fort)continue;
+      drawHouseFire(ctx,info.x0*BC_TS+info.w*BC_TS/2-8,info.y0*BC_TS+info.h*BC_TS/2-10,t,x,y,1.85);
     }
     drawCitadelShield(ctx,d,t);
     drawWarFx(ctx,d,t);
@@ -6730,6 +6798,7 @@
       else{ctx.fillStyle=s.mine?BTC:"#f3efe6";ctx.fillRect(s.x-3,s.y-3,6,6);}
     }
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(d.rubble&&d.rubble[y*BC_C+x]===2)drawLampRuin(ctx,x*BC_TS,y*BC_TS,x,y);
       if(bcAt(d.map,x,y)===9)drawBeacon(ctx,x*BC_TS,y*BC_TS,t,d.hp[y*BC_C+x]||0);
     }
     if(d.aaArmed&&d.reticle&&!d.frozen){
@@ -6843,21 +6912,15 @@
     {wall:"#e4ddcf",roof:"#4a4038",trim:"#2c261e",door:"#6e2420",win:"#d5dde4",frame:"#efe8da",tower:1},
     {wall:"#8d4e3c",roof:"#6a7178",trim:"#3a4046",door:"#2a211c",win:"#9ec4d4",frame:"#d7d0c4",flat:1}
   ];
-  function houseFront(m,x0,y0,w,h){
-    let n=0,s=0,e=0,wv=0;
-    for(let i=0;i<w;i++){
-      if(bcAt(m,x0+i,y0-1)===7)n++;
-      if(bcAt(m,x0+i,y0+h)===7)s++;
+  function houseStruck(d,info){
+    if(!info)return false;
+    if(info.n!==info.w*info.h)return true;
+    for(let y=info.y0;y<info.y0+info.h;y++)for(let x=info.x0;x<info.x0+info.w;x++){
+      if(bcAt(d.map,x,y)!==1)continue;
+      const i=y*BC_C+x;
+      if((d.hp[i]||0)<2||(d.bHits&&d.bHits[i]>0))return true;
     }
-    for(let i=0;i<h;i++){
-      if(bcAt(m,x0-1,y0+i)===7)wv++;
-      if(bcAt(m,x0+w,y0+i)===7)e++;
-    }
-    const best=Math.max(n,s,e,wv);
-    if(!best||s===best)return "s";
-    if(n===best)return "n";
-    if(e===best)return "e";
-    return "w";
+    return false;
   }
   function houseInfo(m,x,y,memo){
     const key=y*BC_C+x;
@@ -6878,7 +6941,7 @@
       }
     }
     const w=x1-x0+1, h=y1-y0+1;
-    const info={x0,y0,w,h,n:qx.length,style:(x0*5+y0*3)&7,face:houseFront(m,x0,y0,w,h)};
+    const info={x0,y0,w,h,n:qx.length,style:(x0*5+y0*3)&7};
     for(let i=0;i<qx.length;i++)memo.set(qy[i]*BC_C+qx[i],info);
     return info;
   }
@@ -7040,12 +7103,7 @@
     }
     const W=info.w*BC_TS, H=info.h*BC_TS;
     ctx.translate(px-(x-info.x0)*BC_TS, py-(y-info.y0)*BC_TS);
-    if(info.face==="n"){ctx.translate(0,H);ctx.scale(1,-1);}
-    else if(info.face==="e")ctx.transform(0,1,1,0,0,0);
-    else if(info.face==="w")ctx.transform(0,1,-1,0,W,0);
-    const dw=info.face==="e"||info.face==="w"?H:W;
-    const dh=info.face==="e"||info.face==="w"?W:H;
-    drawBuilding(ctx,dw,dh,s);
+    drawBuilding(ctx,W,H,s);
     ctx.restore();
   }
   function drawUnitSmoke(ctx,e,t){
@@ -7291,11 +7349,16 @@
   }
 
   function retryLostBattle(){
+    const tier=shotKeep.tier, spread=shotKeep.spread;
     S.trainBattleLose=false;
     S.dead=false;
     S.runTab=null;
     S.bcMapPlan=null;
     S.bcMapSeed=(Math.random()*0x7fffffff)|1;
+    shotKeep.tier=tier;
+    shotKeep.spread=spread;
+    S.bcShotTier=tier;
+    S.bcShotSpread=spread;
     if(field)field.classList.add("is-play");
     startDefense();
   }
@@ -9757,6 +9820,9 @@
     S.bcMapPlan = null;
     S.bcMapSeed = 0;
     S.bcShotTier = 0;
+    S.bcShotSpread = 0;
+    shotKeep.tier = 0;
+    shotKeep.spread = 0;
     S.bcAssaultAt = 0;
     if (!S.bcReactions) rollBlocReactions();
     S.bcRepliesDone = true;
@@ -11004,7 +11070,7 @@
         const ids = runAwardIds(S.stats);
         mergeAwards(ids);
       } catch (e) {}
-      if (S.trainBattleLose && !S.ranked) {
+      if (S.trainBattleLose) {
         overlay.innerHTML = "<p class=\"k\">" + t("trainCamp") + "</p><h1>" + t("retryBattle") + "</h1><p>" + t("retryBattleNote") + "</p><div class=\"overlay-actions\"><button class=\"cta\" id=\"retry-battle\">" + t("retryBattle") + "</button><button type=\"button\" class=\"cta play-alt\" id=\"go\">" + t("tryAgain") + "</button></div>";
         if ($("retry-battle")) {
           $("retry-battle").onclick = (e) => { e.stopPropagation(); retryLostBattle(); };
@@ -11450,7 +11516,8 @@
         const travel=Math.max(1,box.height-22);
         let t=(clientY-box.top-11)/travel;
         t=Math.max(0,Math.min(1,t));
-        d.shotSpread=80-72*t;
+        d.shotSpread=45*t;
+        rememberShot(d);
         syncAaButton(d);
       };
       arc.addEventListener("pointerdown",(e)=>{
