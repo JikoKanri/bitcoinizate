@@ -950,6 +950,7 @@ html[data-palette="flower"] #app {
 .def-stick{
   position:absolute;left:14px;bottom:16px;width:128px;height:128px;
   pointer-events:auto;touch-action:none;z-index:26;
+  opacity:.74;
 }
 .def-stick-well{
   position:absolute;inset:0;border-radius:50%;
@@ -984,6 +985,7 @@ html[data-palette="flower"] #app {
     radial-gradient(circle at 50% 50%, rgba(18,10,8,.94) 0 56%, transparent 57%),
     conic-gradient(from -90deg, #e23b3b var(--aa, 0deg), rgba(50,18,16,.72) var(--aa, 0deg));
   box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 2px rgba(0,0,0,.35);
+  opacity:.72;
 }
 .def-aa.charging{border-color:#ffe14a;box-shadow:0 0 0 3px rgba(255,225,74,.4), 0 6px 14px rgba(0,0,0,.45);}
 .def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}

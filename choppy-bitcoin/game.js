@@ -3949,6 +3949,33 @@
     }
     return {x:Math.max(0,Math.min(BC_C-6,x)),y:Math.max(0,Math.min(BC_R-5,y))};
   }
+  function inlandGate(pad){
+    const cx=pad.x+2.5, cy=pad.y+2;
+    const sides=[
+      {g:"s", d:cy},
+      {g:"n", d:(BC_R-1)-cy},
+      {g:"e", d:cx},
+      {g:"w", d:(BC_C-1)-cx}
+    ];
+    sides.sort((a,b)=>a.d-b.d);
+    return sides[0].g;
+  }
+  function pickEdgePad(m,rng){
+    const cand=[];
+    for(let y=0;y<BC_R-4;y++)for(let x=0;x<BC_C-5;x++){
+      if(!padFits(m,x,y))continue;
+      const cx=x+2.5, cy=y+2;
+      const edge=Math.min(cx,cy,(BC_C-1)-cx,(BC_R-1)-cy);
+      const w=edge<=3?12:edge<=6?2.4:edge<=9?0.32:0.05;
+      cand.push({x,y,w});
+    }
+    if(!cand.length)return null;
+    let sum=0;
+    for(const c of cand)sum+=c.w;
+    let r=rng()*sum;
+    for(const c of cand){r-=c.w;if(r<=0)return {x:c.x,y:c.y};}
+    return {x:cand[0].x,y:cand[0].y};
+  }
   function stampCitadel(m,pad,gate){
     const x=pad.x,y=pad.y;
     const set=(xx,yy,t)=>{if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R)m[yy*BC_C+xx]=t;};
@@ -4340,6 +4367,30 @@
       return;
     }
   }
+  function placeHamlet(m,pad,rng){
+    const near=(x,y)=>x>=pad.x-3&&x<=pad.x+8&&y>=pad.y-3&&y<=pad.y+7;
+    const open=(x,y)=>{
+      if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)return false;
+      const t=m[y*BC_C+x];
+      return t===0||t===6;
+    };
+    const spots=[];
+    for(let y=2;y<BC_R-6;y++)for(let x=2;x<BC_C-7;x++){
+      if(near(x,y))continue;
+      let ok=true;
+      for(let dy=0;dy<4&&ok;dy++)for(let dx=0;dx<5;dx++)if(!open(x+dx,y+dy))ok=false;
+      if(ok)spots.push({x,y});
+    }
+    if(!spots.length)return;
+    const s=spots[(rng()*spots.length)|0];
+    const set=(x,y,t)=>{if(x>=0&&y>=0&&x<BC_C&&y<BC_R)m[y*BC_C+x]=t;};
+    set(s.x,s.y,1);set(s.x+1,s.y,1);
+    set(s.x,s.y+1,1);set(s.x+1,s.y+1,7);
+    set(s.x+3,s.y,1);set(s.x+4,s.y,1);
+    set(s.x+3,s.y+1,7);set(s.x+4,s.y+1,1);
+    for(let i=0;i<5;i++)if(open(s.x+2,s.y+1+i))set(s.x+2,s.y+1+i,7);
+    if(open(s.x+2,s.y+2))set(s.x+2,s.y+2,7);
+  }
   function breakLanes(m,pad){
     const prot=(x,y)=>x>=pad.x&&x<=pad.x+5&&y>=pad.y&&y<=pad.y+4;
     const landOpen=(t)=>t===0||t===6||t===7;
@@ -4498,7 +4549,7 @@
       if(diff>0){
         for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
           const i=y*BC_C+x;
-          if(m[i]===3||guard(x,y))continue;
+          if(m[i]===3||guard(x,y)||m[i]===1||m[i]===7)continue;
           let wet=x===0||y===0||x===BC_C-1||y===BC_R-1;
           if(!wet){
             for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
@@ -4562,20 +4613,23 @@
     const dress=plan.dress||(plan.naval?"wild":"wild");
     const keepTown=!plan.naval&&(dress==="village"||dress==="farm"||plan.id==="harbor"||plan.id==="docks"||plan.id==="coastVillage");
     jaggedCoast(m,{x:pref.x,y:pref.y},salt,keepTown);
-    const pad=fitPad(m,pref.x,pref.y);
-    stampCitadel(m,pad,pref.gate);
     const rng=mapMulberry((salt*131+level*97)>>>0);
+    const edgePad=pickEdgePad(m,rng);
+    const pad=edgePad||fitPad(m,pref.x,pref.y);
+    const gate=edgePad?inlandGate(pad):pref.gate;
+    stampCitadel(m,pad,gate);
     const wantIslets=plan.islets!=null?!!plan.islets:rng()<0.78;
     if(wantIslets && rng()<0.35)sprinkleIslets(m,rng,1);
     sandFringe(m,pad,plan.naval?1:2);
     rockyCoast(m,pad,salt);
     openTransit(m,pad);
-    if(fort)addFort(m,pad,pref.gate);
+    if(fort)addFort(m,pad,gate);
     const road={};
-    if(!plan.naval&&dress==="village")layRoad(m,pad,pref.gate,road);
+    if(!plan.naval&&dress==="village")layRoad(m,pad,gate,road);
     if(!plan.naval&&dress==="village")placeHouses(m,pad,road);
     else if(!plan.naval&&dress==="farm")placeFarm(m,pad);
     else if(!plan.naval)wildGroves(m,pad,road);
+    if(!plan.naval&&rng()<(dress==="village"?0.35:0.48))placeHamlet(m,pad,rng);
     beachTrees(m,pad,road);
     const wantLight=plan.light!=null?!!plan.light:rng()<0.55;
     if(wantLight)placeLighthouse(m,pad,rng);
@@ -4584,7 +4638,7 @@
     thinSeaRocks(m);
     unsealWater(m);
     fitCover(m,!!plan.naval,rng,pad);
-    const home=homeFrom(m,pad,pref.gate,!!plan.naval);
+    const home=homeFrom(m,pad,gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
       spawns:collectSpawns(m,home,!!plan.naval),
@@ -4828,6 +4882,7 @@
     }
     spd*=d.profile.enemy||1;
     const hull=type==="FAST"?"light":type==="HEAVY"?"heavy":type==="ELITE"?"elite":"medium";
+    if(hull==="light")spd*=0.9;
     const sz=hull==="light"?11:hull==="heavy"?16:13;
     let asShip=!!d.naval,foreign=false;
     const left=d.groundLeft|0;
@@ -4897,9 +4952,12 @@
     addFx(d,{kind:"treeBurn",x:cx,y:cy,life:.36,hot:d.hp[i]});
     return true;
   }
-  function smashTile(d,tx,ty,dmg){
+  function smashTile(d,tx,ty,dmg,friendly){
     const t=bcAt(d.map,tx,ty);
-    if(t===5){hitBase(d,10);warSfx("warHit");return true;}
+    if(t===5){
+      if(friendly)return false;
+      hitBase(d,10);warSfx("warHit");return true;
+    }
     if(t===2||t===8||t===9){warSfx("warClank");return true;}
     if(t===4){
       igniteTree(d,tx,ty,false);
@@ -4915,7 +4973,13 @@
     return false;
   }
   function warSfx(name){try{if(A&&A.sfx&&A.sfx[name])A.sfx[name]();}catch(e){}}
-  function facePoint(e,x,y){e.dir=Math.abs(e.x-x)>Math.abs(e.y-y)?(x>e.x?1:3):(y>e.y?2:0);}
+  function facePoint(e,x,y){aimDir(e,Math.abs(e.x-x)>Math.abs(e.y-y)?(x>e.x?1:3):(y>e.y?2:0));}
+  function aimDir(e,dir){
+    if(e.dir===dir)return;
+    e.dir=dir;
+    const wait=e.hull==="heavy"?.2:e.hull==="light"?.1:.15;
+    e.fire=Math.max(e.fire||0,wait);
+  }
   function openStep(d,e,dir){
     const s=12;
     const x=e.x+(dir===1?s:dir===3?-s:0), y=e.y+(dir===2?s:dir===0?-s:0);
@@ -4949,49 +5013,56 @@
     }
     return best;
   }
-  function pathDir(d,e,goal){
-    const ok=(t)=>e.ship?t===3:(t===0||t===6||t===7);
+  function gridRoute(d,e,goal,allowTree){
+    const pass=(t)=>e.ship?t===3:(t===0||t===6||t===7||(allowTree&&t===4));
     const sx=Math.max(0,Math.min(BC_C-1,Math.floor(e.x/BC_TS)));
     const sy=Math.max(0,Math.min(BC_R-1,Math.floor(e.y/BC_TS)));
     const dest=nearestWalk(d,e,goal.x,goal.y);
-    if(!dest)return e.dir;
-    if(sx===dest.x&&sy===dest.y){facePoint(e,goal.x,goal.y);return e.dir;}
-    const W=BC_C,prev=new Int16Array(W*BC_R);
+    if(!dest)return null;
+    const W=BC_C,start=sy*W+sx,destI=dest.y*W+dest.x;
+    if(start===destI){facePoint(e,goal.x,goal.y);return {dir:e.dir,len:0,tree:false,trees:0};}
+    const prev=new Int16Array(W*BC_R);
     prev.fill(-1);
-    const q=[sy*W+sx];
-    prev[q[0]]=q[0];
-    const destI=dest.y*W+dest.x;
-    const steps=[[1,0],[-1,0],[0,1],[0,-1]];
+    const q=[start];
+    prev[start]=start;
     let found=-1;
-    for(let qi=0;qi<q.length&&qi<480;qi++){
+    for(let qi=0;qi<q.length&&qi<700;qi++){
       const cur=q[qi];
       if(cur===destI){found=cur;break;}
       const cx=cur%W,cy=(cur/W)|0;
-      for(const [dx,dy] of steps){
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
         const nx=cx+dx,ny=cy+dy;
         if(nx<0||ny<0||nx>=W||ny>=BC_R)continue;
         const ni=ny*W+nx;
-        if(prev[ni]!==-1||!ok(bcAt(d.map,nx,ny)))continue;
+        if(prev[ni]!==-1||!pass(bcAt(d.map,nx,ny)))continue;
         prev[ni]=cur;q.push(ni);
       }
     }
-    if(found<0){
-      let best=e.dir,bd=1e9;
-      for(let dir=0;dir<4;dir++){
-        if(!openStep(d,e,dir))continue;
-        const nx=e.x+(dir===1?12:dir===3?-12:0),ny=e.y+(dir===2?12:dir===0?-12:0);
-        const dist=Math.hypot(nx-goal.x,ny-goal.y);
-        if(dist<bd){bd=dist;best=dir;}
-      }
-      return best;
-    }
+    if(found<0)return null;
+    const path=[];
     let cur=found,guard=0;
-    while(prev[cur]!==q[0]&&prev[cur]!==cur&&guard++<500)cur=prev[cur];
-    const cx=cur%W,cy=(cur/W)|0;
-    if(cx>sx)return 1;
-    if(cx<sx)return 3;
-    if(cy>sy)return 2;
-    return 0;
+    while(cur!==start&&guard++<500){path.push(cur);cur=prev[cur];}
+    path.reverse();
+    const next=path[0];
+    const nx=next%W,ny=(next/W)|0;
+    let trees=0;
+    for(const c of path)if(bcAt(d.map,c%W,(c/W)|0)===4)trees++;
+    const dir=nx>sx?1:nx<sx?3:ny>sy?2:0;
+    return {dir,len:path.length,tree:bcAt(d.map,nx,ny)===4,trees};
+  }
+  function pathDir(d,e,goal){
+    e.fell=false;
+    const plain=gridRoute(d,e,goal,false);
+    if(e.ship)return plain?plain.dir:e.dir;
+    const cut=gridRoute(d,e,goal,true);
+    const worth=cut&&(!plain||(plain.len-cut.len)>4+cut.trees*3);
+    if(worth){
+      if(cut.tree)e.fell=true;
+      return cut.dir;
+    }
+    if(plain)return plain.dir;
+    if(cut){if(cut.tree)e.fell=true;return cut.dir;}
+    return e.dir;
   }
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done||d.frozen)return;
@@ -5042,14 +5113,17 @@
         e.think=.24+Math.random()*.2;
         if(los(d,e,goal.x,goal.y)){facePoint(e,goal.x,goal.y);e.want=true;}
         else if(los(d,e,other.x,other.y)){facePoint(e,other.x,other.y);e.want=true;}
-        else if(e.type!=="HELI")e.dir=pathDir(d,e,goal);
+        else if(e.type!=="HELI"){
+          aimDir(e,pathDir(d,e,goal));
+          if(e.fell)e.want=true;
+        }
       }
       const ox=e.x,oy=e.y;
       if(e.type==="HELI"){
         const ang=Math.atan2(goal.y-e.y,goal.x-e.x);
         e.x=Math.max(16,Math.min(S.W-16,e.x+Math.cos(ang)*e.spd*dt));
         e.y=Math.max(16,Math.min(S.H-16,e.y+Math.sin(ang)*e.spd*dt));
-        e.dir=Math.abs(Math.cos(ang))>Math.abs(Math.sin(ang))?(Math.cos(ang)>0?1:3):(Math.sin(ang)>0?2:0);
+        aimDir(e,Math.abs(Math.cos(ang))>Math.abs(Math.sin(ang))?(Math.cos(ang)>0?1:3):(Math.sin(ang)>0?2:0));
         if(Math.hypot(e.x-goal.x,e.y-goal.y)<200)e.want=true;
         const ram=e.role==="shield"?(d.fort||d.home):p;
         if(e.role==="shield"&&Math.hypot(e.x-ram.x,e.y-ram.y)<28){hitBase(d,e.leak||12);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");}
@@ -5062,10 +5136,11 @@
           const ty=Math.floor((e.y+(e.dir===2?12:e.dir===0?-12:0))/BC_TS);
           const kt=bcAt(d.map,tx,ty);
           if(kt===1||kt===5){facePoint(e,(d.fort||d.home).x,(d.fort||d.home).y);e.want=true;e.jam=0;}
+          else if(kt===4&&!e.ship&&(e.fell||e.jam>0.35)){e.want=true;e.jam=0;}
           else{
             e.jam=(e.jam||0)+dt;
             if(e.jam>0.22){
-              for(const nd of [(e.dir+1)&3,(e.dir+3)&3,(e.dir+2)&3])if(openStep(d,e,nd)){e.dir=nd;break;}
+              for(const nd of [(e.dir+1)&3,(e.dir+3)&3,(e.dir+2)&3])if(openStep(d,e,nd)){aimDir(e,nd);break;}
               e.jam=0;e.think=0;
             }
           }
@@ -5095,9 +5170,9 @@
       s.x+=s.dx*s.v*dt;s.y+=s.dy*s.v*dt;
       if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
       const tx=Math.floor(s.x/BC_TS),ty=Math.floor(s.y/BC_TS);
-      let hit=smashTile(d,tx,ty,s.damage);
+      let hit=smashTile(d,tx,ty,s.damage,!!s.mine);
       const mate=laneMate(tx);
-      if(mate>=0&&bcAt(d.map,mate,ty)===1){smashTile(d,mate,ty,s.damage);hit=true;}
+      if(mate>=0&&bcAt(d.map,mate,ty)===1){smashTile(d,mate,ty,s.damage,!!s.mine);hit=true;}
       if(hit){s.hit=true;continue;}
       const targets=s.mine?d.enemies:[p];
       for(const t of targets){
@@ -5383,9 +5458,14 @@
       }
       if(k===0){ctx.fillStyle="#c9ae6c";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#b08c4e";ctx.fillRect(px+2,py+9,12,3);continue;}
       if(k===6||k===4){
-        ctx.fillStyle=(x+y)%2?"#6eae3c":"#4e9630";
+        const g=((x*13+y*17)^((x*3+y)*7))&15;
+        ctx.fillStyle=g<5?"#4f8a31":g<10?"#5c9840":g<14?"#467f2c":"#649e46";
         ctx.fillRect(px,py,BC_TS,BC_TS);
-        if(k===6&&((x*7+y*3)%11)===0){ctx.fillStyle="#c6b15a";ctx.fillRect(px+6,py+6,3,3);}
+        ctx.fillStyle="rgba(36,78,24,.28)";
+        if(g%3===0)ctx.fillRect(px+3,py+5,1,4);
+        if(g%4===1)ctx.fillRect(px+10,py+8,1,3);
+        if(g%5===2){ctx.fillStyle="rgba(186,214,110,.32)";ctx.fillRect(px+7,py+2,1,3);}
+        if(k===6&&((x*7+y*3)%11)===0){ctx.fillStyle="#c6b15a";ctx.fillRect(px+6,py+11,2,2);}
         if(k===4){
           const burn=d.hp[y*BC_C+x]||0;
           ctx.fillStyle=burn? "#4a3018" : "#6b4423";ctx.fillRect(px+7,py+8,2,7);
@@ -5412,11 +5492,45 @@
           if(bcAt(d.map,x,y-1)===3||bcAt(d.map,x,y+1)===3){ctx.fillRect(px+2,py,3,BC_TS);ctx.fillRect(px+8,py,3,BC_TS);ctx.fillRect(px+12,py,2,BC_TS);}
           else{ctx.fillRect(px,py+2,BC_TS,3);ctx.fillRect(px,py+8,BC_TS,3);ctx.fillRect(px,py+12,BC_TS,2);}
         }else{
-          ctx.fillStyle="#c9ae62";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#b08c48";ctx.fillRect(px,py+6,BC_TS,3);ctx.fillStyle="#d4c48a";ctx.fillRect(px+2,py+2,6,2);
+          ctx.fillStyle="#b08958";ctx.fillRect(px,py,BC_TS,BC_TS);
+          ctx.fillStyle="#8d6840";ctx.fillRect(px,py+4,BC_TS,2);ctx.fillRect(px,py+11,BC_TS,2);
+          ctx.fillStyle="#d7c09a";ctx.fillRect(px+1,py+1,BC_TS-2,2);
+          if(((x*5+y*3)%13)===0){
+            ctx.fillStyle="#6b4423";ctx.fillRect(px+11,py+3,2,10);
+            ctx.fillStyle="#f4efe4";ctx.fillRect(px+6,py+2,7,5);
+            ctx.fillStyle="#8a3030";ctx.fillRect(px+7,py+3,5,1);
+          }
         }
         continue;
       }
-      if(k===1){ctx.fillStyle="#b07a3a";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.strokeStyle="#6a4218";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);ctx.beginPath();ctx.moveTo(px,py+8);ctx.lineTo(px+16,py+8);ctx.stroke();continue;}
+      if(k===1){
+        let fort=false,bricks=0;
+        for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
+        if(!fort){
+          for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(bcAt(d.map,x+dx,y+dy)===1)bricks++;
+        }
+        if(fort){
+          ctx.fillStyle="#b07a3a";ctx.fillRect(px,py,BC_TS,BC_TS);
+          ctx.strokeStyle="#6a4218";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);
+          ctx.beginPath();ctx.moveTo(px,py+8);ctx.lineTo(px+16,py+8);ctx.stroke();
+        }else if(bricks>=8){
+          ctx.fillStyle="#6b4423";ctx.fillRect(px,py,BC_TS,BC_TS);
+          ctx.fillStyle="#c48a4a";
+          ctx.fillRect(px+1,py+3,14,2);ctx.fillRect(px+1,py+8,14,2);ctx.fillRect(px+1,py+13,14,2);
+          ctx.fillStyle="#3d2814";ctx.fillRect(px,py,2,BC_TS);ctx.fillRect(px+14,py,2,BC_TS);
+        }else{
+          ctx.fillStyle="#c4a06a";ctx.fillRect(px,py+6,BC_TS,10);
+          ctx.fillStyle="#8e2e24";ctx.beginPath();ctx.moveTo(px-1,py+7);ctx.lineTo(px+8,py-1);ctx.lineTo(px+17,py+7);ctx.closePath();ctx.fill();
+          ctx.fillStyle="#f2e2c4";ctx.fillRect(px+3,py+1,3,3);
+          ctx.fillStyle="#5c3a22";ctx.fillRect(px+6,py+10,4,6);
+          ctx.fillStyle="#9fd0e6";ctx.fillRect(px+2,py+9,3,3);
+          if(((x+y)%4)===0){
+            ctx.fillStyle="#6b4423";ctx.fillRect(px+13,py+8,1.4,8);
+            ctx.fillStyle="#f7f1e4";ctx.fillRect(px+14,py+6,5,4);
+          }
+        }
+        continue;
+      }
       if(k===8){
         const wet=bcAt(d.map,x-1,y)===3||bcAt(d.map,x+1,y)===3||bcAt(d.map,x,y-1)===3||bcAt(d.map,x,y+1)===3;
         ctx.fillStyle=wet?"#145864":"#c9ae6c";ctx.fillRect(px,py,BC_TS,BC_TS);
@@ -5426,9 +5540,6 @@
       }
       if(k===9){
         ctx.fillStyle="#c9ae6c";ctx.fillRect(px,py,BC_TS,BC_TS);
-        ctx.fillStyle="#f4f1ea";ctx.fillRect(px+6,py+4,4,11);
-        ctx.fillStyle="#b42318";ctx.fillRect(px+5,py+2,6,4);
-        ctx.fillStyle="#ffe56a";ctx.fillRect(px+7,py+3,2,2);
         continue;
       }
       if(k===2){ctx.fillStyle="#6d6a66";ctx.fillRect(px,py,BC_TS,BC_TS);ctx.fillStyle="#8a8680";ctx.fillRect(px+3,py+2,8,6);continue;}
@@ -5437,6 +5548,9 @@
         ctx.fillStyle="#2a2218";ctx.fillRect(px+1,py+1,BC_TS-2,BC_TS-2);
         continue;
       }
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      if(bcAt(d.map,x,y)===9)drawBeacon(ctx,x*BC_TS,y*BC_TS,t);
     }
     drawCitadelShield(ctx,d,t);
     drawWarFx(ctx,d,t);
@@ -5512,6 +5626,35 @@
     ctx.moveTo(-s*0.22,0);
     ctx.bezierCurveTo(s*0.52,0,s*0.5,s*0.42,-s*0.22,s*0.4);
     ctx.stroke();
+    ctx.restore();
+  }
+  function drawBeacon(ctx,px,py,t){
+    ctx.save();
+    ctx.translate(px+8,py+15);
+    ctx.fillStyle="rgba(0,0,0,.28)";
+    ctx.beginPath();ctx.ellipse(0,2,12,3.4,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#5e5c58";
+    ctx.beginPath();ctx.moveTo(-11,3);ctx.lineTo(-7,-2);ctx.lineTo(-2,1);ctx.lineTo(3,-4);ctx.lineTo(9,1);ctx.lineTo(12,3);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#f6f1e6";
+    ctx.beginPath();ctx.moveTo(-6,3);ctx.lineTo(-4,-28);ctx.lineTo(4,-28);ctx.lineTo(6,3);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#c4372c";ctx.fillRect(-4.2,-18,8.4,3.2);
+    ctx.fillStyle="#e7e0d2";
+    ctx.fillRect(-2.4,-12,1.6,2.4);ctx.fillRect(0.8,-12,1.6,2.4);
+    ctx.fillRect(-2.4,-7,1.6,2.4);ctx.fillRect(0.8,-7,1.6,2.4);
+    ctx.fillStyle="#2c261e";ctx.fillRect(-6.5,-31,13,3.2);
+    ctx.fillStyle="#f2d56a";ctx.fillRect(-4,-38,8,7);
+    ctx.fillStyle="#fff8d0";ctx.fillRect(-1.6,-36.5,3,4);
+    ctx.fillStyle="#8e1e18";ctx.beginPath();ctx.arc(0,-38,4.2,Math.PI,0);ctx.fill();
+    ctx.fillStyle="#f4efe4";ctx.fillRect(-0.6,-44,1.2,4);
+    ctx.save();
+    ctx.translate(0,-34);
+    ctx.rotate((t||0)*0.8);
+    ctx.globalAlpha=0.34;
+    ctx.fillStyle="#ffe9a0";
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(48,-6);ctx.lineTo(48,6);ctx.closePath();ctx.fill();
+    ctx.rotate(Math.PI);
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(34,-4);ctx.lineTo(34,4);ctx.closePath();ctx.fill();
+    ctx.restore();
     ctx.restore();
   }
   function drawCitadelShield(ctx,d,t){
