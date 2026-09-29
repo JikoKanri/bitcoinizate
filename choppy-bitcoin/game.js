@@ -306,6 +306,9 @@
     if (kind === "heal") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#fff\" font-family=\"IBM Plex Mono,monospace\">+</text>", "#e23b3b", "#ffd0d0");
     if (kind === "shot") return wrap("<text x=\"0\" y=\"1.2\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"13\" font-weight=\"700\" fill=\"#062028\" font-family=\"IBM Plex Mono,monospace\">S</text>", "#7fd0ff", "#e8f7ff");
     if (kind === "star") return wrap("<polygon points=\"0,-7.2 2.1,-2.2 7.2,-2.2 3.1,1.2 4.6,6.4 0,3.2 -4.6,6.4 -3.1,1.2 -7.2,-2.2 -2.1,-2.2\" fill=\"#ffe14a\"/>", "#2a2208", "#ffe7a0");
+    if (kind === "freeze") return wrap("<path d=\"M0-7V7M-6-3.4 6 3.4M-6 3.4 6-3.4\" stroke=\"#e8f7ff\" stroke-width=\"1.6\" fill=\"none\"/>", "#1a4a66", "#9fd0ff");
+    if (kind === "bomb") return wrap("<circle r=\"4.2\" fill=\"#2a1208\"/><path d=\"M0-8V-5M5.2-5.2 3.2-3.2M8 0H5M5.2 5.2 3.2 3.2M0 8V5M-5.2 5.2-3.2 3.2M-8 0H-5M-5.2-5.2-3.2-3.2\" stroke=\"#ffb088\" stroke-width=\"1.3\"/>", "#ff6a2a", "#ffe0c8");
+    if (kind === "wall") return wrap("<rect x=\"-7\" y=\"-7\" width=\"14\" height=\"14\" fill=\"#6d6a66\"/><rect x=\"-3.5\" y=\"-4\" width=\"7\" height=\"5\" fill=\"#d0ccc6\"/>", "#222224", "#eeeae4");
     if (kind === "rock") return wrap("<polygon points=\"-7,6 -3,-1 1,3 4,-6 8,6\" fill=\"#6a6864\"/>", "#222220", "#c8c4bc");
     if (kind === "lh") return wrap("<g><rect x=\"-2\" y=\"-2\" width=\"4\" height=\"9\" fill=\"#f4f1ea\"/><rect x=\"-3.2\" y=\"-6\" width=\"6.4\" height=\"4\" fill=\"#b42318\"/><rect x=\"-1\" y=\"-5\" width=\"2\" height=\"2\" fill=\"#ffe56a\"/></g>", "#6a4e22", "#f4f1ea");
     if (kind === "aa" || kind === "lrm") return wrap("<g><path d=\"M0-8 L2.2-1.5 L2 5 H-2 L-2.2-1.5Z\" fill=\"#e8e2d4\"/><path d=\"M-4 3 L0 1 L4 3 L0 6Z\" fill=\"#c45c4a\"/></g>", "#1a0808", "#ff9b92");
@@ -480,7 +483,7 @@
     tutB1: "On land you drive the tank. Sea battles put you in a ship — those maps keep water on at least two edges. The stick moves you. The right side of the screen fires.",
     tutB2: "You start with 3 hearts. Each hit empties one. Empty hearts means you lose. The citadel shield is separate — if it breaks, the island falls.",
     tutB3: "Sand is beach. Grass and dirt paths are open. Brick breaks. Metal does not. Trees block movement and shots. Tanks cannot cross water. Ships sail on water and stop at land.",
-    tutB4: "One pickup at a time, every 5–15 seconds. It disappears 10 seconds after it spawns. + restores a heart, or adds a fourth if you are already full at 3. S speeds your shot. The star makes you untouchable for a moment.",
+    tutB4: "One pickup at a time. After the field is empty, the next waits a random 5–15 seconds, then lasts 10 seconds. + restores a heart, or adds a fourth at 3/3. S stays: faster shot, then two bullets, then it breaks metal and one-shots heavies and trees. The star is 7.5s of invulnerability. F freezes enemies for 7.5s. X blows up every enemy. W wraps the citadel in metal for 7.5s, then that metal becomes ordinary brick.",
     tutB5: "Some land battles send helicopters. They ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
     tutB6: "Red tanks, gold fast tanks, gray heavy tanks and purple elites come in waves. Sea battles send ships instead. KIA is how many you destroyed in this battle, over how many were sent."
   };
@@ -509,7 +512,7 @@
     return line(badgeIco("tank") + badgeIco("ship"), "tutB1")
       + line(badgeIco("heart"), "tutB2")
       + line(battleIcos(["sand", "grass", "dirt", "brick", "metal", "tree", "rock", "lh", "water"]), "tutB3")
-      + line(battleIcos(["heal", "shot", "star"]), "tutB4")
+      + line(battleIcos(["heal", "shot", "star", "freeze", "bomb", "wall"]), "tutB4")
       + line(battleIcos(["tank", "fast", "heavy", "elite", "ship"]), "tutB6")
       + line(badgeIco("heli") + badgeIco("aa"), "tutB5");
   }
@@ -3079,6 +3082,7 @@
     S.bcDefense=null;
     S.battleTutOpen=false;
     if(field)field.classList.remove("defense-mode");
+    try{if(A&&A.battleMusic)A.battleMusic(false);}catch(e){}
     const pad=$("def-pad");if(pad)pad.classList.add("hide");
     const aa=$("def-aa");if(aa)aa.classList.add("hide");
     S.defPtr=null;
@@ -4715,15 +4719,21 @@
   }
   function fireTank(d,t){
     if(t.fire>0)return;
+    const tier=t===d.player?(d.shotTier|0):0;
     const mine=t===d.player?d.shots.filter(s=>s.mine&&!s.hit).length:d.shots.filter(s=>s.owner===t&&!s.hit).length;
-    const cap=1;
-    if(mine>=cap)return;
-    t.fire=t===d.player?(d.shotT>0?.1:.22):.55;
-    const shotMul=t===d.player?(1+((d.up&&d.up.shot)||0)/100)*(d.shotT>0?1.5:1):1;
+    if(tier>=2){if(mine>0)return;}
+    else if(mine>=1)return;
+    t.fire=t===d.player?(tier>=1?.1:.22):.55;
+    const shotMul=t===d.player?(1+((d.up&&d.up.shot)||0)/100)*(tier>=1?1.5:1):1;
     const v=t===d.player?180*shotMul:(t.bspd||180);
     const dmg=t===d.player?((d.up&&d.up.power)||1):(t.dmg||1);
     const dx=t.dir===1?1:t.dir===3?-1:0,dy=t.dir===2?1:t.dir===0?-1:0;
-    d.shots.push({x:t.x+dx*14,y:t.y+dy*14,dx,dy,v,damage:dmg,mine:t===d.player,owner:t,hit:false});
+    const n=tier>=2?2:1;
+    for(let i=0;i<n;i++){
+      const off=n===1?0:(i===0?-6:6);
+      const ox=dx===0?off:0, oy=dy===0?off:0;
+      d.shots.push({x:t.x+dx*14+ox,y:t.y+dy*14+oy,dx,dy,v,damage:dmg,mine:t===d.player,owner:t,hit:false,pierce:tier>=3});
+    }
     if(t===d.player)warSfx("warShot");
   }
   function los(d,a,x,y){
@@ -4813,7 +4823,7 @@
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:built.dir||0,hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:3,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
-      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotT:0,aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,fx:[],shards:[],
+      integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:0,freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
@@ -4837,17 +4847,87 @@
     setPhase("defense");
     syncAaButton(S.bcDefense);
   }
+  function blastEnemies(d){
+    for(const e of d.enemies){
+      if(e.hp<=0)continue;
+      e.hp=0;d.kills++;
+      addFx(d,{kind:"treeBurn",x:e.x,y:e.y,life:.55,hot:3});
+    }
+    warSfx("warPop");
+  }
+  function raiseAegis(d){
+    const base=[];
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(citadelSkin(d,x,y))base.push(y*BC_C+x);
+    if(!base.length)return;
+    const mark=new Uint8Array(d.map.length);
+    for(const i of base)mark[i]=1;
+    const hx=Math.floor(d.player.x/BC_TS),hy=Math.floor(d.player.y/BC_TS);
+    const ring=d.aegis?d.aegis.slice():[];
+    for(const i of base){
+      const x=i%BC_C,y=(i/BC_C)|0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const xx=x+dx,yy=y+dy;
+        if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;
+        const j=yy*BC_C+xx;
+        if(mark[j]||(xx===hx&&yy===hy))continue;
+        const t=d.map[j];
+        if(t===3||t===5||t===9||t===2)continue;
+        mark[j]=1;
+        d.map[j]=2;
+        if(d.seal)d.seal[j]=0;
+        ring.push(j);
+      }
+    }
+    d.aegis=ring;
+    d.aegisT=7.5;
+  }
+  function settleAegis(d){
+    d.aegisT=0;
+    for(const i of d.aegis||[]){
+      if(d.map[i]!==2)continue;
+      d.map[i]=1;
+      d.hp[i]=2;
+      if(d.seal)d.seal[i]=1;
+    }
+    d.aegis=null;
+  }
   function scatterPickups(d,n){
-    const kinds=["heal","shot","god"];
+    const kinds=["heal","shot","god","freeze","bomb","wall"];
+    const sea=!!(d.naval||(d.player&&d.player.ship));
+    const ok=(t)=>sea?t===3:(t===0||t===6||t===7);
+    const seen=new Uint8Array(BC_C*BC_R);
     const cells=[];
-    const naval=!!d.naval;
-    for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
-      const tile=bcAt(d.map,x,y);
-      if(naval){if(tile!==3)continue;}
-      else if(tile!==6&&tile!==0&&tile!==7)continue;
-      const px=x*16+8,py=y*16+8;
-      if(Math.hypot(px-d.home.x,py-d.home.y)<70)continue;
-      cells.push({x:px,y:py});
+    const home=d.home||d.player||{x:0,y:0};
+    const sx=Math.max(0,Math.min(BC_C-1,Math.floor(((d.player&&d.player.x)||home.x)/BC_TS)));
+    const sy=Math.max(0,Math.min(BC_R-1,Math.floor(((d.player&&d.player.y)||home.y)/BC_TS)));
+    let seed=null;
+    for(let r=0;r<Math.max(BC_C,BC_R)&&!seed;r++){
+      for(let y=sy-r;y<=sy+r&&!seed;y++)for(let x=sx-r;x<=sx+r;x++){
+        if(x<1||y<1||x>=BC_C-1||y>=BC_R-1)continue;
+        if(r&&Math.max(Math.abs(x-sx),Math.abs(y-sy))!==r)continue;
+        if(ok(bcAt(d.map,x,y)))seed={x:x,y:y};
+      }
+    }
+    const q=seed?[seed]:[];
+    if(seed)seen[seed.y*BC_C+seed.x]=1;
+    while(q.length){
+      const c=q.pop();
+      const px=c.x*BC_TS+8,py=c.y*BC_TS+8;
+      if(Math.hypot(px-home.x,py-home.y)>=70)cells.push({x:px,y:py});
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const xx=c.x+dx,yy=c.y+dy;
+        if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1)continue;
+        const i=yy*BC_C+xx;
+        if(seen[i]||!ok(bcAt(d.map,xx,yy)))continue;
+        seen[i]=1;
+        q.push({x:xx,y:yy});
+      }
+    }
+    if(!cells.length){
+      for(let y=1;y<BC_R-1;y++)for(let x=1;x<BC_C-1;x++){
+        if(!ok(bcAt(d.map,x,y)))continue;
+        cells.push({x:x*BC_TS+8,y:y*BC_TS+8});
+      }
     }
     for(let i=0;i<n&&cells.length;i++){
       const k=(Math.random()*cells.length)|0;
@@ -4900,6 +4980,7 @@
     const d=S.bcDefense;if(!d||d.done)return;
     d.done=true;
     d.frozen=!!win;
+    try{if(A&&A.battleMusic)A.battleMusic(false);}catch(e){}
     S.chanceMet.bcDefenseResult=win?"win":"lose";
     S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
     const pad=$("def-pad");if(pad)pad.classList.add("hide");
@@ -4952,20 +5033,39 @@
     addFx(d,{kind:"treeBurn",x:cx,y:cy,life:.36,hot:d.hp[i]});
     return true;
   }
+  function citadelSkin(d,tx,ty){
+    const t=bcAt(d.map,tx,ty);
+    if(t===5)return true;
+    if(t!==1)return false;
+    for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){
+      if(bcAt(d.map,tx+dx,ty+dy)===5)return true;
+    }
+    return false;
+  }
   function smashTile(d,tx,ty,dmg,friendly){
     const t=bcAt(d.map,tx,ty);
     if(t===5){
       if(friendly)return false;
       hitBase(d,10);warSfx("warHit");return true;
     }
-    if(t===2||t===8||t===9){warSfx("warClank");return true;}
     if(t===4){
-      igniteTree(d,tx,ty,false);
+      igniteTree(d,tx,ty,!!(friendly&&(d.shotTier|0)>=3));
       warSfx(bcAt(d.map,tx,ty)===4?"warHit":"warBrick");
       return true;
     }
+    if(t===2||t===8||t===9){
+      if(friendly&&(d.shotTier|0)>=3&&t!==9){
+        const i=ty*BC_C+tx;
+        d.map[i]=6;
+        if(d.seal)d.seal[i]=0;
+        warSfx("warBrick");
+        return true;
+      }
+      warSfx("warClank");return true;
+    }
     if(t===1){
-      const i=ty*BC_C+tx;d.hp[i]=Math.max(0,(d.hp[i]||0)-1);
+      const i=ty*BC_C+tx;
+      d.hp[i]=Math.max(0,(d.hp[i]||0)-1);
       if(d.hp[i]<=0){d.map[i]=6;warSfx("warBrick");return true;}
       warSfx("warHit");
       return true;
@@ -5066,7 +5166,11 @@
   }
   function stepDefense(dt){
     const d=S.bcDefense;if(!d||d.done||d.frozen)return;
-    d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.playerInv=Math.max(0,(d.playerInv||0)-dt);d.god=Math.max(0,(d.god||0)-dt);d.shotT=Math.max(0,(d.shotT||0)-dt);d.spawn-=dt;
+    d.t=(d.t||0)+dt;d.inv=Math.max(0,d.inv-dt);d.playerInv=Math.max(0,(d.playerInv||0)-dt);d.god=Math.max(0,(d.god||0)-dt);d.freeze=Math.max(0,(d.freeze||0)-dt);d.spawn-=dt;
+    if((d.aegisT||0)>0){
+      d.aegisT-=dt;
+      if(d.aegisT<=0)settleAegis(d);
+    }
     if(d.aaCharging&&!d.aaArmed){
       if(!(S.defHeld&&S.defHeld.aa)){d.aaCharging=false;d.aaCharge=0;}
       else{
@@ -5105,8 +5209,11 @@
       d.aaTap=0;
       if(d.aaArmed)fireReticle(d);
     }
+    const iced=(d.freeze||0)>0;
     for(const e of d.enemies){
-      e.fire=Math.max(0,e.fire-dt);e.think-=dt;
+      e.fire=Math.max(0,e.fire-dt);
+      if(iced){e.want=false;continue;}
+      e.think-=dt;
       const goal=e.role==="shield"?(d.fort||d.home):p;
       const other=e.role==="shield"?p:(d.fort||d.home);
       if(e.think<=0){
@@ -5171,8 +5278,10 @@
       if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
       const tx=Math.floor(s.x/BC_TS),ty=Math.floor(s.y/BC_TS);
       let hit=smashTile(d,tx,ty,s.damage,!!s.mine);
-      const mate=laneMate(tx);
-      if(mate>=0&&bcAt(d.map,mate,ty)===1){smashTile(d,mate,ty,s.damage,!!s.mine);hit=true;}
+      if(!(s.mine&&bcAt(d.map,tx,ty)===5)){
+        const mate=laneMate(tx);
+        if(mate>=0&&bcAt(d.map,mate,ty)===1){smashTile(d,mate,ty,s.damage,!!s.mine);hit=true;}
+      }
       if(hit){s.hit=true;continue;}
       const targets=s.mine?d.enemies:[p];
       for(const t of targets){
@@ -5188,6 +5297,7 @@
           d.playerInv=0.85;
         }else{
           t.hp-=s.damage;
+          if(s.mine&&(d.shotTier|0)>=3&&(t.hull==="heavy"||t.type==="HEAVY"))t.hp=0;
           warSfx("warHit");
           if(t.hp<=0){d.kills++;warSfx("warPop");}
         }
@@ -5213,9 +5323,13 @@
             if((p.hearts|0)>=max && max===3){p.maxHearts=4;p.hearts=4;}
             else p.hearts=Math.min(p.maxHearts||3,(p.hearts|0)+1);
           }
-          else if(pk.kind==="shot")d.shotT=9;
-          else d.god=6.5;
-          addFx(d,{kind:"eat",x:pk.x,y:pk.y,life:.55,col:pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":"#ffe14a",label:pk.kind==="heal"?"+HP":pk.kind==="shot"?"RAPID":"GOD"});
+          else if(pk.kind==="shot")d.shotTier=Math.min(3,(d.shotTier|0)+1);
+          else if(pk.kind==="freeze")d.freeze=7.5;
+          else if(pk.kind==="bomb")blastEnemies(d);
+          else if(pk.kind==="wall")raiseAegis(d);
+          else d.god=7.5;
+          const tag=pk.kind==="heal"?"+HP":pk.kind==="shot"?"S"+(d.shotTier|0):pk.kind==="freeze"?"ICE":pk.kind==="bomb"?"BOOM":pk.kind==="wall"?"WALL":"GOD";
+          addFx(d,{kind:"eat",x:pk.x,y:pk.y,life:.55,col:pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":pk.kind==="freeze"?"#9fd0ff":pk.kind==="bomb"?"#ff6a2a":pk.kind==="wall"?"#d0ccc6":"#ffe14a",label:tag});
           warSfx("warPick");
         }
       }
@@ -5351,10 +5465,33 @@
     const r=ch((n>>16)&255),g=ch((n>>8)&255),b=ch(n&255);
     return "#"+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1);
   }
+  function drawHeroBulk(ctx,tier){
+    if(tier<=0)return;
+    ctx.fillStyle="#2a2218";
+    ctx.fillRect(-9.2,-7,2,14);
+    ctx.fillRect(7.2,-7,2,14);
+    ctx.fillStyle="#10140c";
+    ctx.fillRect(-1.8,-17.5,3.6,4);
+    if(tier>=2){
+      ctx.fillRect(-3.4,-16.5,1.5,5);
+      ctx.fillRect(1.9,-16.5,1.5,5);
+      ctx.fillStyle="#3d3428";
+      ctx.fillRect(-7.2,5.2,14.4,2.2);
+    }
+    if(tier>=3){
+      ctx.fillStyle="#16120e";
+      ctx.fillRect(-11.4,-10,2.8,20);
+      ctx.fillRect(8.6,-10,2.8,20);
+      ctx.fillStyle="#efe2c4";
+      ctx.fillRect(-2.2,-19,4.4,1.8);
+    }
+  }
   function drawShip(ctx,t,col){
     ctx.save();ctx.translate(t.x,t.y);
     const rot=[0,Math.PI/2,Math.PI,-Math.PI/2][t.dir]||0;ctx.rotate(rot);
     const hero=!!t.hero;
+    const tier=hero?(t.tier|0):0;
+    if(tier)ctx.scale(1+tier*0.08,1+tier*0.08);
     const hull=hero?"medium":(t.hull||"medium");
     const fill=col||"#3c4f42";
     const dark=tone(fill,-38),lite=tone(fill,26);
@@ -5388,6 +5525,7 @@
         ctx.fillStyle="#fff6ea";ctx.font="700 8px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";
         ctx.fillText("B",0,3);
       }
+      if(hero)drawHeroBulk(ctx,tier);
     }
     ctx.restore();
   }
@@ -5395,6 +5533,8 @@
     ctx.save();ctx.translate(t.x,t.y);
     const rot=[0,Math.PI/2,Math.PI,-Math.PI/2][t.dir]||0;ctx.rotate(rot);
     const hero=!!t.hero;
+    const tier=hero?(t.tier|0):0;
+    if(tier)ctx.scale(1+tier*0.08,1+tier*0.08);
     const hull=hero?"medium":(t.hull||"medium");
     const fill=col||"#3f5344";
     const dark=tone(fill,-40),lite=tone(fill,24);
@@ -5438,6 +5578,7 @@
         ctx.fillStyle="#fff6ea";ctx.font="700 7px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";
         ctx.fillText("B",0,0);
       }
+      if(hero)drawHeroBulk(ctx,tier);
     }
     ctx.restore();
   }
@@ -5504,12 +5645,13 @@
         continue;
       }
       if(k===1){
+        const sealed=!!(d.seal&&d.seal[y*BC_C+x]);
         let fort=false,bricks=0;
         for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
         if(!fort){
           for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(bcAt(d.map,x+dx,y+dy)===1)bricks++;
         }
-        if(fort){
+        if(fort||sealed){
           ctx.fillStyle="#b07a3a";ctx.fillRect(px,py,BC_TS,BC_TS);
           ctx.strokeStyle="#6a4218";ctx.lineWidth=1;ctx.strokeRect(px+.5,py+.5,BC_TS-1,BC_TS-1);
           ctx.beginPath();ctx.moveTo(px,py+8);ctx.lineTo(px+16,py+8);ctx.stroke();
@@ -5558,19 +5700,23 @@
     const heroOrange="#ef6a12";
     const blocPaint=["#3d4f2a","#7a2432","#6a4324"];
     const ecol=blocPaint[Math.max(0,Math.min(2,d.bloc|0))];
-    const pcol=d.god>0?"#ffe14a":d.shotT>0?"#9befff":heroOrange;
+    const pcol=d.god>0?"#ffe14a":heroOrange;
+    d.player.tier=d.shotTier|0;
     if(!blink){if(d.naval)drawShip(ctx,d.player,pcol);else drawTank(ctx,d.player,pcol);}
     for(const e of d.enemies){
-      if(e.type==="HELI"){drawHeli(ctx,e,t,ecol);continue;}
-      if(e.ship)drawShip(ctx,e,ecol);else drawTank(ctx,e,ecol);
+      const paint=(d.freeze||0)>0?"#b7e4ff":ecol;
+      if(e.type==="HELI"){drawHeli(ctx,e,t,paint);continue;}
+      if(e.ship)drawShip(ctx,e,paint);else drawTank(ctx,e,paint);
     }
     for(const pk of d.picks||[]){
       if(pk.ttl!=null&&pk.ttl<2.6&&Math.floor(t*8)%2===0)continue;
+      const col=pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":pk.kind==="freeze"?"#9fd0ff":pk.kind==="bomb"?"#ff6a2a":pk.kind==="wall"?"#c8c4bc":"#ffe14a";
+      const ink=pk.kind==="heal"||pk.kind==="bomb"?"#fff":"#120c02";
+      const glyph=pk.kind==="heal"?"+":pk.kind==="shot"?"S":pk.kind==="freeze"?"F":pk.kind==="bomb"?"X":pk.kind==="wall"?"W":"★";
       ctx.beginPath();ctx.arc(pk.x,pk.y,7,0,Math.PI*2);
-      ctx.fillStyle=pk.kind==="heal"?"#e23b3b":pk.kind==="shot"?"#7fd0ff":"#ffe14a";
-      ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#120c02";ctx.stroke();
-      ctx.fillStyle="#120c02";ctx.font="700 9px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";
-      ctx.fillText(pk.kind==="heal"?"+":pk.kind==="shot"?"S":"★",pk.x,pk.y+0.5);
+      ctx.fillStyle=col;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#120c02";ctx.stroke();
+      ctx.fillStyle=ink;ctx.font="700 9px \"IBM Plex Mono\",monospace";ctx.textAlign="center";ctx.textBaseline="middle";
+      ctx.fillText(glyph,pk.x,pk.y+0.5);
     }
     for(const s of d.shots){
       if(s.aa){ctx.fillStyle="#ffe14a";ctx.fillRect(s.x-3,s.y-7,6,14);}
@@ -5604,6 +5750,7 @@
     paintHaloText(ctx,bname,12,68,PAL.fg);
     if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
     if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);}
+    if((d.shotTier|0)>0){ctx.textAlign="right";paintHaloText(ctx,"S"+(d.shotTier|0),S.W-12,78,"#9befff");}
     ctx.textAlign="left";ctx.font='700 11px "IBM Plex Mono",monospace';
     paintHaloText(ctx,"ARMY "+(S.bcArmy||0)+"  WORLD "+(S.bcWorld||20),12,S.H-12,PAL.fg);
     ctx.textAlign="center";ctx.font='700 10px "IBM Plex Mono",monospace';
@@ -5837,9 +5984,13 @@
       if (A) {
         if (p === "play") {
           try { if (A.releaseCue) A.releaseCue(); } catch (e) {}
+          if (A.battleMusic) A.battleMusic(false);
           kickTheme();
         }
-        else if (A.stopMusic) A.stopMusic();
+        else {
+          if (A.stopMusic) A.stopMusic();
+          if (A.battleMusic) A.battleMusic(p === "defense");
+        }
       }
     } catch (e) {}
     const fieldBattle = p === "defense" || !!(S.bcDefense && S.bcDefense.frozen && p === "chance");
