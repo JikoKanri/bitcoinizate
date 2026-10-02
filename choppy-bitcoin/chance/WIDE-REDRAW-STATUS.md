@@ -53,10 +53,10 @@ Target display: all or nearly all of the available game width (about 480 CSS px 
 
 - `theAnswer` — `theAnswer-wide.png` — new original panoramic three-bloc fleet-departure scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; three architecturally distinct ports—pale institutional, red industrial, and old fortified—launch separate unmarked fleets toward one shared open horizon, expressing different answers with the same military consequence without literal communiqués; also supplies the existing `blocAssault` and `battleWon` aliases through their established `artId` mapping; no Choppy because he is not physically present at the bloc ports; no Lena, Madame Luck, named leaders, women, children, perk-job imagery, offices, badges, documents, maps, screens, borders, newspapers, readable text, numbers, labels, flags, emblems, logos, active gunfire, explosions, battle damage, or watermark.
 
-## Still pending
+- `festival` / `blocTriumph` — `festival-wide.png` — new original panoramic national-celebration scene, 1942 × 809 px (2.4005:1); inspected full size and at 480 × 200 px; male residents gather beside the closed bakery and a portable loudspeaker while children run safely along the beach with abstract streamers and an unmarked defeated fleet withdraws on the horizon; the scene remains neutral enough for all three dynamic bloc variants and communicates civilian relief rather than military triumph; Choppy, Lena, Madame Luck, named leaders, identifiable women, and perk-job imagery are absent; no flags, national emblems, recognition documents, maps, screens, calendars, readable text, numbers, signs, logos, confetti, trophies, medals, active gunfire, explosions, corpses, gore, or watermark.
 
-The following existing square scene assets need original wide replacements and card-size review:
+## Completion
 
-- `festival.jpg` (used by `blocTriumph`)
+All tracked Bitcoin Country arc-card scenes now use accepted original panoramic artwork and have been reviewed at card size.
 
 The prior `pieceWorld.jpg` remains as the historic square asset, but the card now loads `pieceWorld-wide.jpg`.
