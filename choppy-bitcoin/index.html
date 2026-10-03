@@ -27,7 +27,7 @@
   <meta name="twitter:title" content="Play Choppy Bitcoin">
   <meta name="twitter:image" content="https://bitcoinizate.com/choppy-bitcoin/og-icon.png">
   <meta name="twitter:image:alt" content="Choppy Bitcoin hero">
-  <link rel="stylesheet" href="style.css?v=mp112">
+  <link rel="stylesheet" href="style.css?v=mp114">
   <script src="nozoom.js"></script>
 </head>
 <body>
@@ -53,7 +53,10 @@
         <span id="user-profile-tag" class="opt-btn hide"></span>
       </div>
       <div class="stat stat-juke locked" id="juke-hud">
-        <span class="juke-hud-title" id="juke-hud-title">Jukebox</span>
+        <div class="juke-hud-top">
+          <span class="juke-hud-title" id="juke-hud-title"><span>Jukebox</span></span>
+          <b class="juke-hud-time hide" id="juke-hud-time"></b>
+        </div>
         <div class="juke-hud-row">
           <button type="button" id="juke-hud-play" class="juke-hud-btn" aria-label="Play/Pause">▶</button>
           <input type="range" id="juke-hud-vol" min="0" max="100" value="80" step="1" aria-label="Volume">
@@ -177,8 +180,8 @@
   <script src="supabase-lib.js"></script>
   <script src="auth.js?v=mp66"></script>
   <script src="run-stats.js"></script>
-  <script src="audio.js?v=mp102"></script>
+  <script src="audio.js?v=mp133"></script>
   <script src="mp.js?v=mp8"></script>
-  <script src="game.js?v=mp131"></script>
+  <script src="game.js?v=mp139"></script>
 </body>
 </html>

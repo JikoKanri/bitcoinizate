@@ -835,13 +835,840 @@ w: I'd have a new string to my bow.
 w: Is be-cause I lost my heart's de-light.
 w: Nev-er give her time to say O nay.
 w: And ev-er since then my head's been red.`),
+    stilly: tune("stilly", "Oft in the Stilly Night", "air", `X:1
+T:Oft in the Stilly Night
+T:Scanlon's Fiddle Setting
+C:Tradicional (Arr. Batt Scanlon, 1923)
+R:Air
+M:2/4
+L:1/8
+Q:1/4=72
+K:C
+%%MIDI gchord off
+%%MIDI nobeataccents
+%%MIDI gracedivider 4
+V:1
+%%MIDI program 40
+%%MIDI channel 1
+V:2
+%%MIDI program 42
+%%MIDI channel 2
+V:1
+!mf! e2 e>d | c>A A/B/c | G>G ce | de/f/ e2 |
+V:2
+!pppp! [C,G,]4 | [A,,E,]4 | [C,G,]4 | [B,,F,]2 [C,G,]2 |
+V:1
+e2 e>d | c>A Ac | G<G e>c | d2 c z/G/ ||
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]2 [A,,E,]2 | [B,,F,]2 [C,G,]2 |
+V:1
+G>c c>c | d>c c z/c/ | e>c cc | d2 c z/G/ |
+V:2
+[C,G,]4 | [B,,F,]2 [C,G,]2 | [A,,E,]4 | [B,,F,]2 [C,G,]2 |
+V:1
+G>c c>c | d>c c z/c/ | e>c cc | de/f/ e2 ||
+V:2
+[F,,C,]2 [C,G,]2 | [D,A,]2 [B,,F,]2 | [C,G,]2 [A,,E,]2 | [B,,F,]2 [C,G,]2 |
+V:1
+e2 e>d | c<A A>c | G>G ce | de/f/ e2 |
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]4 | [B,,F,]2 [C,G,]2 |
+V:1
+e2 e>d | c>A Ac | G<G e>c | d2 c2 ||
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]2 [A,,E,]2 | [B,,F,]2 [C,G,]2 |
+V:1
+!p! e2 e>d | c>A A/B/c | G>G ce | de/f/ e2 |
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]4 | [B,,F,]2 [C,G,]2 |
+V:1
+e2 e>d | c>A Ac | G<G e>c | d2 c z/G/ ||
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]2 [A,,E,]2 | [B,,F,]2 [C,G,]2 |
+V:1
+G>c c>c | d>c c z/c/ | e>c cc | d2 c z/G/ |
+V:2
+[C,G,]4 | [B,,F,]2 [C,G,]2 | [A,,E,]4 | [B,,F,]2 [C,G,]2 |
+V:1
+G>c c>c | d>c c z/c/ | e>c cc | de/f/ e2 ||
+V:2
+[F,,C,]2 [C,G,]2 | [D,A,]2 [B,,F,]2 | [C,G,]2 [A,,E,]2 | [B,,F,]2 [C,G,]2 |
+V:1
+e2 e>d | c<A A>c | G>G ce | de/f/ e2 |
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]4 | [B,,F,]2 [C,G,]2 |
+V:1
+e2 e>d | c>A Ac | G<G e>c | d2 !fermata!c2 |]
+V:2
+[C,G,]4 | [A,,E,]4 | [C,G,]2 [A,,E,]2 | [B,,F,]2 !fermata![C,G,]2 |]`),
+    arkansas: tune("arkansas", "Arkansas Traveler", "reel", `X:1
+T:Arkansas Traveler
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=112
+R:Reel
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: DFED B,2B,2 | A,2A,2 D4 | B,2B,2 D2D2 | E2E2 E2FE |
+DFED B,2B,2 | A,2A,2 D4 | d2B2 A2F2 |1 E2FE D4 :|2 E2FE D2fg ||
+|: fedf e2d2 | B,2B,2 d4 | c2c2 e2e2 | defg a2fg |
+fedf e2d2 | B,2B,2 d2A2 | d2B2 A2F2 |1 E2FE D2fg :|2 E2FE D4 ||
+V:Bajo
+|: D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 |
+D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 |1 A,,2[E,A,]2 D,4 :|2 A,,2[E,A,]2 D,2z2 ||
+|: D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 D,2z2 |
+D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 |1 A,,2[E,A,]2 D,2z2 :|2 A,,2[E,A,]2 D,4 ||`),
+    cripple: tune("cripple", "Cripple Creek", "reel", `X:1
+T:Cripple Creek
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=120
+R:Reel
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: f2af e2de | f2f2 d4 | f2af e2dB | A2Bc d4 :|
+|: B2B2 d2d2 | B2B2 A4 | f2af e2dB | A2Bc d4 :|
+V:Bajo
+|: D,2[F,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 A,,2[E,A,]2 | A,,2[E,A,]2 D,4 :|
+|: G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | D,2[F,A,]2 A,,2[E,A,]2 | A,,2[E,A,]2 D,4 :|`),
+    cluck: tune("cluck", "Cluck Old Hen", "reel", `X:1
+T:Cluck Old Hen
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=108
+R:Reel
+K:Dmix
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: f2fg a2a2 | g2ge d4 | f2fg a2a2 | e2fe d4 :|
+|: d2d2 B2A2 | g2ge d4 | d2dB c2c2 | e2fe d4 :|
+V:Bajo
+|: D,2[F,A,]2 D,2[F,A,]2 | C,2[E,G,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 D,4 :|
+|: D,2[F,A,]2 G,,2[G,B,]2 | C,2[E,G,]2 D,2[F,A,]2 | D,2[F,A,]2 C,2[E,G,]2 | A,,2[E,A,]2 D,4 :|`),
+    turkey: tune("turkey", "Turkey in the Straw", "reel", `X:1
+T:Turkey in the Straw
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=116
+R:Reel
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: BA | G2G2 G2GA | B2B2 B2Bc | d2d2 edBc | d2d2 B2A2 |
+G2G2 G2GA | B2B2 B2Bc | d2d2 B2A2 | G2G2 G2 :|
+|: d2 | b2b2 g2ga | b2b2 g4 | c'2c'2 a2ab | c'2c'2 a2ga |
+b2b2 g2ga | b2d2 e2fg | d2d2 B2A2 | G2G2 G2 :|
+V:Bajo
+|: z2 | G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 |
+G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2 :|
+|: z2 | G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 |
+G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 C,2[G,C]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2 :|`),
+    soldiers: tune("soldiers", "Soldier's Joy", "reel", `X:1
+T:Soldier's Joy
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=120
+R:Reel
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: FG | AFDF AFDF | A2d2 d2cB | AFDF AFDF | G2E2 E2FG |
+AFDF AFDF | A2d2 d2fg | afdf e2fe | d2d2 d2 :|
+|: fg | a2f2 f2ef | g2e2 e2de | f2df edcB | A2A2 A2fg |
+a2f2 f2ef | g2e2 e2de | f2df edce | d2d2 d2 :|
+V:Bajo
+|: z2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 |
+D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 D,2 :|
+|: z2 | D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 |
+D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 D,2 :|`),
+    redwing: tune("redwing", "Red Wing", "reel", `X:1
+T:Red Wing
+C:Traditional / F.A. Mills
+M:2/4
+L:1/16
+Q:1/4=108
+R:Reel
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: D2 | G3G G2B2 | d6 g2 | e2e2 e2g2 | d6 B2 |
+c2c2 c2e2 | B2B2 B2d2 | A2A2 B2B2 | A6 D2 |
+G3G G2B2 | d6 g2 | e2e2 e2g2 | d6 B2 |
+c2c2 c2e2 | B2B2 B2d2 | A2A2 B2A2 | G6 :|
+V:Bajo
+|: z2 | G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | C,2[G,C]2 C,2[G,C]2 | G,,2[G,B,]2 G,,2[G,B,]2 |
+C,2[G,C]2 C,2[G,C]2 | G,,2[G,B,]2 G,,2[G,B,]2 | A,,2[E,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 D,2z2 |
+G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | C,2[G,C]2 C,2[G,C]2 | G,,2[G,B,]2 G,,2[G,B,]2 |
+C,2[G,C]2 C,2[G,C]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2 :|`),
+    whiskey: tune("whiskey", "Whiskey Before Breakfast", "reel", `X:1
+T:Whiskey Before Breakfast
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=120
+R:Reel
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: A,2 | D2D2 DEFG | A2B2 A2FA | d2d2 c2A2 | B2Bc B2A2 |
+D2D2 DEFG | A2B2 A2FA | d2B2 A2F2 | G2FE D2 :|
+|: z2 | d2d2 c2A2 | B2Bc B2A2 | defg a2f2 | e2e2 e2A2 |
+D2D2 DEFG | A2B2 A2FA | d2B2 A2F2 | G2FE D2 :|
+V:Bajo
+|: z2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 A,,2[E,A,]2 | G,,2[G,B,]2 G,,2[G,B,]2 |
+D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | A,,2[E,A,]2 D,2 :|
+|: z2 | D,2[F,A,]2 A,,2[E,A,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 | A,,2[E,A,]2 A,,2[E,A,]2 |
+D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | A,,2[E,A,]2 D,2 :|`),
+    grenadiers: tune("grenadiers", "The British Grenadiers", "march", `X:1
+T:The British Grenadiers
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=100
+R:March
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 72
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: D2 | G2D2 G2A2 | B2cB A2GA | B2c2 d2cB | A6 D2 |
+G2D2 G2A2 | B2cB A2GA | B2cB A2BA | G6 :|
+|: d2 | d3e d2c2 | B2c2 d2d2 | e2e2 d2cB | A6 D2 |
+G2D2 G2A2 | B2d2 g2fg | edcB A2BA | G6 :|
+V:Bajo
+|: z2 | G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2z2 |
+G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2 :|
+|: z2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | C,2[G,C]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2z2 |
+G,,2[G,B,]2 G,,2[G,B,]2 | G,,2[G,B,]2 G,,2[G,B,]2 | C,2[G,C]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,2 :|`),
+    leftbehind: tune("leftbehind", "The Girl I Left Behind Me", "march", `X:1
+T:The Girl I Left Behind Me
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=108
+R:March
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 72
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: g2fg e2dB | A2G2 E2F2 | G2G2 G2AB | c2BA B2d2 |
+g2fg e2dB | A2G2 E2F2 | G2GA F2EF | G4 G4 :|
+|: B2cd e2f2 | g2dB B2A2 | B2cd e2fg | a2f2 d4 |
+g2fg e2dB | A2G2 E2F2 | G2GA F2EF | G4 G4 :|
+V:Bajo
+|: G,,2[G,B,]2 C,2[G,C]2 | D,2[F,A,]2 C,2[G,C]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 G,,2[G,B,]2 |
+G,,2[G,B,]2 C,2[G,C]2 | D,2[F,A,]2 C,2[G,C]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,4 :|
+|: G,,2[G,B,]2 C,2[G,C]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 C,2[G,C]2 | D,2[F,A,]2 D,4 |
+G,,2[G,B,]2 C,2[G,C]2 | D,2[F,A,]2 C,2[G,C]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,4 :|`),
+    yankee: tune("yankee", "Yankee Doodle", "march", `X:1
+T:Yankee Doodle
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=112
+R:March
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 72
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: G2G2 A2B2 | G2B2 A2D2 | G2G2 A2B2 | G4 F4 |
+G2G2 A2B2 | c2B2 A2G2 | F2D2 E2F2 | G4 G4 :|
+|: E3F E2F2 | G2G2 E4 | D3E D2E2 | F2F2 D4 |
+G2G2 A2B2 | c2B2 A2G2 | F2D2 E2F2 | G4 G4 :|
+V:Bajo
+|: G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 |
+G,,2[G,B,]2 D,2[F,A,]2 | C,2[G,C]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,4 :|
+|: C,2[G,C]2 C,2[G,C]2 | G,,2[G,B,]2 C,2[G,C]2 | G,,2[G,B,]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 |
+G,,2[G,B,]2 D,2[F,A,]2 | C,2[G,C]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 G,,4 :|`),
+    garyowen: tune("garyowen", "Garyowen", "march", `X:1
+T:Garyowen
+C:Traditional
+M:6/8
+L:1/8
+Q:3/8=112
+R:March
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 72
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: g/f/ | edB BAG | B2B B2 g/f/ | edB BAG | A2A A2 g/f/ |
+edB BAG | B2B B2 d | def g2e | d2B G2 :|
+|: B/A/ | G2B d2B | g2d d2 B/A/ | G2B d2B | a2e e2 f/g/ |
+g2f e2d | B2d g2 d | def g2e | d2B G2 :|
+V:Bajo
+|: z | G,,3 G,,3 | G,,3 G,,3 | G,,3 G,,3 | D,3 D,3 |
+G,,3 G,,3 | G,,3 G,,3 | D,3 D,3 | G,,3 G,,2 :|
+|: z | G,,3 G,,3 | G,,3 G,,3 | G,,3 G,,3 | C,3 C,3 |
+G,,3 C,3 | G,,3 G,,3 | D,3 D,3 | G,,3 G,,2 :|`),
+    chester: tune("chester", "Chester", "march", `X:1
+T:Chester
+C:William Billings (1770)
+M:2/4
+L:1/8
+Q:1/4=92
+R:March
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 72
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: G2 G2 | A2 B2 | G2 F2 | G4 | B2 B2 | A2 G2 | c2 B2 | A4 |
+B2 d2 | c2 B2 | A2 G2 | F4 | G2 A2 | B2 c2 | B2 A2 | G4 :|
+V:Bajo
+|: G,,2 [G,B,]2 | D,2 [F,A,]2 | G,,2 [G,B,]2 | G,,4 | G,,2 [G,B,]2 | D,2 [F,A,]2 | C,2 [G,C]2 | D,4 |
+G,,2 [G,B,]2 | C,2 [G,C]2 | D,2 [F,A,]2 | D,4 | G,,2 [G,B,]2 | G,,2 [G,B,]2 | D,2 [F,A,]2 | G,,4 :|`),
+    coocoo: tune("coocoo", "The Coo Coo Bird", "ballad", `X:1
+T:The Coo Coo Bird
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=88
+R:Folk Ballad
+K:Dmix
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: d4 d2e2 | f2d2 B2A2 | d4 d2e2 | f2a2 a4 |
+b4 a2f2 | e2d2 B2A2 | B2dB A2F2 | E2D2 D4 :|
+V:Bajo
+|: D,2[F,A,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,4 |
+G,,2[G,B,]2 D,2[F,A,]2 | C,2[E,G,]2 D,2[F,A,]2 | G,,2[G,B,]2 D,2[F,A,]2 | A,,2[E,A,]2 D,4 :|`),
+    wildwood: tune("wildwood", "Wildwood Flower", "ballad", `X:1
+T:Wildwood Flower
+C:Traditional / J.P. Carter
+M:2/4
+L:1/16
+Q:1/4=96
+R:Folk Ballad
+K:C
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: G2 | C2E2 G2G2 | A2A2 G4 | G2c2 B2A2 | G2E2 D2z2 |
+C2E2 G2G2 | A2A2 G4 | G2A2 G2E2 | D2C2 C3 :|
+|: G2 | c2c2 c2d2 | e2e2 d2c2 | e2e2 d2c2 | A2G2 G2z2 |
+C2E2 G2G2 | A2A2 G4 | G2A2 G2E2 | D2C2 C3 :|
+V:Bajo
+|: z2 | C,2[E,G,]2 C,2[E,G,]2 | F,,2[F,A,]2 C,2[E,G,]2 | C,2[E,G,]2 G,,2[D,G,]2 | C,2[E,G,]2 G,,2z2 |
+C,2[E,G,]2 C,2[E,G,]2 | F,,2[F,A,]2 C,2[E,G,]2 | C,2[E,G,]2 C,2[E,G,]2 | G,,2[D,G,]2 C,3 :|
+|: z2 | C,2[E,G,]2 C,2[E,G,]2 | C,2[E,G,]2 C,2[E,G,]2 | C,2[E,G,]2 C,2[E,G,]2 | F,,2[F,A,]2 C,2z2 |
+C,2[E,G,]2 C,2[E,G,]2 | F,,2[F,A,]2 C,2[E,G,]2 | C,2[E,G,]2 C,2[E,G,]2 | G,,2[D,G,]2 C,3 :|`),
+    barley: tune("barley", "The Wind That Shakes the Barley", "reel", `X:1
+T:The Wind That Shakes the Barley
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=120
+R:Reel
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: B2 | A2FA B2GB | A2FA fedB | A2FA B2GB | gfed B2 :|
+|: de | f2fd g2ge | f2fd edBA | f2fd g2ge | fedB d2 :|
+V:Bajo
+|: z2 | D,2[F,A,]2 G,,2[G,B,]2 | D,2[F,A,]2 G,,2[G,B,]2 | D,2[F,A,]2 G,,2[G,B,]2 | A,,2[E,A,]2 G,,2 :|
+|: z2 | D,2[F,A,]2 G,,2[G,B,]2 | D,2[F,A,]2 A,,2[E,A,]2 | D,2[F,A,]2 G,,2[G,B,]2 | A,,2[E,A,]2 D,2 :|`),
+    blossom: tune("blossom", "Blackberry Blossom", "reel", `X:1
+T:Blackberry Blossom
+C:Traditional
+M:2/4
+L:1/16
+Q:1/4=120
+R:Reel
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: gabg fgaf | efge dBGB | cdec BcdB | ABcA GFED |
+gabg fgaf | efge dBGB | cdec BcdB |1 AGFA G4 :|2 AGFA G2ef ||
+|: e2B2 e3B | e2B2 BAGB | d2A2 d3A | d2A2 Adef |
+g2g2 f2f2 | e2e2 d2B2 | cdec BcdB |1 AGFA G2ef :|2 AGFA G4 ||
+V:Bajo
+|: G,,2[G,B,]2 D,2[F,A,]2 | C,2[G,C]2 G,,2[G,B,]2 | C,2[G,C]2 G,,2[G,B,]2 | D,2[F,A,]2 D,2[F,A,]2 |
+G,,2[G,B,]2 D,2[F,A,]2 | C,2[G,C]2 G,,2[G,B,]2 | C,2[G,C]2 G,,2[G,B,]2 |1 D,2[F,A,]2 G,,4 :|2 D,2[F,A,]2 G,,2z2 ||
+|: E,2[E,G,]2 E,2[E,G,]2 | E,2[E,G,]2 E,2[E,G,]2 | D,2[F,A,]2 D,2[F,A,]2 | D,2[F,A,]2 D,2z2 |
+G,,2[G,B,]2 D,2[F,A,]2 | C,2[G,C]2 G,,2[G,B,]2 | C,2[G,C]2 G,,2[G,B,]2 |1 D,2[F,A,]2 G,,2z2 :|2 D,2[F,A,]2 G,,4 ||`),
+    nearer: tune("nearer", "Nearer, My God, to Thee", "hymn", `X:1
+T:Nearer, My God, to Thee
+T:Bethany
+C:Lowell Mason (1856)
+M:4/4
+L:1/4
+Q:1/4=80
+R:Hymn
+K:G
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 73
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 19
+%%MIDI channel 2
+V:Melodia
+|: B2 A>G | E2 D2 | G2 B2 | A4 | B2 A>G | E2 D2 | G2 F>A | G4 :|
+|: d2 e>d | d2 B2 | d2 c>B | A4 | B2 A>G | E2 D2 | G2 F>A | G4 :|
+V:Bajo
+|: G,2 F,>G, | C,2 B,,2 | B,,2 G,2 | D,4 | G,2 F,>G, | C,2 B,,2 | C,2 D,2 | G,,4 :|
+|: G,2 G,2 | G,2 G,2 | G,2 G,2 | D,4 | G,2 F,>G, | C,2 B,,2 | C,2 D,2 | G,,4 :|`),
+    dolore: tune("dolore", "Primo Dolore", "classical", `X:1
+T:Erster Verlust
+T:First Loss / Primo Dolore
+C:Robert Schumann (1848)
+M:2/4
+L:1/8
+Q:1/4=72
+R:Classical
+K:Em
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Mano Der."
+%%MIDI program 0
+%%MIDI channel 1
+V:Bajo clef=bass name="Mano Izq."
+%%MIDI program 0
+%%MIDI channel 2
+V:Melodia
+g | f e ^d e | B3 e | c3 e | B3 c | B c B A | (3G2F2E2 | ^d3 E | [E^G]2 z g |
+f e ^d e | B3 e | c3 e | B3 c | B c B A | (3G2F2E2 | ^d3 E | E2 z2 |]
+V:Bajo
+z | z4 | z G E2 | z A E2 | z G E2 | z G ^D E | E4 | B,3 E, | [E,^G,]2 z2 |
+z4 | z G E2 | z A E2 | z G E2 | z G ^D E | E4 | B,3 E, | E,2 z2 |]
+`),
+    egans: tune("egans", "Egan's Polka", "polka", `X:1
+T:Egan's Polka
+C:Traditional
+M:2/4
+L:1/8
+Q:1/4=130
+R:Polka
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 40
+%%MIDI channel 1
+V:Bajo clef=bass name="Fondo"
+%%MIDI program 32
+%%MIDI channel 2
+V:Melodia
+|: fA BA | fA BA | d2 e>f | ed BA |
+fA BA | fA BA | d2 e>f | ed d2 :|
+|: fa f>e | ed BA | fa f>e | ed e2 |
+fa f>e | ed BA | d2 e>f | ed d2 :|
+V:Bajo
+|: D,2 [F,A,]2 | D,2 [F,A,]2 | G,,2 [G,B,]2 | A,,2 [E,A,]2 |
+D,2 [F,A,]2 | D,2 [F,A,]2 | G,,2 [G,B,]2 | A,,2 D,2 :|
+|: D,2 [F,A,]2 | G,,2 [G,B,]2 | D,2 [F,A,]2 | A,,2 [E,A,]2 |
+D,2 [F,A,]2 | G,,2 [G,B,]2 | G,,2 [G,B,]2 | A,,2 D,2 :|`),
+    gym1: tune("gym1", "Gymnopédie No. 1", "classical", `X:1
+T:Gymnopédie No. 1
+C:Erik Satie (1888)
+M:3/4
+L:1/4
+Q:1/4=66
+K:D
+%%MIDI gchord off
+%%score (Melodia) (Acorde) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 0
+%%MIDI channel 1
+V:Acorde clef=treble name="Acorde"
+%%MIDI program 0
+%%MIDI channel 2
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 0
+%%MIDI channel 3
+V:Melodia
+z3 | z3 | z3 | z3 |
+z f a | g f c | B c d | A3 |
+F3- | F3- | F3- | F3 |
+z f a | g f c | B c d | A3 |
+c3 | f3 | E3- | E3- |
+E3 | A B =c | e d B | d =c B |
+d3- | d2 d | e =f g | a =c d |
+e d B | d3- | d2 d | g3 |
+f3 | B A B | c d e | c d e |
+F3 | [=c'ae=c]3 | [d'afd]3 | G3 |
+=F3 | B, =C =F | E D =C | E D =C |
+=F,3 | [=CA,E,=C,]3 | [DA,=F,D,]3 |
+V:Acorde
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
+z [FCA,]2 | z [FDB,]2 | z [B,G,]2 | z [GDB,]2 |
+z [DA,=F,]2 | z [E=CA,]2 | z [EB,G,]2 | z [EB,G,D,]2 |
+z [DA,E,=C,]2 | z [DA,F,=C]2 | z [=F=CA,]2 | z [E=CA,]2 |
+z [EB,G,D,]2 | z [DA,E,=C,]2 | z [DA,F,=C]2 | z [GEB,]2 |
+z [FCA,]2 | z [FDB,]2 | z [AEC]2 | z [AFCA,]2 |
+z [DA,] [GDB,] | z3 | z3 | z [GEB,]2 |
+z [A=FDA,]2 | z [=F=CA,]2 | z [AE=C]2 | z [A=F=CA,]2 |
+z [DA,] [GDB,] | z3 | z3 |
+V:Bajo
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+F,,3 | B,,,3 | E,,3 | E,,3 |
+D,,3 | A,,,3 | D,,3 | D,,3 |
+D,,3 | D,,3 | D,,3 | D,,3 |
+D,,3 | D,,3 | D,,3 | E,,3 |
+F,,3 | B,,,3 | E,,3 | E,,3 |
+E,,,3 | [G,,A,,,]3 | [D,,A,,,D,,,]3 | E,,3 |
+E,,3 | E,,3 | E,,3 | E,,3 |
+E,,,3 | [G,,A,,,]3 | [D,,A,,,D,,,]3 |
+`),
+    gym2: tune("gym2", "Gymnopédie No. 2", "classical", `X:1
+T:Gymnopédie No. 2
+C:Erik Satie (1888)
+M:3/4
+L:1/4
+Q:1/4=66
+K:C
+%%MIDI gchord off
+%%score (Melodia) (Acorde) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 0
+%%MIDI channel 1
+V:Acorde clef=treble name="Acorde"
+%%MIDI program 0
+%%MIDI channel 2
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 0
+%%MIDI channel 3
+V:Melodia
+z3 | z3 | z3 | z3 |
+g3 | a g f | e f g | d3 |
+g3 | a g f | e f g | d c2 |
+z3 | z3 | c'3 | f g a |
+g3 | c3 | f3- | f _e d |
+f3- | f g _b | a g f | g3 |
+f3 | z3 | z3 | c'3 |
+_a g f | g3 | f3- | f _e d |
+f3 | d3- | d _e _a | _b3 |
+f3 | z3 | z3 | g3 |
+f g a | e f g | d3 | g3 |
+f g a | e f g | f c2 | z3 |
+z3 | c'3 | f g a | g3 |
+c3 | f3 | g3 | d3- |
+d3- | d3- | d2 f | _b3 |
+a f2 | z3 | z3 | z3 |
+z3 |
+V:Acorde
+z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
+z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
+z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
+z [GEB,]2 | z [AFCA,]2 | z [cAEC]2 | z [AFCA,]2 |
+z [G_E_B,]2 | z [G_E_B,G,]2 | z [FDA,]2 | z [F_E_B,G,]2 |
+z [FDA,]2 | z [GFD_B,]2 | z [A_ec]2 | z [GD_B,]2 |
+z [AFCA,]2 | z [GD_B,]2 | z [AFCA,]2 | z [cG_E]2 |
+z [c_AFC]2 | z [_BGD_B,]2 | z [FDA,]2 | z [F_E_B,G,]2 |
+z [FDA,]2 | z [GFD_B,]2 | z [_A_EC]2 | z [GD_B,]2 |
+z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 |
+z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 |
+z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 |
+z [AFCA,]2 | z [cAEC]2 | z [AFCA,]2 | z [G_E_B,]2 |
+z [G_E_B,G,]2 | z [FDA,]2 | z [G_E_B,G,]2 | z [FDA,]2 |
+z [FD_B,G,]2 | z [F_E_B,G,]2 | z [FDA,]2 | z [GD_B,]2 |
+z [AFCA,]2 | z [GD_B,]2 | z [AFCA,]2 | z [GD_B,]2 |
+z [GEC]2 |
+V:Bajo
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | C,,3 | C,,3 |
+C,,3 | F,,3 | F,,3 | F,,3 |
+F,,3 | F,,3 | F,,3 | _B,,,3 |
+D,,3 | G,,3 | D,,3 | C,,3 |
+C,,3 | C,,3 | F,,3 | F,,3 |
+F,,3 | F,,3 | F,,3 | _B,,,3 |
+D,,3 | G,,3 | D,,3 | G,,3 |
+D,,3 | G,,3 | D,,3 | G,,3 |
+D,,3 | G,,3 | D,,3 | G,,3 |
+D,,3 | C,,3 | C,,3 | C,,3 |
+F,,3 | F,,3 | F,,3 | F,,3 |
+F,,3 | F,,3 | F,,3 | _B,,,3 |
+D,,3 | G,,3 | D,,3 | G,,3 |
+C,,3 |
+`),
+    gym3: tune("gym3", "Gymnopédie No. 3", "classical", `X:1
+T:Gymnopédie No. 3
+C:Erik Satie (1888)
+M:3/4
+L:1/4
+Q:1/4=66
+K:Am
+%%MIDI gchord off
+%%score (Melodia) (Acorde) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 0
+%%MIDI channel 1
+V:Acorde clef=treble name="Acorde"
+%%MIDI program 0
+%%MIDI channel 2
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 0
+%%MIDI channel 3
+V:Melodia
+z3 | z3 | z3 | z3 |
+a3 | g f e | d e f | e d c |
+e3 | g2 g | d3- | d3 |
+d3 | z c f | g2 a | d e f |
+B A G | A3 | D3- | D3 |
+e3 | f g f | e d e- | e3- |
+e d c | B c B | A3 | z3 |
+z3 | z3 | a3 | g f e |
+d e f | e d c | e3 | g2 g |
+c B A | B2 c | d3 | e3 |
+z3 | z3 | g2 a | d e f |
+B A G | A3 | D3- | D3 |
+e3 | f g f | e d e- | e3- |
+e d c | B c B | A3 | z3 |
+z3 | z3 | [cAEC]3- | [cAEC]3 |
+V:Acorde
+z [AEC]2 | z [GEB,]2 | z [AEC]2 | z [GEB,]2 |
+z [AEC]2 | z [AEC]2 | z [GD_B,]2 | z [FDA,]2 |
+z [ECA,]2 | z [EB,G,]2 | z [B,G,D,]2 | z [fcA]2 |
+z [BGD]2 | z [f'c'a]2 | z [g'e'b]2 | z [f'c'a]2 |
+z [e'c'a]2 | z [f'c'a]2 | z [f'c'a]2 | z [g'e'b]2 |
+z [a'e'c']2 | z [g'e'b]2 | z [a'e'c']2 | z [g'e'b]2 |
+z [a'e'c']2 | z [g'e'b]2 | z [f'c'a]2 | z [g'e'b]2 |
+z [a'e'c']2 | z [g'e'b]2 | z [a'e'c']2 | z [a'e'c']2 |
+z [g'd'_b]2 | z [f'd'a]2 | z [e'c'a]2 | z [e'bg]2 |
+z [f'c'a]2 | z [e'bg]2 | z [f'c'a]2 | z [a'e'c']2 |
+z [e'c'a]2 | z [f'c'a]2 | z [g'e'b]2 | z [f'c'a]2 |
+z [e'c'a]2 | z [f'c'a]2 | z [f'c'a]2 | z [g'e'b]2 |
+z [a'e'c']2 | z [g'e'b]2 | z [a'e'c']2 | z [g'e'b]2 |
+z [a'e'c']2 | z [g'e'b]2 | z [f'c'a]2 | z [g'e'b]2 |
+z [a'e'c']2 | z [g'e'b]2 | z3 | z3 |
+V:Bajo
+A,,3 | D,,3 | A,,3 | D,,3 |
+A,,3 | C,3 | G,,3 | D,,3 |
+A,,3 | E,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,,3 | G,,,3 |
+G,,,3 | D,,3 | G,,,3 | G,,,3 |
+C,,3 | E,,3 | C,,3 | E,,3 |
+C,,3 | E,,3 | A,,3 | D,,3 |
+A,,3 | D,,3 | A,,3 | C,3 |
+G,,3 | D,,3 | A,,3 | E,,3 |
+E,,3 | E,,3 | D,,3 | D,,3 |
+D,,3 | D,,3 | G,,,3 | G,,,3 |
+G,,,3 | D,,3 | G,,,3 | G,,,3 |
+C,,3 | E,,3 | C,,3 | E,,3 |
+C,,3 | E,,3 | A,,3 | D,,3 |
+A,,3 | D,,3 | [A,,E,,A,,,]3- | [A,,E,,A,,,]3 |
+`),
+    alhambra: tune("alhambra", "Recuerdos de la Alhambra", "classical", `X:1
+T:Recuerdos de la Alhambra
+C:Francisco Tárrega
+M:3/4
+L:1/32
+Q:1/4=72
+K:C
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+EEEEEEEE EEEEEEEE DDDDDDDD |
+CCCCCCCC CCCCCCCC DDDDDDDD |
+EEEEEEEE EEEEEEEE EEEEEEEE |
+EEEEEEEE EEEEEEEE FFFFFFFF |
+GGGGGGGG GGGGGGGG FFFFFFFF |
+EEEEEEEE EEEEEEEE FFFFFFFF |
+GGGGGGGG GGGGGGGG GGGGGGGG |
+GGGGGGGG GGGGGGGG GGGGGGGG |
+cccccccc cccccccc BBBBBBBB |
+AAAAAAAA AAAAAAAA BBBBBBBB |
+AAAAAA (3ABA ^G^G^G^G^G^G^G^G ^G^G^G^G^G^G^G^G |
+^G^G^G^G^G^G^G^G ^G^G^G^G^G^G^G^G ^G^G^G^G^G^G^G^G |
+_B_B_B_B_B_B_B_B _B_B_B_B_B_B_B_B AAAAAAAA |
+GGGGGGGG GGGGGGGG AAAAAAAA |
+GGGGGG (3GAG FFFFFFFF FFFFFFFF |
+FFFFFFFF FFFFFFFF FFFFFFFF |
+EEEEEEEE EEEEEEEE DDDDDDDD |
+CCCCCCCC CCCCCCCC DDDDDDDD |
+CCCCCC (3CDC B,B,B,B,B,B,B,B, B,B,B,B,B,B,B,B, |
+B,B,B,B,B,B,B,B, B,B,B,B,B,B,B,B, B,B,B,B,B,B,B,B, |
+EEEEEEEE EEEEEEEE DDDDDDDD |
+^C^C^C^C^C^C^C^C ^C^C^C^C^C^C^C^C DDDDDDDD |
+EEEEEEEE EEEEEEEE EEEEEEEE |
+EEEEEEEE EEEEEEEE EEEEEEEE |
+^F^F^F^F^F^F^F^F ^F^F^F^F^F^F^F^F ^F^F^F^F^F^F^F^F |
+dddddddd dddddddd ^F^F^F^F^F^F^F^F |
+^F^F^F^F^F^F (3^F^G^F EEEEEEEE EEEEEEEE |
+EEEEEEEE EEEEEEEE EEEEEEEE |
+AAAAAAAA AAAAAAAA AAAAAAAA |
+^G^G^G^G^G^G^G^G ^G^G^G^G^G^G^G^G ^D^D^D^D^D^D^D^D |
+^F^F^F^F^F^F^F^F EEEEEEEE EEEEEEEE |
+EEEEEEEE EEEEEEEE EEEEEEEE |
+DDDDDDDD DDDDDDDD DDDDDDDD |
+^C^C^C^C^C^C^C^C ^C^C^C^C^C^C^C^C B,B,B,B,B,B,B,B, |
+B,B,B,B,B,B, (3B,^CB, A,A,A,A,A,A,A,A, A,A,A,A,A,A,A,A, |
+Q:1/4=52
+A,,4 E,4 A,4 ^C4 E4 A4 |
+[eA]24 |
+[A,E,]24 |]
+V:Bajo
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+C,24 |
+C,24 |
+C,24 |
+C,24 |
+F,24 |
+F,16 D,8 |
+E,,24 |
+E,,24 |
+A,,24 |
+^C,24 |
+D,24 |
+D,24 |
+D,24 |
+F,,24 |
+E,,24 |
+E,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+^F,,24 |
+^G,,24 |
+^C,24 |
+^C,24 |
+B,,24 |
+E,,24 |
+A,,24 |
+A,,24 |
+A,,24 |
+A,,24 |]`),
   };
   A.JUKE_TIERS = [
     ["bonny", "shady", "fisher", "hole"],
     ["nightingale", "joeclark", "pigfoot", "cavalry"],
     ["blueridge", "campaign", "morelli", "boston"],
     ["york", "artillery", "misty", "toarms"],
-    ["reveille", "bird"],
+    ["reveille", "bird", "stilly", "arkansas", "cripple", "cluck", "turkey", "soldiers", "redwing", "whiskey", "grenadiers", "leftbehind", "yankee", "garyowen", "chester", "coocoo", "wildwood", "barley", "blossom", "nearer", "dolore", "egans", "gym1", "gym2", "gym3", "alhambra"],
   ];
   A.JUKE_CORE = A.JUKE_TIERS.flat();
   A.jukePool = (tier) => {
@@ -980,6 +1807,28 @@ w: And ev-er since then my head's been red.`),
   A.jukeStop = () => stopJukeTimer();
   A.jukePlaying = () => jukeOn && !abcPaused;
   A.jukePaused = () => abcPaused;
+  A.jukeId = () => abcId;
+  A.tuneSeconds = (id) => {
+    const song = A.SONGS && A.SONGS[id];
+    if (!song) return 0;
+    if (song.secs > 0) return song.secs;
+    const lib = abcLib();
+    if (!lib || !lib.parseOnly) return 0;
+    try {
+      const tune = lib.parseOnly(song.abc)[0];
+      if (!tune || !tune.setUpAudio) return 0;
+      const seq = tune.setUpAudio();
+      const m = tune.getMeterFraction && tune.getMeterFraction();
+      const meter = m && m.den ? m.num / m.den : 0;
+      const mpm = tune.millisecondsPerMeasure ? tune.millisecondsPerMeasure() : 0;
+      const whole = seq && seq.totalDuration;
+      if (!(whole > 0) || !(meter > 0) || !(mpm > 0)) return 0;
+      song.secs = whole / meter * (mpm / 1000);
+      return song.secs;
+    } catch (e) {
+      return 0;
+    }
+  };
   A.jukeProgress = () => {
     let t = abcElapsed;
     if (jukeOn && !abcPaused && ctx) t += Math.max(0, ctx.currentTime - abcStart);
@@ -1008,6 +1857,7 @@ w: And ev-er since then my head's been red.`),
     }
     try { jukeBuf = synth.getAudioBuffer ? synth.getAudioBuffer() : null; } catch (e) { jukeBuf = null; }
     if (jukeBuf && jukeBuf.duration) abcDur = jukeBuf.duration;
+    if (A.SONGS[id] && abcDur > 0) A.SONGS[id].secs = abcDur;
     abcSynth = synth;
     return synth;
   }

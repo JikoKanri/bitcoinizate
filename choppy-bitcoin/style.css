@@ -98,9 +98,26 @@ body {
 .stat-user,
 .stat-juke { display: flex; flex-direction: column; align-items: stretch; justify-content: stretch; padding: 2px; gap: 2px; min-height: 0; min-width: 0; }
 .stat-juke.locked { opacity: 0.38; }
+.juke-hud-top { display: flex; align-items: baseline; gap: 4px; min-width: 0; }
 .juke-hud-title {
-  font-size: 11px; letter-spacing: 0.03em; color: var(--hud); text-align: center;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; padding: 0 2px; font-weight: 700;
+  flex: 1 1 auto; min-width: 0;
+  font-size: 11px; letter-spacing: 0.03em; color: var(--hud); text-align: left;
+  white-space: nowrap; overflow: hidden; line-height: 1.2; padding: 0 2px; font-weight: 700;
+}
+.juke-hud-title > span {
+  display: inline-block; white-space: nowrap; will-change: transform;
+}
+.juke-hud-title.marquee > span {
+  animation: juke-title-shift var(--juke-dur, 12s) ease-in-out infinite;
+}
+@keyframes juke-title-shift {
+  0%, 14% { transform: translateX(0); }
+  72%, 86% { transform: translateX(var(--juke-shift, 0px)); }
+  100% { transform: translateX(0); }
+}
+.juke-hud-time {
+  flex: 0 0 auto; font-size: 10px; font-weight: 700; color: var(--gold);
+  font-variant-numeric: tabular-nums; letter-spacing: 0.03em; line-height: 1;
 }
 .juke-hud-row { display: flex; gap: 3px; flex: 1 1 auto; min-height: 0; align-items: center; }
 .juke-hud-btn {
@@ -575,7 +592,8 @@ video.chance-art {
 .juke-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 .juke-prog { height: 8px; background: #1a1a1e; border: 1px solid var(--border); overflow: hidden; }
 .juke-prog-bar { height: 100%; width: 0; background: var(--gold); }
-.juke-times { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin: 4px 0 0; }
+.juke-times { display: flex; justify-content: space-between; font-size: 10px; color: var(--gold); margin: 4px 0 0; font-variant-numeric: tabular-nums; font-weight: 700; }
+.juke-len { flex: 0 0 auto; align-self: center; min-width: 2.4em; text-align: right; font-size: 10px; color: var(--gold); font-variant-numeric: tabular-nums; font-weight: 700; }
 .juke-lab { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
 .juke-now { font-size: 14px; color: var(--fg); font-weight: 700; max-width: none !important; white-space: normal; line-height: 1.35; }
 .juke-gen { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }

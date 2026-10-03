@@ -564,7 +564,7 @@
   const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   const PERK_NAME = { dca: "DCA", ff: "FastForward", adopt: "Adoption", manip: "Manipulation", candy: "Candle candy", juke: "Jukebox", aibud: "A.I. bud", job: "Employment", market: "Marketplace", chance: "Arc", opsec: "Opsec" };
   const PERK_NAME_ES = { dca: "DCA", ff: "FastForward", adopt: "Adopción", manip: "Manipulación", candy: "Caramelo de vela", juke: "Jukebox", aibud: "A.I. bud", job: "Empleo", market: "Mercado", chance: "Arco", opsec: "Opsec" };
-  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 7, juke: 5, aibud: 6, job: 7, market: 1, chance: 7, opsec: 5 };
+  const PERK_MAX = { dca: 1, ff: 3, adopt: 7, manip: 7, candy: 7, juke: 7, aibud: 6, job: 7, market: 1, chance: 7, opsec: 5 };
   const OPSEC_GIFT = [
     { cold: 1, msig: 0 },
     { cold: 2, msig: 0 },
@@ -643,7 +643,12 @@
         return es ? "bulls +" + bull + ", bears " + bear : "bulls +" + bull + ", bears " + bear;
       }
       if (id === "manip") return (es ? "tendencia ×" : "trend ×") + tier;
-      if (id === "juke") return tier <= 1 ? (es ? "jukebox · 2 temas" : "jukebox · 2 random tunes") : (es ? "+4 temas al azar" : "+4 random tunes");
+      if (id === "juke") {
+        const n = jukeUnlockCount(tier);
+        const add = Math.max(1, n - jukeUnlockCount(tier - 1));
+        if (tier <= 1) return es ? "jukebox · " + n + " temas" : "jukebox · " + n + " random tunes";
+        return es ? "+" + add + " temas al azar" : "+" + add + " random tunes";
+      }
       if (id === "job") {
         const job = currentJob();
         const title = jobTitleAt(job, tier);
@@ -9408,6 +9413,18 @@
     paintJukeUi();
   }
 
+  function fmtJuke(sec) {
+    sec = Math.max(0, Math.round(Number(sec) || 0));
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
+  function fmtJukeLeft(sec) {
+    sec = Math.max(0, Math.ceil((Number(sec) || 0) - 0.001));
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
   function paintJukeHud() {
     const box = $("juke-hud");
     if (!box) return;
@@ -9419,14 +9436,47 @@
     const playing = !!(A.jukePlaying && A.jukePlaying());
     const paused = !!(A.jukePaused && A.jukePaused());
     if (title) {
-      if (song && (playing || paused || S.jukeOn)) title.textContent = song.title || t("jukebox");
-      else title.textContent = t("jukebox");
+      const text = (song && (playing || paused || S.jukeOn)) ? (song.title || t("jukebox")) : t("jukebox");
+      let inner = title.firstElementChild;
+      if (!inner || inner.tagName !== "SPAN") {
+        inner = document.createElement("span");
+        inner.textContent = text;
+        title.textContent = "";
+        title.appendChild(inner);
+      }
+      if (inner.textContent !== text) inner.textContent = text;
+      const boxW = title.clientWidth;
+      const overflow = boxW > 0 ? inner.scrollWidth - boxW : 0;
+      const shift = overflow > 4 ? (-Math.ceil(overflow) + "px") : "";
+      const boxKey = String(boxW);
+      if (title.dataset.jukeText !== text || title.dataset.box !== boxKey) {
+        title.dataset.jukeText = text;
+        title.dataset.box = boxKey;
+        title.dataset.shift = shift;
+        if (shift) {
+          title.style.setProperty("--juke-shift", shift);
+          title.style.setProperty("--juke-dur", Math.max(10, overflow / 8).toFixed(1) + "s");
+          title.classList.add("marquee");
+        } else {
+          title.classList.remove("marquee");
+          title.style.removeProperty("--juke-shift");
+        }
+      }
     }
     const play = $("juke-hud-play");
     if (play) {
       play.textContent = playing ? "❚❚" : "▶";
       play.classList.toggle("on", playing);
       play.disabled = !ready;
+    }
+    const clock = $("juke-hud-time");
+    if (clock) {
+      const prog = A.jukeProgress ? A.jukeProgress() : null;
+      const same = !A.jukeId || A.jukeId() === id;
+      const live = (playing || paused) && same && prog && prog.dur > 0;
+      const text = live ? fmtJukeLeft(prog.dur - prog.t) : "";
+      if (clock.textContent !== text) clock.textContent = text;
+      clock.classList.toggle("hide", !text);
     }
     const vol = $("juke-hud-vol");
     if (vol) {
@@ -9441,7 +9491,28 @@
   function paintJukeUi() {
     paintJukeHud();
     const bar = $("juke-bar");
-    if (bar && A.jukeProgress) bar.style.width = Math.round((A.jukeProgress().pct || 0) * 100) + "%";
+    const prog = A.jukeProgress ? A.jukeProgress() : null;
+    if (bar && prog) bar.style.width = Math.round((prog.pct || 0) * 100) + "%";
+    const el = $("juke-el");
+    const left = $("juke-left");
+    if (el || left) {
+      const cur = (S.jukeList || [])[S.jukeTrack];
+      const playingNow = !!(A.jukePlaying && A.jukePlaying());
+      const pausedNow = !!(A.jukePaused && A.jukePaused());
+      const same = !A.jukeId || A.jukeId() === cur;
+      const live = (playingNow || pausedNow) && same && prog && prog.dur > 0;
+      const total = live ? prog.dur : ((A.tuneSeconds && A.tuneSeconds(cur)) || 0);
+      const elapsed = live ? prog.t : 0;
+      const remain = live ? Math.max(0, prog.dur - prog.t) : total;
+      if (el) {
+        const a = fmtJuke(elapsed);
+        if (el.textContent !== a) el.textContent = a;
+      }
+      if (left) {
+        const b = live ? fmtJukeLeft(remain) : (total ? fmtJuke(total) : "");
+        if (left.textContent !== b) left.textContent = b;
+      }
+    }
     const stage = $("lyric-stage");
     const titleEl = $("lyric-title");
     const prevEl = $("lyric-prev");
@@ -9792,9 +9863,22 @@
     if (!S.jukeOff) S.jukeOff = {};
     return (S.jukeList || []).filter((id) => !S.jukeOff[id]);
   }
+  function jukeUnlockCount(tier) {
+    const cap = (typeof PERK_MAX !== "undefined" && PERK_MAX.juke) || 7;
+    const total = (A && A.jukeSize) ? A.jukeSize() : 0;
+    const t = Math.max(0, tier || 0);
+    if (t <= 0 || !total) return 0;
+    if (t >= cap) return total;
+    const base = Math.floor(total / cap);
+    const extra = total % cap;
+    return Math.min(total, t * base + Math.min(t, extra));
+  }
   function fillJukebox() {
     const all = (A && A.JUKE_CORE && A.JUKE_CORE.slice()) || Object.keys((A && A.SONGS) || {});
     if (!S.jukeUnlock) S.jukeUnlock = [];
+    const known = {};
+    all.forEach((id) => { known[id] = true; });
+    S.jukeUnlock = S.jukeUnlock.filter((id) => known[id]);
     const seen = {};
     S.jukeUnlock.forEach((id) => { seen[id] = true; });
     const extra = all.filter((id) => !seen[id]);
@@ -9804,7 +9888,7 @@
     }
     S.jukeUnlock = S.jukeUnlock.concat(extra);
     const t = Math.max(0, S.have.juke || 0);
-    const n = t <= 0 ? 0 : Math.min(all.length, t <= 1 ? 2 : 2 + (t - 1) * 4);
+    const n = jukeUnlockCount(t);
     const keep = (S.jukeList || [])[S.jukeTrack];
     S.jukeList = S.jukeUnlock.slice(0, n);
     const idx = keep ? S.jukeList.indexOf(keep) : -1;
@@ -10201,8 +10285,10 @@
       const rows = S.jukeList.map((sid, i) => {
         const t = (A.SONGS && A.SONGS[sid] && A.SONGS[sid].title) || sid;
         const off = S.jukeOff && S.jukeOff[sid];
+        const len = (A.tuneSeconds && A.tuneSeconds(sid)) || 0;
         return "<div class=\"juke-line" + (i === S.jukeTrack ? " on" : "") + (off ? " dim" : "") + "\">"
           + "<button type=\"button\" class=\"juke-track\" data-juke=\"" + i + "\">" + t + "</button>"
+          + "<span class=\"juke-len\">" + (len ? fmtJuke(len) : "") + "</span>"
           + "<button type=\"button\" class=\"juke-arm" + (off ? " off" : " on") + "\" data-skip=\"" + sid + "\" aria-label=\"" + (off ? "Enable" : "Disable") + "\">" + (off ? "✕" : "✓") + "</button>"
           + "</div>";
       }).join("");
@@ -10218,6 +10304,7 @@
         + "<button type=\"button\" class=\"juke-btn ico\" id=\"juke-next\" aria-label=\"Next\">⏭</button>"
         + "</div>"
         + "<div class=\"juke-prog\"><div class=\"juke-prog-bar\" id=\"juke-bar\"></div></div>"
+        + "<div class=\"juke-times\"><span id=\"juke-el\">0:00</span><span id=\"juke-left\"></span></div>"
         + "<div class=\"juke-row\">"
         + "<button type=\"button\" class=\"juke-btn ico" + (S.jukeShuffle ? " on" : "") + "\" id=\"juke-shuf\" aria-label=\"Shuffle\">🔀</button>"
         + "<button type=\"button\" class=\"juke-btn ico" + (rpt !== "off" ? " on" : "") + "\" id=\"juke-rep\" aria-label=\"Repeat\">" + (rpt === "one" ? "🔂" : "🔁") + "</button>"
