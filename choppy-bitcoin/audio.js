@@ -1339,10 +1339,10 @@ V:Bajo clef=bass name="Mano Izq."
 %%MIDI channel 2
 V:Melodia
 g | f e ^d e | B3 e | c3 e | B3 c | B c B A | (3G2F2E2 | ^d3 E | [E^G]2 z g |
-f e ^d e | B3 e | c3 e | B3 c | B c B A | (3G2F2E2 | ^d3 E | E2 z2 |]
+f e ^d e | B3 e | c3 e | B3 c | B c B A | (3G2F2E2 | ^d3 E | E4 |]
 V:Bajo
 z | z4 | z G E2 | z A E2 | z G E2 | z G ^D E | E4 | B,3 E, | [E,^G,]2 z2 |
-z4 | z G E2 | z A E2 | z G E2 | z G ^D E | E4 | B,3 E, | E,2 z2 |]
+z4 | z G E2 | z A E2 | z G E2 | z G ^D E | E4 | B,3 E, | E,4 |]
 `),
     egans: tune("egans", "Egan's Polka", "polka", `X:1
 T:Egan's Polka
@@ -1393,40 +1393,25 @@ z3 | z3 | z3 | z3 |
 z f a | g f c | B c d | A3 |
 F3- | F3- | F3- | F3 |
 z f a | g f c | B c d | A3 |
-c3 | f3 | E3- | E3- |
-E3 | A B =c | e d B | d =c B |
-d3- | d2 d | e =f g | a =c d |
-e d B | d3- | d2 d | g3 |
-f3 | B A B | c d e | c d e |
-F3 | [=c'ae=c]3 | [d'afd]3 | G3 |
-=F3 | B, =C =F | E D =C | E D =C |
-=F,3 | [=CA,E,=C,]3 | [DA,=F,D,]3 |
+z f a | g f c | B c d | A3 |
+F3- | F3- | F3- | F3 |
+z f a | g f c | B c d | A3 |
 V:Acorde
 z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
 z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
 z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
 z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
-z [FCA,]2 | z [FDB,]2 | z [B,G,]2 | z [GDB,]2 |
-z [DA,=F,]2 | z [E=CA,]2 | z [EB,G,]2 | z [EB,G,D,]2 |
-z [DA,E,=C,]2 | z [DA,F,=C]2 | z [=F=CA,]2 | z [E=CA,]2 |
-z [EB,G,D,]2 | z [DA,E,=C,]2 | z [DA,F,=C]2 | z [GEB,]2 |
-z [FCA,]2 | z [FDB,]2 | z [AEC]2 | z [AFCA,]2 |
-z [DA,] [GDB,] | z3 | z3 | z [GEB,]2 |
-z [A=FDA,]2 | z [=F=CA,]2 | z [AE=C]2 | z [A=F=CA,]2 |
-z [DA,] [GDB,] | z3 | z3 |
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
+z [FDB,]2 | z [FCA,]2 | z [FDB,]2 | z [FCA,]2 |
 V:Bajo
 G,,3 | D,,3 | G,,3 | D,,3 |
 G,,3 | D,,3 | G,,3 | D,,3 |
 G,,3 | D,,3 | G,,3 | D,,3 |
 G,,3 | D,,3 | G,,3 | D,,3 |
-F,,3 | B,,,3 | E,,3 | E,,3 |
-D,,3 | A,,,3 | D,,3 | D,,3 |
-D,,3 | D,,3 | D,,3 | D,,3 |
-D,,3 | D,,3 | D,,3 | E,,3 |
-F,,3 | B,,,3 | E,,3 | E,,3 |
-E,,,3 | [G,,A,,,]3 | [D,,A,,,D,,,]3 | E,,3 |
-E,,3 | E,,3 | E,,3 | E,,3 |
-E,,,3 | [G,,A,,,]3 | [D,,A,,,D,,,]3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |]
 `),
     gym2: tune("gym2", "Gymnopédie No. 2", "classical", `X:1
 T:Gymnopédie No. 2
@@ -1450,56 +1435,20 @@ V:Melodia
 z3 | z3 | z3 | z3 |
 g3 | a g f | e f g | d3 |
 g3 | a g f | e f g | d c2 |
-z3 | z3 | c'3 | f g a |
-g3 | c3 | f3- | f _e d |
-f3- | f g _b | a g f | g3 |
-f3 | z3 | z3 | c'3 |
-_a g f | g3 | f3- | f _e d |
-f3 | d3- | d _e _a | _b3 |
-f3 | z3 | z3 | g3 |
-f g a | e f g | d3 | g3 |
-f g a | e f g | f c2 | z3 |
-z3 | c'3 | f g a | g3 |
-c3 | f3 | g3 | d3- |
-d3- | d3- | d2 f | _b3 |
-a f2 | z3 | z3 | z3 |
-z3 |
+g3 | a g f | e f g | d3 |
+g3 | a g f | e f g | d c2 |
 V:Acorde
 z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
 z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
 z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
-z [GEB,]2 | z [AFCA,]2 | z [cAEC]2 | z [AFCA,]2 |
-z [G_E_B,]2 | z [G_E_B,G,]2 | z [FDA,]2 | z [F_E_B,G,]2 |
-z [FDA,]2 | z [GFD_B,]2 | z [A_ec]2 | z [GD_B,]2 |
-z [AFCA,]2 | z [GD_B,]2 | z [AFCA,]2 | z [cG_E]2 |
-z [c_AFC]2 | z [_BGD_B,]2 | z [FDA,]2 | z [F_E_B,G,]2 |
-z [FDA,]2 | z [GFD_B,]2 | z [_A_EC]2 | z [GD_B,]2 |
-z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 |
-z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 |
-z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 |
-z [AFCA,]2 | z [cAEC]2 | z [AFCA,]2 | z [G_E_B,]2 |
-z [G_E_B,G,]2 | z [FDA,]2 | z [G_E_B,G,]2 | z [FDA,]2 |
-z [FD_B,G,]2 | z [F_E_B,G,]2 | z [FDA,]2 | z [GD_B,]2 |
-z [AFCA,]2 | z [GD_B,]2 | z [AFCA,]2 | z [GD_B,]2 |
-z [GEC]2 |
+z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
+z [GEB,]2 | z [AFCA,]2 | z [GEB,]2 | z [AFCA,]2 |
 V:Bajo
 G,,3 | D,,3 | G,,3 | D,,3 |
 G,,3 | D,,3 | G,,3 | D,,3 |
 G,,3 | D,,3 | G,,3 | D,,3 |
-G,,3 | D,,3 | C,,3 | C,,3 |
-C,,3 | F,,3 | F,,3 | F,,3 |
-F,,3 | F,,3 | F,,3 | _B,,,3 |
-D,,3 | G,,3 | D,,3 | C,,3 |
-C,,3 | C,,3 | F,,3 | F,,3 |
-F,,3 | F,,3 | F,,3 | _B,,,3 |
-D,,3 | G,,3 | D,,3 | G,,3 |
-D,,3 | G,,3 | D,,3 | G,,3 |
-D,,3 | G,,3 | D,,3 | G,,3 |
-D,,3 | C,,3 | C,,3 | C,,3 |
-F,,3 | F,,3 | F,,3 | F,,3 |
-F,,3 | F,,3 | F,,3 | _B,,,3 |
-D,,3 | G,,3 | D,,3 | G,,3 |
-C,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |
+G,,3 | D,,3 | G,,3 | D,,3 |]
 `),
     gym3: tune("gym3", "Gymnopédie No. 3", "classical", `X:1
 T:Gymnopédie No. 3
@@ -1527,14 +1476,6 @@ d3 | z c f | g2 a | d e f |
 B A G | A3 | D3- | D3 |
 e3 | f g f | e d e- | e3- |
 e d c | B c B | A3 | z3 |
-z3 | z3 | a3 | g f e |
-d e f | e d c | e3 | g2 g |
-c B A | B2 c | d3 | e3 |
-z3 | z3 | g2 a | d e f |
-B A G | A3 | D3- | D3 |
-e3 | f g f | e d e- | e3- |
-e d c | B c B | A3 | z3 |
-z3 | z3 | [cAEC]3- | [cAEC]3 |
 V:Acorde
 z [AEC]2 | z [GEB,]2 | z [AEC]2 | z [GEB,]2 |
 z [AEC]2 | z [AEC]2 | z [GD_B,]2 | z [FDA,]2 |
@@ -1543,14 +1484,6 @@ z [BGD]2 | z [f'c'a]2 | z [g'e'b]2 | z [f'c'a]2 |
 z [e'c'a]2 | z [f'c'a]2 | z [f'c'a]2 | z [g'e'b]2 |
 z [a'e'c']2 | z [g'e'b]2 | z [a'e'c']2 | z [g'e'b]2 |
 z [a'e'c']2 | z [g'e'b]2 | z [f'c'a]2 | z [g'e'b]2 |
-z [a'e'c']2 | z [g'e'b]2 | z [a'e'c']2 | z [a'e'c']2 |
-z [g'd'_b]2 | z [f'd'a]2 | z [e'c'a]2 | z [e'bg]2 |
-z [f'c'a]2 | z [e'bg]2 | z [f'c'a]2 | z [a'e'c']2 |
-z [e'c'a]2 | z [f'c'a]2 | z [g'e'b]2 | z [f'c'a]2 |
-z [e'c'a]2 | z [f'c'a]2 | z [f'c'a]2 | z [g'e'b]2 |
-z [a'e'c']2 | z [g'e'b]2 | z [a'e'c']2 | z [g'e'b]2 |
-z [a'e'c']2 | z [g'e'b]2 | z [f'c'a]2 | z [g'e'b]2 |
-z [a'e'c']2 | z [g'e'b]2 | z3 | z3 |
 V:Bajo
 A,,3 | D,,3 | A,,3 | D,,3 |
 A,,3 | C,3 | G,,3 | D,,3 |
@@ -1558,15 +1491,7 @@ A,,3 | E,,3 | G,,3 | D,,3 |
 G,,3 | D,,3 | G,,,3 | G,,,3 |
 G,,,3 | D,,3 | G,,,3 | G,,,3 |
 C,,3 | E,,3 | C,,3 | E,,3 |
-C,,3 | E,,3 | A,,3 | D,,3 |
-A,,3 | D,,3 | A,,3 | C,3 |
-G,,3 | D,,3 | A,,3 | E,,3 |
-E,,3 | E,,3 | D,,3 | D,,3 |
-D,,3 | D,,3 | G,,,3 | G,,,3 |
-G,,,3 | D,,3 | G,,,3 | G,,,3 |
-C,,3 | E,,3 | C,,3 | E,,3 |
-C,,3 | E,,3 | A,,3 | D,,3 |
-A,,3 | D,,3 | [A,,E,,A,,,]3- | [A,,E,,A,,,]3 |
+C,,3 | E,,3 | A,,3 | D,,3 |]
 `),
     alhambra: tune("alhambra", "Recuerdos de la Alhambra", "classical", `X:1
 T:Recuerdos de la Alhambra
@@ -1662,7 +1587,198 @@ A,,24 |
 A,,24 |
 A,,24 |
 A,,24 |]`),
-      katyusha: tune("katyusha", "Katyusha - Matvey Blanter", "march", `X:1
+
+    gnossienne: tune("gnossienne", "Gnossienne No. 1", "classical", `X:1
+T:Gnossienne No. 1
+C:Erik Satie (1890)
+M:4/4
+L:1/8
+Q:1/4=66
+K:C
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 0
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 0
+%%MIDI channel 2
+V:Melodia
+z2 c _e d2 c2 | c =B3 c =B3 | z2 c _e d2 c2 | _e f3 _e f3 |
+z2 c _e d2 c2 | c =B3 _A G3 | F G3 F G3 | _A G3 F4 |
+z2 c _e d2 c2 | c =B3 c =B3 | z2 c _e d2 c2 | _e f3 _e f3 |
+z2 c _e d2 c2 | c =B3 _A G3 | F G3 F G3 | _A G3 F4 |
+_A2 _B2 _A2 G2 | _A2 _B2 _A2 G2 | _A2 G2 G2 F2 | F4 z4 |
+c2 d2 e2 f2 | g2 =b2 g2 f2 | g2 f2 g2 f2 | f2 e2 _d2 c2 |
+c2 =B2 _A2 G2 | G2 F4 z2 |
+z2 c _e d2 c2 | c =B3 _A G3 | F G3 _A G3 | F8 |]
+V:Bajo
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | C,,2 [_E,G, C]2 C,,2 [_E,G, C]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 |
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 |
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | C,,2 [_E,G, C]2 C,,2 [_E,G, C]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 |
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 |
+_B,,2 [_B,_D F]2 _B,,2 [_B,_D F]2 | _B,,2 [_B,_D F]2 _B,,2 [_B,_D F]2 | _B,,2 [_B,_D F]2 _B,,2 [_B,_D F]2 | _B,,2 [_B,_D F]2 _B,,4 |
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 |
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 |
+F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | F,,2 [_A,C F]2 F,,2 [_A,C F]2 | [F,,_A,C F]8 |]
+`),
+    barricadas: tune("barricadas", "A las barricadas", "march", `X:1
+T:A las barricadas
+C:Melodía tradicional (Warszawianka, s. XIX)
+M:4/4
+L:1/8
+Q:1/4=104
+K:Emin
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+G2 G2 A2 B2 | c2 c2 d2 e2 | e2 d2 c2 B2 | A2 G2 E4 |
+G2 G2 A2 B2 | c2 c2 d2 e2 | e2 d2 c2 B2 | E4 E4 |
+B2 B2 c2 B2 | A2 G2 A2 B2 | c2 d2 e2 d2 | c2 B2 A2 G2 |
+G2 G2 A2 B2 | c2 d2 e2 d2 | c2 B2 A2 G2 | E4 E4 |
+G2 G2 A2 B2 | c2 c2 d2 e2 | e2 d2 c2 B2 | A2 G2 E4 |
+G2 G2 A2 B2 | c2 c2 d2 e2 | e2 d2 c2 B2 | E4 E4 |
+B2 B2 c2 B2 | A2 G2 A2 B2 | c2 d2 e2 d2 | c2 B2 A2 G2 |
+G2 G2 A2 B2 | c2 d2 e2 d2 | c2 B2 A2 G2 | E4 E4 |]
+V:Bajo
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,2 [E,G,B,]2 E,2 [G,B,E]2 | A,,2 [A,,C,E,]2 A,,2 [C,E,A,]2 | B,,2 [B,,D,F,]2 E,4 |
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,2 [E,G,B,]2 E,2 [G,B,E]2 | A,,2 [A,,C,E,]2 B,,2 [B,,D,F,]2 | E,4 E,4 |
+B,,2 [B,,D,F,]2 B,,2 [D,F,A,]2 | A,,2 [A,,C,E,]2 E,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 B,,2 [B,,D,F,]2 |
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 B,,2 [B,,D,F,]2 | E,4 E,4 |
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,2 [E,G,B,]2 E,2 [G,B,E]2 | A,,2 [A,,C,E,]2 A,,2 [C,E,A,]2 | B,,2 [B,,D,F,]2 E,4 |
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,2 [E,G,B,]2 E,2 [G,B,E]2 | A,,2 [A,,C,E,]2 B,,2 [B,,D,F,]2 | E,4 E,4 |
+B,,2 [B,,D,F,]2 B,,2 [D,F,A,]2 | A,,2 [A,,C,E,]2 E,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 B,,2 [B,,D,F,]2 |
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 B,,2 [B,,D,F,]2 | E,4 E,4 |]
+`),
+    ebro: tune("ebro", "El paso del Ebro", "march", `X:1
+T:El paso del Ebro (Ay, Carmela)
+C:Tradicional
+M:2/4
+L:1/8
+Q:1/4=108
+K:Amin
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+|: E E E G | F E D2 | E F G2 | F E D2 | E E E G | F E D2 | E F G F | E2 E2 |
+c2 c2 | c B A G | A B c2 | B A E2 | c2 c B | A G A B | c B A G | A2 A2 :|
+E E E G | F E D2 | E F G F | E2 E2 | c2 c2 | c B A G | A B c B | A2 A2 |]
+V:Bajo
+|: A,,2 [A,,C,E,]2 | D,2 [D,F,A,]2 | E,2 [E,G,B,]2 | D,2 [D,F,A,]2 | A,,2 [A,,C,E,]2 | D,2 [G,,B,,D,]2 | E,2 D,2 | A,,2 A,,2 |
+A,,2 [A,,C,E,]2 | E,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 | E,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 | G,,2 [G,,B,,D,]2 | E,2 [E,G,B,]2 | A,,2 A,,2 :|
+A,,2 [A,,C,E,]2 | D,2 [D,F,A,]2 | E,2 D,2 | A,,2 A,,2 | A,,2 [A,,C,E,]2 | E,2 [E,G,B,]2 | A,,2 E,2 | A,,2 A,,2 |]
+`),
+    bellaciao: tune("bellaciao", "Bella Ciao", "march", `X:1
+T:Bella Ciao
+C:Tradicional
+M:4/4
+L:1/8
+Q:1/4=96
+K:Emin
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+|: E2 G2 B2 B2 | B2 A G F2 E2 | D2 F2 A2 A2 | A2 G F E4 |
+E2 G2 B2 B2 | B2 A G F2 E2 | D2 F2 G2 F2 | E4 E4 |
+B2 B2 B2 A G | F2 F2 F2 E D | E2 G2 B2 B2 | B4 z4 |
+B2 B2 B A G F | E2 F2 G2 F2 | E4 E4 | z8 :|
+V:Bajo
+|: E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,2 [E,G,B,]2 B,,2 [B,,D,F,]2 | D,2 [D,F,A,]2 A,,2 [D,F,A,]2 | B,,2 [B,,D,F,]2 E,4 |
+E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,2 [E,G,B,]2 B,,2 [B,,D,F,]2 | D,2 [D,F,A,]2 B,,2 [B,,D,F,]2 | E,4 E,4 |
+E,2 [E,G,B,]2 B,,2 [B,,D,F,]2 | D,2 [D,F,A,]2 B,,2 [B,,D,F,]2 | E,2 [E,G,B,]2 B,,2 [E,G,B,]2 | E,4 z4 |
+E,2 [E,G,B,]2 B,,2 [B,,D,F,]2 | D,2 [D,F,A,]2 B,,2 [B,,D,F,]2 | E,4 E,4 | z8 :|
+`),
+    plaza: tune("plaza", "En la plaza de mi pueblo", "folk", `X:1
+T:En la plaza de mi pueblo
+C:Melodía tradicional (El café de Chinitas)
+M:3/4
+L:1/8
+Q:1/4=96
+K:C
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+|: E2 E2 F2 | G2 A2 G2 | F2 E2 D2 | E4 z2 | E2 E2 F2 | G2 A2 B2 | A2 G2 F2 | E4 z2 |
+G2 G2 A2 | B2 c2 B2 | A2 G2 F2 | E2 D2 E2 | E2 F2 G2 | A2 G2 F2 | E2 D2 B,2 | E4 z2 :|
+V:Bajo
+|: E,,2 [E,G,B,]4 | E,,2 [E,G,B,]4 | D,2 [D,F,A,]4 | E,,2 [E,G,B,]4 | E,,2 [E,G,B,]4 | E,,2 [E,G,B,]4 | C,2 [C,E,G,]4 | E,,2 [E,G,B,]4 |
+G,,2 [G,B,D]4 | C,2 [C,E,G,]4 | D,2 [D,F,A,]4 | E,,2 [E,G,B,]4 | E,,2 [E,G,B,]4 | D,2 [D,F,A,]4 | B,,2 [B,,E,G,]4 | E,,2 [E,G,B,]4 :|
+`),
+    internacional: tune("internacional", "La Internacional", "march", `X:1
+T:La Internacional
+C:Pierre De Geyter (1888)
+M:2/4
+L:1/8
+Q:1/4=96
+K:C
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+z3 G | c3 B | d c G E | A4 |
+F2 z A | d3 c | B A G F | E4 |
+z3 G | c3 B | d c G E | A4 |
+F2 d c | B3 d | f3 B | c4 |
+z2 e d | B4 | A B c A | B4 |
+G2 ^F G | A3 A | d3 c | B4 |
+z3 d | d3 B | G G ^F G | e4 |
+z A B c | B2 d2 | c2 A2 | G4 |
+z2 e2 | c4 | G3 A | A4 |
+F2 d2 | B4 | A3 G | G4 |
+z2 G2 | e4 | d2 G2 | c4 |
+B3 B | A3 ^G | A2 d2 | d4 |
+z2 e2 | c4 | G3 A | A4 |
+F2 d2 | B4 | A3 G | e4 |
+z2 e2 | g4 | f2 e2 | d ^c d e |
+f3 f | e3 e | d3 d | c4 |]
+V:Bajo
+G,,2 [G,B,D]2 | C,2 [E,G,C]2 | G,,2 [G,B,D]2 | F,,2 [F,A,C]2 |
+F,,2 [F,A,C]2 | G,,2 [G,B,D]2 | G,,2 [F,B,D]2 | C,2 [E,G,C]2 |
+G,,2 [G,B,D]2 | C,2 [E,G,C]2 | G,,2 [G,B,D]2 | F,,2 [F,A,C]2 |
+G,,2 [F,B,D]2 | G,,2 [G,B,D]2 | G,,2 [F,B,D]2 | C,2 [E,G,C]2 |
+E,,2 [E,G,B,]2 | G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 | G,,2 [G,B,D]2 |
+G,,2 [G,B,D]2 | F,,2 [F,A,C]2 | G,,2 [G,B,D]2 | G,,2 [G,B,D]2 |
+G,,2 [G,B,D]2 | G,,2 [G,B,D]2 | G,,2 [G,B,D]2 | C,2 [E,G,C]2 |
+F,,2 [F,A,C]2 | G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 | G,,2 [G,B,D]2 |
+C,2 [E,G,C]2 | C,2 [E,G,C]2 | F,,2 [F,A,C]2 | F,,2 [F,A,C]2 |
+G,,2 [F,B,D]2 | G,,2 [G,B,D]2 | G,,2 [G,B,D]2 | G,,2 [G,B,D]2 |
+C,2 [E,G,C]2 | C,2 [E,G,C]2 | G,,2 [G,B,D]2 | C,2 [E,G,C]2 |
+G,,2 [G,B,D]2 | A,,2 [A,,C,E,]2 | D,,2 [D,F,A,]2 | G,,2 [G,B,D]2 |
+C,2 [E,G,C]2 | C,2 [E,G,C]2 | F,,2 [F,A,C]2 | F,,2 [F,A,C]2 |
+G,,2 [F,B,D]2 | G,,2 [G,B,D]2 | C,2 [E,G,C]2 | C,2 [E,G,C]2 |
+C,2 [E,G,C]2 | C,2 [E,G,C]2 | F,,2 [F,A,C]2 | G,,2 [G,B,D]2 |
+F,,2 [F,A,C]2 | C,2 [E,G,C]2 | G,,2 [F,B,D]2 | [C,,E,G,C]4 |]
+`),
+    katyusha: tune("katyusha", "Katyusha - Matvey Blanter", "march", `X:1
 T:Katyusha - Matvey Blanter
 C:Matvey Blanter (1938)
 % Melody used by permission of the composer's heirs, CC BY-SA 4.0
@@ -1692,18 +1808,33 @@ E,2 [E,G,B,]2 E,2 [E,G,B,]2 | D,2 [D,F,A,]2 D,2 [F,A,D]2 | B,,2 [D,F,A,]2 B,,2 [
 E,2 [E,G,B,]2 E,2 [E,G,B,]2 | C,2 [C,E,G,]2 C,2 [E,G,C]2 | B,,2 [D,F,A,]2 B,,2 [D,F,A,]2 | E,2 [E,G,B,]2 E,4 |]
 `),
 
-};
-  A.JUKE_TIERS = [
-    ["bonny", "shady", "fisher", "hole"],
-    ["nightingale", "joeclark", "pigfoot", "cavalry"],
-    ["blueridge", "campaign", "morelli", "boston"],
-    ["york", "artillery", "misty", "toarms"],
-    ["reveille", "bird", "stilly", "arkansas", "cripple", "cluck", "turkey", "soldiers", "redwing", "whiskey", "grenadiers", "leftbehind", "yankee", "garyowen", "chester", "coocoo", "wildwood", "barley", "blossom", "nearer", "dolore", "egans", "gym1", "gym2", "gym3", "alhambra", "katyusha"],
-  ];
-  A.JUKE_CORE = A.JUKE_TIERS.flat();
+  };
+  A.JUKE_CORE = Object.keys(A.SONGS);
+  A.jukeSplit = (total, tier) => {
+    const cap = 7;
+    const n = Math.max(0, total | 0);
+    const t = Math.max(0, tier | 0);
+    if (!n || !t) return 0;
+    const base = Math.floor(n / cap);
+    if (t >= cap) return n;
+    return Math.min(n, t * base);
+  };
+  A.JUKE_TIERS = (() => {
+    const cap = 7;
+    const ids = A.JUKE_CORE;
+    const base = Math.floor(ids.length / cap);
+    const tiers = [];
+    let at = 0;
+    for (let t = 1; t <= cap; t++) {
+      const take = t === cap ? ids.length - at : base;
+      tiers.push(ids.slice(at, at + take));
+      at += take;
+    }
+    return tiers;
+  })();
   A.jukePool = (tier) => {
-    const n = Math.max(1, Math.min(A.JUKE_TIERS.length, tier || 1));
-    return A.JUKE_TIERS.slice(0, n).flat();
+    const n = A.jukeSplit(A.JUKE_CORE.length, tier || 0);
+    return A.JUKE_CORE.slice(0, n);
   };
   A.jukeSize = () => A.JUKE_CORE.length;
   A.onJukeEnd = null;
