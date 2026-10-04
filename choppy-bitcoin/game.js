@@ -883,7 +883,7 @@
     mp: false, worldSeed: 0, worldRand: null, mpOver: false, mpErr: "", mpJoinCode: "",
     mpRules: null, mpPlayAt: 0, mpSlot: 0, btcColdAt: 0, spectate: false, finished: false,
     mpRoundOver: false, mpSeriesOver: false, mpSeriesWins: {}, mpGameN: 1, mpNextAt: 0, mpRematchOn: false,
-    jobTrack: null, jobOffer: null, jobName: "",
+    jobTrack: null, jobOffer: null, jobName: "", jobArcPending: "", jobArcQueue: [],
     have: { dca: 0, ff: 0, adopt: 0, manip: 0, candy: 0, juke: 0, aibud: 0, job: 0, market: 0, chance: 0, opsec: 0 },
     poolTier: { dca: 1, ff: 1, adopt: 1, manip: 1, candy: 1, juke: 1, aibud: 1, job: 1, market: 1, chance: 1, opsec: 1 },
     offerSeq: [1, 2], nextOffer: 1, offersDone: 0, perkResume: null, perkFib: 0,
@@ -1286,7 +1286,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.jobArcPending = ""; S.jobArcQueue = []; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -1764,6 +1764,15 @@
       if (S.jobTrack == null) S.jobTrack = (S.jobOffer != null ? S.jobOffer : ((Math.random() * JOBS.length) | 0));
       S.jobOffer = S.jobTrack;
       assignJob();
+      const tier = S.have.job || 0;
+      if (JOB_ARC_MILESTONES.indexOf(tier) >= 0) {
+        const id = jobArcCardId(S.jobTrack, tier);
+        if (id) {
+          if (!Array.isArray(S.jobArcQueue)) S.jobArcQueue = [];
+          S.jobArcQueue.push(id);
+          if (!S.jobArcPending) S.jobArcPending = S.jobArcQueue.shift();
+        }
+      }
     }
     if (kind === "chance") planChanceWindow(S.candles || 0);
     if (kind === "opsec") applyOpsec(S.have.opsec);
@@ -1817,9 +1826,9 @@
   function jobPay() {
     return jobPayAt(currentJob(), S.have.job || 0);
   }
-  function fillJob(text) {
+  function fillJob(text, tierOverride) {
     const job = currentJob();
-    const tier = Math.max(1, Math.min(7, S.have.job || 1));
+    const tier = Math.max(1, Math.min(7, tierOverride || S.have.job || 1));
     const es = chanceLang();
     const title = job ? jobTitleAt(job, tier) : (es ? "el puesto" : "the job");
     const career = job ? (es ? (job.nameEs || job.name) : job.name) : (es ? "el trabajo" : "work");
@@ -2131,22 +2140,15 @@
     usedcar: { en: "Nico has found a 2009 Honda Fit. He looks under the hood, sees Sharpie, and calls it basically new.", es: "Nico encontró un Honda Fit 2009. Mira bajo el capó, ve Sharpie, y lo llama casi nuevo." },
     tetris: { en: "Marek takes you to a bar with a Tetris cabinet nobody uses. He plays, then says it is your turn.", es: "Marek te lleva a un bar con un cabinet de Tetris que nadie usa. Juega, y después dice que es tu turno." },
     unclemike: { en: "Dinner with Uncle Mike is excellent until the check. He will not tip, because he thinks the restaurant should pay its staff. The waiter is still standing there.", es: "La cena con el tío Mike está excelente hasta la cuenta. No quiere dejar propina, porque cree que el restorán debería pagarles a los empleados. El mozo sigue ahí parado." },
-    jobBadge: { en: "They hand you a badge and ask you to say the title. {title}. The wage is {pay}.", es: "Te dan una credencial y te piden que digas el cargo. {title}. El sueldo es {pay}." },
-    jobLunch: { en: "Someone from {career} wants to know what a {title} actually does. You have a sandwich.", es: "Alguien de {career} quiere saber qué hace de verdad un {title}. Vos tenés un sándwich." },
-    jobLate: { en: "The shift does not end. Staying, they say, would add {half}.", es: "El turno no termina. Quedarse, dicen, sumaría {half}." },
-    jobReview: { en: "They read the title back to you, {title}, and slide a bonus across the table. {pay}.", es: "Te leen el cargo, {title}, y deslizan un bono sobre la mesa. {pay}." },
-    jobStation: { en: "They give you a better corner. People start using {title} without smiling first.", es: "Te dan un rincón mejor. La gente empieza a usar {title} sin sonreír primero." },
-    jobPoach: { en: "Someone who already knows the wage, {pay}, offers {double} to do the same work under newer lights.", es: "Alguien que ya sabe el sueldo, {pay}, ofrece {double} por hacer el mismo trabajo con luces más nuevas." },
-    jobNight: { en: "Tonight {title} is not a costume. When it is over, someone leaves {pay} on the bench.", es: "Esta noche {title} no es un disfraz. Cuando termina, alguien deja {pay} en el banco." },
-    jobCrown: { en: "Nothing sits above {title}. The wage is {pay}. It feels smaller than the quiet.", es: "No hay nadie por encima de {title}. El sueldo es {pay}. Se siente más chico que el silencio." }
+
   };
   function cardTldr(card) {
     if (!card) return "";
     if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return stampNation(warTldr(card.id));
-    const row = CHANCE_TLDR[card.id];
+    const row = card.tldr || CHANCE_TLDR[card.id];
     if (!row) return "";
     let line = chanceLang() ? (row.es || row.en) : row.en;
-    if (card.job) line = fillJob(line);
+    if (card.job) line = fillJob(line, card.jobTier);
     if (line.indexOf("{offer}") >= 0) line = line.replace(/\{offer\}/g, formatPayCost(wealthUsd() * 1.35));
     if (line.indexOf("{gift}") >= 0) {
       const gift = S.arcPending ? formatBagDelta(bagSnap(), S.arcPending) : "";
@@ -2423,18 +2425,19 @@
     { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Defeated", titleEs:"Bloque derrotado", body:"After its third failed assault, a bloc withdraws and recognizes Bitcoin Country as a nation.", bodyEs:"Tras su tercer ataque fallido, un bloque se retira y reconoce a Bitcoin Country como nación." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. One bloc filed its final protest and lost the sea lane. Another ran out of ships it was willing to acknowledge. The third, which never apologizes, stopped answering the radio.\n\nThe island still stands. By morning, statements begin to arrive. Some governments call for negotiations; others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a moment, then points to the new border. “You really did it.” By noon, the bakery has reopened, for reasons no one can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se acabó. Un bloque presentó su última protesta y perdió la ruta marítima. Otro se quedó sin barcos que estuviera dispuesto a reconocer. El tercero, que nunca se disculpa, dejó de responder por radio.\n\nLa isla sigue en pie. Por la mañana comienzan a llegar comunicados. Algunos gobiernos piden negociaciones; otros evitan cuidadosamente la palabra país. San Arnaldo no. Marek estudia el mapa por un momento y señala la nueva frontera. «De verdad lo lograste». Al mediodía, la panadería vuelve a abrir por razones que nadie puede explicar.\n\nTres bloques atacaron. Tres bloques fracasaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: EL CUARTO COLOR. CONTINÚA JUGANDO." },
     { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defensive line breaks. The last defenders fall back from the shore as the fleet takes the port. By nightfall, the flag is down and the transmitters are silent. Bitcoin Country's bid for independence ends here. The run is over.", bodyEs:"La línea defensiva se rompe. Los últimos defensores retroceden desde la costa mientras la flota toma el puerto. Al caer la noche, la bandera ha sido retirada y los transmisores están en silencio. El intento de independencia de Bitcoin Country termina aquí. La partida ha terminado." },
-    { id:"jobBadge", job:true, kind:"report", when:()=>(S.have.job||0)>=1, title:"The Badge", titleEs:"La credencial", body:"On the first morning they hand you a badge and ask you to say the title out loud. {title}. It sounds like it already belongs to someone else. A woman in the hallway nods as if she has heard worse. The wage, when you finally find it, is {pay}.", bodyEs:"La primera mañana te dan una credencial y te piden que digas el cargo en voz alta. {title}. Suena a alguien que ya hizo esto. Una mujer en el pasillo asiente como si hubiera oído peores. El sueldo, cuando por fin lo encontrás, es {pay}." },
-    { id:"jobLunch", job:true, kind:"choice", after:["jobBadge"], when:()=>(S.have.job||0)>=1, title:"Lunch", titleEs:"El almuerzo", body:"At lunch someone from {career} sits down without asking. They want to know what a {title} actually does between the parts people notice. You have a sandwich. They have time.", bodyEs:"En el almuerzo alguien de {career} se sienta sin preguntar. Quiere saber qué hace de verdad un {title} entre las partes que la gente nota. Vos tenés un sándwich. Ellos tienen tiempo.", opts:[{k:"a",label:"Tell them the truth",labelEs:"Decirles la verdad"},{k:"b",label:"Eat in silence",labelEs:"Comer en silencio"}] },
-    { id:"jobLate", job:true, kind:"choice", after:["jobLunch"], when:()=>(S.have.job||0)>=2, title:"After Hours", titleEs:"Después de hora", body:"The shift was supposed to end. It does not. Someone senior says the {title} should be the one who stays, and that staying would add {half}. The building gets quiet enough to feel like a decision.", bodyEs:"El turno tenía que terminar. No termina. Alguien con más rango dice que el {title} debería ser quien se queda, y que quedarse suma {half}. El edificio se calla lo suficiente como para que se sienta una decisión.", opts:[{k:"a",label:"Stay",labelEs:"Quedarse"},{k:"b",label:"Go home",labelEs:"Irse a casa"}] },
-    { id:"jobReview", job:true, kind:"report", after:["jobLate"], when:()=>(S.have.job||0)>=3, title:"The Review", titleEs:"La evaluación", body:"The review is shorter than the wait outside the door. They read the title back to you, {title}, as if checking that you still answer to it. Then they slide a bonus across the table. {pay}.", bodyEs:"La evaluación es más corta que la espera afuera de la puerta. Te leen el cargo, {title}, como para ver si todavía respondés a ese nombre. Después deslizan un bono sobre la mesa. {pay}." },
-    { id:"jobStation", job:true, kind:"report", after:["jobReview"], when:()=>(S.have.job||0)>=4, title:"A Better Corner", titleEs:"Un rincón mejor", body:"They move you. The new corner has a window, a chair that does not wobble, and a plaque with nothing on it until you say the title. {title}. In {career}, people start using it without smiling first.", bodyEs:"Te mudan. El rincón nuevo tiene una ventana, una silla que no se mueve, y una placa vacía hasta que decís el cargo. {title}. En {career}, la gente empieza a usarlo sin sonreír primero." },
-    { id:"jobPoach", job:true, kind:"choice", after:["jobStation"], when:()=>(S.have.job||0)>=5, title:"The Other Table", titleEs:"La otra mesa", body:"A stranger already knows the title, {title}, and the wage that comes with it, {pay}. They offer {double} to do the same work where the lights are newer. They do not ask you to leave {career}.", bodyEs:"Un desconocido ya sabe el cargo, {title}, y el sueldo que lo acompaña, {pay}. Ofrece {double} por hacer el mismo trabajo donde las luces son más nuevas. No te pide que dejes {career}.", opts:[{k:"a",label:"Hear them out",labelEs:"Escucharlos"},{k:"b",label:"Stay where you are",labelEs:"Quedarte donde estás"}] },
-    { id:"jobNight", job:true, kind:"report", after:["jobPoach"], when:()=>(S.have.job||0)>=6, title:"The Night It Counts", titleEs:"La noche que importa", body:"It is late, and the building has that hollow sound. Tonight {title} is not a costume. Something in {career} goes wrong if you treat it like one. When it is over, someone who never thanks anyone leaves {pay} on the bench.", bodyEs:"Es tarde, y el edificio tiene ese sonido hueco. Esta noche {title} no es un disfraz. Algo en {career} sale mal si lo tratás como si lo fuera. Cuando termina, alguien que nunca agradece deja {pay} en el banco." },
-    { id:"jobCrown", job:true, kind:"report", after:["jobNight"], when:()=>(S.have.job||0)>=7, title:"The Top of It", titleEs:"La cima", body:"There is no one left above a {title}. The ladder of {career} ends where your name should be. People wait for you to speak first. The wage is {pay}. It feels smaller than the quiet.", bodyEs:"No queda nadie por encima de un {title}. La escalera de {career} termina donde debería estar tu nombre. La gente espera que hables primero. El sueldo es {pay}. Se siente más chico que el silencio." }
+    
   ];
+  CHANCE_CARDS.push(...JOB_ARC_CARDS);
   function resolveChance(card, opt) {
     const es = chanceLang();
     const say = (en, esTxt) => (es && esTxt ? esTxt : en);
+    if (card && card.jobMilestone) {
+      const job = currentJob();
+      const title = jobTitleAt(job, card.jobTier);
+      const pay = jobPayAt(job, card.jobTier);
+      arcPay(pay);
+      return say("You handle the moment as " + title + " and earn " + money(pay) + ".", "Resuelves el momento como " + title + " y ganas " + money(pay) + ".");
+    }
     if (card.id === "landfill") {
       if (opt === "c") return say("You stay in bed. Nico can dig at Docksway without you.",
         "Te quedas en la cama. Nico puede excavar en Docksway sin ti.");
@@ -3061,6 +3064,7 @@
   }
   function closeArc(card){
     const id=card&&card.id;
+    if (S.jobArcPending === id) S.jobArcPending = (Array.isArray(S.jobArcQueue) && S.jobArcQueue.length) ? S.jobArcQueue.shift() : "";
     const launch=(id==="theAnswer"||id==="blocAssault")&&S.bcDefensePending;
     const chainCabinet=id==="theQuestion"&&!!S.bcIndependent&&!S.chanceUsed.cabinet;
     const chainDecl=id==="cabinet";
@@ -3165,7 +3169,8 @@
     const src = pool.length ? pool : CHANCE_CARDS.filter((c) => arcUnlocked(c) && !S.chanceUsed[c.id]);
     if (!src.length && !window.__arcForce) return;
     const forced = window.__arcForce && CHANCE_CARDS.find((c) => c.id === window.__arcForce);
-    let card = forced || (src.length ? src[(Math.random() * src.length) | 0] : null);
+    const pendingJob = S.jobArcPending && CHANCE_CARDS.find((c) => c.id === S.jobArcPending && !S.chanceUsed[c.id] && arcUnlocked(c));
+    let card = forced || pendingJob || (src.length ? src[(Math.random() * src.length) | 0] : null);
     if (!forced && S.arcBias) {
       const bias = CHANCE_CARDS.find((c) => c.id === S.arcBias);
       if (bias && !S.chanceUsed[bias.id] && arcUnlocked(bias)) card = bias;
@@ -3188,7 +3193,7 @@
     const es0 = chanceLang();
     const warBody = applyWarCard(card);
     let body = warBody != null ? warBody : weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
-    if (card.job) body = fillJob(body);
+    if (card.job) body = fillJob(body, card.jobTier);
     if (card.kind === "report") {
       const before = bagSnap();
       S.chanceReadyNote = stampNation(resolveChance(card, "ok"));
@@ -9069,7 +9074,7 @@
       let title = es ? (card.titleEs || card.title) : card.title;
       if (S.chanceTitle) title = es ? (S.chanceTitle.es || S.chanceTitle.en || title) : (S.chanceTitle.en || title);
       if (S.battleTutOpen) title = t("tutBattle");
-      if (card.job) title = fillJob(title);
+      if (card.job) title = fillJob(title, card.jobTier);
       title = stampNation(title);
       const body = stampNation(S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body)));
       const pic = chanceArtHtml(card.id);
