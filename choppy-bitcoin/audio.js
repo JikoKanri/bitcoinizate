@@ -1662,13 +1662,43 @@ A,,24 |
 A,,24 |
 A,,24 |
 A,,24 |]`),
-  };
+      katyusha: tune("katyusha", "Katyusha - Matvey Blanter", "march", `X:1
+T:Katyusha - Matvey Blanter
+C:Matvey Blanter (1938)
+% Melody used by permission of the composer's heirs, CC BY-SA 4.0
+M:4/4
+L:1/8
+Q:1/4=112
+K:Emin
+%%MIDI gchord off
+%%score (Melodia) (Bajo)
+V:Melodia clef=treble name="Melodia"
+%%MIDI program 24
+%%MIDI channel 1
+V:Bajo clef=bass name="Bajo"
+%%MIDI program 24
+%%MIDI channel 2
+V:Melodia
+|: B2 B2 B2 G2 | A2 B2 e4 | d2 c2 B2 A2 | G2 A2 B4 |
+B2 B2 B2 G2 | A2 B2 e2 g2 | f2 d2 e2 B2 | e4 e4 :|
+g2 g2 g2 e2 | f2 g2 a4 | g2 f2 e2 d2 | e2 f2 g4 |
+g2 g2 g2 e2 | f2 g2 a2 b2 | a2 f2 g2 e2 | e4 e4 |
+B2 B2 B2 G2 | A2 B2 e2 g2 | f2 d2 e2 B2 | e4 e4 |]
+V:Bajo
+|: E,2 [E,G,B,]2 E,2 [E,G,B,]2 | A,,2 [A,,C,E,]2 A,,2 [C,E,A,]2 | B,,2 [D,F,A,]2 B,,2 [D,F,A,]2 | E,2 [E,G,B,]2 E,2 [G,B,E]2 |
+E,2 [E,G,B,]2 E,2 [E,G,B,]2 | C,2 [C,E,G,]2 C,2 [E,G,C]2 | B,,2 [D,F,A,]2 B,,2 [D,F,A,]2 | E,2 [E,G,B,]2 E,4 :|
+E,2 [E,G,B,]2 E,2 [E,G,B,]2 | D,2 [D,F,A,]2 D,2 [F,A,D]2 | C,2 [C,E,G,]2 C,2 [E,G,C]2 | G,,2 [G,B,D]2 G,,2 [B,D G]2 |
+E,2 [E,G,B,]2 E,2 [E,G,B,]2 | D,2 [D,F,A,]2 D,2 [F,A,D]2 | B,,2 [D,F,A,]2 B,,2 [D,F,A,]2 | E,2 [E,G,B,]2 E,4 |
+E,2 [E,G,B,]2 E,2 [E,G,B,]2 | C,2 [C,E,G,]2 C,2 [E,G,C]2 | B,,2 [D,F,A,]2 B,,2 [D,F,A,]2 | E,2 [E,G,B,]2 E,4 |]
+`),
+
+};
   A.JUKE_TIERS = [
     ["bonny", "shady", "fisher", "hole"],
     ["nightingale", "joeclark", "pigfoot", "cavalry"],
     ["blueridge", "campaign", "morelli", "boston"],
     ["york", "artillery", "misty", "toarms"],
-    ["reveille", "bird", "stilly", "arkansas", "cripple", "cluck", "turkey", "soldiers", "redwing", "whiskey", "grenadiers", "leftbehind", "yankee", "garyowen", "chester", "coocoo", "wildwood", "barley", "blossom", "nearer", "dolore", "egans", "gym1", "gym2", "gym3", "alhambra"],
+    ["reveille", "bird", "stilly", "arkansas", "cripple", "cluck", "turkey", "soldiers", "redwing", "whiskey", "grenadiers", "leftbehind", "yankee", "garyowen", "chester", "coocoo", "wildwood", "barley", "blossom", "nearer", "dolore", "egans", "gym1", "gym2", "gym3", "alhambra", "katyusha"],
   ];
   A.JUKE_CORE = A.JUKE_TIERS.flat();
   A.jukePool = (tier) => {
