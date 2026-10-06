@@ -357,57 +357,90 @@ body {
   filter: none !important;
   mix-blend-mode: normal !important;
 }
-.overlay.dock.chance-ui h1 {
+.overlay.dock.chance-ui .arc-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 8px 0;
+  padding: 0;
+  min-height: 26px;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.overlay.dock.chance-ui h1,
+.overlay.dock.chance-ui .arc-head h1 {
   text-align: left;
-  padding-right: 72px;
+  margin: 0;
+  padding: 0;
+  min-height: 24px;
   font-size: 22px;
   line-height: 1.15;
   font-weight: 700;
   letter-spacing: -0.02em;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.overlay.dock.chance-ui .arc-top-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+  white-space: nowrap;
 }
 .overlay.dock.chance-ui .arc-tldr-tog {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  z-index: 24;
-  min-height: 22px;
-  min-width: 52px;
+  position: static;
+  min-height: 24px;
+  min-width: 48px;
   padding: 2px 8px;
   border: 1px solid var(--gold);
   background: transparent;
   color: var(--gold);
   font: inherit;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  line-height: 1;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .overlay.dock.chance-ui .arc-tldr-tog.on {
   background: var(--gold);
   color: #120c02;
 }
 .overlay.dock.chance-ui .arc-size-tog {
-  position: absolute;
-  top: 32px;
-  right: 8px;
-  z-index: 24;
-  min-height: 22px;
-  min-width: 52px;
-  padding: 2px 8px;
+  position: static;
+  min-height: 24px;
+  min-width: 28px;
+  width: 28px;
+  padding: 2px 0;
+  text-align: center;
   border: 1px solid var(--gold);
   background: transparent;
   color: var(--gold);
   font: inherit;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  line-height: 1;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .overlay.dock.chance-ui .arc-title {
   text-decoration: none;
