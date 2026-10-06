@@ -346,9 +346,11 @@ body {
   gap: 8px;
 }
 .overlay.dock.chance-ui .chance-art {
-  width: 168px;
-  height: 168px;
-  border-radius: 18px;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  aspect-ratio: 21 / 9;
+  border-radius: 12px;
   object-fit: contain;
   background: #3a3020;
   align-self: center;
@@ -446,6 +448,16 @@ body {
   text-align: left;
   white-space: pre-wrap;
 }
+.overlay.dock.chance-ui .arc-result {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--gold);
+}
 .overlay.dock.chance-ui .arc-actions {
   width: 100%;
   display: flex;
@@ -489,7 +501,7 @@ body {
   height: auto;
   aspect-ratio: 1 / 1;
   max-height: 46vh;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 12px;
 }
 .overlay.dock.chance-ui.fest-ui .arc-body {
@@ -524,12 +536,19 @@ html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-body { font-size: 1
 .overlay.dock .perk-list .cta { min-height: 32px; font-size: 10px; }
 .chance-art,
 video.chance-art {
-  width: 184px; height: 184px; border-radius: 18px;
-  object-fit: contain; border: 2px solid var(--gold);
-  background: #3a3020; flex: 0 0 auto;
-  filter: none; mix-blend-mode: normal;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  aspect-ratio: 21 / 9;
+  border-radius: 12px;
+  object-fit: contain;
+  border: 2px solid var(--gold);
+  background: #3a3020;
+  flex: 0 0 auto;
+  filter: none;
+  mix-blend-mode: normal;
 }
-.overlay.dock .chance-art { width: 72px; height: 72px; }
+.overlay.dock .chance-art { width: 100%; height: auto; max-height: 22vh; aspect-ratio: 21 / 9; }
 .overlay.dock .opt-item { min-height: 30px; font-size: 11px; }
 .overlay.dock .opt-menu { gap: 4px; }
 .overlay.dock .cta { min-height: 30px; min-width: 0; padding: 0 10px; font-size: 11px; }

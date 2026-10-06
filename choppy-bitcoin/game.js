@@ -2227,7 +2227,7 @@
     proposal: { en: "The lake is getting dark and the ring is in your pocket. You ask Lena to marry you. She says yes.", es: "El lago se oscurece y el anillo está en el bolsillo. Le pedís a Lena que se case con vos. Dice que sí." },
     wedding: { en: "You and Lena are getting married. There are more decisions than you expected. Most of hers win.", es: "Se casan con Lena. Hay más decisiones de las que esperabas. Ganan casi todas las de ella." },
     honeymoon: { en: "You and Lena leave with one rule: no checking the portfolio. She takes your phone. There are three possible trips.", es: "Se van con una regla: no mirar el portfolio. Ella te saca el teléfono. Hay tres viajes posibles." },
-    pregnancy: { en: "Two lines on a test. You and Lena are going to have a baby. The first costs come to $450.", es: "Dos rayas en un test. Van a tener un hijo con Lena. Los primeros gastos son $450." },
+    pregnancy: { en: "Two lines on a test. You and Lena are going to have a baby. The first bills arrive.", es: "Dos rayas en un test. Van a tener un hijo con Lena. Llegan las primeras cuentas." },
     baby: { en: "The baby arrives. Everyone is tired, including Paco. You start thinking about the future you want.", es: "Llega el bebé. Todos están cansados, Paco también. Empezás a pensar en el futuro que querés." },
     cousin: { en: "Nico found a new token. He says it will multiply by Friday. What it does, he says, is not the important part.", es: "Nico encontró un token nuevo. Dice que se multiplica para el viernes. Qué hace, dice, no es la parte importante." },
     speeding: { en: "You are a little over the limit. Same corner. Same officer. Same bad decision.", es: "Vas un poco arriba del límite. La misma esquina. El mismo oficial. La misma mala decisión." },
@@ -2269,7 +2269,7 @@
   }
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
-      title: "The Landfill", titleEs: "The Landfill",
+      title: "The Landfill", titleEs: "El basural",
       body: "At 1:14 a.m., Nico sends a voice message. The photo is dark: a truck, and a shovel leaning against the hood.\n\n\"I'm in Wales,\" he says. \"They let me dig Docksway. A USB with 8,000 BTC was supposedly lost there in 2009. I want a partner, not a spectator.\"\n\nFrom the other side of the bed, Lena opens one eye. \"If you put money into a treasure hunt at 1:14 a.m., the next time you're about to come I'm calling you Fartface.\"\n\nYou look at the photo again. The shovel does look surprisingly convincing.",
       bodyEs: "A la 1:14 a.m., Nico manda un audio. La foto está oscura: un camión, y una pala apoyada en el capó.\n\n\"Estoy en Gales\", dice. \"Me dejaron excavar Docksway. Ahí se habría perdido en 2009 un USB con 8.000 BTC. Quiero un socio, no un espectador.\"\n\nDel otro lado de la cama, Lena abre un ojo. \"Si metés plata en una búsqueda del tesoro a la 1:14 a.m., la próxima vez que estés por acabar te voy a decir Cara de pedo.\"\n\nVolvés a mirar la foto. La pala se ve, sorprendentemente, convincente.",
       opts: [
@@ -2315,13 +2315,13 @@
       body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
       bodyEs: "Un scooter de delivery pega tu auto a muy baja velocidad. Nadie sale realmente lastimado. El pibe se disculpa seis veces. Vos te disculpás dos. Nadie sabe por qué lo hiciste." },
     { id: "wine", kind: "choice", after: ["landfill"],
-      title: "Wine", titleEs: "Wine",
+      title: "Wine", titleEs: "El vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins.",
       bodyEs: "Es viernes a la noche en lo de Marek. Hay una botella de vino, la cena a medias y 12 Monkeys en pausa. Así suelen pasar el tiempo: vino, películas viejas y una charla que se alarga más de lo planeado. Esta noche, como siempre, termina en una discusión sobre la I.A. y el futuro. Vos sos el entusiasta. Marek sabe más, y confía menos en la gente. Ninguno gana.",
       opts: [
-        { k: "a", label: "Keep talking", labelEs: "Keep talking" },
-        { k: "b", label: "Get ice cream", labelEs: "Get ice cream" },
-        { k: "c", label: "Cab home", labelEs: "Cab home" }
+        { k: "a", label: "Keep talking", labelEs: "Seguir hablando" },
+        { k: "b", label: "Get ice cream", labelEs: "Ir por un helado" },
+        { k: "c", label: "Cab home", labelEs: "Volver en taxi" }
       ] },
     { id: "casino", kind: "choice", after: ["landfill"],
       title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
@@ -2337,8 +2337,8 @@
       body: "Marek invites you to a poker game. Not a casino. Just people he knows, sitting around a table late at night. He is already there when you arrive, drinking wine and watching the game. He looks at your chips. \"You're playing?\" \"I guess.\" He nods. \"Good.\"",
       bodyEs: "Marek te invita a un póker. No es un casino. Gente que él conoce, mesa de madrugada. Ya está cuando llegás, con vino, mirando el juego. Mira tus fichas. \"¿Jugás?\" \"Supongo.\" Asiente. \"Bien.\"",
       opts: [
-        { k: "a", label: "Buy in · 8%", labelEs: "Buy-in · 8%" },
-        { k: "b", label: "Buy in · 25%", labelEs: "Buy-in · 25%" },
+        { k: "a", label: "Buy in · 8%", labelEs: "Entrada · 8%" },
+        { k: "b", label: "Buy in · 25%", labelEs: "Entrada · 25%" },
         { k: "c", label: "Stay at the pier", labelEs: "Quedarte en el muelle" }
       ] },
     { id: "uncle", kind: "report",
@@ -2430,18 +2430,18 @@
         { k: "c", label: "Patagonia · 4%", labelEs: "Patagonia · 4%" }
       ] },
     { id: "pregnancy", kind: "report", after: ["honeymoon"],
-      title: "Being Four", titleEs: "Being Four",
-      body: "Two lines on a test change everything. You and Lena are going to have a baby. For a few seconds neither of you says anything. Paco yawns. You look at him and say, four. Lena smiles. There will be doctors, appointments, preparations, and a lot of things to pay for. The first costs come to $450. You sleep surprisingly well that night.",
-      bodyEs: "Dos rayas en un test lo cambian todo. Van a tener un hijo con Lena. Por unos segundos ninguno dice nada. Paco bosteza. Lo mirás y decís: cuatro. Lena sonríe. Van a venir médicos, turnos, preparativos y un montón de cosas para pagar. Los primeros gastos son $450. Esa noche dormís sorprendentemente bien." },
+      title: "Being Four", titleEs: "Somos cuatro",
+      body: "Two lines on a test change everything. You and Lena are going to have a baby. For a few seconds neither of you says anything. Paco yawns. You look at him and say, four. Lena smiles. There will be doctors, appointments, preparations, and a lot of things to pay for. The first bills arrive. You sleep surprisingly well that night.",
+      bodyEs: "Dos rayas en un test lo cambian todo. Van a tener un hijo con Lena. Por unos segundos ninguno dice nada. Paco bosteza. Lo mirás y decís: cuatro. Lena sonríe. Van a venir médicos, turnos, preparativos y un montón de cosas para pagar. Llegan las primeras cuentas. Esa noche dormís sorprendentemente bien." },
     { id: "baby", kind: "choice", after: ["pregnancy"],
       title: "The night must fade and give to light a brand new day",
-      titleEs: "The night must fade and give to light a brand new day",
+      titleEs: "La noche tiene que irse y dejar la luz de un día nuevo",
       body: "The baby arrives. You are tired, Lena is tired, and Paco is confused. Kids grow fast. You start thinking about the kind of future you want to build.",
       bodyEs: "Llega el bebé. Vos estás cansado, Lena está cansada y Paco está confundido. Los chicos crecen rápido. Empezás a pensar en el futuro que querés construir.",
       opts: [
-        { k: "a", label: "Set things up properly", labelEs: "Set things up properly" },
-        { k: "b", label: "Keep it simple", labelEs: "Keep it simple" },
-        { k: "c", label: "Send a PDF of financial advice", labelEs: "Send a PDF of financial advice" }
+        { k: "a", label: "Set things up properly", labelEs: "Armarlo bien" },
+        { k: "b", label: "Keep it simple", labelEs: "Dejarlo simple" },
+        { k: "c", label: "Send a PDF of financial advice", labelEs: "Mandar un PDF de consejos" }
       ] },
     { id: "cousin", kind: "choice", after: ["landfill"],
       title: "Nico's New Thing", titleEs: "La nueva de Nico",
@@ -2484,50 +2484,50 @@
         { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek" }
       ] },
     { id: "unclemike", kind: "choice",
-      title: "Fancy Dinner with Uncle Mike", titleEs: "Fancy Dinner with Uncle Mike",
+      title: "Fancy Dinner with Uncle Mike", titleEs: "Cena cara con el tío Mike",
       body: "Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customers. You agree with him. You also want to go home. The waiter is still standing there, and you look at the tip line again.",
       bodyEs: "El tío Mike está de paso y se encuentran en un restorán caro. La comida es excelente y el vino es excelente, hasta que llega la cuenta. La estudia, mira la línea de la propina y deja la lapicera. ¿Por qué, quiere saber, les está pagando el sueldo? Le explicás que la propina se espera. Ese, dice, es el problema, y arranca con un discurso sobre restoranes que deberían pagarles a sus empleados en vez de dejárselo a los clientes. Estás de acuerdo. También te querés ir a casa. El mozo sigue ahí parado, y volvés a mirar la línea de la propina.",
       opts: [
-        { k: "a", label: "Leave a 20% tip", labelEs: "Leave a 20% tip" },
-        { k: "b", label: "Leave no tip", labelEs: "Leave no tip" },
-        { k: "c", label: "Leave a small voluntary tip", labelEs: "Leave a small voluntary tip" }
+        { k: "a", label: "Leave a 20% tip", labelEs: "Dejar 20% de propina" },
+        { k: "b", label: "Leave no tip", labelEs: "No dejar propina" },
+        { k: "c", label: "Leave a small voluntary tip", labelEs: "Dejar una propina chica" }
       ] }
 ,
-    { id:"justInCase", kind:"report", title:"Just in Case", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years." },
-    { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you." },
-    { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what." },
-    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published." },
-    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not." },
-    { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist." },
-    { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", opts:[{k:"a",label:"Go see the island · $1,800"},{k:"b",label:"This is insane"}] },
-    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", opts:[{k:"a",label:"Buy the island"},{k:"b",label:"Walk away"}] },
-    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”" },
-    { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", opts:[{k:"a",label:"Make contact · $5,000"},{k:"b",label:"Post about it"}] },
-    { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating." },
-    { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", opts:[{k:"a",label:"Build a settlement · 3%"},{k:"b",label:"Not yet"}] },
-    { id:"extensionCord", kind:"choice", after:["peopleAsking"], when:()=>!!S.bcSettlement, title:"The Extension Cord Problem", body:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. Someone asks who was mining.", opts:[{k:"a",label:"Build proper power · 4%"},{k:"b",label:"More extension cords"}] },
-    { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", opts:[{k:"a",label:"Build the mine · 5%"},{k:"b",label:"Not yet"}] },
-    { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations." },
-    { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", body:"San Arnaldo has a coastal town, hills, and a government building that may have been a restaurant three months ago. They want Bitcoin infrastructure. You want friends.", opts:[{k:"a",label:"Build a node · $15,000"},{k:"b",label:"Help a little · $5,000"},{k:"c",label:"Just visit"}] },
+    { id:"justInCase", kind:"report", title:"Just in Case", titleEs:"Por las dudas", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years.", bodyEs:"Pasa una ley de emergencia después de tres días de debate. Le da al gobierno más poderes durante la inestabilidad económica. Temporal. Leés la definición dos veces. Parece incluir casi todos los años." },
+    { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", titleEs:"Nada que ocultar", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you.", bodyEs:"Sale un documento digital como opcional. Los aeropuertos van más rápido. Los bancos dan descuentos. Los trámites del Estado empiezan a mudarse ahí. Un conductor de televisión pregunta: “Si no tenés nada que ocultar, ¿cuál es el problema?” No tenés nada que ocultar. La pregunta igual te molesta." },
+    { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", titleEs:"Algo mejor", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what.", bodyEs:"Estás corriendo con Marek por el bosque. El sendero sigue un río entre lomas bajas. “Con plata suficiente”, decís, “se podría construir algo mejor.” Marek te mira. “¿Una empresa?” “No.” “¿Una ONG?” “No.” Seguís corriendo. Todavía no sabés qué." },
+    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", titleEs:"El viajero del tiempo", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published.", bodyEs:"De madrugada encontrás un post viejo de un foro de Bitcoin. El autor dice que escribe desde el futuro. Bitcoin es enorme. Los gobiernos son más débiles. Los ricos viven en ciudadelas que empezaron como minas, después comunidades fortificadas, después otra cosa. Lo que te molesta no son los muros. Es que dejaron de intentar arreglar el lugar donde vivían. Una búsqueda te lleva a un libro: THE BITCOIN STATE — $666. Parece autopublicado." },
+    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", titleEs:"Medidas temporales", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not.", bodyEs:"Declaran una emergencia financiera. Llegan límites a las transferencias. Después, al efectivo. Varias apps de pago dejan de funcionar. Los funcionarios dicen que las medidas van a durar noventa días. Las medidas temporales anteriores entran en su cuarto año. Los mercados caen. Bitcoin no." },
+    { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", titleEs:"El problema de la ciudadela", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist.", bodyEs:"Llega el libro. Cuatrocientas diecisiete páginas. Usa la palabra soberanía 186 veces. Le mandás a Marek varias páginas dudosas. Después, en una corrida por las lomas, lo decís igual. “Un país.” Marek se ríe una vez, y después se da cuenta de que hablás en serio. Veinte minutos más tarde pregunta: “¿Cuánta tierra?” Armás una lista: Tierra. Energía. Agua. Gente. Plata. Reglas. Seguridad. Reconocimiento. Marek agrega Bandera. “No.” “Hace falta una bandera.” Algo que era una idea estúpida ahora es una idea estúpida con una lista." },
+    { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", titleEs:"Un pedazo del mundo", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", bodyEs:"Nico encuentra el aviso de una isla aislada. Dos calas. Un muelle malo. Lomas verdes. La frase OPORTUNIDAD ÚNICA DE ESTILO DE VIDA SOBERANO aparece dos veces. No es soberana. Lo verificás. Tres veces.", opts:[{k:"a",label:"Go see the island",labelEs:"Ir a ver la isla"},{k:"b",label:"This is insane",labelEs:"Esto es una locura"}] },
+    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", titleEs:"Inspección de la isla", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", bodyEs:"El bote llega a la isla al amanecer. Nico salta al muelle. Hace un ruido feo. Las lomas verdes suben detrás de dos calas. Pinos y bosque costero cubren casi todo el interior. Hay acantilados del lado este. Es más linda que el aviso. Marek mira alrededor. “Ni ahí.” En serio. Paco desaparece entre los árboles. Al atardecer estás en el punto alto, con agua para todos lados. Llega la oferta del vendedor.", opts:[{k:"a",label:"Buy the island",labelEs:"Comprar la isla"},{k:"b",label:"Walk away",labelEs:"Irte"}] },
+    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", titleEs:"El papeleo", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”", bodyEs:"Los abogados pasan varias semanas convirtiendo la compra en algo que en el papel se ve cada vez más serio. Nico firma en el lugar equivocado. Paco se come la esquina del documento final. “País”, dice Nico. “Isla”, decís. “Por ahora.”" },
+    { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", titleEs:"Nadie sabe que existimos", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", bodyEs:"Tenés tierra. Tenés papeles. No tenés ciudadanos, ni reconocimiento, ni muchas razones para que a alguien le importe. Un contacto viejo te da un nombre: Madame Luck. Marek lo lee dos veces. Nico dice que la conoce. Claro que sí.", opts:[{k:"a",label:"Make contact",labelEs:"Hacer contacto"},{k:"b",label:"Post about it",labelEs:"Publicarlo"}] },
+    { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", titleEs:"La OG", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating.", bodyEs:"Madame Luck entra diecisiete minutos tarde y hace muy buenas preguntas. Después dice que se lo va a contar a alguna gente. El teléfono empieza a vibrar." },
+    { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", titleEs:"La gente empieza a preguntar", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", bodyEs:"Desarrolladores, mineros y familias preguntan si se pueden mudar. Nico arma una planilla. Marek encuentra el problema. “No tenemos casas.”", opts:[{k:"a",label:"Build a settlement",labelEs:"Construir un asentamiento"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
+    { id:"extensionCord", kind:"choice", after:["peopleAsking"], when:()=>!!S.bcSettlement, title:"The Extension Cord Problem", titleEs:"El problema del alargue", body:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. Someone asks who was mining.", bodyEs:"Los residentes traen heladeras, computadoras, bombas, servidores y un sauna que nadie admite. A las 20:43 la isla se queda a oscuras. Alguien pregunta quién estaba minando.", opts:[{k:"a",label:"Build proper power",labelEs:"Hacer la red en serio"},{k:"b",label:"More extension cords",labelEs:"Más alargues"}] },
+    { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", titleEs:"Obvio", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", bodyEs:"La red funciona. Nico dice que hay que minar Bitcoin. Obvio. Una propuesta tiene solo cuatro palabras: ENERGÍA BARATA. MINAMOS.", opts:[{k:"a",label:"Build the mine",labelEs:"Construir la mina"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
+    { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", titleEs:"El principado", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations.", bodyEs:"Llega un mail de Mr Ortega & Gambette, canciller de San Arnaldo. San Arnaldo tiene bandera, himno, sitio web y 614 ciudadanos reclamados. Quieren relaciones." },
+    { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", titleEs:"Visita de Estado", body:"San Arnaldo has a coastal town, hills, and a government building that may have been a restaurant three months ago. They want Bitcoin infrastructure. You want friends.", bodyEs:"San Arnaldo tiene un pueblo costero, lomas, y un edificio de gobierno que hace tres meses capaz era un restorán. Quieren infraestructura de Bitcoin. Vos querés amigos.", opts:[{k:"a",label:"Build a node",labelEs:"Armar un nodo"},{k:"b",label:"Help a little",labelEs:"Ayudar un poco"},{k:"c",label:"Just visit",labelEs:"Solo visitar"}] },
     { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", titleEs:"El primer bloque", body:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is short. The annexes are not.\n\nValden, Osterbruck, Lior, Maren, Holt, the Sable Coast, and the River Republic of Dun. Trade, energy, a shared payments rail, and a defense clause nobody reads out loud.\n\nChancellor Ivo Voss chairs the first session. He does not raise his voice. He thanks the cameras for their patience and says instability is a kind of violence. Then he lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, uncooperative newspapers.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.", bodyEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es corto. Los anexos no.\n\nValden, Osterbruck, Lior, Maren, Holt, la Costa Sable y la República Fluvial de Dun. Comercio, energía, un riel de pagos común y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. No alza la voz. Agradece a las cámaras por la paciencia y dice que la inestabilidad es una forma de violencia. Después enumera lo que ahora necesita permiso: transferencias grandes, cuentas en el exterior, puertos no autorizados, diarios poco cooperativos.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
-    { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", body:"Someone steals a boat. Your current security system is one camera and Paco. Paco was asleep.", opts:[{k:"a",label:"Build a defense force · 2%"},{k:"b",label:"Hire private security · $50,000"},{k:"c",label:"Give Paco a vest"}] },
-    { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", body:"Coffee shops appear. Then a bakery. Then a bar. Then a newspaper. Its first editorial criticizes you. Nico is delighted. “You made it. You have opposition.”" },
-    { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", body:"Marek brings plans for protected power, walls and a hardened center. “Citadel.” A wall can keep people out. It can also keep people safe.", opts:[{k:"a",label:"Build it · 8%"},{k:"b",label:"Not now"}] },
+    { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", titleEs:"¿Quién protege la isla?", body:"Someone steals a boat. Your current security system is one camera and Paco. Paco was asleep.", bodyEs:"Alguien roba un bote. Tu sistema de seguridad actual es una cámara y Paco. Paco estaba dormido.", opts:[{k:"a",label:"Build a defense force",labelEs:"Formar una fuerza de defensa"},{k:"b",label:"Hire private security",labelEs:"Contratar seguridad privada"},{k:"c",label:"Give Paco a vest",labelEs:"Ponerle un chaleco a Paco"}] },
+    { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", titleEs:"Esto, aparentemente, ya es un lugar", body:"Coffee shops appear. Then a bakery. Then a bar. Then a newspaper. Its first editorial criticizes you. Nico is delighted. “You made it. You have opposition.”", bodyEs:"Aparecen cafeterías. Después una panadería. Después un bar. Después un diario. El primer editorial te critica. Nico está encantado. “Llegaste. Tenés oposición.”" },
+    { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", titleEs:"La pregunta de la ciudadela", body:"Marek brings plans for protected power, walls and a hardened center. “Citadel.” A wall can keep people out. It can also keep people safe.", bodyEs:"Marek trae planos de energía protegida, muros y un centro endurecido. “Ciudadela.” Un muro puede dejar gente afuera. También puede mantenerla a salvo.", opts:[{k:"a",label:"Build it",labelEs:"Construirla"},{k:"b",label:"Not now",labelEs:"Ahora no"}] },
     { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", titleEs:"Rearme", body:"The Pact launches a new frigate program and calls it maintenance.\n\nAcross the water, five states answer with a different kind of order. Karth, Vire, the Collective Coast, Namm, and Solenne sign the Red Ledger Compact in a hall with the lights too bright. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, then the person who decides which shortages are patriotic.\n\nThe Ledger does not talk about stability. It talks about purity. Hoarding is treason. Private mines are unfinished revolutions. Posters go up before the bread does. Police notebooks get thicker. The speeches are beautiful. The queues are not.\n\nBoth blocs lay keels. Neither calls it an arms race.", bodyEs:"El Pacto bota un programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua, cinco Estados responden con otro tipo de orden. Karth, Vire, la Costa Colectiva, Namm y Solenne firman el Compacto del Libro Rojo en un salón con las luces demasiado fuertes. La mariscal Amina Kade lee el preámbulo ella misma. Fue oficial de muelle, después fiscal, después la persona que decide qué escasez es patriótica.\n\nEl Libro no habla de estabilidad. Habla de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los afiches llegan antes que el pan. Los cuadernos de la policía se ponen más gruesos. Los discursos son hermosos. Las filas no.\n\nLos dos bloques ponen quillas. Ninguno lo llama carrera armamentista." },
-    { id:"anOffer", kind:"choice", after:["rearmament"], title:"An Offer", body:"A private group offers to buy everything for 35% more than your current net worth. Madame Luck asks one question: “Why did you build it?”", opts:[{k:"a",label:"Sell"},{k:"b",label:"Bitcoin Country is not for sale"}] },
-    { id:"ambassador", kind:"report", after:["anOffer"], when:()=>!S.bcArcClosed&&S.bcNodes>=75, title:"The Ambassador", body:"A real ambassador visits. Before leaving, she says: “If you ever decide this is more than a project, call me first.”" },
+    { id:"anOffer", kind:"choice", after:["rearmament"], title:"An Offer", titleEs:"Una oferta", body:"A private group offers to buy everything for 35% more than your current net worth. Madame Luck asks one question: “Why did you build it?”", bodyEs:"Un grupo privado ofrece comprar todo por 35% más que tu patrimonio actual. Madame Luck hace una sola pregunta: “¿Por qué lo construiste?”", opts:[{k:"a",label:"Sell",labelEs:"Vender"},{k:"b",label:"Bitcoin Country is not for sale",labelEs:"Bitcoin Country no se vende"}] },
+    { id:"ambassador", kind:"report", after:["anOffer"], when:()=>!S.bcArcClosed&&S.bcNodes>=75, title:"The Ambassador", titleEs:"La embajadora", body:"A real ambassador visits. Before leaving, she says: “If you ever decide this is more than a project, call me first.”", bodyEs:"Visita una embajadora de verdad. Antes de irse dice: “Si algún día decidís que esto es más que un proyecto, llamame primero.”" },
     { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", titleEs:"Tres colores", body:"A third color closes the map.\n\nThe Crown Lattice is older than the press releases. The Crown of Ashen, Bryn March, the Isle Keels, Vesper, and Orth have shared blood rites, harbor law, and a habit of calling their neighbors unfinished. High Warden Soren Pell walks at the front of the procession and does not wave. He believes borders are inherited, not argued, and that a people who will not kneel are a clerical error.\n\nWhere the Pact files a form and the Ledger prints a poster, the Lattice holds a parade and then a silence. Dissent is not debated. It is omitted. The gray spots on the map, including a small island that has been buying generators, are now described as unassigned.\n\nThree tyrannies. Three philosophies. One ocean.", bodyEs:"Un tercer color cierra el mapa.\n\nLa Celosía de la Corona es más vieja que los comunicados. La Corona de Ashen, Bryn March, las Quillas de la Isla, Vesper y Orth comparten ritos de sangre, derecho de puerto y la costumbre de llamar inconclusos a los vecinos. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Cree que las fronteras se heredan, no se discuten, y que un pueblo que no se arrodilla es un error de archivo.\n\nDonde el Pacto presenta un formulario y el Libro imprime un afiche, la Celosía hace un desfile y después un silencio. La disidencia no se debate. Se omite. Las manchas grises del mapa, incluida una isla chica que viene comprando generadores, ahora figuran como sin asignar.\n\nTres tiranías. Tres filosofías. Un océano." },
-    { id:"ortegaCalls", kind:"choice", after:["threeColors"], title:"Mr Ortega & Gambette Calls", body:"Mr Ortega & Gambette calls with ninety-three pages of advice about recognition, treaties, fisheries and ceremonial precedence.", opts:[{k:"a",label:"Take the full package · $25,000"},{k:"b",label:"Take the useful pages"},{k:"c",label:"Decline politely"}] },
-    { id:"theQuestion", kind:"choice", after:["ortegaCalls"], when:()=>S.bcNodes>=100&&!S.bcIndependent&&!S.bcVictory, title:"The Question", body:"The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the last unchecked line. Independence.", opts:[{k:"a",label:"Declare independence"},{k:"b",label:"Not yet"}] },
+    { id:"ortegaCalls", kind:"choice", after:["threeColors"], title:"Mr Ortega & Gambette Calls", titleEs:"Llama Mr Ortega & Gambette", body:"Mr Ortega & Gambette calls with ninety-three pages of advice about recognition, treaties, fisheries and ceremonial precedence.", bodyEs:"Mr Ortega & Gambette llama con noventa y tres páginas de consejos sobre reconocimiento, tratados, pesca y precedencia ceremonial.", opts:[{k:"a",label:"Take the full package",labelEs:"Tomar el paquete completo"},{k:"b",label:"Take the useful pages",labelEs:"Quedarte con las páginas útiles"},{k:"c",label:"Decline politely",labelEs:"Rechazar con educación"}] },
+    { id:"theQuestion", kind:"choice", after:["ortegaCalls"], when:()=>S.bcNodes>=100&&!S.bcIndependent&&!S.bcVictory, title:"The Question", titleEs:"La pregunta", body:"The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the last unchecked line. Independence.", bodyEs:"La lista ya está lo bastante completa como para volverse peligrosa. Tierra. Energía. Gente. Plata. Reglas. Seguridad. Reconocimiento. Marek mira la última línea sin tildar. Independencia.", opts:[{k:"a",label:"Declare independence",labelEs:"Declarar la independencia"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
     { id:"cabinet", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent&&!S.bcVictory, title:"The Cabinet", titleEs:"El gabinete", body:"The declaration needs names.\n\nYou are Head of State. Marek takes Finance and asks you not to spend the first week proving it. Nico takes Commerce, and says the title out loud as if the job had been his idea. Paco is Minister of Defense. He tries it once, then again. The second time he does not laugh.\n\nLena does not take a ministry. She says the island already has enough titles.", bodyEs:"La declaración necesita nombres.\n\nVos sos Jefe de Estado. Marek se queda con Hacienda y te pide que no pases la primera semana demostrándolo. Nico se queda con Comercio, y lo dice en voz alta como si el cargo hubiera sido idea de él. Paco es Ministro de Defensa. Lo prueba una vez, y después otra. La segunda no se ríe.\n\nLena no acepta un ministerio. Dice que la isla ya tiene suficientes títulos." },
-    { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", body:"You declare independence. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Mr Ortega & Gambette sends a thumbs-up and a 14-page attachment." },
-    { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The blocs have already answered." },
-    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration." },
-    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
-    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails." },
-    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
+    { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", titleEs:"La declaración", body:"You declare independence. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Mr Ortega & Gambette sends a thumbs-up and a 14-page attachment.", bodyEs:"Declarás la independencia. San Arnaldo reconoce a Bitcoin Country treinta y siete segundos después. Mr Ortega & Gambette manda un pulgar arriba y un adjunto de 14 páginas." },
+    { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The blocs have already answered.", bodyEs:"Los bloques ya contestaron." },
+    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration.", bodyEs:"Los bloques contestan la declaración." },
+    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire.", bodyEs:"Un bloque abre fuego." },
+    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails.", bodyEs:"El desembarco falla." },
+    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back.", bodyEs:"Un bloque retrocede." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
-    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends." },
+    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends.", bodyEs:"La defensa falla. La partida termina." },
     { id:"jobBadge", job:true, kind:"report", when:()=>(S.have.job||0)>=1, title:"The Badge", titleEs:"La credencial", body:"On the first morning they hand you a badge and ask you to say the title out loud. {title}. It sounds like it already belongs to someone else. A woman in the hallway nods as if she has heard worse. The wage, when you finally find it, is {pay}.", bodyEs:"La primera mañana te dan una credencial y te piden que digas el cargo en voz alta. {title}. Suena a alguien que ya hizo esto. Una mujer en el pasillo asiente como si hubiera oído peores. El sueldo, cuando por fin lo encontrás, es {pay}." },
     { id:"jobLunch", job:true, kind:"choice", after:["jobBadge"], when:()=>(S.have.job||0)>=1, title:"Lunch", titleEs:"El almuerzo", body:"At lunch someone from {career} sits down without asking. They want to know what a {title} actually does between the parts people notice. You have a sandwich. They have time.", bodyEs:"En el almuerzo alguien de {career} se sienta sin preguntar. Quiere saber qué hace de verdad un {title} entre las partes que la gente nota. Vos tenés un sándwich. Ellos tienen tiempo.", opts:[{k:"a",label:"Tell them the truth",labelEs:"Decirles la verdad"},{k:"b",label:"Eat in silence",labelEs:"Comer en silencio"}] },
     { id:"jobLate", job:true, kind:"choice", after:["jobLunch"], when:()=>(S.have.job||0)>=2, title:"After Hours", titleEs:"Después de hora", body:"The shift was supposed to end. It does not. Someone senior says the {title} should be the one who stays, and that staying would add {half}. The building gets quiet enough to feel like a decision.", bodyEs:"El turno tenía que terminar. No termina. Alguien con más rango dice que el {title} debería ser quien se queda, y que quedarse suma {half}. El edificio se calla lo suficiente como para que se sienta una decisión.", opts:[{k:"a",label:"Stay",labelEs:"Quedarse"},{k:"b",label:"Go home",labelEs:"Irse a casa"}] },
@@ -2552,16 +2552,13 @@
       if (r < 0.00029) {
         const share = opt === "b" ? 4000 : (4000 / 3);
         creditBtc(share);
-        return say("Find the USB. +" + share.toFixed(2) + " BTC.",
-          "Find the USB. +" + share.toFixed(2) + " BTC.");
+        return say("You find the USB.", "Encontrás el USB.");
       }
       if (r < 0.00029 + 0.22) {
         arcPay(8);
-        return say("Find old Nokia. +$8.",
-          "Find old Nokia. +$8.");
+        return say("You find an old Nokia.", "Encontrás un Nokia viejo.");
       }
-      return say("Three weeks digging through clay and nothing.",
-        "Three weeks digging through clay and nothing.");
+      return say("Three weeks of clay. Nothing.", "Tres semanas de arcilla. Nada.");
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
@@ -2603,15 +2600,15 @@
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
-        "The conversation eventually turns to free will and incentives.");
+        "La charla termina en el libre albedrío y los incentivos.");
       if (opt === "b") {
         cutBill(17);
-        return say("You finish the movie. Marek says the ending is overrated.\n\n−$17.",
-          "You finish the movie. Marek says the ending is overrated.\n\n−$17.");
+        return say("You finish the movie. Marek says the ending is overrated.",
+          "Terminan la película. Marek dice que el final está sobrevalorado.");
       }
       cutBill(25);
-      return say("You leave thinking Marek may have made a good point.\n\n−$25.",
-        "You leave thinking Marek may have made a good point.\n\n−$25.");
+      return say("You leave thinking Marek may have made a good point.",
+        "Te vas pensando que Marek capaz tenía razón.");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
@@ -2671,17 +2668,15 @@
         arcPay(paid * 4);
         return say("They actually ship. 4× on " + costLabel(paid) + ".", "De verdad publican. 4× sobre " + costLabel(paid) + ".");
       }
-      return say("The domain expired. " + costLabel(paid) + " is a case study.", "Venció el dominio. " + costLabel(paid) + " es un caso de estudio.");
+      return say("The domain expired. The whole thing is a case study.", "Venció el dominio. Todo el asunto es un caso de estudio.");
     }
     if (card.id === "tow") {
       const paid = cutBill(85);
       return say("Nine minutes. The sign was very clear. −" + costLabel(paid) + ".", "Nueve minutos. El cartel estaba muy claro. −" + costLabel(paid) + ".");
     }
     if (card.id === "courage") {
-      if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","");}
+      if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","Esperás. La pregunta no se va.");}
       S.hasRing=true;
-      if (opt === "b") return say("You go home. Lena asks why you are quiet. You say you are tired. \"Sure, Fartface.\"",
-        "Volvés. Lena pregunta por qué estás callado. Decís que estás cansado. \"Claro, Fartface.\"");
       const paid = cutPct(0.06);
       return say("You are officially doing this. −" + costLabel(paid) + ".", "Oficialmente lo estás haciendo. −" + costLabel(paid) + ".");
     }
@@ -2735,35 +2730,35 @@
       return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + costLabel(paid) + ".",
         "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + costLabel(paid) + ".");
     }
-    if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","");
-    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","");}
-    if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","");
-    if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","");
-    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Nico te manda el aviso otra vez mañana.");}
-    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+costLabel(p)+".","");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","");}
-    if(card.id==="paperwork")return say("Country. Island. For now.","");
-    if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+costLabel(p)+".","");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","");}
-    if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","");}
-    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. -"+costLabel(p)+".","");}delete S.chanceUsed.peopleAsking;return say("Not yet.","");}
-    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+costLabel(p)+".","");}delete S.chanceUsed.extensionCord;return say("More extension cords.","");}
-    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. -"+costLabel(p)+".","");}delete S.chanceUsed.obviously;return say("Not yet.","");}
-    if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","");
-    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("+10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+costLabel(p)+".","");}return say("Nico takes some stamps.","");}
-    if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;return say("Army unlocked. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now. -"+costLabel(p)+".","");}return say("Paco gets a SECURITY vest.","");}
-    if(card.id==="placeNow"){S.bcNodes=Math.min(100,S.bcNodes+5);return say("+5 Liberty Nodes.","");}
-    if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built. -"+costLabel(p)+".","");}return say("The plans stay on the table.","");}
-    if(card.id==="rearmament"){S.bcWorld+=6;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed. +35% net worth.","");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","");}
-    if(card.id==="ambassador")return say("Diplomatic contact unlocked.","");
-    if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
-    if(card.id==="theQuestion"){if(S.bcVictory||S.bcIndependent){return say(stampNation("Bitcoin Country is already independent."),"");}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declarás.":"You declare.","");}return say(chanceLang()?"Todavía no.":"Not yet.","");}
-    if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
-    if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
-    if(card.id==="theAnswer"){return say("The blocs already answered.","");}
+    if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","La idea se queda con vos.");
+    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","THE BITCOIN STATE está en el Mercado por "+costLabel(666)+".");}
+    if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","Los mercados caen. Bitcoin no.");
+    if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","Bitcoin Country desbloqueado.");
+    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked.","Viaje reservado.");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Nico te manda el aviso otra vez mañana.");}
+    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island.","La isla es tuya.");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","La isla sigue en el Mercado a "+costLabel(S.bcIslandOffer)+".");}
+    if(card.id==="paperwork")return say("Country. Island. For now.","País. Isla. Por ahora.");
+    if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME.","INTERESANTE. LLAMAME.");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","Tres seguidores. Uno es Nico.");}
+    if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","Nodos de libertad: "+S.bcNodes+"/100.");}
+    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built.","Asentamiento construido.");}delete S.chanceUsed.peopleAsking;return say("Not yet.","Todavía no.");}
+    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built.","Red eléctrica lista.");}delete S.chanceUsed.extensionCord;return say("More extension cords.","Más alargues.");}
+    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online.","La mina de Bitcoin está en línea.");}delete S.chanceUsed.obviously;return say("Not yet.","Todavía no.");}
+    if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","Misión de San Arnaldo desbloqueada.");
+    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("+10 Liberty Nodes.","+10 nodos de libertad.");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes.","El nodo no está enchufado. +4 nodos de libertad.");}return say("Nico takes some stamps.","Nico se lleva unos sellos.");}
+    if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
+    if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;return say("Army unlocked.","Ejército desbloqueado.");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now.","Seguridad privada. Por ahora.");}return say("Paco gets a SECURITY vest.","Paco se pone un chaleco de SEGURIDAD.");}
+    if(card.id==="placeNow"){S.bcNodes=Math.min(100,S.bcNodes+5);return say("+5 Liberty Nodes.","+5 nodos de libertad.");}
+    if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built.","Ciudadela construida.");}return say("The plans stay on the table.","Los planos se quedan en la mesa.");}
+    if(card.id==="rearmament"){S.bcWorld+=6;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
+    if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed.","Arco de Bitcoin Country cerrado.");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","BITCOIN COUNTRY NO SE VENDE. +10 nodos de libertad.");}
+    if(card.id==="ambassador")return say("Diplomatic contact unlocked.","Contacto diplomático desbloqueado.");
+    if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
+    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes.","Un Ministerio de Pesca pregunta si Bitcoin Country produce anguila de arena en escabeche. Decís que sí. Parece ayudar. +10 nodos de libertad.");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","+4 nodos de libertad.");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","Mr Ortega & Gambette manda igual las 93 páginas.");}
+    if(card.id==="theQuestion"){if(S.bcVictory||S.bcIndependent){return say("Bitcoin Country is already independent.","Bitcoin Country ya es independiente.");}if(opt==="a"){S.bcIndependent=true;return say("You declare.","Declarás.");}return say("Not yet.","Todavía no.");}
+    if(card.id==="theAnswer"){return say("The blocs already answered.","Los bloques ya contestaron.");}
+    if(card.id==="cabinet")return say("The posts are filled. Paco is Minister of Defense.","Los cargos quedan cubiertos. Paco es Ministro de Defensa.");
+    if(card.id==="declaration")return say("San Arnaldo recognizes Bitcoin Country in thirty-seven seconds.","San Arnaldo reconoce a Bitcoin Country en treinta y siete segundos.");
     if(card.id==="blocReplies"){
-      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+costLabel(p)+".","La carta se pone más cálida. Las flotas no. −"+costLabel(p)+".");}
+      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not.","La carta se pone más cálida. Las flotas no.");}
       if(opt==="b")return say("You refuse. The fleets were never waiting on your answer.","Rechazás. Las flotas no estaban esperando tu respuesta.");
       return say("The statements are in. The ships are already moving.","Los comunicados llegaron. Los barcos ya se mueven.");
     }
@@ -2771,7 +2766,7 @@
     if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
     if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
     if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
-    if(card.id==="notYet"){return say("Not yet.","");}
+    if(card.id==="notYet"){return say("Not yet.","Todavía no.");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
       const paid = cutPct(map[opt] || 0.04);
@@ -2787,7 +2782,8 @@
       return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos rayas. Después la planificación. −" + costLabel(paid) + ".");
     }
     if (card.id === "baby") {
-      if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.", "Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.");
+      if (opt === "c") return say("Lena looks at the PDF. Then at you. She is not impressed.",
+        "Lena mira el PDF. Después a vos. No está impresionada.");
       if (opt === "a") {
         const paid = cutPct(0.05);
         S.cold += 1;
@@ -2806,7 +2802,7 @@
         arcPay(paid * 2.2);
         return say("Friday arrives early. 2.2× on " + costLabel(paid) + ".", "El viernes llega temprano. 2.2× sobre " + costLabel(paid) + ".");
       }
-      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendido. " + costLabel(paid) + " ahora es un screenshot.");
+      return say("Halted. The position is a screenshot now.", "Suspendido. La posición ahora es un screenshot.");
     }
     if (card.id === "speeding") {
       const paid = cutBill(75);
@@ -2847,12 +2843,12 @@
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
       cutBill(bill);
-      if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.",
-        "Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.");
-      if (opt === "b") return say("Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.",
-        "Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.");
-      return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.",
-        "Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.");
+      if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.",
+        "El tío Mike te mira firmar.\n\n“Así solo se alienta el sistema.”\n\nSe van del restorán.");
+      if (opt === "b") return say("Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.",
+        "El tío Mike parece conforme.\n\nEl mozo no.\n\nVos solo querés irte a casa.");
+      return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.",
+        "El tío Mike asiente.\n\n“Eso es distinto.”\n\nNo estás seguro.\n\nÉl sí.");
     }
     if (card.job) {
       const job = currentJob();
@@ -2914,11 +2910,7 @@
     });
   }
   function chanceArtHtml(id) {
-    const artId = id === "cabinet" ? "declaration" : id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "battleWon" ? "theAnswer" : id;
-    if (id === "blocTriumph") {
-      return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
-    }
-    const jpg="chance/"+artId+".jpg?v=mp55";
+    const jpg = "chance/" + id + ".jpg?v=mp159";
     if (ARC_VID[id]) {
       return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
@@ -3300,17 +3292,6 @@
       S.chanceReadyNote = stampNation(resolveChance(card, "ok"));
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
-      const gift = formatBagDelta(before, S.arcPending);
-      if (card.id === "uncle" && gift) {
-        body = es0
-          ? body.replace("Te giró plata.", "Te giró " + gift + ".")
-          : body.replace("some money", gift);
-      }
-      if (card.id === "taxbill" && gift) {
-        body = es0
-          ? body.replace("No cambió.", "No cambió. Son " + gift + ".")
-          : body.replace("It has not.", "It has not. It is " + gift + ".");
-      }
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       S.invuln = before.invuln;
       S.msig = before.msig;
@@ -3356,7 +3337,35 @@
     if ((after.invuln || 0) > (before.invuln || 0) + 0.4) {
       bits.push(es ? "unos segundos de invulnerabilidad" : "a few seconds of invuln");
     }
-    return bits.join(" · ");
+    if (!bits.length) return "";
+    return (es ? "Resultado · " : "Result · ") + bits.join(" · ");
+  }
+  function stripOutcomeMoney(text) {
+    if (!String(S.arcTldr || "").trim()) return String(text || "").trim();
+    let s = String(text || "");
+    s = s.replace(/\s*(?:\d+(?:\.\d+)?×)\s+(?:on|sobre)\s+(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)\b\.?/gi, "");
+    s = s.replace(/\s+(?:on|sobre|on a)\s+(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)(?:\s+buy-in)?\.?/gi, "");
+    s = s.replace(/\s+(?:then|y después)\s+\+?(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)\b\.?/gi, "");
+    s = s.replace(/\s*[+\-−–]\s*\$[\d.,]+[kMBT]?\b\.?/g, "");
+    s = s.replace(/\s*[+\-−–]\s*[\d.,]+\s*BTC\b\.?/gi, "");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+is\b/gi, "That money is");
+    s = s.replace(/[\d.,]+\s*BTC\s+is\b/gi, "That money is");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+es\b/gi, "Esa plata es");
+    s = s.replace(/[\d.,]+\s*BTC\s+es\b/gi, "Esa plata es");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+ahora es\b/gi, "Esa plata ahora es");
+    s = s.replace(/[\d.,]+\s*BTC\s+ahora es\b/gi, "Esa plata ahora es");
+    s = s.replace(/\.\s*(?:and|y)\s*\.?$/gi, ".");
+    s = s.replace(/\s+(?:and|y)\s*\.?$/gi, ".");
+    s = s.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").replace(/[ \t]{2,}/g, " ").replace(/\s+\./g, ".");
+    return s.trim();
+  }
+  function arcMoneyHtml(prose) {
+    const story = stripOutcomeMoney(prose);
+    const d = String(S.arcTldr || "").trim();
+    const show = !!(d && story.indexOf(d) < 0);
+    let html = story ? "<p class=\"arc-body\">" + story + "</p>" : "";
+    if (show) html += "<p class=\"arc-result\">" + d + "</p>";
+    return html;
   }
   function peelArcNote(note) {
     return String(note || "")
@@ -3391,16 +3400,17 @@
     return "<p class=\"arc-body\">" + text + "</p>";
   }
   function arcOutcomeHtml() {
-    const shown = peelArcNote(S.chanceNote) || S.chanceNote || "";
+    const raw = peelArcNote(S.chanceNote) || S.chanceNote || "";
     let text;
     if (ARC_TLDR) {
-      const punch = punchline(shown) || shown;
+      const peeled = stripOutcomeMoney(raw);
+      const punch = punchline(peeled) || peeled;
       const tldr = S.chanceCard ? cardTldr(S.chanceCard) : "";
       text = punch || tldr;
     } else {
-      text = shown;
+      text = raw;
     }
-    return "<p class=\"arc-body\">" + withArcDelta(text) + "</p>";
+    return arcMoneyHtml(text);
   }
 
   function commitArcBooks() {
@@ -12031,13 +12041,17 @@
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
-          const lab = arcOptionLabel(card,o,es);
+          const lab = stampNation(arcOptionLabel(card,o,es));
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
+        const settled = (S.chanceSettled && S.chanceReadyNote && !S.battleTutOpen)
+          ? arcMoneyHtml(ARC_TLDR ? (punchline(stripOutcomeMoney(S.chanceReadyNote)) || S.chanceReadyNote) : S.chanceReadyNote)
+          : "";
         overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
           + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
+          + settled
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       const tog = $("arc-tldr-tog");
