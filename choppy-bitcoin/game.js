@@ -2103,7 +2103,7 @@
     taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
     nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
     mexico: { en: "Lena proposes five days in Tulum. Booking costs 8% of your net worth and grants four seconds of invulnerability; staying home costs nothing.", es: "Lena propone pasar cinco días en Tulum. Reservar cuesta el 8% de tu patrimonio y otorga cuatro segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
-    flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
+    flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
     phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
     crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
@@ -2200,9 +2200,9 @@
         { k: "b", label: "Stay home with Paco", labelEs: "Quedarse en casa con Paco" }
       ] },
     { id: "flu", kind: "report", after: ["landfill"],
-      title: "Flu", titleEs: "Gripe",
-      body: "Lena gets the flu. You spend the day bringing her water, medicine, soup, and whatever else she asks for. By evening you have spent money you will not get back. Paco eats half the soup. Lena does not notice.",
-      bodyEs: "Lena tiene gripe. Pasas el día llevándole agua, medicinas, sopa y cualquier otra cosa que necesite. Al final del día, has gastado dinero que no recuperarás. Paco se come la mitad de la sopa sin que Lena se dé cuenta." },
+      title: "A Day with the Flu", titleEs: "Un día de gripe",
+      body: "Lena wakes with the flu. You spend the day bringing her water, medicine, soup, and anything else she needs. By evening she is resting, the pharmacy receipt is longer than expected, and Paco has quietly eaten half the soup.",
+      bodyEs: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas, sopa y todo lo que necesita. Al anochecer, ella descansa, el recibo de la farmacia es más largo de lo esperado y Paco se ha comido la mitad de la sopa sin que nadie lo note." },
     { id: "phish", kind: "choice",
       title: "Support", titleEs: "Soporte",
       body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
@@ -2490,7 +2490,7 @@
     }
     if (card.id === "flu") {
       const paid = cutBill(120);
-      return say("Soup, medicine, half eaten by Paco. −" + money(paid) + ".", "Sopa, remedio, la mitad se la comió Paco. −" + money(paid) + ".");
+      return say("Water, medicine, and soup—half of it eaten by Paco. −" + money(paid) + ".", "Agua, medicinas y sopa; Paco se comió la mitad. −" + money(paid) + ".");
     }
     if (card.id === "phish") {
       if (opt === "b") return say("Deleted. You stare at the empty inbox for thirty seconds anyway.", "Borrado. Igual mirás la bandeja treinta segundos.");
