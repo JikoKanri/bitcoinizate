@@ -410,11 +410,13 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .overlay.dock.chance-ui .arc-title {
-  text-decoration: underline;
+  text-decoration: none;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
   color: var(--fg);
   font-size: 20px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
+  letter-spacing: 0.005em;
   padding-right: 64px;
 }
 .overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; color: var(--fg); }
@@ -1350,6 +1352,19 @@ html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
   object-fit: contain;
   align-self: stretch;
   margin: 0;
+  background: #251e14;
+}
+
+/* Prevent partial/stuck 15% scanlines by concealing during decode and fading in when complete */
+.overlay.dock.chance-ui .chance-art {
+  background: #251e14;
+}
+.overlay.dock.chance-ui .chance-art.art-loading {
+  opacity: 0;
+}
+.overlay.dock.chance-ui .chance-art.art-loaded {
+  opacity: 1;
+  transition: opacity 0.22s ease-in;
 }
 
 /* Let a verified wide image reach both edges of the 480px game field. */

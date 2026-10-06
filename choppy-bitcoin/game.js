@@ -2896,22 +2896,112 @@
   }
 
   const ARC_VID = { landfill: 1, proposal: 1, mexico: 1, phish: 1, baby: 1 };
+  const WIDE_ART_PNG = new Set([
+    "citadelQuestion", "declaration", "justInCase", "nothingToHide", "extensionCord",
+    "firstBloc", "somethingBetter", "temporaryMeasures", "timeTraveler", "nobodyKnows",
+    "theOg", "obviously", "peopleAsking", "placeNow", "principality", "stateVisit",
+    "protectIsland", "rearmament", "theQuestion", "threeColors", "fourthColor",
+    "notYet", "theAnswer", "festival"
+  ]);
+  const WIDE_ART_JPG = new Set([
+    "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
+    "ortegaCalls", "ambassador", "anOffer"
+  ]);
+  const ARC_ART_ALIAS = {
+    cabinet: "declaration",
+    blocReplies: "threeColors",
+    blocAssault: "theAnswer",
+    battleWon: "theAnswer",
+    blocTriumph: "festival"
+  };
+  const ARC_ART_VERSIONS = {
+    justInCase: "gpt6",
+    somethingBetter: "gpt5",
+    protectIsland: "gpt5",
+    theOg: "gpt5",
+    fourthColor: "gpt5",
+    notYet: "gpt5",
+    theAnswer: "gpt5",
+    festival: "gpt5"
+  };
+
+  const PRELOADED_ART = new Map();
+
+  function getChanceArtMeta(cardOrId) {
+    const card = typeof cardOrId === "object" && cardOrId ? cardOrId : (CHANCE_CARDS.find((c) => c.id === cardOrId) || null);
+    const id = typeof cardOrId === "string" ? cardOrId : (card ? card.id : "");
+    const artId = ARC_ART_ALIAS[id] || (card && card.artId) || id;
+
+    if (card && card.art) {
+      const isWide = !!(card.wide || card.panoramic || card.art.includes("-wide"));
+      return { id, artId, src: card.art, wide: isWide, isVideo: false };
+    }
+
+    if (ARC_VID[id]) {
+      const poster = "chance/" + artId + ".jpg?v=mp86";
+      return { id, artId, src: "chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : ""), poster, wide: false, isVideo: true };
+    }
+
+    const isWide = !!(card && (card.wide || card.panoramic)) || WIDE_ART_PNG.has(artId) || WIDE_ART_JPG.has(artId) || (artId && artId.endsWith("-wide"));
+
+    let src = "";
+    if (WIDE_ART_PNG.has(artId) || (card && card.artFormat === "png") || (isWide && !WIDE_ART_JPG.has(artId) && !artId.endsWith(".jpg"))) {
+      const v = ARC_ART_VERSIONS[artId] || "gpt4";
+      src = "chance/" + artId + "-wide.png?v=" + v;
+    } else if (isWide) {
+      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin9";
+    } else {
+      src = "chance/" + artId + ".jpg?v=mp86";
+    }
+
+    return { id, artId, src, wide: isWide, isVideo: false };
+  }
+
+  function preloadSingleArt(src, eager = false) {
+    if (!src || PRELOADED_ART.has(src)) return PRELOADED_ART.get(src);
+    const im = new Image();
+    im.loading = eager ? "eager" : "auto";
+    im.decoding = "async";
+    PRELOADED_ART.set(src, im);
+    im.src = src;
+    if ("decode" in im) {
+      im.decode().catch(() => {});
+    }
+    return im;
+  }
+
   let chanceArtBusy = false;
   function preloadChanceArt() {
     if (chanceArtBusy) return;
     chanceArtBusy = true;
-    const ids = CHANCE_CARDS.map((c) => c.id);
-    ids.push("hero");
-    let i = 0;
-    const kick = (n) => {
-      while (n-- > 0 && i < ids.length) {
-        const im = new Image();
-        im.decoding = "async";
-        im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src=(id==="citadelQuestion"||id==="declaration"||id==="justInCase"||id==="nothingToHide"||id==="extensionCord"||id==="firstBloc"||id==="somethingBetter"||id==="temporaryMeasures"||id==="timeTraveler"||id==="nobodyKnows"||id==="theOg"||id==="obviously"||id==="peopleAsking"||id==="placeNow"||id==="principality"||id==="stateVisit"||id==="protectIsland"||id==="rearmament"||id==="theQuestion"||id==="threeColors"||id==="fourthColor"||id==="notYet"||id==="theAnswer")?"chance/"+id+"-wide.png?v="+(id==="justInCase"?"gpt6":id==="somethingBetter"?"gpt5":id==="protectIsland"?"gpt5":id==="theOg"?"gpt5":id==="fourthColor"?"gpt5":id==="notYet"?"gpt5":id==="theAnswer"?"gpt5":"gpt4"):(id==="citadelProblem"||id==="citadelQuestion"||id==="pieceWorld"||id==="islandInspection"||id==="paperwork"||id==="ortegaCalls"||id==="ambassador"||id==="anOffer")?"chance/"+id+"-wide.jpg?v=cin9":"chance/"+id+".jpg?v=mp86";
+
+    // Collect all card metas dynamically from the active deck
+    const allMetas = CHANCE_CARDS.map((c) => getChanceArtMeta(c));
+    Object.keys(ARC_ART_ALIAS).forEach((aliasId) => {
+      allMetas.push(getChanceArtMeta(aliasId));
+    });
+    allMetas.push({ src: "chance/hero.jpg?v=mp86", wide: false, isVideo: false });
+
+    // PRIORITY 1: Preload ALL panoramic/wide arc images first into memory and decode them!
+    const wideMetas = allMetas.filter((m) => m && m.wide && !m.isVideo);
+    const normalMetas = allMetas.filter((m) => m && !m.wide && !m.isVideo);
+
+    wideMetas.forEach((m) => {
+      preloadSingleArt(m.src, true);
+    });
+
+    // PRIORITY 2: Queue standard cards smoothly
+    let ni = 0;
+    const kickNormals = (n) => {
+      while (n-- > 0 && ni < normalMetas.length) {
+        const m = normalMetas[ni++];
+        const im = preloadSingleArt(m.src, false);
+        if (im) im.onload = im.onerror = () => kickNormals(1);
       }
     };
-    kick(4);
+    kickNormals(6);
+
+    // Videos
     Object.keys(ARC_VID).forEach((id) => {
       const v = document.createElement("video");
       v.muted = true;
@@ -2920,17 +3010,17 @@
       v.src = "chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "");
     });
   }
+
   function chanceArtHtml(id) {
-    const artId = id === "cabinet" ? "declaration" : id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "battleWon" ? "theAnswer" : id;
-    if (id === "blocTriumph") {
-      return "<img class=\"chance-art fest-art wide-art\" src=\"chance/festival-wide.png?v=gpt5\" alt=\"\">";
+    const meta = getChanceArtMeta(id);
+    if (meta.isVideo) {
+      return "<video class=\"chance-art\" src=\"" + meta.src + "\" poster=\"" + meta.poster + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
-    const wide = artId === "citadelProblem" || artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "extensionCord" || artId === "firstBloc" || artId === "somethingBetter" || artId === "timeTraveler" || artId === "temporaryMeasures" || artId === "nobodyKnows" || artId === "theOg" || artId === "obviously" || artId === "peopleAsking" || artId === "placeNow" || artId === "principality" || artId === "stateVisit" || artId === "protectIsland" || artId === "rearmament" || artId === "theQuestion" || artId === "threeColors" || artId === "fourthColor" || artId === "notYet" || artId === "theAnswer" || artId === "pieceWorld" || artId === "islandInspection" || artId === "paperwork" || artId === "ortegaCalls" || artId === "ambassador" || artId === "anOffer";
-    const jpg = (artId === "citadelQuestion" || artId === "declaration" || artId === "justInCase" || artId === "nothingToHide" || artId === "extensionCord" || artId === "firstBloc" || artId === "somethingBetter" || artId === "temporaryMeasures" || artId === "timeTraveler" || artId === "nobodyKnows" || artId === "theOg" || artId === "obviously" || artId === "peopleAsking" || artId === "placeNow" || artId === "principality" || artId === "stateVisit" || artId === "protectIsland" || artId === "rearmament" || artId === "theQuestion" || artId === "threeColors" || artId === "fourthColor" || artId === "notYet" || artId === "theAnswer") ? "chance/"+artId+"-wide.png?v="+(artId==="justInCase"?"gpt6":artId==="somethingBetter"?"gpt5":artId==="protectIsland"?"gpt5":artId==="theOg"?"gpt5":artId==="fourthColor"?"gpt5":artId==="notYet"?"gpt5":artId==="theAnswer"?"gpt5":"gpt4") : wide ? "chance/"+artId+"-wide.jpg?v=cin9" : "chance/"+artId+".jpg?v=mp86";
-    if (ARC_VID[id]) {
-      return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
-    }
-    return "<img class=\"chance-art" + (wide ? " wide-art" : "") + "\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
+    const alreadyCached = PRELOADED_ART.has(meta.src) && PRELOADED_ART.get(meta.src).complete && PRELOADED_ART.get(meta.src).naturalWidth > 0;
+    const loadClass = alreadyCached ? " art-loaded" : " art-loading";
+    const wideClass = meta.wide ? " wide-art" : "";
+    const festClass = (id === "blocTriumph" || meta.artId === "festival") ? " fest-art" : "";
+    return "<img class=\"chance-art" + festClass + wideClass + loadClass + "\" src=\"" + meta.src + "\" alt=\"\" loading=\"eager\" decoding=\"async\" onload=\"this.classList.remove('art-loading');this.classList.add('art-loaded');\" onerror=\"this.onerror=null;this.src='chance/hero.jpg';this.classList.remove('art-loading');this.classList.add('art-loaded');\">";
   }
 
   const WAR_BLOCS = [
@@ -3292,6 +3382,7 @@
     if (card.id === S.arcBias) S.arcBias = "";
     noteArcSeen(card.id);
     S.chanceCard = card;
+    try { preloadSingleArt(getChanceArtMeta(card).src, true); } catch (e) {}
     S.chanceNote = "";
     S.chanceReadyNote = "";
     S.chanceLead = "";
@@ -11997,7 +12088,7 @@
         overlay.classList.remove("chance-options");
         const esN = chanceLang();
         overlay.innerHTML = "<h1>" + (esN ? "El nombre" : "The name") + "</h1>"
-          + "<p class=\"k arc-title\">" + (esN ? "¿Cómo se llama el país?" : "What is the country called?") + "</p>"
+          + "<p class=\"arc-title\">" + (esN ? "¿Cómo se llama el país?" : "What is the country called?") + "</p>"
           + "<p class=\"arc-body\">" + (esN
             ? "Ese nombre queda en la declaración, en las respuestas y en las cartas que siguen."
             : "That name stays on the declaration, the replies, and the cards that follow.") + "</p>"
@@ -12035,7 +12126,7 @@
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
+        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"arc-title\">" + title + "</p>"
           + arcOutcomeHtml()
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
@@ -12045,7 +12136,7 @@
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
+        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"arc-title\">" + title + "</p>"
           + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
@@ -12064,6 +12155,30 @@
         renderOverlay();
       };
       bindArcChoices(card);
+      const artImg = overlay.querySelector("img.chance-art");
+      if (artImg) {
+        const markDone = () => {
+          artImg.classList.remove("art-loading");
+          artImg.classList.add("art-loaded");
+        };
+        if (artImg.complete && artImg.naturalWidth > 0) {
+          markDone();
+        } else {
+          artImg.addEventListener("load", markDone, { once: true });
+          const watchdog = setTimeout(() => {
+            if (!artImg.complete || artImg.naturalWidth === 0) {
+              const raw = artImg.src.split("&retry=")[0];
+              artImg.src = raw + (raw.includes("?") ? "&" : "?") + "retry=" + Date.now();
+            }
+          }, 3500);
+          artImg.addEventListener("load", () => clearTimeout(watchdog), { once: true });
+          artImg.addEventListener("error", () => {
+            clearTimeout(watchdog);
+            artImg.src = "chance/hero.jpg";
+            markDone();
+          }, { once: true });
+        }
+      }
     } else if (p === "perk") {
       if (S.optPanel) {
         overlay.classList.add("chance-options");
