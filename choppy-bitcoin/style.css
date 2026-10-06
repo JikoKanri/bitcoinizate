@@ -1004,7 +1004,7 @@ html[data-palette="flower"] #app {
 .def-fire{
   position:absolute;left:50%;right:0;top:0;bottom:0;
   pointer-events:auto;touch-action:none;
-  background:linear-gradient(90deg, transparent 0%, rgba(242,169,0,.05) 100%);
+  background:linear-gradient(90deg, transparent 0%, rgba(242,169,0,.3) 100%);
 }
 .def-rev{
   position:absolute;left:46px;bottom:152px;width:64px;height:36px;z-index:27;
@@ -1013,12 +1013,13 @@ html[data-palette="flower"] #app {
   background:radial-gradient(circle at 50% 30%, rgba(60,48,20,.9), rgba(12,10,8,.92));
   color:#ffe7a0;font:700 12px "IBM Plex Mono",monospace;letter-spacing:.08em;
   box-shadow:0 4px 10px rgba(0,0,0,.45);-webkit-tap-highlight-color:transparent;user-select:none;
+  opacity:.3;
 }
-.def-rev.on{background:#f2a900;color:#1a1204;border-color:#fff6d0}
+.def-rev.on{background:#f2a900;color:#1a1204;border-color:#fff6d0;opacity:.3}
 .def-stick{
   position:absolute;left:14px;bottom:16px;width:128px;height:128px;
   pointer-events:auto;touch-action:none;z-index:26;
-  opacity:.74;
+  opacity:.3;
 }
 .def-stick-well{
   position:absolute;inset:0;border-radius:50%;
@@ -1031,7 +1032,7 @@ html[data-palette="flower"] #app {
   background:
     linear-gradient(rgba(243,239,230,.22), rgba(243,239,230,.22)) center/10px 78px no-repeat,
     linear-gradient(rgba(243,239,230,.22), rgba(243,239,230,.22)) center/78px 10px no-repeat;
-  pointer-events:none;opacity:.7;
+  pointer-events:none;opacity:1;
 }
 .def-knob{
   position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;
@@ -1053,7 +1054,7 @@ html[data-palette="flower"] #app {
     radial-gradient(circle at 50% 50%, rgba(18,10,8,.94) 0 56%, transparent 57%),
     conic-gradient(from -90deg, #e23b3b var(--aa, 0deg), rgba(50,18,16,.72) var(--aa, 0deg));
   box-shadow:0 6px 14px rgba(0,0,0,.45), inset 0 0 0 2px rgba(0,0,0,.35);
-  opacity:.72;
+  opacity:.3;
 }
 .def-aa.charging{border-color:#ffe14a;box-shadow:0 0 0 3px rgba(255,225,74,.4), 0 6px 14px rgba(0,0,0,.45);}
 .def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
@@ -1061,6 +1062,7 @@ html[data-palette="flower"] #app {
 .def-arc{
   position:absolute;left:calc(50% - 88px);bottom:22px;width:42px;height:118px;z-index:40;
   pointer-events:auto;touch-action:none;
+  opacity:.3;
 }
 .def-arc.hide{display:none}
 .def-arc-lab{
