@@ -284,6 +284,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `ccd233cdb7b0609f5fb21e8ffff8c4e425df0387`
   - Pull request: #11
 
+- [x] `phish` — “Verificación de cuenta”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, both options, and both outcomes; clarified the phishing setup, made the choices distinct, and removed regional phrasing.
+  - Mechanics: choice card; 18% loss on the unsafe choice, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `66a39797705f2074ede25651cf8e09ecfe69bfe8`
+  - Pull request: #11
+
 ## Next priority
 
-- `phish`
+- `crash`
