@@ -2105,7 +2105,7 @@
     mexico: { en: "Lena proposes five days in Tulum. Booking costs 8% of your net worth and grants four seconds of invulnerability; staying home costs nothing.", es: "Lena propone pasar cinco días en Tulum. Reservar cuesta el 8% de tu patrimonio y otorga cuatro segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
     flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
     phish: { en: "A polished support email claims there is a problem with your account and asks for your seed phrase. You must decide whether to trust it or delete it.", es: "Un correo de soporte muy convincente afirma que hay un problema con tu cuenta y solicita tu frase semilla. Debes decidir si confiar en el mensaje o eliminarlo." },
-    crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
+    crash: { en: "A delivery scooter clips your car at low speed. Nobody is hurt, but the bumper needs a $650 repair.", es: "Un repartidor en scooter golpea tu automóvil a baja velocidad. Nadie resulta herido, pero reparar el parachoques cuesta $650." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Puedes apostar el 10% o el 30% de tu patrimonio, o salir sin apostar." },
     poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a un póker de madrugada con gente que conoce. No es un casino. Asiente cuando decís que jugás." },
@@ -2212,9 +2212,9 @@
         { k: "b", label: "Delete the email", labelEs: "Eliminar el correo" }
       ] },
     { id: "crash", kind: "report",
-      title: "Scooter Crash", titleEs: "El scooter",
-      body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
-      bodyEs: "Un repartidor en scooter choca tu automóvil a muy baja velocidad. Nadie resulta herido de gravedad. El repartidor se disculpa seis veces; tú, dos. Nadie sabe por qué te disculpaste." },
+      title: "A Low-Speed Collision", titleEs: "Choque a baja velocidad",
+      body: "A delivery scooter clips your car at very low speed. Nobody is hurt. The driver apologizes six times; you apologize twice. Neither of you knows why you apologized, but the bumper still needs to be repaired.",
+      bodyEs: "Un repartidor en scooter golpea tu automóvil a muy baja velocidad. Nadie resulta herido. El repartidor se disculpa seis veces; tú, dos. Ninguno sabe por qué te disculpaste, pero el parachoques necesita reparación." },
     { id: "wine", kind: "choice", after: ["landfill"],
       title: "Wine", titleEs: "Vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins.",
@@ -2500,8 +2500,8 @@
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
-      return say("Nobody was hurt. The bumper still wants money. −" + money(paid) + ".",
-        "Nadie se lastimó. El paragolpes igual quiere plata. −" + money(paid) + ".");
+      return say("Nobody is hurt. The bumper repair still costs −" + money(paid) + ".",
+        "Nadie resulta herido. La reparación del parachoques cuesta −" + money(paid) + ".");
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
