@@ -270,6 +270,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `3d1112e3fe474bc2d287bb550878259002263d91`
   - Pull request: #11
 
+- [x] `mexico` — “Cinco días en Tulum”
+  - General card selected after completing the Bitcoin Country arc; follows `landfill` and is clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, both options, and both outcomes; aligned the summary with the 8% cost and four-second invulnerability effect, and used neutral Spanish.
+  - Mechanics: choice card; 8% travel cost, four-second invulnerability, option keys, prerequisite, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `e16093702bace9f14b9f27208b9bb9832c98a80c`
+  - Pull request: #11
+
 ## Next priority
 
-- `mexico`
+- `flu`
