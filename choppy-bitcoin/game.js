@@ -2104,7 +2104,7 @@
     nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
     mexico: { en: "Lena proposes five days in Tulum. Booking costs 8% of your net worth and grants four seconds of invulnerability; staying home costs nothing.", es: "Lena propone pasar cinco días en Tulum. Reservar cuesta el 8% de tu patrimonio y otorga cuatro segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
     flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
-    phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
+    phish: { en: "A polished support email claims there is a problem with your account and asks for your seed phrase. You must decide whether to trust it or delete it.", es: "Un correo de soporte muy convincente afirma que hay un problema con tu cuenta y solicita tu frase semilla. Debes decidir si confiar en el mensaje o eliminarlo." },
     crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Puedes apostar el 10% o el 30% de tu patrimonio, o salir sin apostar." },
@@ -2204,12 +2204,12 @@
       body: "Lena wakes with the flu. You spend the day bringing her water, medicine, soup, and anything else she needs. By evening she is resting, the pharmacy receipt is longer than expected, and Paco has quietly eaten half the soup.",
       bodyEs: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas, sopa y todo lo que necesita. Al anochecer, ella descansa, el recibo de la farmacia es más largo de lo esperado y Paco se ha comido la mitad de la sopa sin que nadie lo note." },
     { id: "phish", kind: "choice",
-      title: "Support", titleEs: "Soporte",
-      body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
-      bodyEs: "Recibes un correo del equipo de soporte: aseguran que hay un problema con tu cuenta y te piden la frase semilla para verificar tu identidad. El mensaje parece totalmente auténtico.",
+      title: "Account Verification", titleEs: "Verificación de cuenta",
+      body: "A customer support email says there is a problem with your account. The logo, formatting, and urgent tone all look legitimate. To verify your identity, the message asks you to open a link and enter your seed phrase.",
+      bodyEs: "Un correo del equipo de soporte afirma que hay un problema con tu cuenta. El logotipo, el formato y el tono urgente parecen legítimos. Para verificar tu identidad, el mensaje te pide abrir un enlace e ingresar tu frase semilla.",
       opts: [
-        { k: "a", label: "Open the link", labelEs: "Abrir el enlace y compartir la frase semilla" },
-        { k: "b", label: "Delete it", labelEs: "Eliminar el correo" }
+        { k: "a", label: "Enter the seed phrase", labelEs: "Ingresar la frase semilla" },
+        { k: "b", label: "Delete the email", labelEs: "Eliminar el correo" }
       ] },
     { id: "crash", kind: "report",
       title: "Scooter Crash", titleEs: "El scooter",
@@ -2493,10 +2493,10 @@
       return say("Water, medicine, and soup—half of it eaten by Paco. −" + money(paid) + ".", "Agua, medicinas y sopa; Paco se comió la mitad. −" + money(paid) + ".");
     }
     if (card.id === "phish") {
-      if (opt === "b") return say("Deleted. You stare at the empty inbox for thirty seconds anyway.", "Borrado. Igual mirás la bandeja treinta segundos.");
+      if (opt === "b") return say("You delete it, then spend thirty seconds checking that it is really gone.", "Lo eliminas y pasas treinta segundos comprobando que realmente desapareció.");
       const paid = cutPct(0.18);
-      return say("The site looked convincing. So did the transaction. −" + money(paid) + ".",
-        "El sitio se veía convincente. La transacción también. −" + money(paid) + ".");
+      return say("The page looked convincing. The transfer was real. −" + money(paid) + ".",
+        "La página parecía convincente. La transferencia fue real. −" + money(paid) + ".");
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
