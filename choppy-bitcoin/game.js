@@ -140,6 +140,22 @@
   }
   let SHOW_GAIN = true;
   let SHOW_TRADE = true;
+  let BATTLE_360 = true;
+  function loadBattleMove(){
+    try { BATTLE_360 = localStorage.getItem("choppy-battle-move") !== "ortho"; } catch (e) { BATTLE_360 = true; }
+  }
+  function setBattleMove(mode){
+    BATTLE_360 = mode !== "ortho";
+    try { localStorage.setItem("choppy-battle-move", BATTLE_360 ? "360" : "ortho"); } catch (e) {}
+  }
+  function axisSnap(vx,vy){
+    if(BATTLE_360) return [vx,vy];
+    const ax=Math.abs(vx), ay=Math.abs(vy);
+    if(ax<1e-4&&ay<1e-4) return [0,0];
+    if(ax>=ay) return [vx>=0?1:-1, 0];
+    return [0, vy>=0?1:-1];
+  }
+  loadBattleMove();
   let PRICE_MODE = "dyn";
   let ARC_TEXT = "m";
   function applyArcTextAttr() {
@@ -407,6 +423,8 @@
     buyBtc: "BUY BTC", sellBtc: "SELL BTC",
     keepPlaying: "KEEP PLAYING", playAgain: "PLAY AGAIN",
     options: "OPTIONS", paused: "PAUSED", resume: "RESUME", back: "BACK",
+    gameplay: "GAMEPLAY", battleMove: "BATTLE MOVE",
+    priceShow: "PRICES", priceDyn: "DYNAMIC", priceUsd: "USD", priceBtc: "BTC",
     sound: "SOUND", jukebox: "JUKEBOX", tutorial: "TUTORIAL", feedback: "FEEDBACK",
     language: "LANGUAGE", aiLog: "A.I. BUD LOG", signIn: "SIGN IN",
     ranked: "RANKED", training: "TRAINING", versus: "VERSUS",
@@ -1770,7 +1788,7 @@
       if (S.perkPick) confirmPerk();
       return;
     }
-    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; S.arcHold = false; setPhase("paused"); }
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; S.arcHold = false; setPhase("paused"); armWindowLock(); }
     else if (S.phase === "paused") {
       S.optPanel = null;
       S.arcHold = false;
@@ -3140,6 +3158,7 @@
     S.bcDefense=null;
     S.battleTutOpen=false;
     if(field)field.classList.remove("defense-mode");
+    releaseBattleLoad();
     try{if(A&&A.battleMusic)A.battleMusic(false);}catch(e){}
     const pad=$("def-pad");if(pad)pad.classList.add("hide");
     const aa=$("def-aa");if(aa)aa.classList.add("hide");
@@ -6027,6 +6046,11 @@
   }
   function faceVec(t,vx,vy){
     if(!t||(Math.abs(vx)<1e-4&&Math.abs(vy)<1e-4))return;
+    if(!BATTLE_360){
+      const s=axisSnap(vx,vy);
+      vx=s[0]; vy=s[1];
+      if(!vx&&!vy)return;
+    }
     t.ang=Math.atan2(vy,vx);
     const nd=vecDir(vx,vy);
     if(nd>=0)t.dir=nd;
@@ -6206,7 +6230,7 @@
     const base=6+level*2+boost;
     let n=base+(wave<=1?0:wave===2?2:4);
     if((level|0)===0)n=Math.max(1,Math.floor((n*3+(wave<=1?2:1))/4));
-    return n;
+    return Math.max(1,Math.floor(n*0.9));
   }
   const shotKeep={tier:0,spread:0};
   function rememberShot(d){
@@ -6233,6 +6257,36 @@
     shotKeep.tier=0;shotKeep.spread=0;
     S.bcShotTier=0;S.bcShotSpread=0;
     try{sessionStorage.removeItem("bc-shot");}catch(e){}
+  }
+  function parkMarketLoad(){
+    if(field){
+      field.classList.remove("is-play","bull","bear","swan-bear");
+      field.classList.add("defense-mode");
+    }
+    if(canvas){
+      canvas.style.animation="none";
+      canvas.style.webkitAnimation="none";
+      canvas.style.filter="none";
+      canvas.style.transform="none";
+    }
+    if(S.particles)S.particles.length=0;
+    if(S.floats)S.floats.length=0;
+    S._battleJuke=!!(A&&A.jukePlaying&&A.jukePlaying());
+    if(S._battleJuke&&A.jukePause){ try{ A.jukePause(); }catch(e){} }
+    try{ if(A&&A.stopMusic)A.stopMusic(); }catch(e){}
+    try{ if(A&&A.cancelSpeech)A.cancelSpeech(); }catch(e){}
+  }
+  function releaseBattleLoad(){
+    if(canvas){
+      canvas.style.animation="";
+      canvas.style.webkitAnimation="";
+      canvas.style.filter="";
+      canvas.style.transform="";
+    }
+    if(S._battleJuke&&A&&A.jukeResume){
+      S._battleJuke=false;
+      try{ A.jukeResume(); }catch(e){}
+    }else S._battleJuke=false;
   }
   function startDefense(){
     recallShot();
@@ -6284,6 +6338,7 @@
       field.classList.remove("is-play","bull","bear","swan-bear");
       field.classList.add("defense-mode");
     }
+    parkMarketLoad();
     setPhase("defense");
     syncAaButton(S.bcDefense);
     warSfx("warWave");
@@ -6695,7 +6750,8 @@
       const cur=q[qi];
       if(cur===destI){found=cur;break;}
       const cx=cur%W,cy=(cur/W)|0;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
+      const steps=BATTLE_360?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]:[[1,0],[-1,0],[0,1],[0,-1]];
+      for(const [dx,dy] of steps){
         const nx=cx+dx,ny=cy+dy;
         if(nx<0||ny<0||nx>=W||ny>=BC_R)continue;
         const ni=ny*W+nx;
@@ -6802,6 +6858,8 @@
         const back=aimVec(p);
         slideUnit(d,p,-back[0],-back[1],pspd,dt);
       }else if(Math.hypot(mvx,mvy)>0.04){
+        const snap=axisSnap(mvx,mvy);
+        mvx=snap[0]; mvy=snap[1];
         faceVec(p,mvx,mvy);
         slideUnit(d,p,mvx,mvy,pspd,dt);
       }
@@ -6833,7 +6891,9 @@
       }
       const ox=e.x,oy=e.y;
       if(e.type==="HELI"){
-        const ang=Math.atan2(goal.y-e.y,goal.x-e.x);
+        let dx=goal.x-e.x, dy=goal.y-e.y;
+        if(!BATTLE_360){ const s=axisSnap(dx,dy); dx=s[0]; dy=s[1]; }
+        const ang=Math.atan2(dy,dx);
         const hspd=e.spd*0.729;
         e.x=Math.max(16,Math.min(S.W-16,e.x+Math.cos(ang)*hspd*dt));
         e.y=Math.max(16,Math.min(S.H-16,e.y+Math.sin(ang)*hspd*dt));
@@ -8085,13 +8145,16 @@
     if(field)field.classList.add("is-play");
     startDefense();
   }
-  const AID_COSTS=[2100,21000,210000];
+  const AID_COSTS=[2.1,21,210];
   function aidOffer(){
     const i=S.bcAidUsed|0;
     return i<AID_COSTS.length?AID_COSTS[i]:0;
   }
   function aidBtcLabel(n){
-    return Math.round(Math.max(0,Number(n)||0)).toLocaleString("en-US")+" BTC";
+    const v=Math.round((Number(n)||0)*10)/10;
+    const whole=Math.abs(v-Math.round(v))<1e-6;
+    const s=v.toLocaleString("en-US",{minimumFractionDigits:whole?0:1,maximumFractionDigits:1});
+    return s+" BTC";
   }
   function payMilitaryAid(){
     const cost=aidOffer();
@@ -8114,6 +8177,12 @@
   }
 
   function step(dt) {
+    if (S.phase === "defense" || (S.bcDefense && S.bcDefense.frozen)) {
+      S.lifeT += dt;
+      if (S.bcDefense && S.bcDefense.frozen) S.bcDefense.t = (S.bcDefense.t || 0) + dt;
+      if (S.phase === "defense") stepDefense(dt);
+      return;
+    }
     const m = metrics();
     S.bird.r = m.birdR;
     S.bg += m.speed * 0.35 * dt;
@@ -8124,12 +8193,6 @@
     S.particles = S.particles.filter((p) => p.life > 0);
     for (const f of S.floats) { f.y += f.vy * dt; f.life -= dt; }
     S.floats = S.floats.filter((f) => f.life > 0);
-    if (S.phase === "defense" || (S.bcDefense && S.bcDefense.frozen)) {
-      S.lifeT += dt;
-      if (S.bcDefense && S.bcDefense.frozen) S.bcDefense.t = (S.bcDefense.t || 0) + dt;
-      if (S.phase === "defense") stepDefense(dt);
-      return;
-    }
     if (S.phase !== "play") return;
     if (S.invuln > 0) S.invuln -= dt;
 
@@ -10100,6 +10163,7 @@
   }
 
   function paintJukeUi() {
+    if(S.phase==="defense") return;
     paintJukeHud();
     const bar = $("juke-bar");
     const prog = A.jukeProgress ? A.jukeProgress() : null;
@@ -10954,11 +11018,16 @@
         + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"120\" height=\"84\"></canvas>"
         + "</button>"
         + "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>"
-        + "<div class=\"gfx-toggles\">"
+        + "<div class=\"pal-grid\">" + swatches + "</div>"
+        + "</div>";
+    }
+    if (panel === "game") {
+      return "<div class=\"opt-head\">" + optHead(t("gameplay")) + "</div>"
+        + "<div class=\"opt-menu\">"
+        + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-move\">" + t("battleMove") + " · " + (BATTLE_360 ? "360°" : "↑↓←→") + "</button>"
+        + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-price\">" + t("priceShow") + " · " + priceModeLabel() + "</button>"
         + "<button type=\"button\" class=\"mute-tog" + (SHOW_GAIN ? "" : " on") + "\" id=\"tog-gain\">" + t("candleText") + " " + (SHOW_GAIN ? t("soundOn") : t("soundOff")) + "</button>"
         + "<button type=\"button\" class=\"mute-tog" + (SHOW_TRADE ? "" : " on") + "\" id=\"tog-trade\">" + t("tradeText") + " " + (SHOW_TRADE ? t("soundOn") : t("soundOff")) + "</button>"
-        + "</div>"
-        + "<div class=\"pal-grid\">" + swatches + "</div>"
         + "</div>";
     }
     if (panel === "test") return testMarkup();
@@ -10966,7 +11035,7 @@
     return "<div class=\"opt-head\">" + optHead(fromPlay ? t("paused") : t("options")) + "</div>"
       + "<div class=\"opt-menu\">"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-lang\">" + t("language") + "</button>"
-      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-price\">" + t("priceShow") + " · " + priceModeLabel() + "</button>"
+      + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-game\">" + t("gameplay") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-sound\">" + t("sound") + "</button>"
       + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-gfx\">" + t("graphics") + "</button>"
       + (S.ranked ? "" : "<button type=\"button\" class=\"cta opt-item\" id=\"opt-test\">" + t("testing") + "</button>")
@@ -11101,6 +11170,14 @@
     if (mv) mv.onclick = (e) => { e.stopPropagation(); A.setMuteVoice(!A.muteVoice()); renderOverlay(); };
     const optGfx = $("opt-gfx");
     if (optGfx) optGfx.onclick = (e) => { e.stopPropagation(); S.optPanel = "gfx"; renderOverlay(); };
+    const optGame = $("opt-game");
+    if (optGame) optGame.onclick = (e) => { e.stopPropagation(); S.optPanel = "game"; renderOverlay(); };
+    const optMove = $("opt-move");
+    if (optMove) optMove.onclick = (e) => {
+      e.stopPropagation();
+      setBattleMove(BATTLE_360 ? "ortho" : "360");
+      renderOverlay();
+    };
     const optTest = $("opt-test");
     if (optTest) optTest.onclick = (e) => {
       e.stopPropagation();
@@ -11732,7 +11809,7 @@
     overlay.classList.toggle("test-ui", S.optPanel === "test");
     overlay.classList.toggle("gfx-ui", S.optPanel === "gfx");
     const optName = S.optPanel || "";
-    const optMenuOpen = optName === "menu" || optName === "lang" || optName === "sound" || (p === "paused" && !optName && !(S.arcHold && !S.optPanel));
+    const optMenuOpen = optName === "menu" || optName === "lang" || optName === "sound" || optName === "game" || (p === "paused" && !optName && !(S.arcHold && !S.optPanel));
     overlay.classList.toggle("opt-ui", optMenuOpen);
     if (p === "ready") {
       if (S.optPanel) {
@@ -11991,7 +12068,7 @@
     hudAcc += 0.016;
     const ctx = fit();
     if(S.phase==="defense" || (S.bcDefense && S.bcDefense.frozen && S.phase==="chance")) drawDefense(ctx); else draw(ctx);
-    paintHeroPreview();
+    if(S.phase!=="defense") paintHeroPreview();
     if (hudAcc > 0.12) { renderHud(); hudAcc = 0; }
     requestAnimationFrame(loop);
   }
@@ -12025,36 +12102,42 @@
   }
   bindFlap(flapLayer);
   bindFlap(canvas);
-  let winBtnAt = 0;
-  let winBtnSwallow = false;
-  let winBtnTimer = 0;
+  let winLockUntil = 0;
+  let winLockEl = null;
+  function armWindowLock() {
+    winLockUntil = performance.now() + 250;
+    winLockEl = null;
+  }
+  function resumesLive(el) {
+    if (!el) return false;
+    if (el.closest("#hud, #def-pad, #juke-hud, #bc-bar, #bc-panel, #trades, #perk-bar")) return true;
+    if (el.id === "pause-btn") return true;
+    if (el.id === "go" && (S.phase === "paused" || S.phase === "win")) return true;
+    return false;
+  }
   function windowBtnOf(node) {
     const el = node && node.closest && node.closest("button, [role='button'], input[type='button'], input[type='submit']");
-    if (!el) return null;
-    if (el.closest("#hud, #def-pad, #juke-hud, #bc-bar, #bc-panel, #trades")) return null;
+    if (!el || resumesLive(el)) return null;
     if (el.closest("#overlay, #auth-modal, #profile-modal, .modal, .auth-modal")) return el;
     return null;
   }
-  document.addEventListener("pointerdown", (e) => {
-    if (!windowBtnOf(e.target)) return;
+  function guardWindowBtn(e) {
+    const btn = windowBtnOf(e.target);
+    if (!btn) return;
     const now = performance.now();
-    if (now - winBtnAt < 250) {
-      winBtnSwallow = true;
-      if (winBtnTimer) clearTimeout(winBtnTimer);
-      winBtnTimer = setTimeout(() => { winBtnSwallow = false; }, 320);
+    if (now < winLockUntil && btn !== winLockEl) {
       e.preventDefault();
       e.stopPropagation();
       return;
     }
-    winBtnAt = now;
-  }, true);
-  document.addEventListener("click", (e) => {
-    if (!winBtnSwallow || !windowBtnOf(e.target)) return;
-    winBtnSwallow = false;
-    if (winBtnTimer) { clearTimeout(winBtnTimer); winBtnTimer = 0; }
-    e.preventDefault();
-    e.stopPropagation();
-  }, true);
+    if (e.type === "pointerdown" || e.type === "click") {
+      winLockUntil = now + 250;
+      winLockEl = btn;
+    }
+  }
+  document.addEventListener("pointerdown", guardWindowBtn, true);
+  document.addEventListener("pointerup", guardWindowBtn, true);
+  document.addEventListener("click", guardWindowBtn, true);
   overlay.addEventListener("click", (e) => {
     const go = e.target.closest("#go");
     if (!go) return;
@@ -12130,31 +12213,37 @@
     return false;
   }
   function toggleOptions() {
-    winBtnAt = performance.now();
     if (S.mp) return;
     if (S.phase === "defense") return;
+    let opened = false;
     if (S.phase === "chance" || S.phase === "perk") {
       S.optBack = S.phase;
-      S.optPanel = optionsVisible() ? null : "menu";
+      opened = !optionsVisible();
+      S.optPanel = opened ? "menu" : null;
       renderOverlay();
+      if (opened) armWindowLock();
       return;
     }
     if (S.phase === "play") {
       S.optBack = "play";
       S.optPanel = "menu";
       setPhase("paused");
+      armWindowLock();
       return;
     }
     if (S.phase === "ready") {
       S.optBack = "ready";
-      S.optPanel = optionsVisible() ? null : "menu";
+      opened = !optionsVisible();
+      S.optPanel = opened ? "menu" : null;
       renderOverlay();
+      if (opened) armWindowLock();
       return;
     }
     if (S.phase === "paused") {
       if (optionsVisible()) S.optPanel = S.arcHold ? null : "off";
-      else S.optPanel = "menu";
+      else { S.optPanel = "menu"; opened = true; }
       renderOverlay();
+      if (opened) armWindowLock();
     }
   }
   const optBtn = $("opt-btn");
@@ -12166,11 +12255,11 @@
   if (authHud) authHud.onpointerdown = (e) => {
     e.stopPropagation();
     if (S.mp) return;
-    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); armWindowLock(); }
   };
   window.pauseChoppyForAuth = function () {
     if (S.mp) return;
-    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); }
+    if (S.phase === "play") { S.optBack = "play"; S.optPanel = null; setPhase("paused"); armWindowLock(); }
   };
   const jukeHudPlay = $("juke-hud-play");
   if (jukeHudPlay) jukeHudPlay.onpointerdown = (e) => {
@@ -12220,11 +12309,11 @@
   if (mkt) mkt.onpointerdown = (e) => {
     e.stopPropagation(); e.preventDefault();
     if ((S.have.market || 0) <= 0 || S.mp) return;
-    winBtnAt = performance.now();
     S.optBack = S.phase === "play" ? "play" : (S.optBack || "ready");
     S.optPanel = "market";
     if (S.phase === "play") setPhase("paused");
     else renderOverlay();
+    armWindowLock();
   };
   $("buy-btc").onpointerdown = (e) => {
     e.stopPropagation();
