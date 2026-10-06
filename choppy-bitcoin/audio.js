@@ -154,6 +154,8 @@
     warHeal: () => { beep(520, 0.06, "sine", 0.04, 780); beep(780, 0.08, "triangle", 0.03, null, 0.05); },
     warCrack: () => { beep(100, 0.08, "sawtooth", 0.06, 40); beep(220, 0.05, "square", 0.04, 80, 0.04); },
     warWave: () => { beep(330, 0.09, "square", 0.04); beep(494, 0.12, "triangle", 0.04, null, 0.08); },
+    warSpawn: () => { beep(150, 0.07, "square", 0.05, 70); beep(420, 0.06, "triangle", 0.035, 680, 0.05); beep(760, 0.11, "sine", 0.028, 980, 0.1); },
+    armyReady: () => { beep(392, 0.42, "sine", 0.022, 494); beep(494, 0.55, "sine", 0.016, 392, 0.32); },
     warWin: () => { beep(523, 0.09, "triangle", 0.045); beep(659, 0.09, "triangle", 0.04, null, 0.08); beep(784, 0.16, "triangle", 0.05, null, 0.16); },
     warBoom: () => { if (A.sfx && A.sfx.boom) A.sfx.boom(); },
   };

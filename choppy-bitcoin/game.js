@@ -3445,6 +3445,39 @@
   }
 
   let arcClickLock = 0;
+  let arcChoiceAt = 0;
+  let arcChoiceKey = "";
+  let arcChoiceTimer = 0;
+  function bindArcChoices(card) {
+    const key = ((card && card.id) || "") + (S.chanceNote ? ":note" : ":ask") + (S.battleTutOpen ? ":tut" : "");
+    const now = performance.now();
+    if (key !== arcChoiceKey) {
+      arcChoiceKey = key;
+      arcChoiceAt = now + 500;
+    }
+    const waiting = () => performance.now() < arcChoiceAt;
+    overlay.querySelectorAll("[data-ch]").forEach((btn) => {
+      const hold = waiting();
+      btn.disabled = hold;
+      const go = (e) => {
+        if (waiting()) { e.preventDefault(); e.stopPropagation(); return; }
+        e.preventDefault();
+        e.stopPropagation();
+        pickChance(btn.getAttribute("data-ch"));
+      };
+      btn.onclick = go;
+      btn.onpointerdown = (e) => { if (waiting()) { e.preventDefault(); e.stopPropagation(); } };
+    });
+    if (arcChoiceTimer) clearTimeout(arcChoiceTimer);
+    const left = arcChoiceAt - now;
+    if (left > 0) {
+      arcChoiceTimer = setTimeout(() => {
+        arcChoiceTimer = 0;
+        if (S.phase !== "chance") return;
+        overlay.querySelectorAll("[data-ch]").forEach((btn) => { btn.disabled = false; });
+      }, left + 20);
+    }
+  }
   function pickChance(opt) {
     const now = performance.now();
     if (now - arcClickLock < 280) return;
@@ -6051,8 +6084,12 @@
       vx=s[0]; vy=s[1];
       if(!vx&&!vy)return;
     }
-    t.ang=Math.atan2(vy,vx);
     const nd=vecDir(vx,vy);
+    if(!BATTLE_360&&!t.hero&&nd>=0&&(t.dir|0)!==nd){
+      if((t.turnCd||0)>0)return;
+      t.turnCd=0.1;
+    }
+    t.ang=Math.atan2(vy,vx);
     if(nd>=0)t.dir=nd;
   }
   function facingRot(t){return heading(t)+Math.PI/2;}
@@ -6207,6 +6244,7 @@
     for(let n=0;n<4;n++){
       let moved=false;
       for(const a of units){
+        if((a.spawn||0)>0)continue;
         const others=p&&unitAlive(p)?units.concat([p]):units;
         for(const b of others){
           if(a===b)continue;
@@ -6346,6 +6384,7 @@
   function blastEnemies(d){
     for(const e of d.enemies){
       if(e.hp<=0)continue;
+      if((e.spawn||0)>0)continue;
       e.hp=0;d.kills++;
       addFx(d,{kind:"treeBurn",x:e.x,y:e.y,life:.55,hot:3});
     }
@@ -6440,9 +6479,17 @@
       d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:10});
     }
   }
+  function armSpawn(d,e){
+    e.spawn=2;
+    e.want=false;
+    addFx(d,{kind:"spawn",x:e.x,y:e.y,life:.65});
+    warSfx("warSpawn");
+  }
   function spawnHeli(d){
     const sp=d.spawns[(Math.random()*d.spawns.length)|0]||{x:240,y:80};
-    d.enemies.push({x:sp.x,y:Math.max(28,sp.y-20),dir:2,ang:Math.PI/2,hp:1,maxHp:1,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.1,think:.2,fly:true,role:Math.random()<0.5?"hero":"shield"});
+    const e={x:sp.x,y:Math.max(28,sp.y-20),dir:2,ang:Math.PI/2,hp:1,maxHp:1,sz:15,spd:54*(d.profile.enemy||1),bspd:150,dmg:1,leak:16,type:"HELI",fire:.1,think:.2,fly:true,role:Math.random()<0.5?"hero":"shield"};
+    d.enemies.push(e);
+    armSpawn(d,e);
     warSfx("warHeli");
   }
   function defenseEnemy(d){
@@ -6479,7 +6526,9 @@
     const pool=asShip?(d.seaSpawns&&d.seaSpawns.length?d.seaSpawns:d.spawns):(d.landSpawns&&d.landSpawns.length?d.landSpawns:d.spawns);
     const sp=pool[d.spawnI%pool.length];d.spawnI++;
     const at=asShip?placeShip(d,sp.x,sp.y,sz,null):placeTank(d,sp.x,sp.y,sz);
-    d.enemies.push({x:at.x,y:at.y,dir:2,ang:Math.PI/2,hp,maxHp:hp,sz,spd,bspd,dmg,leak,type,hull,fire:.1,think:.05,ship:asShip,foreign,role:Math.random()<0.5?"hero":"shield"});
+    const e={x:at.x,y:at.y,dir:2,ang:Math.PI/2,hp,maxHp:hp,sz,spd,bspd,dmg,leak,type,hull,fire:.1,think:.05,ship:asShip,foreign,role:Math.random()<0.5?"hero":"shield"};
+    d.enemies.push(e);
+    armSpawn(d,e);
   }
   function finishDefense(win){
     const d=S.bcDefense;if(!d||d.done)return;
@@ -6693,12 +6742,17 @@
   function warSfx(name){try{if(A&&A.sfx&&A.sfx[name])A.sfx[name]();}catch(e){}}
   function facePoint(e,x,y){faceVec(e,x-e.x,y-e.y);}
   function aimDir(e,dir){
-    if(dir<0)return;
+    if(dir<0||!e)return false;
+    if(!BATTLE_360&&!e.hero&&(e.dir|0)!==(dir|0)){
+      if((e.turnCd||0)>0)return false;
+      e.turnCd=0.1;
+    }
     const turned=e.dir!==dir;
     e.dir=dir;
     const v=dirVec(dir);
     e.ang=Math.atan2(v[1],v[0]);
     if(turned)e.fire=Math.max(e.fire||0,0.05);
+    return true;
   }
   function openStep(d,e,dir){
     const s=12;
@@ -6872,7 +6926,14 @@
     const iced=(d.freeze||0)>0;
     sortTraffic(d);
     for(const e of d.enemies){
+      if((e.turnCd||0)>0)e.turnCd=Math.max(0,e.turnCd-dt);
       e.fire=Math.max(0,e.fire-dt);
+      if((e.spawn||0)>0){
+        e.spawn-=dt;
+        e.want=false;
+        if(e.spawn<=0)e.spawn=0;
+        continue;
+      }
       if(iced){e.want=false;continue;}
       e.think-=dt;
       const goal=e.role==="shield"?(d.fort||d.home):p;
@@ -6926,7 +6987,7 @@
               const bias=e.bias||(e.bias=Math.random()<0.5?1:3);
               const opts=[(e.dir+bias)&3,(e.dir+(bias===1?3:1))&3];
               for(const nd of opts)if(openStep(d,e,nd)){
-                aimDir(e,nd);
+                if(!aimDir(e,nd))continue;
                 const v=aimVec(e);
                 e.aimAt={x:e.x+v[0]*64,y:e.y+v[1]*64};
                 break;
@@ -6953,7 +7014,9 @@
         if(s.x<4||s.y<4||s.x>S.W-4||s.y>S.H-4){s.hit=true;continue;}
         for(const t of d.enemies){
           if(t.type!=="HELI"||t.hp<=0||!shotHits(s,t))continue;
-          s.hit=true;t.hp-=3;if(t.hp<=0){d.kills++;warSfx("warPop");}
+          s.hit=true;
+          if((t.spawn||0)>0){warSfx("warClank");break;}
+          t.hp-=3;if(t.hp<=0){d.kills++;warSfx("warPop");}
           break;
         }
         continue;
@@ -6982,6 +7045,8 @@
           warSfx("warHurt");
           if(p.hearts<=0){finishDefense(false);return;}
           d.playerInv=0.85;
+        }else if((t.spawn||0)>0){
+          warSfx("warClank");
         }else{
           t.shots=(t.shots|0)+1;
           t.hp-=s.damage;
@@ -7177,7 +7242,7 @@
     const heroHearts=lrmHeroHearts(d,rx,ry);
     const hits=[];
     for(const e of d.enemies){
-      if(e.hp<=0)continue;
+      if(e.hp<=0||(e.spawn||0)>0)continue;
       const dist=Math.hypot(e.x-rx,e.y-ry);
       const r=unitRadius(e);
       const cls=lrmClass(e);
@@ -7624,9 +7689,33 @@
       const thaw=freeze>0&&freeze<2;
       const hz=freeze<0.7?14:8;
       const paint=freeze<=0?ecol:(thaw&&Math.floor((d.t||0)*hz)%2===0?ecol:"#b7e4ff");
+      const arriving=(e.spawn||0)>0;
+      ctx.save();
+      if(arriving)ctx.globalAlpha=0.5+0.22*Math.abs(Math.sin((d.t||0)*7));
       if(e.type==="HELI")drawHeli(ctx,e,t,paint);
       else if(e.ship)drawShip(ctx,e,paint);
       else drawTank(ctx,e,paint);
+      ctx.restore();
+      if(arriving){
+        const left=e.spawn;
+        const rad=(e.sz||13)+8;
+        ctx.save();
+        ctx.translate(e.x,e.y);
+        ctx.strokeStyle="rgba(255,225,74,.95)";
+        ctx.lineWidth=2;
+        ctx.setLineDash([3,3]);
+        ctx.beginPath();ctx.arc(0,0,rad+Math.sin((d.t||0)*9)*1.4,0,Math.PI*2);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.strokeStyle="#fff6d0";
+        ctx.lineWidth=2.4;
+        ctx.beginPath();ctx.arc(0,0,rad+7,-Math.PI/2,-Math.PI/2+Math.PI*2*(left/2));ctx.stroke();
+        ctx.fillStyle="#fff6d0";
+        ctx.font='700 9px "IBM Plex Mono",monospace';
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillText(String(Math.ceil(left)),0,-rad-12);
+        ctx.restore();
+      }
       if(!e.hero&&e.hp>0&&((e.shots|0)>0||(e.lrm|0)>0))drawUnitSmoke(ctx,e,t);
     }
     for(const pk of d.picks||[]){
@@ -7960,6 +8049,17 @@
         ctx.globalAlpha=1-u;
         ctx.fillStyle="#fff6d8";ctx.font='700 11px "IBM Plex Mono",monospace';
         ctx.textAlign="center";ctx.fillText(f.label||"+",f.x,f.y-10-u*16);
+      }else if(f.kind==="spawn"){
+        ctx.globalAlpha=1-u;
+        ctx.strokeStyle="#ffe14a";ctx.lineWidth=2.2;
+        ctx.beginPath();ctx.arc(f.x,f.y,5+u*28,0,Math.PI*2);ctx.stroke();
+        ctx.strokeStyle="rgba(255,246,208,.85)";ctx.lineWidth=1.4;
+        ctx.beginPath();ctx.arc(f.x,f.y,2+u*12,0,Math.PI*2);ctx.stroke();
+        ctx.fillStyle="#f2a900";
+        for(let i=0;i<6;i++){
+          const a=i*Math.PI/3;
+          ctx.fillRect(f.x+Math.cos(a)*u*20-1.3,f.y+Math.sin(a)*u*20-1.3,2.6,2.6);
+        }
       }else if(f.kind==="lrmFire"){
         ctx.globalAlpha=1-u;
         ctx.strokeStyle="#ffe14a";ctx.lineWidth=3;
@@ -9856,7 +9956,12 @@
     const bar=$("bc-bar"),panel=$("bc-panel");if(!bar)return;
     const unlocked=!!(S.chanceUsed&&S.chanceUsed.citadelProblem)&&!S.bcArcClosed;
     bar.classList.toggle("hide",!unlocked);
-    if(!unlocked){if(panel)panel.classList.add("hide");return;}
+    if(!unlocked){
+      if(panel)panel.classList.add("hide");
+      const open=$("bc-open");if(open)open.classList.remove("army-ready");
+      armyAlarmAt=0;
+      return;
+    }
     const named=cleanCountryName(S.bcCountryName);
     const brand=named?named.toUpperCase():"BITCOIN COUNTRY";
     const openBtn=$("bc-open"); if(openBtn) openBtn.textContent=brand;
@@ -9878,7 +9983,11 @@
     const canBuy=!!S.bcArmyUnlocked&&!S.bcVictory&&!S.bcArcClosed&&tier<7&&quote.affordable;
     const es=chanceLang();
     const nextLab=tier>=7?(es?"MÁXIMO":"MAX"):("TIER "+(tier+1)+"/7 · "+quote.label);
-    [ab,ab2].forEach((el)=>{if(!el)return;el.disabled=!canBuy;el.classList.toggle("hide",!S.bcArmyUnlocked||S.bcVictory);el.textContent=el.id==="bc-army-bar"?(tier>=7?"MAX":"T"+(tier+1)+" · "+quote.label):nextLab;});
+    if(ab){ab.disabled=!canBuy;ab.classList.toggle("hide",!S.bcArmyUnlocked||S.bcVictory);ab.textContent=nextLab;}
+    if(ab2)ab2.classList.add("hide");
+    const openBtnReady=$("bc-open");
+    if(openBtnReady)openBtnReady.classList.toggle("army-ready",!!canBuy);
+    tickArmyAlarm(canBuy);
     const dec=$("bc-declare");if(dec){const ready=(S.bcNodes||0)>=100&&!S.bcIndependent&&!S.bcVictory;dec.classList.toggle("hide",!ready);}
     const ups=$("bc-ups");
     if(ups){
@@ -9904,6 +10013,15 @@
       }
     }
     setTxt("bc-note",S.bcVictory?(es?"Independiente. Seguí jugando.":"Independent. Keep playing."):S.bcArmyUnlocked?(es?"Las compras de ejército son permanentes. La fuerza mundial puede seguir subiendo.":"Army purchases are permanent. World strength can keep rising."):(es?"El ejército se entrena acá. Formá una fuerza de defensa (2%) si te la salteaste.":"Army is trained here. Form a defense force (2%) if you skipped it."));
+  }
+  let armyAlarmAt=0;
+  function tickArmyAlarm(canBuy){
+    if(!canBuy){armyAlarmAt=0;return;}
+    if(S.phase==="defense"||(S.bcDefense&&S.bcDefense.frozen))return;
+    const now=performance.now();
+    if(armyAlarmAt&&now<armyAlarmAt)return;
+    armyAlarmAt=now+4800;
+    warSfx("armyReady");
   }
   function renderHud() {
     try { renderBitcoinCountry(); } catch (e) {}
@@ -11018,6 +11136,11 @@
         + "<canvas id=\"hero-prev\" class=\"hero-prev\" width=\"120\" height=\"84\"></canvas>"
         + "</button>"
         + "<p class=\"hero-prev-cap\">" + t("tapHero") + "</p>"
+        + "<div class=\"gfx-toggles\">"
+        + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-price\">" + t("priceShow") + " · " + priceModeLabel() + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (SHOW_GAIN ? "" : " on") + "\" id=\"tog-gain\">" + t("candleText") + " " + (SHOW_GAIN ? t("soundOn") : t("soundOff")) + "</button>"
+        + "<button type=\"button\" class=\"mute-tog" + (SHOW_TRADE ? "" : " on") + "\" id=\"tog-trade\">" + t("tradeText") + " " + (SHOW_TRADE ? t("soundOn") : t("soundOff")) + "</button>"
+        + "</div>"
         + "<div class=\"pal-grid\">" + swatches + "</div>"
         + "</div>";
     }
@@ -11025,9 +11148,6 @@
       return "<div class=\"opt-head\">" + optHead(t("gameplay")) + "</div>"
         + "<div class=\"opt-menu\">"
         + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-move\">" + t("battleMove") + " · " + (BATTLE_360 ? "360°" : "↑↓←→") + "</button>"
-        + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-price\">" + t("priceShow") + " · " + priceModeLabel() + "</button>"
-        + "<button type=\"button\" class=\"mute-tog" + (SHOW_GAIN ? "" : " on") + "\" id=\"tog-gain\">" + t("candleText") + " " + (SHOW_GAIN ? t("soundOn") : t("soundOff")) + "</button>"
-        + "<button type=\"button\" class=\"mute-tog" + (SHOW_TRADE ? "" : " on") + "\" id=\"tog-trade\">" + t("tradeText") + " " + (SHOW_TRADE ? t("soundOn") : t("soundOff")) + "</button>"
         + "</div>";
     }
     if (panel === "test") return testMarkup();
@@ -11934,10 +12054,7 @@
         cycleArcText();
         renderOverlay();
       };
-      overlay.querySelectorAll("[data-ch]").forEach((btn) => {
-        const go = (e) => { e.preventDefault(); e.stopPropagation(); pickChance(btn.getAttribute("data-ch")); };
-        btn.onclick = go;
-      });
+      bindArcChoices(card);
     } else if (p === "perk") {
       if (S.optPanel) {
         overlay.classList.add("chance-options");
