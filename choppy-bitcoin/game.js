@@ -2905,15 +2905,10 @@
   ]);
   const WIDE_ART_JPG = new Set([
     "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
-    "ortegaCalls", "ambassador", "anOffer"
+    "ortegaCalls", "ambassador", "anOffer",
+    "cabinet", "blocReplies", "blocAssault", "battleWon", "blocTriumph"
   ]);
-  const ARC_ART_ALIAS = {
-    cabinet: "declaration",
-    blocReplies: "threeColors",
-    blocAssault: "theAnswer",
-    battleWon: "theAnswer",
-    blocTriumph: "festival"
-  };
+  const ARC_ART_ALIAS = {};
   const ARC_ART_VERSIONS = {
     justInCase: "gpt6",
     somethingBetter: "gpt5",
@@ -3405,17 +3400,6 @@
       S.chanceReadyNote = stampNation(resolveChance(card, "ok"));
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
-      const gift = formatBagDelta(before, S.arcPending);
-      if (card.id === "uncle" && gift) {
-        body = es0
-          ? body.replace("Te giró plata.", "Te giró " + gift + ".")
-          : body.replace("some money", gift);
-      }
-      if (card.id === "taxbill" && gift) {
-        body = es0
-          ? body.replace("El monto no cambió.", "El monto no cambió. Debes pagar " + gift + ".")
-          : body.replace("The number has not changed.", "The number has not changed. You owe " + gift + ".");
-      }
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       S.invuln = before.invuln;
       S.msig = before.msig;
@@ -3461,7 +3445,35 @@
     if ((after.invuln || 0) > (before.invuln || 0) + 0.4) {
       bits.push(es ? "unos segundos de invulnerabilidad" : "a few seconds of invuln");
     }
-    return bits.join(" · ");
+    if (!bits.length) return "";
+    return (es ? "Resultado · " : "Result · ") + bits.join(" · ");
+  }
+  function stripOutcomeMoney(text) {
+    if (!String(S.arcTldr || "").trim()) return String(text || "").trim();
+    let s = String(text || "");
+    s = s.replace(/\s*(?:\d+(?:\.\d+)?×)\s+(?:on|sobre)\s+(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)\b\.?/gi, "");
+    s = s.replace(/\s+(?:on|sobre|on a)\s+(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)(?:\s+buy-in)?\.?/gi, "");
+    s = s.replace(/\s+(?:then|y después)\s+\+?(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)\b\.?/gi, "");
+    s = s.replace(/\s*[+\-−–]\s*\$[\d.,]+[kMBT]?\b\.?/g, "");
+    s = s.replace(/\s*[+\-−–]\s*[\d.,]+\s*BTC\b\.?/gi, "");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+is\b/gi, "That money is");
+    s = s.replace(/[\d.,]+\s*BTC\s+is\b/gi, "That money is");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+es\b/gi, "Esa plata es");
+    s = s.replace(/[\d.,]+\s*BTC\s+es\b/gi, "Esa plata es");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+ahora es\b/gi, "Esa plata ahora es");
+    s = s.replace(/[\d.,]+\s*BTC\s+ahora es\b/gi, "Esa plata ahora es");
+    s = s.replace(/\.\s*(?:and|y)\s*\.?$/gi, ".");
+    s = s.replace(/\s+(?:and|y)\s*\.?$/gi, ".");
+    s = s.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").replace(/[ \t]{2,}/g, " ").replace(/\s+\./g, ".");
+    return s.trim();
+  }
+  function arcMoneyHtml(prose) {
+    const story = stripOutcomeMoney(prose);
+    const d = String(S.arcTldr || "").trim();
+    const show = !!(d && story.indexOf(d) < 0);
+    let html = story ? "<p class=\"arc-body\">" + story + "</p>" : "";
+    if (show) html += "<p class=\"arc-result\">" + d + "</p>";
+    return html;
   }
   function peelArcNote(note) {
     return String(note || "")
@@ -3496,16 +3508,17 @@
     return "<p class=\"arc-body\">" + text + "</p>";
   }
   function arcOutcomeHtml() {
-    const shown = peelArcNote(S.chanceNote) || S.chanceNote || "";
+    const raw = peelArcNote(S.chanceNote) || S.chanceNote || "";
     let text;
     if (ARC_TLDR) {
-      const punch = punchline(shown) || shown;
+      const peeled = stripOutcomeMoney(raw);
+      const punch = punchline(peeled) || peeled;
       const tldr = S.chanceCard ? cardTldr(S.chanceCard) : "";
       text = punch || tldr;
     } else {
-      text = shown;
+      text = raw;
     }
-    return "<p class=\"arc-body\">" + withArcDelta(text) + "</p>";
+    return arcMoneyHtml(text);
   }
 
   function commitArcBooks() {
@@ -12136,13 +12149,17 @@
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
         btns = (card.opts || []).map((o) => {
-          const lab = arcOptionLabel(card,o,es);
+          const lab = stampNation(arcOptionLabel(card,o,es));
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
+        const settled = (S.chanceSettled && S.chanceReadyNote && !S.battleTutOpen)
+          ? arcMoneyHtml(ARC_TLDR ? (punchline(stripOutcomeMoney(S.chanceReadyNote)) || S.chanceReadyNote) : S.chanceReadyNote)
+          : "";
         overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"arc-title\">" + title + "</p>"
           + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
+          + settled
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       const tog = $("arc-tldr-tog");
