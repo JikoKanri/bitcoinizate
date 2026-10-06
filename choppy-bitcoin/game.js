@@ -2102,7 +2102,7 @@
     landfill: { en: "Nico asks you to risk 25% or 75% of your net worth on a search for a USB that supposedly held 8,000 BTC.", es: "Nico te pide arriesgar el 25% o el 75% de tu patrimonio para buscar una memoria USB que supuestamente contenía 8,000 BTC." },
     taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
     nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
-    mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere pasar cinco días en Tulum. Reservar el viaje cuesta 8% del patrimonio y otorga unos segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
+    mexico: { en: "Lena proposes five days in Tulum. Booking costs 8% of your net worth and grants four seconds of invulnerability; staying home costs nothing.", es: "Lena propone pasar cinco días en Tulum. Reservar cuesta el 8% de tu patrimonio y otorga cuatro segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
     flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
     phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
     crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
@@ -2192,12 +2192,12 @@
         { k: "c", label: "Skip the gift", labelEs: "No dar regalo" }
       ] },
     { id: "mexico", kind: "choice", after: ["landfill"],
-      title: "Mexico", titleEs: "México",
-      body: "Lena suggests a few days in the Mexican Riviera. Tulum. Warm water, white sand, small restaurants, and a hotel that looks more expensive in the photos than it probably is. Sounds like a nice place to leave a ColdCard randomness incident behind. You look at the flights together. Paco watches from the floor. Lena wants five days. You think three would be enough. Paco eats one of the travel brochures. You take that as his vote.",
-      bodyEs: "Lena propone pasar unos días en Tulum: agua tibia, arena blanca, restaurantes pequeños y un hotel que se ve mejor en las fotos que en el presupuesto. Parece un buen lugar para dejar atrás el incidente con la aleatoriedad de la ColdCard. Revisan los vuelos juntos mientras Paco observa desde el piso. Lena quiere quedarse cinco días; tú crees que tres serían suficientes. Paco se come uno de los folletos. Lo toman como su voto.",
+      title: "Five Days in Tulum", titleEs: "Cinco días en Tulum",
+      body: "Lena proposes five days in Tulum: warm water, white sand, small restaurants, and a hotel whose photos look pricier than the rooms probably are. It sounds like a good place to forget the ColdCard randomness incident. You compare flights while Paco watches from the floor. Three days seem enough to you; Lena wants five. Paco eats a brochure, which settles his vote.",
+      bodyEs: "Lena propone pasar cinco días en Tulum: agua tibia, arena blanca, restaurantes pequeños y un hotel cuyas fotos parecen más costosas que las habitaciones. Suena como un buen lugar para olvidar el incidente con la aleatoriedad de la ColdCard. Comparan vuelos mientras Paco observa desde el piso. Para ti, tres días serían suficientes; Lena quiere cinco. Paco se come un folleto y deja claro su voto.",
       opts: [
-        { k: "a", label: "Book the trip · 8%", labelEs: "Reservar el viaje · 8%" },
-        { k: "b", label: "Stay home", labelEs: "Quedarse en casa" }
+        { k: "a", label: "Book five days · 8%", labelEs: "Reservar cinco días · 8%" },
+        { k: "b", label: "Stay home with Paco", labelEs: "Quedarse en casa con Paco" }
       ] },
     { id: "flu", kind: "report", after: ["landfill"],
       title: "Flu", titleEs: "Gripe",
@@ -2482,11 +2482,11 @@
         "Nico mira el sobre y luego te mira a ti. \"Es justo.\" −" + money(paid) + ".");
     }
     if (card.id === "mexico") {
-      if (opt === "b") return say("You stay home. Paco destroys a cushion.", "Se quedan. Paco destruye un almohadón.");
+      if (opt === "b") return say("You stay home. Paco celebrates by destroying a cushion.", "Se quedan en casa. Paco lo celebra destruyendo un cojín.");
       const paid = cutPct(0.08);
       S.invuln = Math.max(S.invuln || 0, 4);
-      return say("Five days in Tulum. −" + money(paid) + ". About four seconds of feeling untouchable.",
-        "Cinco días en Tulum. −" + money(paid) + ". Unos cuatro segundos de sentirte intocable.");
+      return say("Five days in Tulum. −" + money(paid) + ". For four seconds, nothing can touch you.",
+        "Cinco días en Tulum. −" + money(paid) + ". Durante cuatro segundos, nada puede tocarte.");
     }
     if (card.id === "flu") {
       const paid = cutBill(120);
