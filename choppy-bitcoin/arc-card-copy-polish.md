@@ -277,6 +277,27 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `e16093702bace9f14b9f27208b9bb9832c98a80c`
   - Pull request: #11
 
+- [x] `flu` — “Un día de gripe”
+  - General card selected after completing the Bitcoin Country arc; follows `landfill` and is clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, and outcome; improved narrative flow, kept the summary faithful, and used neutral Spanish.
+  - Mechanics: report card with no options; $120 medical cost, prerequisite, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `ccd233cdb7b0609f5fb21e8ffff8c4e425df0387`
+  - Pull request: #11
+
+- [x] `phish` — “Verificación de cuenta”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, both options, and both outcomes; clarified the phishing setup, made the choices distinct, and removed regional phrasing.
+  - Mechanics: choice card; 18% loss on the unsafe choice, option keys, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `66a39797705f2074ede25651cf8e09ecfe69bfe8`
+  - Pull request: #11
+
+- [x] `crash` — “Choque a baja velocidad”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, and outcome; clarified the minor collision and replaced regional terms with neutral Spanish.
+  - Mechanics: report card with no options; $650 repair cost, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `802cf57b82a01aa1a1686d6df8900b468bc06538`
+  - Pull request: #11
+
 ## Next priority
 
-- `flu`
+- `wine`

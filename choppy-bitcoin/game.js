@@ -2208,9 +2208,9 @@
     taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
     nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
     mexico: { en: "Lena proposes five days in Tulum. Booking costs 8% of your net worth and grants four seconds of invulnerability; staying home costs nothing.", es: "Lena propone pasar cinco días en Tulum. Reservar cuesta el 8% de tu patrimonio y otorga cuatro segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
-    flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "Lena tiene gripe. Pasas el día cuidándola y cubres los gastos de sopa y medicinas. Paco se come la mitad de la sopa." },
-    phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Un correo de soporte solicita tu frase semilla para verificar la cuenta. Parece auténtico, pero compartirla pondría en riesgo tus fondos." },
-    crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un repartidor en scooter choca tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita una reparación." },
+    flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
+    phish: { en: "A polished support email claims there is a problem with your account and asks for your seed phrase. You must decide whether to trust it or delete it.", es: "Un correo de soporte muy convincente afirma que hay un problema con tu cuenta y solicita tu frase semilla. Debes decidir si confiar en el mensaje o eliminarlo." },
+    crash: { en: "A delivery scooter clips your car at low speed. Nobody is hurt, but the bumper needs a $650 repair.", es: "Un repartidor en scooter golpea tu automóvil a baja velocidad. Nadie resulta herido, pero reparar el parachoques cuesta $650." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Puedes apostar el 10% o el 30% de tu patrimonio, o salir sin apostar." },
     poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a un póker de madrugada con gente que conoce. No es un casino. Asiente cuando decís que jugás." },
@@ -2305,21 +2305,21 @@
         { k: "b", label: "Stay home with Paco", labelEs: "Quedarse en casa con Paco" }
       ] },
     { id: "flu", kind: "report", after: ["landfill"],
-      title: "Flu", titleEs: "Gripe",
-      body: "Lena gets the flu. You spend the day bringing her water, medicine, soup, and whatever else she asks for. By evening you have spent money you will not get back. Paco eats half the soup. Lena does not notice.",
-      bodyEs: "Lena tiene gripe. Pasas el día llevándole agua, medicinas, sopa y cualquier otra cosa que necesite. Al final del día, has gastado dinero que no recuperarás. Paco se come la mitad de la sopa sin que Lena se dé cuenta." },
+      title: "A Day with the Flu", titleEs: "Un día de gripe",
+      body: "Lena wakes with the flu. You spend the day bringing her water, medicine, soup, and anything else she needs. By evening she is resting, the pharmacy receipt is longer than expected, and Paco has quietly eaten half the soup.",
+      bodyEs: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas, sopa y todo lo que necesita. Al anochecer, ella descansa, el recibo de la farmacia es más largo de lo esperado y Paco se ha comido la mitad de la sopa sin que nadie lo note." },
     { id: "phish", kind: "choice",
-      title: "Support", titleEs: "Soporte",
-      body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
-      bodyEs: "Recibes un correo del equipo de soporte: aseguran que hay un problema con tu cuenta y te piden la frase semilla para verificar tu identidad. El mensaje parece totalmente auténtico.",
+      title: "Account Verification", titleEs: "Verificación de cuenta",
+      body: "A customer support email says there is a problem with your account. The logo, formatting, and urgent tone all look legitimate. To verify your identity, the message asks you to open a link and enter your seed phrase.",
+      bodyEs: "Un correo del equipo de soporte afirma que hay un problema con tu cuenta. El logotipo, el formato y el tono urgente parecen legítimos. Para verificar tu identidad, el mensaje te pide abrir un enlace e ingresar tu frase semilla.",
       opts: [
-        { k: "a", label: "Open the link", labelEs: "Abrir el enlace y compartir la frase semilla" },
-        { k: "b", label: "Delete it", labelEs: "Eliminar el correo" }
+        { k: "a", label: "Enter the seed phrase", labelEs: "Ingresar la frase semilla" },
+        { k: "b", label: "Delete the email", labelEs: "Eliminar el correo" }
       ] },
     { id: "crash", kind: "report",
-      title: "Scooter Crash", titleEs: "El scooter",
-      body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
-      bodyEs: "Un repartidor en scooter choca tu automóvil a muy baja velocidad. Nadie resulta herido de gravedad. El repartidor se disculpa seis veces; tú, dos. Nadie sabe por qué te disculpaste." },
+      title: "A Low-Speed Collision", titleEs: "Choque a baja velocidad",
+      body: "A delivery scooter clips your car at very low speed. Nobody is hurt. The driver apologizes six times; you apologize twice. Neither of you knows why you apologized, but the bumper still needs to be repaired.",
+      bodyEs: "Un repartidor en scooter golpea tu automóvil a muy baja velocidad. Nadie resulta herido. El repartidor se disculpa seis veces; tú, dos. Ninguno sabe por qué te disculpaste, pero el parachoques necesita reparación." },
     { id: "wine", kind: "choice", after: ["landfill"],
       title: "Wine", titleEs: "Vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins.",
@@ -2595,18 +2595,18 @@
     }
     if (card.id === "flu") {
       const paid = cutBill(120);
-      return say("Soup, medicine, half eaten by Paco. −" + costLabel(paid) + ".", "Sopa, remedio, la mitad se la comió Paco. −" + costLabel(paid) + ".");
+      return say("Water, medicine, and soup—half of it eaten by Paco. −" + costLabel(paid) + ".", "Agua, medicinas y sopa; Paco se comió la mitad. −" + costLabel(paid) + ".");
     }
     if (card.id === "phish") {
-      if (opt === "b") return say("Deleted. You stare at the empty inbox for thirty seconds anyway.", "Borrado. Igual mirás la bandeja treinta segundos.");
+      if (opt === "b") return say("You delete it, then spend thirty seconds checking that it is really gone.", "Lo eliminas y pasas treinta segundos comprobando que realmente desapareció.");
       const paid = cutPct(0.18);
-      return say("The site looked convincing. So did the transaction. −" + costLabel(paid) + ".",
-        "El sitio se veía convincente. La transacción también. −" + costLabel(paid) + ".");
+      return say("The page looked convincing. The transfer was real. −" + costLabel(paid) + ".",
+        "La página parecía convincente. La transferencia fue real. −" + costLabel(paid) + ".");
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
-      return say("Nobody was hurt. The bumper still wants money. −" + costLabel(paid) + ".",
-        "Nadie se lastimó. El paragolpes igual quiere plata. −" + costLabel(paid) + ".");
+      return say("Nobody is hurt. Bumper repair: −" + costLabel(paid) + ".",
+        "Nadie resulta herido. Reparación del parachoques: −" + costLabel(paid) + ".");
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
