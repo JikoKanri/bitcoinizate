@@ -277,6 +277,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `e16093702bace9f14b9f27208b9bb9832c98a80c`
   - Pull request: #11
 
+- [x] `flu` — “Un día de gripe”
+  - General card selected after completing the Bitcoin Country arc; follows `landfill` and is clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, and outcome; improved narrative flow, kept the summary faithful, and used neutral Spanish.
+  - Mechanics: report card with no options; $120 medical cost, prerequisite, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `ccd233cdb7b0609f5fb21e8ffff8c4e425df0387`
+  - Pull request: #11
+
 ## Next priority
 
-- `flu`
+- `phish`
