@@ -2500,8 +2500,8 @@
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
-      return say("Nobody is hurt. The bumper repair still costs −" + money(paid) + ".",
-        "Nadie resulta herido. La reparación del parachoques cuesta −" + money(paid) + ".");
+      return say("Nobody is hurt. Bumper repair: −" + money(paid) + ".",
+        "Nadie resulta herido. Reparación del parachoques: −" + money(paid) + ".");
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
