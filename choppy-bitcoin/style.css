@@ -464,6 +464,11 @@ body {
   margin-right: auto;
   text-align: center;
 }
+.overlay.dock.chance-ui .arc-actions .cta:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+  filter: grayscale(0.4);
+}
 .overlay.dock.chance-ui.fest-ui {
   inset: 0;
   top: 0;
@@ -983,6 +988,11 @@ html[data-palette="flower"] #app {
 .bc-bar{max-width:480px;margin:5px auto 7px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;font:700 10px "IBM Plex Mono",monospace;color:var(--fg)}
 .bc-bar.hide{display:none}.bc-open{border:1px solid var(--border);background:var(--surface);color:var(--fg);font:700 10px "IBM Plex Mono",monospace;padding:6px 9px;border-radius:7px}.bc-bar span{opacity:.72}
 .bc-bar #bc-army-bar{border-color:#f2a900;color:#f2a900}
+@keyframes army-titilar{
+  0%,100%{border-color:var(--border);color:var(--fg);box-shadow:0 0 0 0 rgba(242,169,0,0)}
+  50%{border-color:#f2a900;color:#f2a900;box-shadow:0 0 0 3px rgba(242,169,0,.35)}
+}
+#bc-open.army-ready{animation:army-titilar 1.15s ease-in-out infinite}
 .bc-panel{position:absolute;z-index:40;left:12px;right:12px;top:54px;background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--border);border-radius:14px;padding:12px;box-shadow:0 16px 45px rgba(0,0,0,.38);backdrop-filter:blur(8px);font-family:"IBM Plex Mono",monospace}
 .bc-panel.hide{display:none}.bc-head{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-size:13px}.bc-head button{background:transparent;border:0;color:var(--fg);font-size:22px}
 .bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:9px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
