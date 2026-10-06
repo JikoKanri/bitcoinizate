@@ -2975,31 +2975,37 @@
     if (chanceArtBusy) return;
     chanceArtBusy = true;
 
-    // Collect all card metas dynamically from the active deck
     const allMetas = CHANCE_CARDS.map((c) => getChanceArtMeta(c));
     Object.keys(ARC_ART_ALIAS).forEach((aliasId) => {
       allMetas.push(getChanceArtMeta(aliasId));
     });
     allMetas.push({ src: "chance/hero.jpg?v=mp86", wide: false, isVideo: false });
 
-    // PRIORITY 1: Preload ALL panoramic/wide arc images first into memory and decode them!
-    const wideMetas = allMetas.filter((m) => m && m.wide && !m.isVideo);
-    const normalMetas = allMetas.filter((m) => m && !m.wide && !m.isVideo);
-
-    wideMetas.forEach((m) => {
-      preloadSingleArt(m.src, true);
+    // Deduplicate image sources
+    const seen = new Set();
+    const queue = [];
+    // Prioritize panoramic wide images first
+    allMetas.filter((m) => m && m.wide && !m.isVideo).forEach((m) => {
+      if (!seen.has(m.src)) { seen.add(m.src); queue.push(m.src); }
+    });
+    // Then standard images
+    allMetas.filter((m) => m && !m.wide && !m.isVideo).forEach((m) => {
+      if (!seen.has(m.src)) { seen.add(m.src); queue.push(m.src); }
     });
 
-    // PRIORITY 2: Queue standard cards smoothly
-    let ni = 0;
-    const kickNormals = (n) => {
-      while (n-- > 0 && ni < normalMetas.length) {
-        const m = normalMetas[ni++];
-        const im = preloadSingleArt(m.src, false);
-        if (im) im.onload = im.onerror = () => kickNormals(1);
+    let qIdx = 0;
+    const kick = (concurrency) => {
+      while (concurrency-- > 0 && qIdx < queue.length) {
+        const src = queue[qIdx++];
+        const im = preloadSingleArt(src);
+        if (im) {
+          im.onload = im.onerror = () => kick(1);
+        } else {
+          kick(1);
+        }
       }
     };
-    kickNormals(6);
+    kick(3);
 
     // Videos
     Object.keys(ARC_VID).forEach((id) => {
@@ -3016,11 +3022,10 @@
     if (meta.isVideo) {
       return "<video class=\"chance-art\" src=\"" + meta.src + "\" poster=\"" + meta.poster + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
-    const alreadyCached = PRELOADED_ART.has(meta.src) && PRELOADED_ART.get(meta.src).complete && PRELOADED_ART.get(meta.src).naturalWidth > 0;
-    const loadClass = alreadyCached ? " art-loaded" : " art-loading";
     const wideClass = meta.wide ? " wide-art" : "";
     const festClass = (id === "blocTriumph" || meta.artId === "festival") ? " fest-art" : "";
-    return "<img class=\"chance-art" + festClass + wideClass + loadClass + "\" src=\"" + meta.src + "\" alt=\"\" loading=\"eager\" decoding=\"async\" onload=\"this.classList.remove('art-loading');this.classList.add('art-loaded');\" onerror=\"this.onerror=null;this.src='chance/hero.jpg';this.classList.remove('art-loading');this.classList.add('art-loaded');\">";
+    const fallback = meta.artId && meta.artId !== "hero" ? "chance/" + meta.artId + ".jpg?v=mp86" : "chance/hero.jpg";
+    return "<img class=\"chance-art" + festClass + wideClass + "\" src=\"" + meta.src + "\" alt=\"\" loading=\"eager\" decoding=\"async\" onerror=\"this.onerror=null;this.src='" + fallback + "';\">";
   }
 
   const WAR_BLOCS = [
@@ -12155,30 +12160,6 @@
         renderOverlay();
       };
       bindArcChoices(card);
-      const artImg = overlay.querySelector("img.chance-art");
-      if (artImg) {
-        const markDone = () => {
-          artImg.classList.remove("art-loading");
-          artImg.classList.add("art-loaded");
-        };
-        if (artImg.complete && artImg.naturalWidth > 0) {
-          markDone();
-        } else {
-          artImg.addEventListener("load", markDone, { once: true });
-          const watchdog = setTimeout(() => {
-            if (!artImg.complete || artImg.naturalWidth === 0) {
-              const raw = artImg.src.split("&retry=")[0];
-              artImg.src = raw + (raw.includes("?") ? "&" : "?") + "retry=" + Date.now();
-            }
-          }, 3500);
-          artImg.addEventListener("load", () => clearTimeout(watchdog), { once: true });
-          artImg.addEventListener("error", () => {
-            clearTimeout(watchdog);
-            artImg.src = "chance/hero.jpg";
-            markDone();
-          }, { once: true });
-        }
-      }
     } else if (p === "perk") {
       if (S.optPanel) {
         overlay.classList.add("chance-options");

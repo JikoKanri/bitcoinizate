@@ -1349,22 +1349,15 @@ html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
   height: auto;
   aspect-ratio: 2.4 / 1;
   max-height: none;
-  object-fit: contain;
+  object-fit: cover;
   align-self: stretch;
   margin: 0;
   background: #251e14;
+  display: block;
 }
 
-/* Prevent partial/stuck 15% scanlines by concealing during decode and fading in when complete */
 .overlay.dock.chance-ui .chance-art {
   background: #251e14;
-}
-.overlay.dock.chance-ui .chance-art.art-loading {
-  opacity: 0;
-}
-.overlay.dock.chance-ui .chance-art.art-loaded {
-  opacity: 1;
-  transition: opacity 0.22s ease-in;
 }
 
 /* Let a verified wide image reach both edges of the 480px game field. */
