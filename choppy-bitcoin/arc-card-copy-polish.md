@@ -291,6 +291,13 @@ Persistent record for `automation/bitcoin-country-copy-polish`.
   - Confirmed remote commit on `maingpt`: `66a39797705f2074ede25651cf8e09ecfe69bfe8`
   - Pull request: #11
 
+- [x] `crash` — “Choque a baja velocidad”
+  - General card selected after completing the Bitcoin Country arc; clearly unrelated to the excluded `perk jobs` system.
+  - Updated: English and Spanish full text, title, TL;DR, and outcome; clarified the minor collision and replaced regional terms with neutral Spanish.
+  - Mechanics: report card with no options; $650 repair cost, IDs, sequence, conditions, and effects unchanged.
+  - Confirmed remote commit on `maingpt`: `802cf57b82a01aa1a1686d6df8900b468bc06538`
+  - Pull request: #11
+
 ## Next priority
 
-- `crash`
+- `wine`
