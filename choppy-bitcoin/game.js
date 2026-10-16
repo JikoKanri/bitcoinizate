@@ -4192,8 +4192,8 @@
       mfill(m,10,14,19,24,3);
       mfill(m,6,6,6,14,7);
       mfill(m,22,6,22,14,7);
-      mfill(m,10,16,10,23,7);
-      mfill(m,19,16,19,23,7);
+      mfill(m,13,18,13,24,7); // basin docks: straight from the south quay into open basin water
+      mfill(m,16,18,16,24,7);
     }else if(id==="docks"){
       mfill(m,0,12,29,39,6);
       mfill(m,6,3,6,12,7);
@@ -4679,8 +4679,8 @@
       if(out.some((q)=>Math.hypot(q.x-p.x,q.y-p.y)<72))continue;
       out.push({x:p.x,y:p.y});
     }
-    if(out.length<3){
-      for(let y=1;y<BC_R-1&&out.length<3;y+=2)for(let x=1;x<BC_C-1&&out.length<3;x+=2){
+    if(out.length<4){
+      for(let y=1;y<BC_R-1&&out.length<4;y+=2)for(let x=1;x<BC_C-1&&out.length<4;x+=2){
         const t=m[y*BC_C+x];
         const ok=naval?t===3:(t===0||t===6||t===7);
         if(!ok)continue;
@@ -4750,6 +4750,28 @@
       }
       if(land===1&&coastHash(x,y,salt+3)<12)m[y*BC_C+x]=6;
     }
+  }
+  // Straight orthogonal bridge from any cell of `cells` to the first tile accepted by `isTarget`,
+  // crossing only open water. Picks the shortest such span; no staircases.
+  function straightBridge(m,cells,isTarget,maxLen){
+    let best=null;
+    for(const i of cells){
+      const x0=i%BC_C,y0=(i/BC_C)|0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const span=[];let x=x0+dx,y=y0+dy;
+        while(x>0&&y>0&&x<BC_C-1&&y<BC_R-1&&span.length<=maxLen&&m[y*BC_C+x]===3){span.push(y*BC_C+x);x+=dx;y+=dy;}
+        if(!span.length||span.length>maxLen)continue;
+        if(x<0||y<0||x>=BC_C||y>=BC_R)continue;
+        const j=y*BC_C+x;
+        if(!isTarget(j))continue;
+        // keep water on both sides of the span so it reads as a bridge, not a causeway glued to land
+        const px=dy?1:0,py=dx?1:0;
+        if(span.some((k)=>{const kx=k%BC_C,ky=(k/BC_C)|0;return m[(ky+py)*BC_C+kx+px]!==3||m[(ky-py)*BC_C+kx-px]!==3;}))continue;
+        if(!best||span.length<best.length)best=span;
+      }
+    }
+    if(best)for(const k of best)m[k]=7;
+    return best?best.length:0;
   }
   function seedIslands(m,rng){
     const N=BC_C*BC_R;
@@ -4849,62 +4871,15 @@
       else if(idx%2===0)link=true;
       else link=rng()<0.4;
       if(!link)return;
-      let from=cells[0], best=-1, bd=1e9;
-      for(const i of cells){
-        const x=i%BC_C, y=(i/BC_C)|0;
-        for(let j=0;j<N;j+=2){
-          if(!main[j])continue;
-          const dx=x-(j%BC_C), dy=y-((j/BC_C)|0);
-          const d=dx*dx+dy*dy;
-          if(d<bd){bd=d;best=j;from=i;}
-        }
-      }
-      if(best<0||bd>16*16)return;
-      let x=from%BC_C, y=(from/BC_C)|0;
-      const gx=best%BC_C, gy=(best/BC_C)|0;
-      const own={};
-      for(const id of cells)own[id]=1;
-      for(let s=0;s<22;s++){
-        const dx=gx-x, dy=gy-y;
-        if(!dx&&!dy)break;
-        if(Math.abs(dx)>=Math.abs(dy))x+=dx>0?1:-1;
-        else y+=dy>0?1:-1;
-        if(x<0||y<0||x>=BC_C||y>=BC_R)break;
-        const j=y*BC_C+x;
-        if(own[j])continue;
-        if(m[j]!==3)break;
-        m[j]=7;
-      }
+      const own={};for(const id of cells)own[id]=1;
+      straightBridge(m,cells,(j)=>!!main[j]&&!own[j],12);
     });
     let links=0;
     for(let a=0;a<islands.length&&links<2;a++){
       for(let b=a+1;b<islands.length&&links<2;b++){
         if(rng()>0.5)continue;
-        let best=1e9, ia=islands[a][0], ib=islands[b][0];
-        for(const i of islands[a])for(const j of islands[b]){
-          const dx=(i%BC_C)-(j%BC_C), dy=((i/BC_C)|0)-((j/BC_C)|0);
-          const d=dx*dx+dy*dy;
-          if(d<best){best=d;ia=i;ib=j;}
-        }
-        if(best<9||best>10*10)continue;
-        const own={};
-        for(const id of islands[a])own[id]=1;
-        for(const id of islands[b])own[id]=1;
-        let x=ia%BC_C, y=(ia/BC_C)|0;
-        const gx=ib%BC_C, gy=(ib/BC_C)|0;
-        let laid=0;
-        for(let s=0;s<16;s++){
-          const dx=gx-x, dy=gy-y;
-          if(!dx&&!dy)break;
-          if(Math.abs(dx)>=Math.abs(dy))x+=dx>0?1:-1;
-          else y+=dy>0?1:-1;
-          if(x<0||y<0||x>=BC_C||y>=BC_R)break;
-          const j=y*BC_C+x;
-          if(own[j])continue;
-          if(m[j]!==3)break;
-          m[j]=7;
-          laid++;
-        }
+        const inB={};for(const id of islands[b])inB[id]=1;
+        const laid=straightBridge(m,islands[a],(j)=>!!inB[j],8);
         if(laid)links++;
       }
     }
@@ -5663,8 +5638,12 @@
   function carveMazeWater(m,id){
     const set=(x,y)=>{if(x>=1&&y>=1&&x<BC_C-1&&y<BC_R-1&&m[y*BC_C+x]!==3)m[y*BC_C+x]=3;};
     if(id==="canalMaze"){
-      for(let y=8;y<=30;y++){set(19,y);set(20,y);}
-      for(let x=19;x<BC_C;x++){set(x,22);set(x,23);}
+      for(let y=6;y<BC_R;y++){
+        const cx=19+Math.round(2.6*Math.sin(y*0.33)+1.2*Math.sin(y*0.11+1));
+        const w=y<28?2:2+Math.ceil((y-28)/2.5); // widens into an estuary near the sea
+        for(let x=cx-Math.floor(w/2);x<cx-Math.floor(w/2)+w;x++)set(x,y);
+      }
+      for(let x=0;x<BC_C;x++)for(let y=BC_R-1;y<BC_R;y++)set(x,y);
     }else if(id==="blockFort"){
       for(let y=11;y<=15;y++)for(let x=6;x<=9;x++)set(x,y);
       for(let y=24;y<=28;y++)for(let x=18;x<=22;x++)set(x,y);
@@ -5976,6 +5955,15 @@
   // ---- Geography tidy-up, run on every generated map before spawns are picked ----
   // Water must be the sea (touching the map edge), a river/canal that reaches it, or a real pond; piers run
   // straight from land into open water; exactly one lighthouse on a plausible coastal spot.
+  // The harbor's basin is its whole point: later coast/cover passes may silt it up, so re-open it as a
+  // rectangular basin with a mouth to the sea and two straight docks rooted on the south quay.
+  function keepHarborBasin(m,pad){
+    const prot=(x,y)=>pad&&x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
+    const soft=(t)=>t===0||t===6||t===4||t===8||t===7||t===3;
+    for(let y=15;y<=23;y++)for(let x=11;x<=18;x++){if(!prot(x,y)&&soft(m[y*BC_C+x]))m[y*BC_C+x]=3;}
+    for(let x=11;x<=18;x++)for(let y=14;y>=1;y--){const i=y*BC_C+x;if(m[i]===3)break;if(prot(x,y)||!soft(m[i]))break;m[i]=3;}
+    for(const x of [13,16]){for(let y=19;y<=24;y++)if(!prot(x,y))m[y*BC_C+x]=7;}
+  }
   function tidyGeography(m,pad,rng){
     const W=BC_C,H=BC_R,N=W*H;
     const prot=(x,y)=>pad&&x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
@@ -6150,6 +6138,7 @@
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
     settleCoast(built);
+    tidyGeography(built.map,null,rng);
     built.maze=true;
     return built;
   }
@@ -6217,6 +6206,7 @@
     placeLighthouse(m,pad,rng,isles);
     if(plan.river)carveRiver(m,rng,pad);
     if(dress==="cliffs"||dress==="sea"){if(rng()<0.6)placeHamlet(m,pad,rng);}
+    if(plan.id==="harbor")keepHarborBasin(m,pad);
     tidyGeography(m,pad,rng);
     const home=homeFrom(m,pad,gate,!!plan.naval);
     const built=flipAll({
@@ -6230,6 +6220,7 @@
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
     settleCoast(built);
+    tidyGeography(built.map,null,rng);
     return built;
   }
 // MAPGEN_END
