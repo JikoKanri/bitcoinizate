@@ -526,7 +526,7 @@
     tutB1: "On land you drive the tank. Sea battles put you in a ship — those maps keep water on at least two edges. The stick moves you. The right side of the screen fires.",
     tutB2: "You start with 3 hearts. Each hit empties one. Empty hearts means you lose. The citadel shield is separate — if it breaks, the island falls.",
     tutB3: "Sand is beach. Grass and dirt paths are open. Brick breaks. Metal does not. Trees block movement and shots. Tanks cannot cross water. Ships sail on water and stop at land.",
-    tutB4: "One pickup at a time. After the field is empty, the next waits a random 5–15 seconds, then lasts 10 seconds. + restores a heart, or adds a fourth at 3/3. S stays: faster shot, then two bullets, then it breaks metal and one-shots heavies and trees. The star is 7.5s of invulnerability. F freezes enemies for 7.5s. X blows up every enemy. W wraps the citadel in metal for 7.5s, then that metal becomes ordinary brick.",
+    tutB4: "One pickup at a time. After the field is empty, the next waits a random 5–15 seconds, then lasts 12.5 seconds. + restores a heart, or adds a fourth at 3/3. S stays: faster shot, then two bullets, then it breaks metal and one-shots heavies and trees. The star is 7.5s of invulnerability. F freezes enemies for 7.5s. X blows up every enemy. W wraps the citadel in metal for 7.5s, then that metal becomes ordinary brick.",
     tutB5: "Some land battles send helicopters. They ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
     tutB6: "Red tanks, gold fast tanks, gray heavy tanks and purple elites come in waves. Sea battles send ships instead. KIA is how many you destroyed in this battle, over how many were sent."
   };
@@ -6728,6 +6728,7 @@
     d.aegis=null;
     warSfx("warBrick");
   }
+  const PICK_TTL=12.5; // seconds a battle pickup stays on the ground (was 10, +25%)
   function scatterPickups(d,n){
     const kinds=["heal","shot","god","freeze","bomb","wall"];
     const sea=!!(d.naval||(d.player&&d.player.ship));
@@ -6769,7 +6770,7 @@
     for(let i=0;i<n&&cells.length;i++){
       const k=(Math.random()*cells.length)|0;
       const c=cells.splice(k,1)[0];
-      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:10});
+      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:PICK_TTL});
     }
   }
   function armSpawn(d,e){
@@ -7432,7 +7433,7 @@
     if(d.picks){
       for(const pk of d.picks){
         if(pk.got||pk.dead)continue;
-        pk.ttl=(pk.ttl==null?10:pk.ttl)-dt;
+        pk.ttl=(pk.ttl==null?PICK_TTL:pk.ttl)-dt;
         if(pk.ttl<=0){pk.dead=true;continue;}
         if(Math.hypot(pk.x-p.x,pk.y-p.y)<18){
           pk.got=true;
