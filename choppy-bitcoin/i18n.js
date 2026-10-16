@@ -2,6 +2,10 @@
   const KEY = "bitcoinizate-lang";
   const dict = {
     en: {
+      gameplay: "GAMEPLAY", battleMove: "BATTLE MOVE",
+      halveTipUp: "Halving. Look up!", halveTipDown: "Halving. Look down!",
+      aidTitle: "San Arnaldo", aidNote: "The beach fell. San Arnaldo offers military help for {n}. ({i}/3)",
+      aidPay: "Accept help", aidShort: "Not enough BTC and cash. Together they cover {have}.", aidDecline: "Refuse",
       brandSub: "Free bitcoin-themed games",
       signIn: "SIGN IN",
       signUp: "Sign up",
@@ -348,6 +352,10 @@
       eloPending: "ELO NOT SAVED",
     },
     es: {
+      gameplay: "JUEGO", battleMove: "MOVIMIENTO EN BATALLA",
+      halveTipUp: "Halving. ¡Mira arriba!", halveTipDown: "Halving. ¡Mira abajo!",
+      aidTitle: "San Arnaldo", aidNote: "Cayó la playa. San Arnaldo ofrece ayuda militar por {n}. ({i}/3)",
+      aidPay: "Aceptar ayuda", aidShort: "No alcanzan BTC y efectivo. Juntos cubren {have}.", aidDecline: "Rechazar",
       brandSub: "Juegos gratis de temática bitcoin",
       signIn: "Iniciar sesión",
       signUp: "Crear cuenta",
@@ -489,9 +497,6 @@
       retryBattleNote: "Cayó la playa. Prepara otro mapa y resiste de nuevo.",
       testArmy: "TU EJÉRCITO",
       testWorld: "ENEMIGO",
-      arcCards: "ARC CARDS",
-      arcTldrOn: "TLDR",
-      arcFullOn: "FULL TEXT",
       chanceOutcome: "Resultado",
       market: "Mercado",
       pickOne: "Elige uno.",
