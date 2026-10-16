@@ -2755,16 +2755,16 @@
     if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+costLabel(p)+".","");}delete S.chanceUsed.extensionCord;return say("More extension cords.","");}
     if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. -"+costLabel(p)+".","");}delete S.chanceUsed.obviously;return say("Not yet.","");}
     if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","");
-    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("+10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+costLabel(p)+".","");}return say("Nico takes some stamps.","");}
+    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("+10 Liberty Nodes. World Military Strength −2. -"+costLabel(p)+".","+10 Nodos de Libertad. Fuerza militar mundial −2. -"+costLabel(p)+".");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+costLabel(p)+".","");}return say("Nico takes some stamps.","");}
     if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","");}
     if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;return say("Army unlocked. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now. -"+costLabel(p)+".","");}return say("Paco gets a SECURITY vest.","");}
     if(card.id==="placeNow"){S.bcNodes=Math.min(100,S.bcNodes+5);return say("+5 Liberty Nodes.","");}
     if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built. -"+costLabel(p)+".","");}return say("The plans stay on the table.","");}
-    if(card.id==="rearmament"){S.bcWorld+=6;return say("World Military Strength: "+S.bcWorld+".","");}
+    if(card.id==="rearmament"){S.bcWorld+=S.bcArmyUnlocked?8:4;return say("World Military Strength: "+S.bcWorld+".","");}
     if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed. +35% net worth.","");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","");}
     if(card.id==="ambassador")return say("Diplomatic contact unlocked.","");
     if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
+    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("World Military Strength −2. A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
     if(card.id==="theQuestion"){if(S.bcVictory||S.bcIndependent){return say(stampNation("Bitcoin Country is already independent."),"");}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declarás.":"You declare.","");}return say(chanceLang()?"Todavía no.":"Not yet.","");}
     if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
     if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
@@ -4013,19 +4013,11 @@
     } catch (e) {}
   }
 
-  function defenseProfile(){
-    const delta=(S.bcArmy||0)-(S.bcWorld||20);
-    if(delta<=-30)return {waves:8,rate:.72,enemy:1.30};
-    if(delta<=-15)return {waves:7,rate:.80,enemy:1.20};
-    if(delta<=-5)return {waves:6,rate:.88,enemy:1.12};
-    if(delta<10)return {waves:6,rate:1,enemy:1};
-    if(delta<25)return {waves:5,rate:1.08,enemy:.92};
-    return {waves:4,rate:1.16,enemy:.84};
-  }
   function armyBattleMods(tier){
     tier=Math.max(0,Math.min(7,tier|0));
     const lives=Math.floor(tier/2);
-    return {speed:tier*5,shot:0,shield:tier*5,power:1,medic:lives>0,wall:false,lives,hearts:3+lives};
+    // Every tier now matters: shot speed, fewer attackers, the citadel wall from tier 5 and double-damage shells at tier 7.
+    return {speed:tier*5,shot:tier*4,shield:tier*5,power:tier>=7?2:1,medic:lives>0,wall:tier>=5,fewer:tier*0.04,lives,hearts:3+lives};
   }
   function armyTier(){
     let tier=S.bcArmyTier|0;
@@ -4037,7 +4029,9 @@
   function armyTierQuote(){
     const px=clampPx(S.price);
     const net=Math.max(0,netUsd());
-    const usd=Math.max(1000*px, net*0.05);
+    // Scales with the tier being bought: 250, 500 … 1750 BTC (same 7000 BTC total as the old flat 1000/tier, cheaper to start).
+    const nextTier=Math.min(7,armyTier()+1);
+    const usd=Math.max(250*nextTier*px, net*0.05);
     const cash=Math.max(0,S.cash||0);
     const btcUsd=Math.max(0,(S.btc||0)*px);
     const preferBtc=preferBtcDisplay();
@@ -6383,12 +6377,12 @@
       if(!moved)break;
     }
   }
-  function battleWaveQuota(level,wave,world){
+  function battleWaveQuota(level,wave,world,fewer){
     const boost=Math.max(0,Math.round((((world|0)||20)-20)/4));
     const base=6+level*2+boost;
     let n=base+(wave<=1?0:wave===2?2:4);
     if((level|0)===0)n=Math.max(1,Math.floor((n*3+(wave<=1?2:1))/4));
-    return Math.max(1,Math.floor(n*0.9));
+    return Math.max(1,Math.floor(n*0.9*(1-Math.max(0,Math.min(0.5,fewer||0)))));
   }
   const shotKeep={tier:0,spread:0};
   function rememberShot(d){
@@ -6457,10 +6451,10 @@
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
     S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
     const world=S.bcWorld||20;
-    const quota=battleWaveQuota(level,1,world);
+    const quota=battleWaveQuota(level,1,world,u.fewer);
     const naval=!!built.naval;
     const heliN=(!naval && (level%3===2))?2:0;
-    const ground=battleWaveQuota(level,1,world)+battleWaveQuota(level,2,world);
+    const ground=battleWaveQuota(level,1,world,u.fewer)+battleWaveQuota(level,2,world,u.fewer);
     const delta=(S.bcArmy||0)-world;
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
     const hearts=u.hearts||3;
@@ -7254,7 +7248,7 @@
     if(d.integrity<=0){finishDefense(false);return;}
     if(d.spawned>=d.quota&&d.enemies.length===0&&!(d.heliLeft>0)){
       if(d.wave>=d.waves){finishDefense(true);return;}
-      d.wave++;d.spawned=0;d.quota=battleWaveQuota(d.level,d.wave,S.bcWorld||20);d.spawn=.8;
+      d.wave++;d.spawned=0;d.quota=battleWaveQuota(d.level,d.wave,S.bcWorld||20,d.up&&d.up.fewer);d.spawn=.8;
       warSfx("warWave");
     }
     syncAaButton(d);
@@ -10165,7 +10159,7 @@
           steps.push([n,lab]);
         }
         const list=steps.map(([n,lab])=>"<li class=\""+(tierNow>=n?"on":"")+"\">"+(tierNow>=n?"●":"○")+" "+n+" · "+lab+"</li>").join("");
-        const hint=es?"Cada tier suma 5% de velocidad y 5% de defensa del escudo. Los pares suman 1 vida. El precio es el más caro entre 1000 BTC y el 5% del patrimonio, en la moneda que más tenés.":"Each tier adds 5% speed and 5% shield defense. Even tiers add 1 life. The price is the higher of 1000 BTC and 5% of net worth, shown in whichever you hold more of.";
+        const hint=es?"Cada tier suma 5% de velocidad, 5% de defensa del escudo, 4% de velocidad de disparo y 4% menos enemigos. Los pares suman 1 vida, el tier 5 levanta el muro de la ciudadela y el tier 7 duplica el daño. El tier N cuesta N×250 BTC o el 5% del patrimonio (lo que sea mayor), en la moneda que más tienes.":"Each tier adds 5% speed, 5% shield defense, 4% shot speed and 4% fewer attackers. Even tiers add 1 life, tier 5 raises the citadel wall and tier 7 doubles damage. Tier N costs N×250 BTC or 5% of net worth (whichever is higher), shown in whichever you hold more of.";
         ups.innerHTML="<p class=\"bc-up-now\">"+now+"</p><ul class=\"bc-up-list\">"+list+"</ul><p class=\"bc-note\">"+hint+"</p>";
       }
     }
