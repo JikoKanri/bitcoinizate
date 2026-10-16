@@ -6730,7 +6730,13 @@
   }
   const PICK_TTL=12.5; // seconds a battle pickup stays on the ground (was 10, +25%)
   function scatterPickups(d,n){
-    const kinds=["heal","shot","god","freeze","bomb","wall"];
+    // Powerups that already hit their tier cap are left out of the pool (S at tier 3, + at 4/4 hearts).
+    const pl=d.player||{};
+    const kinds=["heal","shot","god","freeze","bomb","wall"].filter((k)=>{
+      if(k==="shot")return (d.shotTier|0)<3;
+      if(k==="heal")return !((pl.maxHearts||3)>=4&&(pl.hearts|0)>=4);
+      return true;
+    });
     const sea=!!(d.naval||(d.player&&d.player.ship));
     const ok=(t)=>sea?t===3:(t===0||t===6||t===7);
     const seen=new Uint8Array(BC_C*BC_R);
