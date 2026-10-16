@@ -2292,8 +2292,8 @@
       body: "Nico is getting married. You arrive with Lena and Paco, who has already decided he dislikes the venue. There are 400 guests, and you recognize about twelve. The DJ is playing CDs from 1998. Near the bar, Nico is pitching an elaborate idea to a stranger who did not ask. Lena looks at you. \"Do not let your cousin talk you into anything tonight.\" At the gift table, you decide how much to give.",
       bodyEs: "Nico se casa. Llegas con Lena y Paco, quien ya decidió que el lugar no le gusta. Hay 400 invitados y apenas reconoces a unos doce. El DJ pone música de 1998. Cerca de la barra, Nico le explica una idea complicadísima a un desconocido que no preguntó nada. Lena te mira: \"No permitas que tu primo te convenza de nada esta noche\". En la mesa de regalos debes decidir cuánto dar.",
       opts: [
-        { k: "a", label: "Give a generous gift · 4%", labelEs: "Dar un regalo generoso · 4%" },
-        { k: "b", label: "Give a modest gift · 0.6%", labelEs: "Dar un regalo modesto · 0.6%" },
+        { k: "a", label: "Give a generous gift", labelEs: "Dar un regalo generoso" },
+        { k: "b", label: "Give a modest gift", labelEs: "Dar un regalo modesto" },
         { k: "c", label: "Skip the gift", labelEs: "No dar regalo" }
       ] },
     { id: "mexico", kind: "choice", after: ["landfill"],
@@ -2326,8 +2326,8 @@
       bodyEs: "Es viernes por la noche en casa de Marek. Hay una botella de vino, la cena a medio terminar y 12 Monkeys en pausa. Así suelen pasar el tiempo: vino, películas antiguas y una conversación que siempre se alarga más de lo previsto. Esta vez, como de costumbre, terminan debatiendo sobre la IA y el futuro. Tú eres el entusiasta; Marek sabe más, pero confía menos en la gente. Ninguno convence al otro.",
       opts: [
         { k: "a", label: "Keep talking", labelEs: "Seguir conversando" },
-        { k: "b", label: "Get ice cream · $17", labelEs: "Comprar helado · $17" },
-        { k: "c", label: "Cab home · $25", labelEs: "Tomar un taxi a casa · $25" }
+        { k: "b", label: "Get ice cream", labelEs: "Comprar helado" },
+        { k: "c", label: "Cab home", labelEs: "Tomar un taxi a casa" }
       ] },
     { id: "casino", kind: "choice", after: ["landfill"],
       title: "Nico Finds a Table", titleEs: "Nico encuentra una mesa",
@@ -2356,7 +2356,7 @@
       body: "Sofi is going on a school trip to the Mint Museum. Her family is a little short this month. Lena thinks you should help. You agree, or you don't.",
       bodyEs: "Sofi tiene una excursión escolar al museo de la Casa de Moneda. En su casa este mes el dinero está ajustado. Lena cree que deberías ayudar. Aceptas, o no.",
       opts: [
-        { k: "a", label: "Cover the trip · $300", labelEs: "Pagar la excursión · $300" },
+        { k: "a", label: "Cover the trip", labelEs: "Pagar la excursión" },
         { k: "b", label: "Let them handle it", labelEs: "Que lo resuelvan ellos" }
       ] },
     { id: "roof", kind: "report",
@@ -2404,8 +2404,8 @@
       body: "You plan a proper date. A nice restaurant. A walk. The lake at sunset. The restaurant is nice. The walk is quiet. The lake looks good at sunset. Nothing goes wrong. This feels suspicious.",
       bodyEs: "Planeas una cita formal: un buen restaurante, una caminata y el lago al atardecer. El restaurante está bien. La caminata es tranquila. El lago se ve hermoso al atardecer. Nada sale mal. Eso te parece sospechoso.",
       opts: [
-        { k: "a", label: "Nice restaurant · $180", labelEs: "Buen restaurante · $180" },
-        { k: "b", label: "Keep it simple · $60", labelEs: "Mantenerlo sencillo · $60" },
+        { k: "a", label: "Nice restaurant", labelEs: "Buen restaurante" },
+        { k: "b", label: "Keep it simple", labelEs: "Mantenerlo sencillo" },
         { k: "c", label: "Cancel (try another day)", labelEs: "Cancelar (otro día)" }
       ] },
     { id: "proposal", kind: "choice", after: ["date"],
@@ -2424,7 +2424,7 @@
       opts: [
         { k: "a", label: "The wedding Lena wants · 12%", labelEs: "La boda que Lena quiere · 12%" },
         { k: "b", label: "Keep it small · 5%", labelEs: "Hacer una fiesta pequeña · 5%" },
-        { k: "c", label: "Run · 1% (ends the family arc)", labelEs: "Salir huyendo · 1% (termina el arco familiar)" }
+        { k: "c", label: "Run (ends the family arc)", labelEs: "Salir huyendo (termina el arco familiar)" }
       ] },
     { id: "honeymoon", kind: "choice", after: ["wedding"], when:()=>!!S.familyPath&&!S.familyClosed,
       title: "Honeymoon", titleEs: "La luna de miel",
@@ -2445,8 +2445,8 @@
       body: "The baby arrives. You are tired, Lena is tired, and Paco is confused. Kids grow fast. You start thinking about the kind of future you want to build.",
       bodyEs: "Llega el bebé. Tú estás agotado, Lena está agotada y Paco está confundido. Los niños crecen muy rápido. Empiezas a pensar en la clase de futuro que quieres construir.",
       opts: [
-        { k: "a", label: "Set things up properly · 5%", labelEs: "Organizar todo debidamente · 5%" },
-        { k: "b", label: "Keep it simple · 2%", labelEs: "Mantenerlo sencillo · 2%" },
+        { k: "a", label: "Set things up properly", labelEs: "Organizar todo debidamente" },
+        { k: "b", label: "Keep it simple", labelEs: "Mantenerlo sencillo" },
         { k: "c", label: "Send a PDF of financial advice", labelEs: "Enviar un PDF con consejos financieros" }
       ] },
     { id: "cousin", kind: "choice", after: ["landfill"],
@@ -2486,7 +2486,7 @@
       body: "Marek takes you to an old bar with an arcade machine in the back. There is a Tetris cabinet nobody seems to use. He starts playing. He gets unusually focused. \"Trying not to make it worse.\" After a few minutes he steps aside. \"Your turn.\"",
       bodyEs: "Marek te lleva a un bar antiguo con una máquina de arcade al fondo. Hay una máquina de Tetris que nadie parece usar. Empieza a jugar y se concentra de una manera inusual: \"Intento no arruinarlo\". Tras unos minutos, se hace a un lado: \"Tu turno\".",
       opts: [
-        { k: "a", label: "Put money in · $20", labelEs: "Insertar monedas · $20" },
+        { k: "a", label: "Put money in", labelEs: "Insertar monedas" },
         { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek jugar" }
       ] },
     { id: "unclemike", kind: "choice",
@@ -2494,9 +2494,9 @@
       body: "Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customers. You agree with him. You also want to go home. The waiter is still standing there, and you look at the tip line again.",
       bodyEs: "El tío Mike está de visita en la ciudad y se reúnen en un restaurante elegante. La comida y el vino son excelentes, hasta que llega la cuenta. La revisa con detenimiento, mira la línea de la propina y suelta el bolígrafo. Pregunta con molestia por qué tiene que pagar él los sueldos de los empleados. Le explicas que la propina es habitual. Ese, insiste él, es el verdadero problema, y empieza un discurso sobre restaurantes que deberían pagarles sueldos dignos a sus empleados en lugar de transferirles la carga a los clientes. Estás de acuerdo con él, pero también quieres irte a casa. El mesero sigue ahí de pie, y tú vuelves a mirar la línea de la propina.",
       opts: [
-        { k: "a", label: "Leave a 20% tip · $220", labelEs: "Dejar el 20% de propina · $220" },
-        { k: "b", label: "Leave no tip · $180", labelEs: "No dejar propina · $180" },
-        { k: "c", label: "Leave a small tip · $195", labelEs: "Dejar una propina modesta · $195" }
+        { k: "a", label: "Leave a 20% tip", labelEs: "Dejar el 20% de propina" },
+        { k: "b", label: "Leave no tip", labelEs: "No dejar propina" },
+        { k: "c", label: "Leave a small tip", labelEs: "Dejar una propina modesta" }
       ] }
 ,
     { id:"justInCase", kind:"report", title:"Just in Case", titleEs:"Por si acaso", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years.", bodyEs:"Tras tres días de debate, se aprueba una nueva ley de emergencia. Amplía las facultades del Estado durante períodos de inestabilidad económica. La presentan como temporal. Lees la definición dos veces: parece abarcar casi todos los años." },
@@ -3351,9 +3351,6 @@
     }
     if (!card) return;
     if (card.id==="islandInspection" && !(S.bcIslandOffer>0)) S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));
-    if (card.id==="islandInspection" && card.opts && card.opts[0]) { // show the asking price on the button
-      card.opts[0].label="Buy the island · "+costLabel(S.bcIslandOffer); card.opts[0].labelEs="Comprar la isla · "+costLabel(S.bcIslandOffer);
-    }
     S.chanceUsed[card.id] = true;
     if (card.id === S.arcBias) S.arcBias = "";
     noteArcSeen(card.id);
