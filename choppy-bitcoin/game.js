@@ -2871,7 +2871,7 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
-  const ARC_VID = { landfill: 1, proposal: 1, mexico: 1, phish: 1, baby: 1 };
+  const ARC_VID = { mexico: 1 };
   const WIDE_ART_PNG = new Set([]);  // all wide art is JPG now (mobile weight)
   const WIDE_ART_JPG = new Set([
     "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
@@ -2886,6 +2886,8 @@
     "jobCareermedicalTier4", "jobCareermedicalTier6", "jobCareermaritimeTier2",
     "jobCareermaritimeTier4", "jobCareermaritimeTier6",
     // former PNG panoramas + Marek restyles
+    "landfill", "phish", "crash", "flu", "roof", "proposal",
+    "pregnancy", "honeymoon", "baby", "school", "ring", "speeding",
     "citadelQuestion", "declaration", "justInCase", "nothingToHide", "extensionCord",
     "firstBloc", "somethingBetter", "temporaryMeasures", "timeTraveler", "nobodyKnows",
     "theOg", "obviously", "peopleAsking", "placeNow", "principality",
@@ -2924,7 +2926,7 @@
 
     if (ARC_VID[id]) {
       const poster = "chance/" + artId + ".jpg?v=mp86";
-      return { id, artId, src: "chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : ""), poster, wide: false, isVideo: true };
+      return { id, artId, src: "chance/" + id + ".mp4", poster, wide: false, isVideo: true };
     }
 
     const isWide = !!(card && (card.wide || card.panoramic)) || WIDE_ART_PNG.has(artId) || WIDE_ART_JPG.has(artId) || (artId && artId.endsWith("-wide"));
@@ -2934,7 +2936,7 @@
       const v = ARC_ART_VERSIONS[artId] || "gpt4";
       src = "chance/" + artId + "-wide.png?v=" + v;
     } else if (isWide) {
-      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin10";
+      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin11";
     } else {
       src = "chance/" + artId + ".jpg?v=mp86";
     }
@@ -2998,7 +3000,7 @@
       v.muted = true;
       v.preload = "auto";
       v.playsInline = true;
-      v.src = "chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "");
+      v.src = "chance/" + id + ".mp4";
     });
   }
 
