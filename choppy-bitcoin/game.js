@@ -5721,10 +5721,20 @@
           if(!mid){steel(pc.x-hx,y);steel(pc.x+hx,y);}
         }
       };
-      ring(8,8,true,false);
-      ring(12,13,false,true);
-      for(const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]]){
-        for(let k=0;k<3;k++){steel(pc.x+sx*10,pc.y+sy*(10-k));steel(pc.x+sx*(10-k),pc.y+sy*10);}
+      // size the outer ring so it sits entirely on dry land inside the map; inner ring and blocks scale with it
+      const ringDry=(hx,hy)=>{
+        for(let x=pc.x-hx;x<=pc.x+hx;x++)if(!dry(x,pc.y-hy)||!dry(x,pc.y+hy))return false;
+        for(let y=pc.y-hy;y<=pc.y+hy;y++)if(!dry(pc.x-hx,y)||!dry(pc.x+hx,y))return false;
+        return true;
+      };
+      let ox=Math.min(12,pc.x-2,BC_C-3-pc.x),oy=Math.min(13,pc.y-2,BC_R-3-pc.y);
+      while((ox>7||oy>7)&&!ringDry(ox,oy)){if(ox>7)ox--;if(oy>7)oy--;}
+      const ix=Math.max(6,Math.round(ox*0.62)),iy=Math.max(6,Math.round(oy*0.62)); // >=6 keeps the inner ring clear of the citadel pad
+      ring(ix,iy,true,false);
+      ring(ox,oy,false,true);
+      const bx=Math.round((ix+ox)/2),byy=Math.round((iy+oy)/2);
+      if(ox-ix>=3&&oy-iy>=3)for(const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]]){
+        for(let k=0;k<2;k++){steel(pc.x+sx*bx,pc.y+sy*(byy-k));steel(pc.x+sx*(bx-k),pc.y+sy*byy);}
       }
     }else if(id==="brickYard"){
       // A real town: rows of destructible houses (tile 1) in 2-deep blocks along a street grid,
@@ -6616,10 +6626,11 @@
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
     S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
     const world=S.bcWorld||20;
-    const quota=battleWaveQuota(level,1,world,u.fewer);
+    const troopMul=zplan.id==="blockFort"?1.5:1; // the fortress draws a bigger assault
+    const quota=Math.ceil(battleWaveQuota(level,1,world,u.fewer)*troopMul);
     const naval=!!built.naval;
     const heliN=(!naval && (level%3===2))?2:0;
-    const ground=battleWaveQuota(level,1,world,u.fewer)+battleWaveQuota(level,2,world,u.fewer);
+    const ground=Math.ceil(battleWaveQuota(level,1,world,u.fewer)*troopMul)+Math.ceil(battleWaveQuota(level,2,world,u.fewer)*troopMul);
     const delta=(S.bcArmy||0)-world;
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
     const hearts=u.hearts||3;
@@ -6630,7 +6641,7 @@
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:face0,ang:Math.atan2(faceV[1],faceV[0]),hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:2,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
-      fortSteel:!!built.steel,
+      fortSteel:!!built.steel,troopMul,
       integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,tier0|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,shotSpread:spread0,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,maze:!!built.maze,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
@@ -7456,7 +7467,7 @@
     if(d.integrity<=0){finishDefense(false);return;}
     if(d.spawned>=d.quota&&d.enemies.length===0&&!(d.heliLeft>0)){
       if(d.wave>=d.waves){finishDefense(true);return;}
-      d.wave++;d.spawned=0;d.quota=battleWaveQuota(d.level,d.wave,S.bcWorld||20,d.up&&d.up.fewer);d.spawn=.8;
+      d.wave++;d.spawned=0;d.quota=Math.ceil(battleWaveQuota(d.level,d.wave,S.bcWorld||20,d.up&&d.up.fewer)*(d.troopMul||1));d.spawn=.8;
       warSfx("warWave");
     }
     syncAaButton(d);
