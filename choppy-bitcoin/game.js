@@ -7986,11 +7986,20 @@
     ctx.fillStyle=tint;ctx.fillRect(0,0,BC_C*T,BC_R*T);
     ctx.restore();
   }
-  function drawDefense(ctx){
-    const d=S.bcDefense;if(!d)return;
-    const t=d.t||0;
-    const houseMemo=new Map();
-    ctx.save();
+  // ---- Static terrain cache ----
+  // The tile grid + polish pass is ~1200 tiles of fillRect/paths and dominated battle frame time on phones.
+  // It is baked into an offscreen canvas and only repainted when the map/damage changes, or at most
+  // TERRAIN_HZ times a second for the slow water/foam animation. Fires are drawn live on top.
+  let TERRAIN_BAKING=false;
+  const TERRAIN_HZ=2;
+  const terrainCache={cv:null,key:"",tq:-1,dpr:0};
+  function terrainKey(d){
+    let h=2166136261>>>0;
+    const mix=(a)=>{if(!a)return;for(let i=0;i<a.length;i++){h=Math.imul(h^(a[i]|0),16777619);}};
+    mix(d.map);mix(d.hp);mix(d.rubble);mix(d.seal);mix(d.bHits);
+    return (h>>>0)+":"+(d.maze?1:0)+":"+(d.theme||"")+":"+(S.bcMapSeed|0)+":"+d.map.length;
+  }
+  function drawTerrainBase(ctx,d,t,houseMemo){
     ctx.fillStyle="#0c3c46";ctx.fillRect(0,0,S.W,S.H);
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       const k=bcAt(d.map,x,y),px=x*BC_TS,py=y*BC_TS;
@@ -8054,7 +8063,7 @@
           }
           ctx.fillStyle=burn?"#6a3a16":"#24461e";
           ctx.beginPath();ctx.arc(px+8,py+7,2.1,0,Math.PI*2);ctx.fill();
-          if(burn>=1){
+          if(burn>=1&&!TERRAIN_BAKING){
             const flick=0.65+0.35*Math.sin(t*16+x*2.2+y);
             ctx.globalAlpha=flick;
             ctx.fillStyle=burn>=2?"#ffb020":"#e25822";
@@ -8095,7 +8104,7 @@
         }else{
           drawHouseCell(ctx,d.map,x,y,px,py,houseMemo);
           const hi=y*BC_C+x;
-          if((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0))drawHouseFire(ctx,px,py,t,x,y,1);
+          if(!TERRAIN_BAKING&&((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0)))drawHouseFire(ctx,px,py,t,x,y,1);
         }
         continue;
       }
@@ -8122,6 +8131,53 @@
       }
     }
     drawTerrainPolish(ctx,d,t);
+  }
+  function drawTerrainCached(ctx,d,t,houseMemo){
+    const dpr=canvasDpr();
+    const W=BC_C*BC_TS,H=Math.max(S.H,BC_R*BC_TS);
+    const c=terrainCache;
+    const key=terrainKey(d);
+    const tq=Math.floor(t*TERRAIN_HZ);
+    if(!c.cv||c.dpr!==dpr||c.key!==key||c.tq!==tq){
+      if(!c.cv)c.cv=document.createElement("canvas");
+      if(c.dpr!==dpr||c.cv.width!==Math.round(Math.max(S.W,W)*dpr)){c.cv.width=Math.round(Math.max(S.W,W)*dpr);c.cv.height=Math.round(H*dpr);}
+      const g=c.cv.getContext("2d");
+      g.setTransform(dpr,0,0,dpr,0,0);
+      TERRAIN_BAKING=true;
+      try{drawTerrainBase(g,d,tq/TERRAIN_HZ,houseMemo);}finally{TERRAIN_BAKING=false;}
+      c.dpr=dpr;c.key=key;c.tq=tq;
+    }
+    ctx.drawImage(c.cv,0,0,c.cv.width,c.cv.height,0,0,c.cv.width/dpr,c.cv.height/dpr);
+    // live fires (trees and houses), skipped while baking
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const k=bcAt(d.map,x,y);
+      if(k!==4&&k!==1)continue;
+      const hi=y*BC_C+x,px=x*BC_TS,py=y*BC_TS;
+      if(k===4){
+        const burn=d.hp[hi]||0;
+        if(burn>=1){
+          const flick=0.65+0.35*Math.sin(t*16+x*2.2+y);
+          ctx.globalAlpha=flick;
+          ctx.fillStyle=burn>=2?"#ffb020":"#e25822";
+          ctx.beginPath();ctx.arc(px+8,py+6,burn>=2?3.4:2,0,Math.PI*2);ctx.fill();
+          ctx.globalAlpha=1;
+        }
+        continue;
+      }
+      if(d.maze||(d.seal&&d.seal[hi]))continue;
+      if(!((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0)))continue;
+      let fort=false;
+      for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
+      if(fort)continue;
+      drawHouseFire(ctx,px,py,t,x,y,1);
+    }
+  }
+  function drawDefense(ctx){
+    const d=S.bcDefense;if(!d)return;
+    const t=d.t||0;
+    const houseMemo=new Map();
+    ctx.save();
+    drawTerrainCached(ctx,d,t,houseMemo);
     if(!d.maze)for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       if(bcAt(d.map,x,y)!==1)continue;
       if(d.seal&&d.seal[y*BC_C+x])continue;
@@ -9111,6 +9167,7 @@
     const down = f === String(PAL.labelDn || "").toLowerCase() || f === String(RED || "").toLowerCase() || f === String(PAL.red || "").toLowerCase();
     return down ? "#ffd0c8" : "#fff8ef";
   }
+  const wickUp = [], wickDn = [];
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
     const bucket = 4, cw = 4.75, stepX = 5.1;
@@ -9196,7 +9253,10 @@
 
     const rng = S.tapeHi - S.tapeLo;
     const inv = (y1 - y0) / (rng < 0.01 ? 0.01 : rng);
-    const py = (v) => y1 - (v - S.tapeLo) * inv;
+    // Clamp to just outside the clip rect: a wick with huge off-screen coordinates (tiny range + price shock)
+    // made a single stroke() take seconds on software/mobile rasterizers.
+    const pyLo = y0 - 16, pyHi = y1 + 16;
+    const py = (v) => { const y = y1 - (v - S.tapeLo) * inv; return y < pyLo ? pyLo : y > pyHi ? pyHi : (y === y ? y : y1); };
 
     ctx.save();
     ctx.beginPath();
@@ -9211,16 +9271,22 @@
       const l = i === lastI ? lastL : b.l;
       const c = i === lastI ? lastC : b.c;
       const bull = c >= b.o;
-      ctx.strokeStyle = bull ? up : dn;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x + cw * 0.5, py(h));
-      ctx.lineTo(x + cw * 0.5, py(l));
-      ctx.stroke();
+      // wicks are batched into one path per colour (2 strokes per frame instead of one per candle)
+      const wick = bull ? wickUp : wickDn;
+      wick.push(x + cw * 0.5, py(h), py(l));
       ctx.fillStyle = bull ? up : dn;
       const yO = py(b.o), yC = py(c);
       ctx.fillRect(x, yO < yC ? yO : yC, cw, Math.max(1.2, yO < yC ? yC - yO : yO - yC));
     }
+    ctx.lineWidth = 1;
+    for (const [w, col] of [[wickUp, up], [wickDn, dn]]) {
+      if (!w.length) continue;
+      ctx.strokeStyle = col;
+      ctx.beginPath();
+      for (let k = 0; k < w.length; k += 3) { ctx.moveTo(w[k], w[k + 1]); ctx.lineTo(w[k], w[k + 2]); }
+      ctx.stroke();
+    }
+    wickUp.length = 0; wickDn.length = 0;
     const marks = (S.tapeMarks || []).concat(S.tapeLive ? [S.tapeLive] : []);
     if (marks.length) {
       ctx.font = "700 8px \"IBM Plex Mono\", monospace";
@@ -10148,9 +10214,10 @@
     ctx.restore();
   }
 
-  function drawWorldBg(ctx, wash, w, h) {
-    w = w || S.W;
-    h = h || S.H;
+  // The gradient sky, stars, sun/moon glow and vignette never change for a palette + size, but full-canvas
+  // gradient fills are the most expensive thing to rasterize on phones. Bake them once per palette/size.
+  const BG_CACHE = new Map();
+  function paintBgStatic(ctx, w, h) {
     const g = ctx.createLinearGradient(0, 0, 0, h);
     g.addColorStop(0, PAL.bgTop || PAL.bg);
     g.addColorStop(0.52, PAL.bg);
@@ -10226,6 +10293,24 @@
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, w, h);
     }
+  }
+  function drawWorldBg(ctx, wash, w, h) {
+    w = w || S.W;
+    h = h || S.H;
+    const id = PALETTE_ID;
+    const dpr = canvasDpr();
+    const key = id + "|" + w + "|" + h + "|" + dpr + "|" + PAL.bgTop + PAL.bg + PAL.bgBot + PAL.gold + PAL.green + PAL.fg;
+    let bc = BG_CACHE.get(key);
+    if (!bc) {
+      if (BG_CACHE.size > 6) BG_CACHE.clear();
+      bc = document.createElement("canvas");
+      bc.width = Math.round(w * dpr); bc.height = Math.round(h * dpr);
+      const g = bc.getContext("2d");
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      paintBgStatic(g, w, h);
+      BG_CACHE.set(key, bc);
+    }
+    ctx.drawImage(bc, 0, 0, bc.width, bc.height, 0, 0, w, h);
     if (id === "flower") {
       const tnow = performance.now() * 0.001;
       for (let i = 6; i >= 0; i--) {
@@ -10258,18 +10343,10 @@
       ctx.lineWidth = 1;
       const stepG = id === "terminal" ? 28 : 36;
       const ox = -(((S.bg || 0) * 0.5) % stepG);
-      for (let x = ox; x < w + stepG; x += stepG) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (let y = 0; y < h; y += stepG) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
+      ctx.beginPath();
+      for (let x = ox; x < w + stepG; x += stepG) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+      for (let y = 0; y < h; y += stepG) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+      ctx.stroke();
     }
     if (S.power === "BULL" || S.power === "BEAR") {
       const tint = wash || (S.power === "BULL" ? PAL.green : PAL.red);
@@ -10394,8 +10471,11 @@
   const GAME_H = 640;
 
   let fitW = 0, fitH = 0, fitCtx = null;
+  // Backing-store scale for the main canvas. Capped at 2: DPR 3 phones would otherwise push 2.25x the pixels
+  // every frame for no visible gain on a 480x640 pixel-art stage.
+  function canvasDpr() { return Math.min(2, window.devicePixelRatio || 1); }
   function fit() {
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = canvasDpr();
     const W = GAME_W, H = GAME_H;
     S.W = W; S.H = H;
     if (fitCtx && W === fitW && H === fitH) return fitCtx;
