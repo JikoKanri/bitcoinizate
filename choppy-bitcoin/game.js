@@ -10505,10 +10505,12 @@
     const baseW = GAME_W;
     const baseH = app.offsetHeight || (GAME_H + 160);
     const pad = 8;
-    const inset = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    const bs = getComputedStyle(document.body);
+    const inset = (parseFloat(bs.paddingBottom) || 0) + (parseFloat(bs.paddingTop) || 0);
+    const insetX = (parseFloat(bs.paddingLeft) || 0) + (parseFloat(bs.paddingRight) || 0);
     const viewW = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
     const viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-    const sx = (viewW - pad) / baseW;
+    const sx = (viewW - pad - insetX) / baseW;
     const sy = (viewH - pad - inset) / baseH;
     const s = Math.max(0.35, Math.min(sx, sy));
     app.style.transform = "scale(" + s + ")";
@@ -12967,6 +12969,21 @@
     else kbMsg="";
     KB[id]=code;kbSave();kbHints();
   }
+  // "?" opens a read-only cheat sheet of the current bindings (desktop). Esc, "?" or a click closes it.
+  function kbSheetToggle(force){
+    let el=$("kb-sheet");
+    const show=force!=null?force:!(el&&el.classList.contains("open"));
+    if(!show){if(el)el.classList.remove("open");return;}
+    if(!el){el=document.createElement("div");el.id="kb-sheet";el.setAttribute("role","dialog");el.onclick=()=>kbSheetToggle(false);document.body.appendChild(el);}
+    const es=chanceLang();
+    const head={play:es?"Juego":"Run",battle:es?"Batalla":"Battle",ui:es?"Menús y cartas":"Menus & cards"};
+    let h="<div class=\"kb-sheet-box\"><p class=\"k\">"+(es?"ATAJOS DE TECLADO":"KEYBOARD SHORTCUTS")+"</p><div class=\"kb-sheet-cols\">",g="";
+    KB_DEFS.forEach(d=>{if(d.g!==g){if(g)h+="</div>";g=d.g;h+="<div><p class=\"kb-sec\">"+head[g]+"</p>";}
+      h+="<div class=\"kb-row\"><span>"+(es?d.es:d.en)+"</span><kbd>"+kbLabel(KB[d.id])+"</kbd></div>";});
+    h+="</div></div><p class=\"kb-note\">"+(es?"? o Esc cierra · Cambialas en Opciones → Juego → Teclas (PC)":"? or Esc closes · Rebind in Options → Gameplay → Keys (PC)")+"</p></div>";
+    el.innerHTML=h;el.classList.add("open");
+    if(S.phase==="play"&&!S.mp)togglePause();
+  }
   function kbClickFirst(sel){const el=overlay.querySelector(sel);if(el&&!el.disabled&&el.offsetParent!==null){el.click();return true;}return false;}
   window.addEventListener("keyup", (e) => {
     if(S.phase!=="defense")return;
@@ -12994,6 +13011,9 @@
     const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
     if (typing) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const sheet = $("kb-sheet");
+    if (sheet && sheet.classList.contains("open") && (e.code === "Escape" || e.key === "?")) { e.preventDefault(); kbSheetToggle(false); return; }
+    if (e.key === "?" && !e.repeat && S.phase !== "defense") { e.preventDefault(); kbSheetToggle(true); return; }
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
     if(S.phase==="defense"){
       const h=S.defHeld||(S.defHeld={u:0,d:0,l:0,r:0,f:0});
