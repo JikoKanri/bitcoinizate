@@ -6754,7 +6754,7 @@
     for(let i=0;i<n;i++){
       const t=d.map[i];
       const x=i%BC_C, y=(i/BC_C)|0;
-      const house=t===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
+      const house=t===1&&!d.maze&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
       if(t===9||house){mark[i]=1;tiles++;}
     }
     d.buildMark=mark;
@@ -6939,7 +6939,7 @@
     return best;
   }
   function gridRoute(d,e,goal,allowTree){
-    const pass=(t)=>e.ship?t===3:(t===0||t===6||t===7||(allowTree&&t===4));
+    const pass=(t)=>e.ship?t===3:(t===0||t===6||t===7||(allowTree&&(t===4||(t===1&&!d.maze))));
     const sx=Math.max(0,Math.min(BC_C-1,Math.floor(e.x/BC_TS)));
     const sy=Math.max(0,Math.min(BC_R-1,Math.floor(e.y/BC_TS)));
     // No passable tile near the goal (e.g. an inland fort for a ship): aim the search at the goal tile itself
@@ -6977,9 +6977,10 @@
     const next=path[0];
     const nx=next%W,ny=(next/W)|0;
     let trees=0;
-    for(const c of path)if(bcAt(d.map,c%W,(c/W)|0)===4)trees++;
+    for(const c of path){const pt=bcAt(d.map,c%W,(c/W)|0);if(pt===4)trees++;else if(pt===1)trees+=3;}
     const dir=vecDir(nx-sx,ny-sy);
-    return {dir:dir<0?e.dir:dir,len:path.length,tree:bcAt(d.map,nx,ny)===4,trees,wx:nx*BC_TS+BC_TS/2,wy:ny*BC_TS+BC_TS/2};
+    const nt=bcAt(d.map,nx,ny);
+    return {dir:dir<0?e.dir:dir,len:path.length,tree:nt===4||nt===1,trees,wx:nx*BC_TS+BC_TS/2,wy:ny*BC_TS+BC_TS/2};
   }
   // True when a tank/ship can actually drive the straight segment toward (x,y), not just see it.
   function driveClear(d,e,x,y){
@@ -6993,6 +6994,20 @@
       if(e.ship?t!==3:!(t===0||t===6||t===7))return false;
     }
     return true;
+  }
+  function nearHouse(d,e,r){
+    if(d.maze)return null;
+    const tx0=Math.floor(e.x/BC_TS),ty0=Math.floor(e.y/BC_TS),R=Math.ceil(r/BC_TS);
+    let best=null,bd=r*r;
+    for(let y=ty0-R;y<=ty0+R;y++)for(let x=tx0-R;x<=tx0+R;x++){
+      if(bcAt(d.map,x,y)!==1||citadelSkin(d,x,y)||(d.seal&&d.seal[y*BC_C+x]))continue;
+      const cx=x*BC_TS+8,cy=y*BC_TS+8,dd=(cx-e.x)**2+(cy-e.y)**2;
+      if(dd>=bd)continue;
+      const L=Math.sqrt(dd)||1,ex=cx-(cx-e.x)/L*10,ey=cy-(cy-e.y)/L*10;
+      if(!los(d,e,ex,ey))continue;
+      bd=dd;best={x:cx,y:cy};
+    }
+    return best;
   }
   function pathDir(d,e,goal){
     e.fell=false;
@@ -7130,6 +7145,11 @@
           if(e.aimAt&&e.aimAt!==fireAt)e.navAt=e.aimAt;
           e.aimAt=fireAt;
         }
+        // Nothing to shoot at (no line to the hero or the shield): occasionally shell a nearby house/village.
+        if(e.type!=="HELI"&&!e.want&&Math.random()<0.3){
+          const h=nearHouse(d,e,88);
+          if(h){if(e.aimAt)e.navAt=e.aimAt;e.aimAt=h;e.want=true;}
+        }
       }
       const ox=e.x,oy=e.y;
       if(e.type==="HELI"){
@@ -7161,6 +7181,7 @@
           const kt=bcAt(d.map,tx,ty);
           const beach=e.ship&&e.role==="shield"&&(d.fort||d.home)&&losShield(d,e,(d.fort||d.home).x,(d.fort||d.home).y);
           if(beach){e.aimAt=d.fort||d.home;facePoint(e,e.aimAt.x,e.aimAt.y);e.want=true;e.jam=0;}
+          else if(kt===1&&!e.ship&&!d.maze){e.want=true;e.jam=0;} // a house blocks the route: shell it out of the way
           else if(kt===1||kt===5){e.aimAt=d.fort||d.home;facePoint(e,e.aimAt.x,e.aimAt.y);e.want=true;e.jam=0;}
           else if(kt===4&&!e.ship&&(e.fell||e.jam>0.35)){e.want=true;e.jam=0;}
           else if(!backing){
@@ -7381,7 +7402,7 @@
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       const t=bcAt(d.map,x,y);
       const i=y*BC_C+x;
-      const house=t===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
+      const house=t===1&&!d.maze&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
       if(t!==9&&!house)continue;
       const b=t===9?beaconBase(x,y):null;
       const cx=b?(b.x0+b.x1)/2:x*BC_TS+8;
