@@ -2130,7 +2130,7 @@
   const CHANCE_WHO = {
     landfill: ["nico", "lena"], taxbill: [], nicoWedding: ["nico", "lena", "paco"], mexico: ["lena", "paco"],
     flu: ["lena", "paco"], phish: [], crash: [], casino: ["nico"], poker: ["marek"],
-    uncle: ["hector"], school: ["sofi", "lena"], roof: ["paco"], lotto: ["marek"],
+    uncle: ["hector"], school: ["sofi", "lena"], roof: ["paco"],
     hospital: ["lena"], startup: ["nico"], tow: [], courage: ["marek", "lena"],
     ring: ["lena"], date: ["lena"], proposal: ["lena"], wedding: ["lena", "nico", "paco"],
     honeymoon: ["lena", "paco"], pregnancy: ["lena"], baby: ["lena", "paco"], cousin: ["nico"],
@@ -2217,7 +2217,6 @@
     uncle: { en: "Uncle Héctor wires you {gift} and refuses to say why.", es: "El tío Héctor te transfiere {gift} y se niega a decir por qué." },
     school: { en: "Sofi is going on a school trip to the Mint Museum, and her family is short this month. Lena thinks you should help.", es: "Sofi tiene una excursión escolar al museo de la Casa de Moneda y el dinero está ajustado en su casa este mes. Lena cree que deberías ayudar." },
     roof: { en: "Paco finds the leak and sits under it. When the workers arrive, he finds another place to sit.", es: "Paco encuentra la gotera y se sienta debajo. Cuando llegan los reparadores, busca otro lugar donde sentarse." },
-    lotto: { en: "Over wine with Marek you buy a scratch ticket. In the morning he asks if you checked the numbers. You did not.", es: "Tomando vino con Marek compras un boleto de lotería instantánea. Por la mañana te pregunta si revisaste los números. No los revisaste." },
     hospital: { en: "You need stitches. Lena drives you to the hospital and, on the way home, tells you not to bleed on anything.", es: "Necesitas puntos de sutura. Lena te lleva al hospital y, de regreso, te pide que no sangres sobre nada." },
     startup: { en: "Nico has a long deck for an app that mixes subscriptions, A.I., and something he calls community ownership. He says the upside is enormous.", es: "Nico preparó una presentación para una app que combina suscripciones, IA y propiedad comunitaria. Dice que el potencial de ganancias es enorme." },
     tow: { en: "You were parked in the wrong place. The sign was very clear.", es: "Te estacionaste en el lugar equivocado. El letrero era muy claro." },
@@ -2363,10 +2362,6 @@
       title: "Roof", titleEs: "La gotera en el techo",
       body: "Paco finds the leak in the roof before you do. He sits directly underneath it. The workers arrive. He moves. He immediately finds another place to sit.",
       bodyEs: "Paco encuentra la gotera en el techo antes que tú. Se sienta justo debajo. Llegan los reparadores. Se quita de ahí, pero de inmediato encuentra otro lugar donde sentarse." },
-    { id: "lotto", kind: "report", after: ["wine"],
-      title: "Lottery Ticket", titleEs: "El boleto de lotería",
-      body: "You are having wine with Marek. At some point the conversation turns to probability. You buy a lottery ticket. The next morning Marek asks if you checked the numbers. You did not.",
-      bodyEs: "Estás tomando vino con Marek. En algún momento la conversación pasa a la probabilidad. Compras un boleto de lotería. A la mañana siguiente, Marek te pregunta si revisaste los números. No los revisaste." },
     { id: "hospital", kind: "report", after: ["landfill"],
       title: "Four Stitches", titleEs: "Cuatro puntos de sutura",
       body: "You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\"",
@@ -2659,12 +2654,6 @@
     if (card.id === "roof") {
       const paid = cutBill(900);
       return say("Paco found it first. −" + costLabel(paid) + ".", "Paco lo encontró primero. −" + costLabel(paid) + ".");
-    }
-    if (card.id === "lotto") {
-      const r = Math.random();
-      if (r < 0.04) { const n = grantWealthPct(0.35); return say("Marek reads the numbers. Not bad. +" + money(n) + ".", "Marek lee los números. Nada mal. +" + money(n) + "."); }
-      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Marek: \"Not bad.\" He meant the odds. +" + money(n) + ".", "Marek: \"Nada mal\". Se refería a las probabilidades. +" + money(n) + "."); }
-      return say("You lost the ticket price. Marek was referring to the odds.", "El boleto no gana nada. Marek se refería a las probabilidades.");
     }
     if (card.id === "hospital") {
       const paid = cutBill(250);
