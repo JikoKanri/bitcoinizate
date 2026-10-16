@@ -2871,7 +2871,7 @@
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
-  const ARC_VID = { mexico: 1 };
+  const ARC_VID = {};
   const WIDE_ART_PNG = new Set([]);  // all wide art is JPG now (mobile weight)
   const WIDE_ART_JPG = new Set([
     "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
@@ -2886,6 +2886,9 @@
     "jobCareermedicalTier4", "jobCareermedicalTier6", "jobCareermaritimeTier2",
     "jobCareermaritimeTier4", "jobCareermaritimeTier6",
     // former PNG panoramas + Marek restyles
+    "taxbill", "nicoWedding", "mexico", "casino", "uncle", "hospital",
+    "startup", "tow", "date", "wedding", "cousin", "wallet",
+    "potluck", "usedcar", "unclemike",
     "landfill", "phish", "crash", "flu", "roof", "proposal",
     "pregnancy", "honeymoon", "baby", "school", "ring", "speeding",
     "citadelQuestion", "declaration", "justInCase", "nothingToHide", "extensionCord",
@@ -2936,7 +2939,7 @@
       const v = ARC_ART_VERSIONS[artId] || "gpt4";
       src = "chance/" + artId + "-wide.png?v=" + v;
     } else if (isWide) {
-      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin11";
+      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin12";
     } else {
       src = "chance/" + artId + ".jpg?v=mp86";
     }
