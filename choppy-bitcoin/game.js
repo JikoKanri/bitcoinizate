@@ -5694,7 +5694,7 @@
       if(q.length<=2&&!q.some((c)=>prot(c%BC_C,(c/BC_C)|0)))for(const c of q)m[c]=6;
     }
   }
-  function stampMazeWalls(m,id,prot,rng){
+  function stampMazeWalls(m,id,prot,rng,fortC){
     const dry=(x,y)=>{
       if(x<2||y<2||x>=BC_C-2||y>=BC_R-2||prot(x,y))return false;
       if(m[y*BC_C+x]!==6)return false;
@@ -5706,28 +5706,39 @@
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]===6){cx+=x;cy+=y;n++;}
     cx=n?Math.round(cx/n):15;cy=n?Math.round(cy/n):22;
     if(id==="blockFort"){
-      // three concentric curtain walls with offset gates; outer ring partly ruined
-      [[4,5],[8,10],[12,15]].forEach(([hx,hy],ring)=>{
-        const gates=[0,1,2,3].map(()=>2+((rng()*(Math.min(hx,hy)*2-4))|0));
-        for(let x=cx-hx;x<=cx+hx;x++){
-          const k=x-(cx-hx);
-          if(Math.abs(k-gates[0])>1)wall(x,cy-hy);
-          if(Math.abs(k-gates[1])>1)wall(x,cy+hy);
+      // Simple geometric fortification in indestructible metal (tile 2): two concentric rectangular rings
+      // around the citadel with fixed 2-tile gates (inner ring N/S, outer ring E/W), plus four straight
+      // blocks between the rings. Walls are only dropped where the coast cuts the ring.
+      const pc=fortC||{x:cx,y:cy};
+      const steel=(x,y)=>{if(dry(x,y))m[y*BC_C+x]=2;};
+      const ring=(hx,hy,gatesNS,gatesEW)=>{
+        for(let x=pc.x-hx;x<=pc.x+hx;x++){
+          const mid=Math.abs(x-pc.x)<=1&&gatesNS;
+          if(!mid){steel(x,pc.y-hy);steel(x,pc.y+hy);}
         }
-        for(let y=cy-hy;y<=cy+hy;y++){
-          const k=y-(cy-hy);
-          if(Math.abs(k-gates[2])>1)wall(cx-hx,y);
-          if(Math.abs(k-gates[3])>1)wall(cx+hx,y);
+        for(let y=pc.y-hy;y<=pc.y+hy;y++){
+          const mid=Math.abs(y-pc.y)<=1&&gatesEW;
+          if(!mid){steel(pc.x-hx,y);steel(pc.x+hx,y);}
         }
-        if(ring===2)for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){const i=y*BC_C+x;if(m[i]===1&&rng()<0.22)m[i]=6;}
-      });
+      };
+      ring(8,8,true,false);
+      ring(12,13,false,true);
+      for(const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]]){
+        for(let k=0;k<3;k++){steel(pc.x+sx*10,pc.y+sy*(10-k));steel(pc.x+sx*(10-k),pc.y+sy*10);}
+      }
     }else if(id==="brickYard"){
-      // town blocks (3x2 buildings) on a street grid, a few blocks left open as plazas
-      const ox=(rng()*5)|0,oy=(rng()*4)|0;
-      for(let by=oy;by<BC_R;by+=4)for(let bx=ox;bx<BC_C;bx+=5){
-        if(rng()<0.22)continue;
-        const w=rng()<0.5?3:2,h=rng()<0.5?2:1;
-        for(let y=by;y<by+h+1;y++)for(let x=bx;x<bx+w+1;x++)wall(x,y);
+      // A real town: rows of destructible houses (tile 1) in 2-deep blocks along a street grid,
+      // some blocks left as tree-lined plazas. No walls.
+      const ox=(rng()*4)|0,oy=(rng()*3)|0;
+      for(let by=2+oy;by<BC_R-2;by+=4)for(let bx=2+ox;bx<BC_C-2;bx+=6){
+        if(rng()<0.2){ // plaza: corner trees, open square
+          for(const [tx,ty] of [[bx,by],[bx+3,by],[bx,by+2],[bx+3,by+2]])if(dry(tx,ty))m[ty*BC_C+tx]=4;
+          continue;
+        }
+        for(const hx of [bx,bx+3]){
+          let ok=true;for(let y=by;y<by+2;y++)for(let x=hx;x<hx+2;x++)if(!dry(x,y))ok=false;
+          if(ok)for(let y=by;y<by+2;y++)for(let x=hx;x<hx+2;x++)m[y*BC_C+x]=1;
+        }
       }
     }else{
       // hedgerows: broken field boundaries
@@ -5985,7 +5996,7 @@
       void shore;
     }
   }
-  function tidyGeography(m,pad,rng){
+  function tidyGeography(m,pad,rng,built){
     const W=BC_C,H=BC_R,N=W*H;
     const prot=(x,y)=>pad&&x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
     const at=(x,y)=>(x<0||y<0||x>=W||y>=H)?3:m[y*W+x];
@@ -6056,7 +6067,14 @@
       }
     }
     // 3) exactly one lighthouse, on a coastal point (most water around it), never inland
-    const lights=[];for(let i=0;i<N;i++)if(m[i]===9)lights.push(i);
+    const spawnPts=built?[].concat(built.spawns||[],built.landSpawns||[],built.seaSpawns||[],built.home?[built.home]:[]):[];
+    const lightOk=(x,y)=>{
+      // the sprite is ~3 tiles tall, so also keep the tiles above it clear of docks/roads/bridges
+      for(let dy=-4;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(at(x+dx,y+dy)===7||at(x+dx,y+dy)===5)return false;
+      for(const p of spawnPts){if(Math.hypot(p.x/BC_TS-x,p.y/BC_TS-y)<4)return false;}
+      return x>=2&&y>=2&&x<W-2&&y<H-2;
+    };
+    const lights=[];for(let i=0;i<N;i++)if(m[i]===9){if(lightOk(i%W,(i/W)|0))lights.push(i);else m[i]=0;}
     const coastScore=(x,y)=>{let w=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&at(x+dx,y+dy)===3)w++;return w;};
     let keep=-1,best=-1;
     for(const i of lights){const sc=coastScore(i%W,(i/W)|0);if(sc>best){best=sc;keep=i;}}
@@ -6065,11 +6083,18 @@
     if(keep<0){
       let cand=-1,cs=-1;
       for(let y=2;y<H-2;y++)for(let x=2;x<W-2;x++){
-        const t=at(x,y);if((t!==0&&t!==6&&t!==8)||prot(x,y))continue;
+        const t=at(x,y);if((t!==0&&t!==6&&t!==8)||prot(x,y)||!lightOk(x,y))continue;
         let land=0;for(const [dx,dy] of O4)if(at(x+dx,y+dy)!==3)land++;
         if(land<1)continue;
-        const sc=coastScore(x,y)*10+((x*7+y*13)%7);
+        const sc=coastScore(x,y)*10+(t===8?15:0)+((x*7+y*13)%7); // rocky points first
         if(coastScore(x,y)>=4&&sc>cs){cs=sc;cand=y*W+x;}
+      }
+      if(cand<0){ // no headland: settle for any clear beach tile with water on 3 sides of its ring
+        for(let y=2;y<H-2;y++)for(let x=2;x<W-2;x++){
+          const t=at(x,y);if((t!==0&&t!==8)||prot(x,y)||!lightOk(x,y))continue;
+          const sc=coastScore(x,y)*10+((x*7+y*13)%7);
+          if(coastScore(x,y)>=3&&sc>cs){cs=sc;cand=y*W+x;}
+        }
       }
       if(cand>=0)m[cand]=9;
     }
@@ -6084,8 +6109,12 @@
     const clearPad=(p)=>!!(p&&padFits(m,p.x,p.y)&&!citadelHitsUi(p,!!plan.fx,!!plan.fy));
     const candidates=[];
     for(let y=6;y<BC_R-12;y+=2)for(let x=3;x<BC_C-10;x+=2)if(clearPad({x,y}))candidates.push({x,y});
-    candidates.sort((a,b)=>Math.hypot(a.x-11,a.y-14)-Math.hypot(b.x-11,b.y-14));
-    const pool=candidates.slice(0,8);
+    if(plan.id==="blockFort"){
+      const wd=(p)=>{const fx=p.x+3,fy=p.y+2;let best=Math.min(fx,fy,BC_C-1-fx,BC_R-1-fy);for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]===3)best=Math.min(best,Math.max(Math.abs(x-(p.x+3)),Math.abs(y-(p.y+2))));return best;};
+      candidates.forEach((c)=>{c.wd=wd(c);});
+      candidates.sort((a,b)=>b.wd-a.wd);
+    }else candidates.sort((a,b)=>Math.hypot(a.x-11,a.y-14)-Math.hypot(b.x-11,b.y-14));
+    const pool=candidates.slice(0,plan.id==="blockFort"?2:8);
     let pad=pool.length?pool[(rng()*pool.length)|0]:fitPad(m,10,14);
     if(!clearPad(pad)){
       pad=null;
@@ -6093,17 +6122,16 @@
     }
     if(!pad)pad={x:10,y:14};
     const prot=(x,y)=>x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
-    stampMazeWalls(m,plan.id,prot,rng);
-    pruneMazeStubs(m,prot);
-    let steel=0;
+    stampMazeWalls(m,plan.id,prot,rng,{x:pad.x+3,y:pad.y+2});
+    if(plan.id!=="brickYard")pruneMazeStubs(m,prot);
+    let steel=plan.id==="canalMaze"?0:99;
     for(let y=2;y<BC_R-2&&steel<12;y++)for(let x=2;x<BC_C-2&&steel<12;x++){
       if(m[y*BC_C+x]!==1||prot(x,y))continue;
       let n=0;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===1)n++;
       if(n>=2&&((x*13+y*7+salt)%11)===0){m[y*BC_C+x]=2;steel++;}
     }
-    carveLane(m,pad.x+2,pad.y+2,15,20);
-    carveLane(m,pad.x+2,pad.y+2,8,28);
+    if(plan.id==="canalMaze"){carveLane(m,pad.x+2,pad.y+2,15,20);carveLane(m,pad.x+2,pad.y+2,8,28);}
     const sx=Math.max(1,Math.min(BC_C-2,pad.x+2)), sy=Math.max(1,Math.min(BC_R-2,pad.y+2));
     if(!mazeWalk(m[sy*BC_C+sx]))m[sy*BC_C+sx]=6;
     openMaze(m,sx,sy);
@@ -6155,11 +6183,14 @@
       seaSpawns:collectSpawns(m,home,true),
       naval:false,skel:plan.id,maze:true
     },!!plan.fx,!!plan.fy);
-    const moved=moveShieldOffUi(built.map);
+    // the fort rings are built around the citadel, so it must not be shifted afterwards
+    const moved=plan.id==="blockFort"?null:moveShieldOffUi(built.map);
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
-    tidyGeography(built.map,null,rng);
-    built.maze=true;
+    tidyGeography(built.map,null,rng,built);
+    // brickYard is a town: its tile-1 blocks are houses (drawn, burnt and billed as houses), not maze masonry
+    built.maze=plan.id!=="brickYard";
+    built.steel=plan.id==="blockFort";
     return built;
   }
   function makeIslandMap(level, fort){
@@ -6240,7 +6271,7 @@
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
     settleCoast(built);
-    tidyGeography(built.map,null,rng);
+    tidyGeography(built.map,null,rng,built);
     return built;
   }
 // MAPGEN_END
@@ -6599,6 +6630,7 @@
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:face0,ang:Math.atan2(faceV[1],faceV[0]),hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:2,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
+      fortSteel:!!built.steel,
       integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,tier0|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,shotSpread:spread0,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,maze:!!built.maze,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
@@ -6948,7 +6980,7 @@
       return true;
     }
     if(t===2||t===9){
-      if(friendly&&(d.shotTier|0)>=3&&t!==9){
+      if(friendly&&(d.shotTier|0)>=3&&t!==9&&!d.fortSteel){
         const i=ty*BC_C+tx;
         d.map[i]=6;
         if(d.seal)d.seal[i]=0;
