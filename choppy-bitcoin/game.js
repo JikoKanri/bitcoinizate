@@ -2216,7 +2216,7 @@
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Deberías hacer más preguntas, pero vas igual." },
     poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a una partida de póker de madrugada con gente conocida. No es un casino. Asiente cuando dices que vas a jugar." },
     uncle: { en: "Uncle Héctor wires you {gift} and refuses to say why.", es: "El tío Héctor te transfiere {gift} y se niega a decir por qué." },
-    school: { en: "Sofi is going on a school trip to the Mint Museum, and her family is short this month. Lena thinks you should help.", es: "Sofi tiene una excursión escolar al museo de la Casa de Moneda y el dinero está ajustado en su casa este mes. Lena cree que deberías ayudar." },
+    school: { en: "Nico's daughter Sofi has a school trip to the Mint Museum, and money is tight at home. Lena wants you to chip in.", es: "Sofi, la hija de Nico, tiene una excursión al museo de la Casa de Moneda y en su casa no alcanza. Lena quiere que ayudes." },
     roof: { en: "Paco finds the leak and sits under it. When the workers arrive, he finds another place to sit.", es: "Paco encuentra la gotera y se sienta debajo. Cuando llegan los reparadores, busca otro lugar donde sentarse." },
     hospital: { en: "You need stitches. Lena drives you to the hospital and, on the way home, tells you not to bleed on anything.", es: "Necesitas puntos de sutura. Lena te lleva al hospital y, de regreso, te pide que no sangres sobre nada." },
     startup: { en: "Nico has a long deck for an app that mixes subscriptions, A.I., and something he calls community ownership. He says the upside is enormous.", es: "Nico preparó una presentación para una app que combina suscripciones, IA y propiedad comunitaria. Dice que el potencial de ganancias es enorme." },
@@ -2229,7 +2229,7 @@
     honeymoon: { en: "You and Lena leave with one rule: no checking the portfolio. She takes your phone. There are three possible trips.", es: "Se van de viaje con una sola regla: no revisar el portafolio. Ella te quita el teléfono. Hay tres viajes posibles." },
     pregnancy: { en: "A positive test: you and Lena are having a baby. The first costs come to $450.", es: "Una prueba positiva: Lena y tú van a tener un bebé. Los primeros gastos suman $450." },
     baby: { en: "The baby arrives. Everyone is tired, including Paco. You start thinking about the future you want.", es: "Llega el bebé. Todos están cansados, incluido Paco. Empiezas a pensar en el futuro que quieres." },
-    cousin: { en: "Nico found a new token. He says it will multiply by Friday. What it does, he says, is not the important part.", es: "Nico encontró un nuevo token. Dice que multiplicará su valor para el viernes. Qué hace exactamente no es lo importante, según él." },
+    cousin: { en: "Nico is all in on FridayCoin ($FRY) and swears it will multiply by Friday. What it does is not the important part, he says.", es: "Nico apuesta todo a FridayCoin ($FRY) y jura que se multiplicará para el viernes. Qué hace no es lo importante, según él." },
     speeding: { en: "You get caught speeding again, on the same corner, by the same officer.", es: "Otra vez te multan por exceso de velocidad, en la misma esquina y con el mismo oficial." },
     wallet: { en: "You forget your wallet on the bus and get it back at the terminal, minus the cash.", es: "Olvidas la billetera en el autobús y la recuperas en la terminal, sin el efectivo." },
     potluck: { en: "Lena signs you and Paco up for the neighborhood potluck. He eats half of what you brought before you arrive.", es: "Lena los anota a ti y a Paco en la comida comunitaria del vecindario. Paco se come la mitad de lo que prepararon antes de llegar." },
@@ -2354,8 +2354,8 @@
       bodyEs: "El tío Héctor envía un mensaje sin explicación: \"Revisa tu cuenta\". Te transfirió dinero. Lo llamas, pero se niega a decirte por qué." },
     { id: "school", kind: "choice", after: ["nicoWedding"],
       title: "School Trip", titleEs: "La excursión escolar",
-      body: "Sofi is going on a school trip to the Mint Museum. Her family is a little short this month. Lena thinks you should help.",
-      bodyEs: "Sofi tiene una excursión escolar al museo de la Casa de Moneda. En su casa este mes el dinero está ajustado. Lena cree que deberías ayudar.",
+      body: "Sofi, Nico's ten-year-old daughter, is going on a school trip to the Mint Museum. With Nico's latest plans, money at their house is a little short this month. Lena thinks you should help.",
+      bodyEs: "Sofi, la hija de diez años de Nico, tiene una excursión escolar al museo de la Casa de Moneda. Con los últimos planes de Nico, este mes el dinero en su casa está ajustado. Lena cree que deberías ayudar.",
       opts: [
         { k: "a", label: "Cover the trip", labelEs: "Pagar la excursión" },
         { k: "b", label: "Let them handle it", labelEs: "Que lo resuelvan ellos" }
@@ -2448,8 +2448,8 @@
       ] },
     { id: "cousin", kind: "choice", after: ["landfill"],
       title: "Nico's New Thing", titleEs: "La nueva idea de Nico",
-      body: "Nico calls again. \"I found something.\" Of course he did. This time it is a new token. He says it will do ten times by Friday. You ask what it actually does. He says that is not the important part.",
-      bodyEs: "Nico llama otra vez: \"Encontré algo\". Por supuesto que sí. Esta vez se trata de un nuevo token. Asegura que multiplicará por diez su valor para el viernes. Le preguntas qué hace realmente. Responde que esa no es la parte importante.",
+      body: "Nico calls again. \"I found something.\" Of course he did. This time it is a new token called FridayCoin, ticker $FRY. He says it will do ten times by Friday. You ask what it actually does. He says that is not the important part.",
+      bodyEs: "Nico llama otra vez: \"Encontré algo\". Por supuesto que sí. Esta vez se trata de un nuevo token: FridayCoin, símbolo $FRY. Asegura que multiplicará por diez su valor para el viernes. Le preguntas qué hace realmente. Responde que esa no es la parte importante.",
       opts: [
         { k: "a", label: "Invest", labelEs: "Invertir" },
         { k: "b", label: "Walk away", labelEs: "Rechazar la oferta" }
@@ -2804,14 +2804,14 @@
         "Compran lo necesario y resuelven el resto después. −" + costLabel(paid) + ".");
     }
     if (card.id === "cousin") {
-      if (opt === "b") return say("Three hours later Nico texts. The token is already down 40%. \"Temporary.\"",
-        "Tres horas después, Nico escribe. El token ya cayó un 40%. \"Es temporal\".");
+      if (opt === "b") return say("Three hours later Nico texts you a chart: $FRY is already down 40%. \"Temporary.\"",
+        "Tres horas después, Nico te manda un gráfico: $FRY ya cayó un 40%. \"Es temporal\".");
       const paid = cutPct(0.4);
       if (Math.random() < 0.5) {
         arcPay(paid * 2.2);
-        return say("Friday arrives early. 2.2× on " + costLabel(paid) + ".", "El viernes llega temprano. 2.2× sobre " + costLabel(paid) + ".");
+        return say("$FRY really does pump. You sell on Thursday: 2.2× on " + costLabel(paid) + ".", "$FRY sube de verdad. Vendes el jueves: 2.2× sobre " + costLabel(paid) + ".");
       }
-      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendieron el token. " + costLabel(paid) + " ahora es solo una captura de pantalla.");
+      return say("The developers pull the liquidity and vanish. Your $FRY can no longer be sold. −" + costLabel(paid) + ".", "Los desarrolladores retiran la liquidez y desaparecen. Tus $FRY ya no se pueden vender. −" + costLabel(paid) + ".");
     }
     if (card.id === "speeding") {
       const paid = cutBill(75);

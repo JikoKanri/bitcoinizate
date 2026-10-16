@@ -12,5 +12,17 @@
   "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/taxbill-wide.jpg",
   "archive_old_to": "art-archive/history/taxbill-wide-<date>-replaced.jpg",
   "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere (envelopes and papers blank). Cozy wood-paneled home office at golden hour, desk with a single opened official envelope and a blank bill sheet, a laptop, a desk lamp. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), red bandana on top, no nose, no mouth, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts. Instead of his usual sunglasses he wears a pair of small round READING GLASSES sitting low on the coin face above the ₿ — these are the ONLY glasses in the whole scene; there are NO glasses, broken or otherwise, lying on the desk. New pose: Choppy leaning in close to the bill held at arm's length in one gloved hand, the other glove pushing the reading glasses up, squinting posture, slightly slumped in a leather chair."
+ },
+ {
+  "id": "somethingBetter",
+  "out": "chance/somethingBetter-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/somethingBetter-wide.jpg",
+  "refs": [
+   "/workspace/illus/refs/marek.png",
+   "/workspace/illus/refs/choppy.png",
+   "/workspace/bitcoinizate/choppy-bitcoin/chance/somethingBetter.jpg (composition/scene)"
+  ],
+  "archive_old_to": "art-archive/history/somethingBetter-wide-<date>-replaced.jpg",
+  "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text. ZOOMED-OUT wide shot: a forest trail following a sparkling river between low hills at golden hour; both characters fully in frame from head to sneakers with generous margin above heads and below feet, occupying about half the image height. Marek: same face and build as the chess card reference (dark tousled hair, glasses, lean), dressed for a trail run in a plain dark t-shirt and shorts with trail shoes, mid-stride, glancing sideways at Choppy with a skeptical half-smile. Choppy: a perfectly round flat orange Bitcoin coin character, a clean correct white ₿ symbol intact and centered (slightly below center ok; must be a proper ₿, not a P or ₽ shape), large low black sunglasses above the ₿, red bandana on top, no nose, mouth only if speaking (small open mouth allowed since he is talking), thin orange arms and legs, white gloves, brown sneakers; the coin never distorts. New pose: Choppy jogging beside Marek while gesturing outward with one open glove toward the wide landscape, as if describing something big he cannot name yet."
  }
 ]
