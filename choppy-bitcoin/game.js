@@ -2051,7 +2051,7 @@
     const pct = {
       landfill: { a: .25, b: .75 }, nicoWedding: { a: .04, b: .006 }, mexico: { a: .08 },
       phish: { a: .18 }, casino: { a: .1, b: .3 }, poker: { a: .08, b: .25 }, startup: { a: .2 },
-      courage: { a: .06 }, ring: { a: .08, b: .03 }, proposal: { a: .02, c: .01 },
+      ring: { a: .08, b: .03 }, proposal: { a: .02, c: .01 },
       wedding: { a: .12, b: .05, c: .01 }, honeymoon: { a: .1, b: .06, c: .04 },
       baby: { a: .05, b: .02 }, cousin: { a: .4 }, potluck: { a: .05 }, usedcar: { a: .12 },
       peopleAsking: { a: .03 }, extensionCord: { a: .04 }, obviously: { a: .05 },
@@ -2388,7 +2388,7 @@
       body: "You are at Marek's apartment. There is wine on the table and 12 Monkeys paused on the TV. You end up talking about A.I., futurism, and whether people actually know what they want. Eventually you mention Lena. Marek looks at you. \"So?\" You shrug. \"We've been together for years.\" He takes a sip. \"Maybe you're waiting for certainty.\" Then he presses play again. You keep thinking about it.",
       bodyEs: "Estás en el departamento de Marek. Hay vino en la mesa y 12 Monkeys en pausa. Terminan hablando de IA, futurismo y de si la gente realmente sabe lo que quiere. En algún momento mencionas a Lena. Marek te mira: \"¿Y bien?\". Te encoges de hombros: \"Llevamos años juntos\". Da un sorbo: \"Quizá estás esperando tener certeza absoluta\". Vuelve a poner la película. Te quedas pensándolo.",
       opts: [
-        { k: "a", label: "Buy the ring · 6%", labelEs: "Comprar el anillo · 6%" },
+        { k: "a", label: "Go buy a ring", labelEs: "Ir a comprar un anillo" },
         { k: "b", label: "Wait", labelEs: "Esperar" }
       ] },
     { id: "ring", kind: "choice", after: ["courage"], when:()=>!!S.hasRing,
@@ -2686,9 +2686,8 @@
     }
     if (card.id === "courage") {
       if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","Esperas. La pregunta no desaparece.");}
-      S.hasRing=true; // opt "b" already returned above
-      const paid = cutPct(0.06);
-      return say("You are officially doing this. −" + costLabel(paid) + ".", "Es oficial: vas a hacerlo. −" + costLabel(paid) + ".");
+      S.hasRing=true; // opt "b" already returned above; the ring itself is paid once, on the Ring card
+      return say("You are officially doing this. Next stop: the jewelry store.", "Es oficial: vas a hacerlo. Próxima parada: la joyería.");
     }
     if (card.id === "ring") {
       const paid = cutPct(opt === "b" ? 0.03 : 0.08);
