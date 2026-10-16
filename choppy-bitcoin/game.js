@@ -7174,6 +7174,11 @@
         const step=aimVec(e);
         const sx=backing?-step[0]:step[0], sy=backing?-step[1]:step[1];
         slideUnit(d,e,sx,sy,e.spd*0.81,dt);
+        // Watchdog: a unit that has not covered 10px in 4s gets a forced re-route (trees/houses allowed) and a short reverse.
+        e.wdT=(e.wdT||0)+dt;
+        if(e.wdX==null){e.wdX=e.x;e.wdY=e.y;}
+        if(Math.hypot(e.x-e.wdX,e.y-e.wdY)>10){e.wdX=e.x;e.wdY=e.y;e.wdT=0;}
+        else if(e.wdT>4&&!iced){e.wdT=0;e.navAt=null;e.backup=0.4;pathDir(d,e,goal);e.want=true;e.think=0.6;}
         if(Math.hypot(e.x-ox,e.y-oy)<0.4){
           const probe=aimVec(e);
           const tx=Math.floor((e.x+probe[0]*12)/BC_TS);
