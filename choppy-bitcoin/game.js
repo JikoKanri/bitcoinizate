@@ -2894,7 +2894,11 @@
     "jobCareermusicTier4", "jobCareermusicTier6", "jobCareerathleticTier2",
     "jobCareerathleticTier4", "jobCareerathleticTier6", "jobCareermedicalTier2",
     "jobCareermedicalTier4", "jobCareermedicalTier6", "jobCareermaritimeTier2",
-    "jobCareermaritimeTier4", "jobCareermaritimeTier6"
+    "jobCareermaritimeTier4", "jobCareermaritimeTier6",
+    "jobCareerdivingTier4", "jobCareerdivingTier6", "jobCareerscienceTier2",
+    "jobCareerscienceTier4", "jobCareerscienceTier6", "jobCareerlawTier2",
+    "jobCareerlawTier4", "jobCareerlawTier6", "jobCareerculinaryTier2",
+    "jobCareerculinaryTier4"
   ]);
   const ARC_ART_ALIAS = {};
   const ARC_ART_VERSIONS = {
