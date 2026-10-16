@@ -1441,3 +1441,7 @@ html.ui-pop .field { overflow: visible; }
   border: 1px solid rgba(58,58,64,0.7);
   border-radius: 6px;
 }
+/* Opera Game card: typed chess move */
+.overlay.dock.chance-ui .arc-move { width: min(100%, 300px); }
+.overlay.dock.chance-ui .arc-move-label { font: 700 11px "IBM Plex Mono", monospace; letter-spacing: .06em; color: var(--gold); text-align: center; }
+.overlay.dock.chance-ui .arc-move input { font-size: 16px; text-transform: none; }

@@ -2234,7 +2234,7 @@
     potluck: { en: "Lena signs you and Paco up for the neighborhood potluck. He eats half of what you brought before you arrive.", es: "Lena los anota a ti y a Paco en la comida comunitaria del vecindario. Paco se come la mitad de lo que prepararon antes de llegar." },
     usedcar: { en: "Nico has found a 2009 Honda Fit. He looks under the hood, sees Sharpie, and calls it basically new.", es: "Nico encontró un Honda Fit 2009. Mira debajo del capó, ve una marca de Sharpie y lo considera básicamente nuevo." },
     tetris: { en: "Marek takes you to a bar with a Tetris cabinet nobody uses. He plays, then says it is your turn.", es: "Marek te lleva a un bar con una máquina de Tetris que nadie usa. Juega un rato y luego te cede el turno." },
-    chess: { en: "Marek sets up Morphy's Opera Game (Paris, 1858) and offers 1 BTC if you find White's first move in a mate in three. A miss costs nothing.", es: "Marek arma la partida de la ópera de Morphy (París, 1858) y te ofrece 1 BTC si encuentras la primera jugada de un mate en tres. Fallar no cuesta nada." },
+    chess: { en: "Marek sets up Morphy's Opera Game (Paris, 1858) and offers 1 BTC if you type White's first move in a mate in three. A miss costs nothing.", es: "Marek arma la partida de la ópera de Morphy (París, 1858) y te ofrece 1 BTC si escribes la primera jugada de las blancas en un mate en tres. Fallar no cuesta nada." },
     unclemike: { en: "Dinner with Uncle Mike is excellent until the check. He will not tip, because he thinks the restaurant should pay its staff. The waiter is still standing there.", es: "La cena con el tío Mike es excelente hasta que llega la cuenta. Se niega a dejar propina porque cree que el restaurante debería pagarle sueldos dignos a los empleados. El mesero sigue esperando de pie." },
 
   };
@@ -2485,16 +2485,10 @@
         { k: "a", label: "Put money in", labelEs: "Insertar monedas" },
         { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek jugar" }
       ] },
-    { id: "chess", kind: "choice", after: ["tetris", "poker"], artId: "wine",
+    { id: "chess", kind: "choice", after: ["tetris", "poker"], input: "move",
       title: "The Opera Game", titleEs: "La partida de la ópera",
-      body: "Marek clears the wine glasses off the table and sets up a chessboard from memory. \"Paris, 1858. Paul Morphy, in a box at the opera, against the Duke of Brunswick and Count Isouard.\" He moves the last piece into place: the position after 14...Qe6. \"White to play and mate in three.\" He refills his glass. \"Find the first move and I'll give you a bitcoin. Miss it and you owe me nothing but an apology to Morphy.\" He leaves the clock off. He wants you to think.",
-      bodyEs: "Marek retira las copas de la mesa y arma un tablero de ajedrez de memoria. \"París, 1858. Paul Morphy, en un palco de la ópera, contra el duque de Brunswick y el conde Isouard\". Coloca la última pieza: la posición después de 14...De6. \"Juegan las blancas y dan mate en tres\". Vuelve a llenar su copa. \"Si encuentras la primera jugada, te doy un bitcoin. Si fallas, solo le debes una disculpa a Morphy\". No enciende el reloj. Quiere que pienses.",
-      opts: [
-        { k: "a", label: "Play 15. Qb8+", labelEs: "Jugar 15. Db8+" },
-        { k: "b", label: "Play 15. Bxd7+", labelEs: "Jugar 15. Axd7+" },
-        { k: "c", label: "Play 15. Bxf6", labelEs: "Jugar 15. Axf6" },
-        { k: "d", label: "Decline", labelEs: "No jugar" }
-      ] },
+      body: "Marek clears the wine glasses off the table and sets up a chessboard from memory.\n\n\"Paris, 1858. The opera house, during The Barber of Seville. Paul Morphy is twenty-one, American, and the guest of the Duke of Brunswick in his private box. The duke and Count Isouard play him together, consulting on every move. Morphy would rather be watching the opera, so he doesn't take long.\"\n\nHe places the last piece: the position after 14...Qe6.\n\n\"White to move and mate in three. Type the first move. Find it and the bitcoin is yours. Miss it and you owe me nothing but an apology to Morphy.\"",
+      bodyEs: "Marek retira las copas de la mesa y arma un tablero de ajedrez de memoria.\n\n\"París, 1858. La ópera, durante El barbero de Sevilla. Paul Morphy tiene veintiún años, es estadounidense y es invitado del duque de Brunswick en su palco. El duque y el conde Isouard juegan juntos contra él y discuten cada jugada. Morphy preferiría estar mirando la ópera, así que no se demora\".\n\nColoca la última pieza: la posición después de 14...De6.\n\n\"Juegan las blancas y dan mate en tres. Escribe la primera jugada. Si la encuentras, el bitcoin es tuyo. Si fallas, solo le debes una disculpa a Morphy\"." },
     { id: "unclemike", kind: "choice",
       title: "Fancy Dinner with Uncle Mike", titleEs: "Cena elegante con el tío Mike",
       body: "Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customers. You agree with him. You also want to go home. The waiter is still standing there, and you look at the tip line again.",
@@ -2543,6 +2537,12 @@
     
   ];
   CHANCE_CARDS.push(...JOB_ARC_CARDS);
+  // Opera Game (Morphy, Paris 1858), position after 14...Qe6: the only accepted answer is 15. Bxd7+ (bishop b5 to d7).
+  // Accepts SAN in English or Spanish (B/A), with or without x/×/+/#/!, long algebraic (b5d7, Bb5xd7), and a "15." prefix.
+  function chessMoveOk(raw) {
+    const v = String(raw || "").toLowerCase().replace(/^\s*15\s*\.*\s*/, "").replace(/[\s+#!?×x:\-]/g, "");
+    return ["bd7", "ad7", "b5d7", "bb5d7", "ab5d7"].indexOf(v) >= 0;
+  }
   function resolveChance(card, opt) {
     const es = chanceLang();
     const say = (en, esTxt) => (es && esTxt ? esTxt : en);
@@ -2850,16 +2850,15 @@
     }
     if (card.id === "chess") {
       const line = es ? "15. Axd7+ Cxd7 16. Db8+!! Cxb8 17. Td8#" : "15. Bxd7+ Nxd7 16. Qb8+!! Nxb8 17. Rd8#";
-      if (opt === "d") return say("Marek shrugs and plays it out alone: " + line + " \"Morphy did it at the opera. You didn't even have to miss the second act.\"",
-        "Marek se encoge de hombros y la resuelve solo: " + line + " \"Morphy lo hizo en la ópera. Tú ni siquiera tenías que perderte el segundo acto\".");
-      if (opt === "b") {
+      const typed = String(opt || "").replace(/^move:/, "").trim().slice(0, 16).replace(/[<>&"]/g, "");
+      if (chessMoveOk(typed)) {
         const out = creditBtc(1);
-        return say("Marek stares at the board, then finishes the line for you: " + line + " He slides the bitcoin across the table. \"I was hoping you'd play the queen first.\" +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
-          "Marek mira el tablero y termina la línea por ti: " + line + " Te pasa el bitcoin por la mesa. \"Esperaba que jugaras primero la dama\". +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
+        return say("Marek looks at the board for a long moment, then plays it out for you: " + line + " \"The bishop first, then the queen, then the rook. Morphy saw it from a box seat.\" He slides the bitcoin across the table. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
+          "Marek mira el tablero un largo rato y luego lo juega por ti: " + line + " \"Primero el alfil, después la dama, después la torre. Morphy lo vio desde un palco\". Te pasa el bitcoin por la mesa. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
       }
-      // a wrong move costs nothing: Marek keeps his bitcoin, you keep yours
-      return say("Marek resets the pieces and shows you Morphy's line: " + line + " \"The sacrifice comes first. Then the queen.\" He waves off the bet. \"You can pay me in wine.\"",
-        "Marek vuelve a colocar las piezas y te muestra la línea de Morphy: " + line + " \"Primero el sacrificio. Después la dama\". Perdona la apuesta. \"Págame con vino\".");
+      // a wrong move costs nothing: Marek shows the line and waves off the bet
+      return say((typed ? "\"" + typed + "?\" Marek shakes his head" : "Marek waits, then shrugs") + " and shows you Morphy's line: " + line + " \"The sacrifice comes first. Then the queen. You can pay me in wine.\"",
+        (typed ? "\"¿" + typed + "?\" Marek niega con la cabeza" : "Marek espera y luego se encoge de hombros") + " y te muestra la línea de Morphy: " + line + " \"Primero el sacrificio. Después la dama. Págame con vino\".");
     }
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
@@ -2880,7 +2879,7 @@
     "firstBloc", "somethingBetter", "temporaryMeasures", "timeTraveler", "nobodyKnows",
     "theOg", "obviously", "peopleAsking", "placeNow", "principality", "stateVisit",
     "protectIsland", "rearmament", "theQuestion", "threeColors", "fourthColor",
-    "notYet", "theAnswer", "festival"
+    "notYet", "theAnswer", "festival", "chess"
   ]);
   const WIDE_ART_JPG = new Set([
     "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
@@ -2896,7 +2895,8 @@
     fourthColor: "gpt5",
     notYet: "gpt5",
     theAnswer: "gpt5",
-    festival: "gpt5"
+    festival: "gpt5",
+    chess: "board1"
   };
 
   const PRELOADED_ART = new Map();
@@ -12607,6 +12607,14 @@
           + arcOutcomeHtml()
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
+        if (card.input === "move") {
+          const esM = chanceLang();
+          btns = "<form id=\"arc-move-form\" class=\"nation-ask arc-move\" autocomplete=\"off\">"
+            + "<label for=\"arc-move-in\" class=\"arc-move-label\">" + (esM ? "Tu jugada (blancas, jugada 15)" : "Your move (White, move 15)") + "</label>"
+            + "<input id=\"arc-move-in\" maxlength=\"16\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"none\" spellcheck=\"false\" enterkeyhint=\"done\" inputmode=\"text\" placeholder=\"" + (esM ? "p. ej. Cf3" : "e.g. Nf3") + "\">"
+            + "<button type=\"submit\" class=\"cta\">" + (esM ? "Jugar" : "Play") + "</button>"
+            + "</form>";
+        } else
         btns = (card.opts || []).map((o) => {
           const lab = stampNation(arcOptionLabel(card,o,es));
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
@@ -12637,6 +12645,18 @@
         renderOverlay();
       };
       bindArcChoices(card);
+      const mvForm = $("arc-move-form"), mvIn = $("arc-move-in");
+      if (mvForm && mvIn) {
+        // keys typed here never reach the game (the global keydown handler skips inputs); stop bubbling anyway
+        mvIn.addEventListener("keydown", (e) => e.stopPropagation());
+        mvIn.addEventListener("pointerdown", (e) => e.stopPropagation());
+        mvForm.onsubmit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          try { mvIn.blur(); } catch (err) {}
+          pickChance("move:" + (mvIn.value || ""));
+        };
+      }
     } else if (p === "perk") {
       if (S.optPanel) {
         overlay.classList.add("chance-options");
