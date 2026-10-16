@@ -5591,9 +5591,15 @@
     return {seen,beaches};
   }
   function openMaze(m,sx,sy){
-    for(let pass=0;pass<90;pass++){
+    // only tiles on the shield's own landmass (walls count as land, water does not) must become reachable
+    let walk=0;
+    {const seen=new Uint8Array(m.length),q=[sy*BC_C+sx];seen[q[0]]=1;
+     for(let k=0;k<q.length;k++){const c=q[k],x=c%BC_C,y=(c/BC_C)|0;if(mazeWalk(m[c]))walk++;
+       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;const j=yy*BC_C+xx;if(!seen[j]&&m[j]!==3){seen[j]=1;q.push(j);}}}}
+    for(let pass=0;pass<240;pass++){
       const hit=mazeReach(m,sx,sy);
-      if(hit.beaches>=4)return;
+      let got=0;for(let i=0;i<m.length;i++)if(hit.seen[i])got++;
+      if(hit.beaches>=4&&got>=walk)return;
       let best=null;
       for(let y=1;y<BC_R-1&&!best;y++)for(let x=1;x<BC_C-1;x++){
         const t=m[y*BC_C+x];
@@ -5627,103 +5633,111 @@
       else break;
     }
   }
-  function paintMazeBed(m){
+  // Maze maps are a coherent piece of the island: either the southern half (coast across the north) or a
+  // corner of the island (coast curving between two edges). Land naturally reaches 2-3 map edges.
+  function paintMazeBed(m,rng){
+    const p=rng()*6.28,q=rng()*6.28,corner=rng()<0.5;
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      const dx=(x-14.4)/12.4, dy=(y-18.6)/16.2;
-      const e=dx*dx+dy*dy;
-      if(e>1.05)continue;
-      m[y*BC_C+x]=e>0.86?0:6;
-    }
-  }
-  function carveMazeWater(m,id){
-    const set=(x,y)=>{if(x>=1&&y>=1&&x<BC_C-1&&y<BC_R-1&&m[y*BC_C+x]!==3)m[y*BC_C+x]=3;};
-    if(id==="canalMaze"){
-      for(let y=6;y<BC_R;y++){
-        const cx=19+Math.round(2.6*Math.sin(y*0.33)+1.2*Math.sin(y*0.11+1));
-        const w=y<28?2:2+Math.ceil((y-28)/2.5); // widens into an estuary near the sea
-        for(let x=cx-Math.floor(w/2);x<cx-Math.floor(w/2)+w;x++)set(x,y);
+      let land;
+      if(corner){
+        const dx=x+2,dy=(BC_R+1)-y,th=Math.atan2(dy,dx);
+        const R=31+2.4*Math.sin(th*5+p)+1.4*Math.sin(th*11+q);
+        land=Math.hypot(dx,dy)<R;
+      }else{
+        const cy=7.5+2.2*Math.sin(x*0.31+p)+1.3*Math.sin(x*0.83+q);
+        land=y>cy;
       }
-      for(let x=0;x<BC_C;x++)for(let y=BC_R-1;y<BC_R;y++)set(x,y);
-    }else if(id==="blockFort"){
-      for(let y=11;y<=15;y++)for(let x=6;x<=9;x++)set(x,y);
-      for(let y=24;y<=28;y++)for(let x=18;x<=22;x++)set(x,y);
-      for(let y=28;y<BC_R;y++){set(20,y);set(21,y);}
-    }else{
-      for(let x=0;x<=9;x++){set(x,15);set(x,16);}
-      for(let y=9;y<=13;y++)for(let x=21;x<=24;x++)set(x,y);
+      m[y*BC_C+x]=land?6:3;
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const i=y*BC_C+x;if(m[i]!==6)continue;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3){m[i]=0;break;}}
     }
   }
-  // Cleaner mazes: a wall tile touching at most one other wall reads as noise, so turn it back into grass.
+  // canalMaze gets a real river: it rises at the inland point farthest from the sea and meanders down
+  // the distance field to the coast, widening into an estuary. The other mazes keep dry land.
+  function carveMazeWater(m,id,rng){
+    if(id!=="canalMaze")return;
+    const N=BC_C*BC_R,dist=new Int16Array(N).fill(-1),q=[];
+    for(let i=0;i<N;i++)if(m[i]===3){dist[i]=0;q.push(i);}
+    for(let k=0;k<q.length;k++){const c=q[k],x=c%BC_C,y=(c/BC_C)|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;const j=yy*BC_C+xx;if(dist[j]<0){dist[j]=dist[c]+1;q.push(j);}}}
+    let cur=-1,md=-1;for(let i=0;i<N;i++){const x=i%BC_C,y=(i/BC_C)|0;if(x<7||y<5||x>BC_C-8||y>BC_R-6)continue;if(dist[i]>md){md=dist[i];cur=i;}}
+    if(cur<0)return;
+    const ph=rng()*6.28;
+    for(let step=0;step<120&&cur>=0;step++){
+      const x=cur%BC_C,y=(cur/BC_C)|0,dHere=dist[cur];
+      const w=dHere<=3?3:2;
+      for(let oy=0;oy<w;oy++)for(let ox=0;ox<w;ox++){const xx=x+ox-((w/2)|0),yy=y+oy-((w/2)|0);if(xx>=1&&yy>=1&&xx<BC_C-1&&yy<BC_R-1)m[yy*BC_C+xx]=3;}
+      if(dHere<=0)break;
+      // prefer going downhill, with a sideways swing so the river meanders instead of running straight
+      const swing=Math.sin(step*0.45+ph);
+      let best=-1,bs=1e9;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const xx=x+dx,yy=y+dy;if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1)continue;
+        const j=yy*BC_C+xx;const edgeP=(xx<4||xx>BC_C-5||yy<3||yy>BC_R-4)?2.5:0;const sc=edgeP+dist[j]*1.0-(dist[j]===dHere?0.6:0)*Math.abs(swing)+(dx*swing+dy*swing>0?-0.35:0.35);
+        if(dist[j]<=dHere&&sc<bs){bs=sc;best=j;}
+      }
+      cur=best;
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const i=y*BC_C+x;if(m[i]!==6)continue;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3){m[i]=0;break;}}
+    }
+  }
   function pruneMazeStubs(m,prot){
-    for(let pass=0;pass<2;pass++){
-      const kill=[];
-      for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
-        if(m[y*BC_C+x]!==1||prot(x,y))continue;
-        let n=0;
-        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===1||mtile(m,x+dx,y+dy)===2)n++;
-        if(n<=1)kill.push(y*BC_C+x);
-      }
-      for(const i of kill)m[i]=6;
+    // drop wall specks: 4-connected wall pieces of 1-2 tiles read as noise; real walls/blocks are kept whole
+    const seen=new Uint8Array(m.length);
+    for(let i=0;i<m.length;i++){
+      if(seen[i]||(m[i]!==1&&m[i]!==2))continue;
+      const q=[i];seen[i]=1;
+      for(let k=0;k<q.length;k++){const c=q[k],x=c%BC_C,y=(c/BC_C)|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;const jj=yy*BC_C+xx;if(!seen[jj]&&(m[jj]===1||m[jj]===2)){seen[jj]=1;q.push(jj);}}}
+      if(q.length<=2&&!q.some((c)=>prot(c%BC_C,(c/BC_C)|0)))for(const c of q)m[c]=6;
     }
   }
-  function stampMazeWalls(m,id,prot){
-    const wall=(x,y)=>{
-      if(x<2||y<2||x>=BC_C-2||y>=BC_R-2||prot(x,y))return;
-      if(m[y*BC_C+x]===6)m[y*BC_C+x]=1;
+  function stampMazeWalls(m,id,prot,rng){
+    const dry=(x,y)=>{
+      if(x<2||y<2||x>=BC_C-2||y>=BC_R-2||prot(x,y))return false;
+      if(m[y*BC_C+x]!==6)return false;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(mtile(m,x+dx,y+dy)===3)return false;
+      return true;
     };
+    const wall=(x,y)=>{if(dry(x,y))m[y*BC_C+x]=1;};
+    let cx=0,cy=0,n=0;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]===6){cx+=x;cy+=y;n++;}
+    cx=n?Math.round(cx/n):15;cy=n?Math.round(cy/n):22;
     if(id==="blockFort"){
-      for(let y=4;y<BC_R-3;y++){
-        if(((y-4)%5)!==4)continue;
-        for(let x=4;x<BC_C-4;x++){
-          const gap=(x+((y/5)|0)%2*2)%6;
-          if(gap<2)continue;
-          wall(x,y);
+      // three concentric curtain walls with offset gates; outer ring partly ruined
+      [[4,5],[8,10],[12,15]].forEach(([hx,hy],ring)=>{
+        const gates=[0,1,2,3].map(()=>2+((rng()*(Math.min(hx,hy)*2-4))|0));
+        for(let x=cx-hx;x<=cx+hx;x++){
+          const k=x-(cx-hx);
+          if(Math.abs(k-gates[0])>1)wall(x,cy-hy);
+          if(Math.abs(k-gates[1])>1)wall(x,cy+hy);
         }
-      }
-      for(let x=4;x<BC_C-4;x++){
-        if(((x-4)%5)!==4)continue;
-        for(let y=4;y<BC_R-3;y++){
-          const gap=(y+((x/5)|0)%2*2)%6;
-          if(gap<2)continue;
-          wall(x,y);
+        for(let y=cy-hy;y<=cy+hy;y++){
+          const k=y-(cy-hy);
+          if(Math.abs(k-gates[2])>1)wall(cx-hx,y);
+          if(Math.abs(k-gates[3])>1)wall(cx+hx,y);
         }
+        if(ring===2)for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){const i=y*BC_C+x;if(m[i]===1&&rng()<0.22)m[i]=6;}
+      });
+    }else if(id==="brickYard"){
+      // town blocks (3x2 buildings) on a street grid, a few blocks left open as plazas
+      const ox=(rng()*5)|0,oy=(rng()*4)|0;
+      for(let by=oy;by<BC_R;by+=4)for(let bx=ox;bx<BC_C;bx+=5){
+        if(rng()<0.22)continue;
+        const w=rng()<0.5?3:2,h=rng()<0.5?2:1;
+        for(let y=by;y<by+h+1;y++)for(let x=bx;x<bx+w+1;x++)wall(x,y);
       }
-      return;
-    }
-    if(id==="canalMaze"){
-      for(let y=5;y<BC_R-3;y++){
-        if(((y-5)%4)!==3)continue;
-        const shift=((y/4)|0)%2;
-        for(let x=3;x<BC_C-3;x++){
-          const gap=(x+shift*3)%9;
-          if(gap<2)continue;
-          wall(x,y);
-        }
+    }else{
+      // hedgerows: broken field boundaries
+      for(let y=3;y<BC_R-2;y+=4){
+        let x=2+((rng()*3)|0);
+        while(x<BC_C-2){const len=3+((rng()*4)|0);for(let k=0;k<len;k++)wall(x+k,y);x+=len+2+((rng()*2)|0);}
       }
-      for(let x=5;x<BC_C-4;x+=7){
-        for(let y=5;y<BC_R-3;y++){
-          if(((y+x)%5)<2)continue;
-          wall(x,y);
-        }
-      }
-      return;
-    }
-    for(let y=4;y<BC_R-3;y++){
-      if(((y-4)%3)!==2)continue;
-      const shift=((y/3)|0)%2;
-      for(let x=3;x<BC_C-3;x++){
-        const gap=(x+shift*2)%6;
-        if(gap<2)continue;
-        wall(x,y);
-      }
-    }
-    for(let x=4;x<BC_C-3;x++){
-      if(((x-4)%3)!==2)continue;
-      const shift=((x/3)|0)%2;
-      for(let y=4;y<BC_R-3;y++){
-        const gap=(y+shift*2)%7;
-        if(gap<2)continue;
-        wall(x,y);
+      for(let x=4;x<BC_C-2;x+=7){
+        let y=3+((rng()*3)|0);
+        while(y<BC_R-2){const len=2+((rng()*3)|0);for(let k=0;k<len;k++)wall(x,y+k);y+=len+3;}
       }
     }
   }
@@ -5963,6 +5977,13 @@
     for(let y=15;y<=23;y++)for(let x=11;x<=18;x++){if(!prot(x,y)&&soft(m[y*BC_C+x]))m[y*BC_C+x]=3;}
     for(let x=11;x<=18;x++)for(let y=14;y>=1;y--){const i=y*BC_C+x;if(m[i]===3)break;if(prot(x,y)||!soft(m[i]))break;m[i]=3;}
     for(const x of [13,16]){for(let y=19;y<=24;y++)if(!prot(x,y))m[y*BC_C+x]=7;}
+    // outer docks at x=6 and x=22 run north from the shore: keep open water in front of and beside them
+    for(const px of [6,22]){
+      let shore=14;for(let y=14;y>=2;y--){if(m[y*BC_C+px]===7||m[y*BC_C+px]===3)continue;shore=y;break;}
+      for(let y=2;y<=13;y++)for(let x=px-1;x<=px+1;x++){if(!prot(x,y)&&soft(m[y*BC_C+x]))m[y*BC_C+x]=3;}
+      for(let y=7;y<=14;y++)if(!prot(px,y))m[y*BC_C+px]=7;
+      void shore;
+    }
   }
   function tidyGeography(m,pad,rng){
     const W=BC_C,H=BC_R,N=W*H;
@@ -6056,10 +6077,10 @@
   function makeMazeIsland(level,fort,plan){
     const m=new Uint8Array(BC_C*BC_R);
     m.fill(3);
-    paintMazeBed(m);
-    carveMazeWater(m,plan.id);
     const salt=(((S.bcMapSeed||1)>>>0)+level*17)>>>0;
     const rng=mapMulberry((salt*131+level*97)>>>0);
+    paintMazeBed(m,rng);
+    carveMazeWater(m,plan.id,rng);
     const clearPad=(p)=>!!(p&&padFits(m,p.x,p.y)&&!citadelHitsUi(p,!!plan.fx,!!plan.fy));
     const candidates=[];
     for(let y=6;y<BC_R-12;y+=2)for(let x=3;x<BC_C-10;x+=2)if(clearPad({x,y}))candidates.push({x,y});
@@ -6072,7 +6093,7 @@
     }
     if(!pad)pad={x:10,y:14};
     const prot=(x,y)=>x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
-    stampMazeWalls(m,plan.id,prot);
+    stampMazeWalls(m,plan.id,prot,rng);
     pruneMazeStubs(m,prot);
     let steel=0;
     for(let y=2;y<BC_R-2&&steel<12;y++)for(let x=2;x<BC_C-2&&steel<12;x++){
@@ -6137,7 +6158,6 @@
     const moved=moveShieldOffUi(built.map);
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
-    settleCoast(built);
     tidyGeography(built.map,null,rng);
     built.maze=true;
     return built;
