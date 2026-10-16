@@ -2876,13 +2876,7 @@
   }
 
   const ARC_VID = { landfill: 1, proposal: 1, mexico: 1, phish: 1, baby: 1 };
-  const WIDE_ART_PNG = new Set([
-    "citadelQuestion", "declaration", "justInCase", "nothingToHide", "extensionCord",
-    "firstBloc", "somethingBetter", "temporaryMeasures", "timeTraveler", "nobodyKnows",
-    "theOg", "obviously", "peopleAsking", "placeNow", "principality", "stateVisit",
-    "protectIsland", "rearmament", "theQuestion", "threeColors", "fourthColor",
-    "notYet", "theAnswer", "festival", "chess"
-  ]);
+  const WIDE_ART_PNG = new Set([]);  // all wide art is JPG now (mobile weight)
   const WIDE_ART_JPG = new Set([
     "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
     "ortegaCalls", "ambassador", "anOffer",
@@ -2895,6 +2889,13 @@
     "jobCareerathleticTier4", "jobCareerathleticTier6", "jobCareermedicalTier2",
     "jobCareermedicalTier4", "jobCareermedicalTier6", "jobCareermaritimeTier2",
     "jobCareermaritimeTier4", "jobCareermaritimeTier6",
+    // former PNG panoramas + Marek restyles
+    "citadelQuestion", "declaration", "justInCase", "nothingToHide", "extensionCord",
+    "firstBloc", "somethingBetter", "temporaryMeasures", "timeTraveler", "nobodyKnows",
+    "theOg", "obviously", "peopleAsking", "placeNow", "principality",
+    "stateVisit", "protectIsland", "rearmament", "threeColors", "notYet",
+    "theAnswer", "festival", "chess", "poker", "wine",
+    "courage", "tetris", "theQuestion", "fourthColor",
     "jobCareerdivingTier4", "jobCareerdivingTier6", "jobCareerscienceTier2",
     "jobCareerscienceTier4", "jobCareerscienceTier6", "jobCareerlawTier2",
     "jobCareerlawTier4", "jobCareerlawTier6", "jobCareerculinaryTier2",
@@ -2937,7 +2938,7 @@
       const v = ARC_ART_VERSIONS[artId] || "gpt4";
       src = "chance/" + artId + "-wide.png?v=" + v;
     } else if (isWide) {
-      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin9";
+      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin10";
     } else {
       src = "chance/" + artId + ".jpg?v=mp86";
     }
