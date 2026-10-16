@@ -8146,22 +8146,43 @@
     const dpr=canvasDpr();
     const W=BC_C*BC_TS,H=Math.max(S.H,BC_R*BC_TS);
     const c=terrainCache;
-    const tq0=Math.floor(t*(LOW_END||DPR_CAP<2?1:TERRAIN_HZ));
-    // Hashing every tile array each frame is costly on phones; re-hash every 4th frame or on a new anim tick.
+    // The baked layer is static (t=0) and only rebuilt when tiles change; the shoreline foam wobble is
+    // drawn live on top from a cached list, so water animation no longer forces full-map rebakes.
     c.fr=(c.fr|0)+1;
-    if(c.key==null||c.tq!==tq0||(c.fr&3)===0||c.d!==d){c.k2=terrainKey(d);c.d=d;}
+    if(c.key==null||(c.fr&3)===0||c.d!==d){c.k2=terrainKey(d);c.d=d;}
     const key=c.k2;
-    const tq=Math.floor(t*(LOW_END||DPR_CAP<2?1:TERRAIN_HZ));
-    if(!c.cv||c.dpr!==dpr||c.key!==key||c.tq!==tq){
+    if(!c.cv||c.dpr!==dpr||c.key!==key){
       if(!c.cv)c.cv=document.createElement("canvas");
       if(c.dpr!==dpr||c.cv.width!==Math.round(Math.max(S.W,W)*dpr)){c.cv.width=Math.round(Math.max(S.W,W)*dpr);c.cv.height=Math.round(H*dpr);}
       const g=c.cv.getContext("2d");
       g.setTransform(dpr,0,0,dpr,0,0);
       TERRAIN_BAKING=true;
-      try{drawTerrainBase(g,d,tq/(LOW_END||DPR_CAP<2?1:TERRAIN_HZ),houseMemo);}finally{TERRAIN_BAKING=false;}
-      c.dpr=dpr;c.key=key;c.tq=tq;
+      try{drawTerrainBase(g,d,0,houseMemo);}finally{TERRAIN_BAKING=false;}
+      c.dpr=dpr;c.key=key;
+      const foam=[];
+      for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+        if(bcAt(d.map,x,y)!==3)continue;
+        let f=0;
+        if(bcAt(d.map,x,y-1)!==3)f|=1;if(bcAt(d.map,x,y+1)!==3)f|=2;if(bcAt(d.map,x-1,y)!==3)f|=4;if(bcAt(d.map,x+1,y)!==3)f|=8;
+        if(f)foam.push(x,y,f);
+      }
+      c.foam=foam;
     }
     ctx.drawImage(c.cv,0,0,c.cv.width,c.cv.height,0,0,c.cv.width/dpr,c.cv.height/dpr);
+    if(c.foam&&c.foam.length){
+      const tw=Math.floor(t*(LOW_END||DPR_CAP<2?2:4))/(LOW_END||DPR_CAP<2?2:4);
+      ctx.fillStyle="rgba(226,232,220,.5)";
+      const F=c.foam,T=BC_TS;
+      for(let i=0;i<F.length;i+=3){
+        const x=F[i],y=F[i+1],f=F[i+2];
+        if(Math.sin(tw*1.6+x*0.9+y*1.3)<=0)continue;
+        const px=x*T,py=y*T;
+        if(f&1)ctx.fillRect(px,py+2,T,1);
+        if(f&2)ctx.fillRect(px,py+T-3,T,1);
+        if(f&4)ctx.fillRect(px+2,py,1,T);
+        if(f&8)ctx.fillRect(px+T-3,py,1,T);
+      }
+    }
     // live fires (trees and houses), skipped while baking
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       const k=bcAt(d.map,x,y);
