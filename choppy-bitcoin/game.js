@@ -6920,7 +6920,7 @@
     const q=[start];
     prev[start]=start;
     let found=-1;
-    for(let qi=0;qi<q.length&&qi<700;qi++){
+    for(let qi=0;qi<q.length;qi++){
       const cur=q[qi];
       if(cur===destI){found=cur;break;}
       const cx=cur%W,cy=(cur/W)|0;
@@ -6945,6 +6945,19 @@
     for(const c of path)if(bcAt(d.map,c%W,(c/W)|0)===4)trees++;
     const dir=vecDir(nx-sx,ny-sy);
     return {dir:dir<0?e.dir:dir,len:path.length,tree:bcAt(d.map,nx,ny)===4,trees,wx:nx*BC_TS+BC_TS/2,wy:ny*BC_TS+BC_TS/2};
+  }
+  // True when a tank/ship can actually drive the straight segment toward (x,y), not just see it.
+  function driveClear(d,e,x,y){
+    const dist=Math.hypot(x-e.x,y-e.y);
+    const reach=Math.min(dist,96);
+    if(reach<4)return true;
+    const n=Math.ceil(reach/8);
+    for(let i=1;i<=n;i++){
+      const px=e.x+(x-e.x)*(reach/dist)*i/n, py=e.y+(y-e.y)*(reach/dist)*i/n;
+      const t=bcAt(d.map,Math.floor(px/BC_TS),Math.floor(py/BC_TS));
+      if(e.ship?t!==3:!(t===0||t===6||t===7))return false;
+    }
+    return true;
   }
   function pathDir(d,e,goal){
     e.fell=false;
@@ -6987,6 +7000,8 @@
       d.aegisT-=dt;
       if(d.aegisT<=0)settleAegis(d);
     }
+    if((d.lrmCd||0)>0)d.lrmCd=Math.max(0,d.lrmCd-dt);
+    if(d.aaCharging&&!d.aaArmed&&(d.lrmCd||0)>0){d.aaCharging=false;d.aaCharge=0;}
     if(d.aaCharging&&!d.aaArmed){
       if(!(S.defHeld&&S.defHeld.aa)){d.aaCharging=false;d.aaCharge=0;}
       else{
@@ -6995,7 +7010,7 @@
         if(d.aaBeep>0.16){d.aaBeep=0;warSfx("warCharge");}
         if(d.aaCharge>=1){
           d.aaCharging=false;d.aaArmed=true;d.aa=1;
-          d.reticle={x:S.W*0.5,y:S.H*0.5};
+          d.reticle={x:d.player.x,y:d.player.y};
           addFx(d,{kind:"scopeOn",x:d.reticle.x,y:d.reticle.y,life:.4});
           warSfx("warAa");
         }
@@ -7027,6 +7042,8 @@
       if(len>1){rdx/=len;rdy/=len;}
       d.reticle.x=Math.max(-40,Math.min(S.W+40,d.reticle.x+rdx*rspd*dt));
       d.reticle.y=Math.max(-40,Math.min(S.H+40,d.reticle.y+rdy*rspd*dt));
+      const rox=d.reticle.x-p.x, roy=d.reticle.y-p.y, rlen=Math.hypot(rox,roy);
+      if(rlen>LRM_RANGE){d.reticle.x=p.x+rox/rlen*LRM_RANGE;d.reticle.y=p.y+roy/rlen*LRM_RANGE;}
     }else{
       if(h.rev){
         const back=aimVec(p);
@@ -7069,6 +7086,15 @@
           pathDir(d,e,goal);
           if(e.fell)e.want=true;
         }
+        // Seeing the target is not the same as being able to drive to it (water, rocks, houses in between):
+        // keep firing at the target but steer along the BFS route instead of ramming the obstacle.
+        e.navAt=null;
+        if(e.type!=="HELI"&&e.want&&e.aimAt&&!driveClear(d,e,e.aimAt.x,e.aimAt.y)){
+          const fireAt=e.aimAt;
+          pathDir(d,e,goal);
+          if(e.aimAt&&e.aimAt!==fireAt)e.navAt=e.aimAt;
+          e.aimAt=fireAt;
+        }
       }
       const ox=e.x,oy=e.y;
       if(e.type==="HELI"){
@@ -7088,7 +7114,8 @@
           e.backup-=dt;
           if(e.backup<=0)e.slip=null;
         }
-        if(e.aimAt)faceVec(e,e.aimAt.x-e.x,e.aimAt.y-e.y);
+        const steer=e.navAt||e.aimAt;
+        if(steer)faceVec(e,steer.x-e.x,steer.y-e.y);
         const step=aimVec(e);
         const sx=backing?-step[0]:step[0], sy=backing?-step[1]:step[1];
         slideUnit(d,e,sx,sy,e.spd*0.81,dt);
@@ -7114,14 +7141,17 @@
               }
               e.jam=0;
               e.think=0.32;
+              // Repeatedly jammed: drop the current target and re-route (allowing tree cuts) next think.
+              e.jamN=(e.jamN||0)+1;
+              if(e.jamN>=3){e.jamN=0;e.navAt=null;pathDir(d,e,goal);e.think=0.05;}
             }
           }
-        }else e.jam=0;
+        }else{e.jam=0;e.jamN=0;}
         if(e.ship&&e.role==="shield"&&Math.hypot(e.x-(d.fort||d.home).x,e.y-(d.fort||d.home).y)<36){
           hitBase(d,e.leak||8);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");
         }
       }
-      if(e.want&&!(e.fire>0)){fireTank(d,e);e.want=false;}
+      if(e.want&&!(e.fire>0)){if(e.navAt&&e.aimAt)faceVec(e,e.aimAt.x-e.x,e.aimAt.y-e.y);fireTank(d,e);e.want=false;}
     }
     separateUnits(d);
     function shotHits(s,t){return Math.abs(t.x-s.x)<t.sz+3&&Math.abs(t.y-s.y)<t.sz+3;}
@@ -7235,6 +7265,8 @@
     return tier>=3?1.25:tier>=2?1:0.75;
   }
   function lrmR(d){return AA_R*lrmScale(d);}
+  const LRM_COOLDOWN=7;   // seconds after each strike before it can charge again
+  const LRM_RANGE=230;    // max reticle distance from the player tank (px)
   function lrmDeg(){return 360;}
   function lrmAim(d,rx,ry){
     const p=d&&d.player;
@@ -7372,8 +7404,8 @@
       const inArea=circleOverlapFrac(dist,R,r)>=0.5&&inLrmWedge(d,e.x,e.y,rx,ry);
       let ok=false;
       if(cls==="light")ok=onCross||inArea;
-      else if(onCross)ok=true;
-      else if(inArea){
+      else if(onCross&&cls==="medium")ok=true;
+      else if(onCross||inArea){
         e.lrm=(e.lrm|0)+1;
         e.hurt=1;
         addFx(d,{kind:"treeBurn",x:e.x,y:e.y,life:.4,hot:2});
@@ -7385,6 +7417,7 @@
     const burned=scorchTrees(d,rx,ry);
     const lamps=lrmBuildings(d,rx,ry);
     d.aaArmed=false;d.aa=0;d.aaCharge=0;d.aaCharging=false;d.reticle=null;
+    d.lrmCd=LRM_COOLDOWN;
     warSfx("warLrm");
     if(heroHearts){
       const p=d.player;
@@ -7449,7 +7482,9 @@
     if(!btn)return;
     const show=!!(d&&!d.done&&!d.frozen);
     btn.classList.toggle("hide",!show);
-    const pct=d?(d.aaArmed?1:(d.aaCharge||0)):0;
+    const cd=d?(d.lrmCd||0):0;
+    const pct=d?(d.aaArmed?1:cd>0?1-cd/LRM_COOLDOWN:(d.aaCharge||0)):0;
+    btn.classList.toggle("cooldown",cd>0);
     btn.style.setProperty("--aa",(pct*360)+"deg");
     btn.classList.toggle("armed",!!(d&&d.aaArmed));
     btn.classList.toggle("charging",!!(d&&d.aaCharging&&!d.aaArmed));
@@ -7662,7 +7697,8 @@
       const k=bcAt(d.map,x,y),px=x*BC_TS,py=y*BC_TS;
       if(k===3){
         const n=((x*17+y*13)^((x+y)*3))&7;
-        ctx.fillStyle=n<3?"#0d4550":n<6?"#115564":"#0a3a44";
+        const shore=bcAt(d.map,x,y-1)!==3||bcAt(d.map,x,y+1)!==3||bcAt(d.map,x-1,y)!==3||bcAt(d.map,x+1,y)!==3;
+        ctx.fillStyle=shore?(n<4?"#1f6f74":"#22787b"):(n<3?"#0d4550":n<6?"#115564":"#0a3a44");
         ctx.fillRect(px,py,BC_TS,BC_TS);
         ctx.fillStyle="rgba(170,220,210,.07)";
         if((x*3+y)%5===0)ctx.fillRect(px+3,py+6,3,1);
@@ -7673,11 +7709,12 @@
         if(bcAt(d.map,x-1,y)!==3)foam|=4;
         if(bcAt(d.map,x+1,y)!==3)foam|=8;
         if(foam){
-          ctx.fillStyle="rgba(226,232,220,.42)";
-          if(foam&1)ctx.fillRect(px,py,BC_TS,1);
-          if(foam&2)ctx.fillRect(px,py+BC_TS-1,BC_TS,1);
-          if(foam&4)ctx.fillRect(px,py,1,BC_TS);
-          if(foam&8)ctx.fillRect(px+BC_TS-1,py,1,BC_TS);
+          const wob=Math.sin(t*1.6+x*0.9+y*1.3)>0?1:0;
+          ctx.fillStyle="rgba(226,232,220,.5)";
+          if(foam&1)ctx.fillRect(px,py,BC_TS,2+wob);
+          if(foam&2)ctx.fillRect(px,py+BC_TS-2-wob,BC_TS,2+wob);
+          if(foam&4)ctx.fillRect(px,py,2+wob,BC_TS);
+          if(foam&8)ctx.fillRect(px+BC_TS-2-wob,py,2+wob,BC_TS);
         }
         continue;
       }

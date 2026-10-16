@@ -1113,6 +1113,7 @@ html[data-palette="flower"] #app {
 }
 .def-aa.charging{border-color:#ffe14a;box-shadow:0 0 0 3px rgba(255,225,74,.4), 0 6px 14px rgba(0,0,0,.45);}
 .def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
+.def-aa.cooldown{opacity:.55;filter:grayscale(.6);}
 .def-aa.hide{display:none}
 .def-arc{
   position:absolute;left:calc(50% - 88px);bottom:22px;width:42px;height:118px;z-index:40;
