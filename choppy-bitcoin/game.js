@@ -3265,6 +3265,7 @@
   }
   function closeArc(card){
     const id=card&&card.id;
+    if(id==="notYet"&&S.bcLostPending){S.bcLostPending=false;S.battleTutOpen=false;finishArcHold();battleLostScreen();return;}
     const launch=(id==="theAnswer"||id==="blocAssault")&&S.bcDefensePending;
     const chainCabinet=id==="theQuestion"&&!!S.bcIndependent&&!S.chanceUsed.cabinet;
     const chainDecl=id==="cabinet";
@@ -6673,6 +6674,16 @@
     S.dead=false;
     S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
     try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
+    // Show the "Not Yet" report card first; closing it lands on the defeat / military-aid screen.
+    S.bcLostPending=true;
+    S.phase="play";
+    window.__arcForce="notYet";
+    try{dealChance();}catch(e){}finally{window.__arcForce="";}
+    if(S.phase==="chance")return;
+    S.bcLostPending=false;
+    battleLostScreen();
+  }
+  function battleLostScreen(){
     if(field)field.classList.remove("is-play");
     try{setPhase("over");}catch(e){try{renderOverlay();}catch(err){}}
   }
@@ -6739,7 +6750,7 @@
     const gone=Math.max(0,S.bcRuinGone|0);
     const pct=tiles?Math.max(0,Math.min(100,Math.round(gone*100/tiles))):0;
     const net=Math.max(0,netUsd());
-    const usd=net*pct/100;
+    const usd=net*Math.min(50,pct)/100; // reconstruction never takes more than half of net worth
     if(usd>0){
       const paid=payUsd(usd);
       let left=usd-paid;
@@ -6765,8 +6776,8 @@
     }
     const label=costLabel(b.usd||0);
     return es
-      ? "En los tres mapas, el "+pct+"% de las casas y del faro quedó destruido. La reconstrucción se cobra al mismo porcentaje del patrimonio: "+label+". Ya salió de las cuentas."
-      : "Across the three maps, "+pct+"% of the house and lighthouse tiles are destroyed. Reconstruction is billed at the same share of net worth: "+label+". It is already off the books.";
+      ? "En los tres mapas, el "+pct+"% de las casas y del faro quedó destruido. La reconstrucción se cobra al mismo porcentaje del patrimonio (máximo 50%): "+label+". Ya salió de las cuentas."
+      : "Across the three maps, "+pct+"% of the house and lighthouse tiles are destroyed. Reconstruction is billed at the same share of net worth (capped at 50%): "+label+". It is already off the books.";
   }
   function groundUnder(d,i){
     if(d.bedSet&&d.bedSet[i])return d.bed[i]===0?0:6;
@@ -8407,10 +8418,18 @@
     const s=v.toLocaleString("en-US",{minimumFractionDigits:whole?0:1,maximumFractionDigits:1});
     return s+" BTC";
   }
+  // Military aid is priced in BTC but can be topped up with cash at the current price.
+  function aidReach(){
+    const px=clampPx(S.price);
+    return (S.btc||0)+Math.max(0,S.cash||0)/px;
+  }
   function payMilitaryAid(){
     const cost=aidOffer();
-    if(!cost||(S.btc||0)+1e-6<cost) return;
-    S.btc=Math.max(0,(S.btc||0)-cost);
+    if(!cost||aidReach()+1e-6<cost) return;
+    const fromBtc=Math.min(S.btc||0,cost);
+    S.btc=Math.max(0,(S.btc||0)-fromBtc);
+    const restUsd=(cost-fromBtc)*clampPx(S.price);
+    if(restUsd>0)S.cash=Math.max(0,(S.cash||0)-restUsd);
     S.bcAidUsed=(S.bcAidUsed|0)+1;
     retryLostBattle();
   }
@@ -12252,7 +12271,7 @@
       } catch (e) {}
       if (S.trainBattleLose && aidOffer()) {
         const cost = aidOffer();
-        const have = S.btc || 0;
+        const have = aidReach();
         const ok = have + 1e-6 >= cost;
         const n = aidBtcLabel(cost);
         const note = t("aidNote").replace("{n}", n).replace("{i}", String((S.bcAidUsed | 0) + 1));
