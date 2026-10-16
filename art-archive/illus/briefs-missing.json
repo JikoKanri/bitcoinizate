@@ -1,0 +1,516 @@
+{
+ "count": 30,
+ "note": "To display these, the ids must be added to WIDE_ART_PNG in game.js (renderer then loads chance/<id>-wide.png?v=<ARC_ART_VERSIONS[id]||'gpt4'>). Without that, the game looks for chance/<id>.jpg (square).",
+ "cards": [
+  {
+   "id": "jobCareeractingTier2",
+   "title": "The Missing Cue",
+   "job_title": "Soap regular",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareeractingTier2-wide.png",
+   "target_filename": "jobCareeractingTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareeractingTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a soap regular (backstage / film set), dressed appropriately for the job while keeping bandana and sunglasses. Scene: On opening night, the cue sheet skips a page just before Soap regular enters. You listen for the breath before the line and carry the scene. The director asks you to teach the company how. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareeractingTier4",
+   "title": "One Quiet Take",
+   "job_title": "Prestige-TV regular",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareeractingTier4-wide.png",
+   "target_filename": "jobCareeractingTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareeractingTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a prestige-tv regular (backstage / film set), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The sound cart dies during the festival film's final setup. You keep the camera rolling and play the scene without its planned line. The editor says the silence tells the story better. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareeractingTier6",
+   "title": "The Stunt Delay",
+   "job_title": "A-list lead",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareeractingTier6-wide.png",
+   "target_filename": "jobCareeractingTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareeractingTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a a-list lead (backstage / film set), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A delayed rig leaves the blockbuster setup without its stunt performer. You reset the scene and give the crew a safer mark, keeping production moving without taking a risk that is not yours. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerdivingTier2",
+   "title": "The Mooring Line",
+   "job_title": "Harbor salvage hand",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerdivingTier2-wide.png",
+   "target_filename": "jobCareerdivingTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareerdivingTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a harbor salvage hand (underwater harbor or wreck, diving gear on Choppy), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A workboat keeps drifting from its berth. You find an old mooring line caught beneath a piling and bring it up before the next tide. The harbor master stops calling your dives practice. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerdivingTier4",
+   "title": "The Pressure Check",
+   "job_title": "Saturation diver",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerdivingTier4-wide.png",
+   "target_filename": "jobCareerdivingTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareerdivingTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a saturation diver (underwater harbor or wreck, diving gear on Choppy), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The intake-frame weld looks sound from shore, but the gauge twitches underwater. You stop the repair and find a hairline leak before the pump goes back online. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerdivingTier6",
+   "title": "The Wreck Map",
+   "job_title": "Expedition dive master",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerdivingTier6-wide.png",
+   "target_filename": "jobCareerdivingTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareerdivingTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a expedition dive master (underwater harbor or wreck, diving gear on Choppy), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The survey team loses its bearing where the wreck splits into two dark passages. You mark the current against the hull, guide the divers back to the entry line, and save the survey slate. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerscienceTier2",
+   "title": "The Labeled Control",
+   "job_title": "Postdoc",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerscienceTier2-wide.png",
+   "target_filename": "jobCareerscienceTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareerscienceTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a postdoc (research laboratory), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A result looks extraordinary until you notice the control tube has yesterday's label. You rerun the samples before anyone writes the headline. The corrected result is smaller, but sound. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerscienceTier4",
+   "title": "The Drifting Instrument",
+   "job_title": "Principal investigator",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerscienceTier4-wide.png",
+   "target_filename": "jobCareerscienceTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareerscienceTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a principal investigator (research laboratory), dressed appropriately for the job while keeping bandana and sunglasses. Scene: Three runs disagree by the same small amount. You trace the difference to a drifting calibration lamp, not the samples. The corrected series answers the team's real question. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerscienceTier6",
+   "title": "The Freezer Alarm",
+   "job_title": "Prize shortlist",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerscienceTier6-wide.png",
+   "target_filename": "jobCareerscienceTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareerscienceTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a prize shortlist (research laboratory), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A brief power dip trips the archive freezer alarm after the night crew has left. You move the vulnerable samples to backup storage and log the temperature excursion before morning. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerlawTier2",
+   "title": "The Filing Date",
+   "job_title": "Public-defender grind",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerlawTier2-wide.png",
+   "target_filename": "jobCareerlawTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareerlawTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a public-defender grind (courthouse / law office), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The hearing packet is ready, but a service receipt is dated one day late. You compare the docket against the courier log and catch the mismatch before it reaches the judge. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerlawTier4",
+   "title": "The Missing Witness",
+   "job_title": "Trial counsel",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerlawTier4-wide.png",
+   "target_filename": "jobCareerlawTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareerlawTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a trial counsel (courthouse / law office), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A witness changes the meeting time on trial morning. You rebuild the sequence from the call log, tell the court what can be verified, and keep the argument inside the facts. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerlawTier6",
+   "title": "The Settlement Room",
+   "job_title": "Chief counsel",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerlawTier6-wide.png",
+   "target_filename": "jobCareerlawTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareerlawTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a chief counsel (courthouse / law office), dressed appropriately for the job while keeping bandana and sunglasses. Scene: Both sides bring a draft that solves the loudest problem and hides the expensive one. You point out the overlooked term, explain its cost, and give your client room to decide. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerculinaryTier2",
+   "title": "The Dead Burner",
+   "job_title": "Sous-chef",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerculinaryTier2-wide.png",
+   "target_filename": "jobCareerculinaryTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareerculinaryTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a sous-chef (professional kitchen), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The dinner rush starts just as one burner goes cold. You rearrange the pans, call the delay early, and serve every table without sending out undercooked fish. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerculinaryTier4",
+   "title": "The Allergy Ticket",
+   "job_title": "Michelin kitchen",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerculinaryTier4-wide.png",
+   "target_filename": "jobCareerculinaryTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareerculinaryTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a michelin kitchen (professional kitchen), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A regular dish comes back with an allergy note the kitchen has not seen. You stop the plate, check every sauce, and remake the order on a clean station. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerculinaryTier6",
+   "title": "The Galley in Weather",
+   "job_title": "World's-best kitchen",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerculinaryTier6-wide.png",
+   "target_filename": "jobCareerculinaryTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareerculinaryTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a world's-best kitchen (professional kitchen), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The yacht rolls hard as the weather closes in. You secure the hot pans, switch to a meal that can be served in a calmer interval, and keep the crew fed safely. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareeraviationTier2",
+   "title": "The Short Strip",
+   "job_title": "Regional first officer",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareeraviationTier2-wide.png",
+   "target_filename": "jobCareeraviationTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareeraviationTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a regional first officer (cockpit or airfield), dressed appropriately for the job while keeping bandana and sunglasses. Scene: Weather closes the ridge route while a survey crew waits at the far strip. You check the wind against the short runway, call the diversion early, and land with fuel to spare. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareeraviationTier4",
+   "title": "The Go-Around",
+   "job_title": "Captain",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareeraviationTier4-wide.png",
+   "target_filename": "jobCareeraviationTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareeraviationTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a captain (cockpit or airfield), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The runway appears through the rain, but a crosswind is pushing the aircraft off center. You call a go-around before landing becomes a correction, then brief the crew for another approach. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareeraviationTier6",
+   "title": "The Medical Diversion",
+   "job_title": "Test pilot",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareeraviationTier6-wide.png",
+   "target_filename": "jobCareeraviationTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareeraviationTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a test pilot (cockpit or airfield), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A passenger becomes seriously ill halfway across the ocean. You compare nearby airports, coordinate with the cabin crew, and divert while the medical team is still on the line. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermusicTier2",
+   "title": "The Silent Ballroom",
+   "job_title": "Studio session",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermusicTier2-wide.png",
+   "target_filename": "jobCareermusicTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareermusicTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a studio session (concert stage), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The ballroom loses power between the first dance and the speeches. You move the band closer, switch to an unplugged set, and give the venue time to restore the lights. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermusicTier4",
+   "title": "The Wrong Chart",
+   "job_title": "Festival headliner",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermusicTier4-wide.png",
+   "target_filename": "jobCareermusicTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareermusicTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a festival headliner (concert stage), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The touring set begins in a new key, but the chart on your stand is yesterday's arrangement. You follow the singer's cue and bring the band back together before the chorus. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermusicTier6",
+   "title": "The Broken String",
+   "job_title": "World-tour closer",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermusicTier6-wide.png",
+   "target_filename": "jobCareermusicTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareermusicTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a world-tour closer (concert stage), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The solo begins and a string snaps under the hall lights. You shift the phrase to the open strings, meet the orchestra on the next entrance, and finish without stopping. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerathleticTier2",
+   "title": "The Scouting Note",
+   "job_title": "Minors call-up",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerathleticTier2-wide.png",
+   "target_filename": "jobCareerathleticTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareerathleticTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a minors call-up (sports arena), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The other team steals the same base whenever the pitcher looks home. You spot the runner's first step in the video, share it with the coach, and turn it into a better pickoff drill. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerathleticTier4",
+   "title": "The Shape of the Press",
+   "job_title": "All-star",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerathleticTier4-wide.png",
+   "target_filename": "jobCareerathleticTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareerathleticTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a all-star (sports arena), dressed appropriately for the job while keeping bandana and sunglasses. Scene: The opposing defense changes its press after every timeout. You recognize the same weak side in both setups, call the switch before the inbound, and open a path through the trap. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareerathleticTier6",
+   "title": "The Sponsor's Clock",
+   "job_title": "Hall of fame",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareerathleticTier6-wide.png",
+   "target_filename": "jobCareerathleticTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareerathleticTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a hall of fame (sports arena), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A sponsor asks the team to add an appearance before the final, cutting into warm-ups. You set a firm end time, protect preparation, and still give the sponsor a moment worth filming. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermedicalTier2",
+   "title": "The Medication List",
+   "job_title": "Resident",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermedicalTier2-wide.png",
+   "target_filename": "jobCareermedicalTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareermedicalTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a resident (hospital ward), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A patient says the new tablet is the same one they already take, but the label lists another dose. You pause the handoff, compare the medication record, and call the nurse. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermedicalTier4",
+   "title": "The Returning Fever",
+   "job_title": "Surgeon",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermedicalTier4-wide.png",
+   "target_filename": "jobCareermedicalTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareermedicalTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a surgeon (hospital ward), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A patient's fever drops, then rises again just before discharge. You compare the latest readings with the morning labs and ask the team to wait for one more result. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermedicalTier6",
+   "title": "The Night Roster",
+   "job_title": "IMI Bariloche hospital director",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermedicalTier6-wide.png",
+   "target_filename": "jobCareermedicalTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareermedicalTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a imi bariloche hospital director (hospital ward), dressed appropriately for the job while keeping bandana and sunglasses. Scene: Two emergencies arrive as a nurse calls out sick and the night roster is already thin. You move the float team, keep critical beds staffed, and make the handoff unmistakable. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermaritimeTier2",
+   "title": "The Frayed Line",
+   "job_title": "Bosun",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermaritimeTier2-wide.png",
+   "target_filename": "jobCareermaritimeTier2-wide.png",
+   "currently_referenced_as": "chance/jobCareermaritimeTier2.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a bosun (ship deck / harbor), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A deckhand says the mooring line is sound, but one strand is lifting near the cleat. You stop departure, replace it, and test the knot under load. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermaritimeTier4",
+   "title": "The Shifting Hold",
+   "job_title": "Ship captain",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermaritimeTier4-wide.png",
+   "target_filename": "jobCareermaritimeTier4-wide.png",
+   "currently_referenced_as": "chance/jobCareermaritimeTier4.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a ship captain (ship deck / harbor), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A rough patch sends a pallet against the hold braces. You reduce speed, secure the cargo, and check the rest of the bay before the next swell. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  },
+  {
+   "id": "jobCareermaritimeTier6",
+   "title": "The Fishing Boat",
+   "job_title": "Harbor master",
+   "characters": [
+    "choppy"
+   ],
+   "target_path": "choppy-bitcoin/chance/jobCareermaritimeTier6-wide.png",
+   "target_filename": "jobCareermaritimeTier6-wide.png",
+   "currently_referenced_as": "chance/jobCareermaritimeTier6.jpg (missing)",
+   "format": "PNG, 1920x800 (2.4:1), sRGB",
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Choppy works as a harbor master (ship deck / harbor), dressed appropriately for the job while keeping bandana and sunglasses. Scene: A fishing boat reports engine trouble as the weather turns and the harbor channel begins to close. You send a launch with a towline and bring the crew in before dark. Show the decisive calm moment; Choppy on one side of the frame, the environment filling the wide panorama."
+  }
+ ]
+}

@@ -1,0 +1,128 @@
+[
+ {
+  "id": "proposal",
+  "choice": "a",
+  "out": "chance/proposal-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy down on one knee on the pebbles, ring box open; Lena both hands over her mouth, full figure with legs and boots visible, lake glowing."
+ },
+ {
+  "id": "proposal",
+  "choice": "b",
+  "out": "chance/proposal-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy frozen stiff like a statue, one hand raised mid-gesture, a single sweat drop on the coin; Lena tilts her head puzzled; ring box still in his back pocket."
+ },
+ {
+  "id": "proposal",
+  "choice": "c",
+  "out": "chance/proposal-c-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy sprinting away along the shore, sneakers kicking up pebbles, looking back over his shoulder; Lena laughing with hands on hips, full legs visible."
+ },
+ {
+  "id": "wedding",
+  "choice": "a",
+  "out": "chance/wedding-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Big lavish wedding: arches of roses, long candlelit tables, many guests dancing; Choppy in tuxedo spinning Lena in her gown; Paco with a bow tie stealing cake."
+ },
+ {
+  "id": "wedding",
+  "choice": "b",
+  "out": "chance/wedding-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Small intimate backyard wedding with string lights, a dozen guests on folding chairs; Choppy and Lena toasting with plain glasses; Paco asleep under the table."
+ },
+ {
+  "id": "wedding",
+  "choice": "c",
+  "out": "chance/wedding-c-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Night outside the wedding venue: Choppy walking away down a dark road with a duffel bag, Paco trotting beside him; in the lit doorway behind, Lena in her gown watches, small and sad; flowers scattered."
+ },
+ {
+  "id": "honeymoon",
+  "choice": "a",
+  "out": "chance/honeymoon-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Kyoto-style street with lanterns and cherry blossoms; Choppy and Lena (full figures) sharing ramen at a tiny counter; Lena holds Choppy's phone out of reach."
+ },
+ {
+  "id": "honeymoon",
+  "choice": "b",
+  "out": "chance/honeymoon-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Amalfi-like cliffside terrace, lemons and sea; Choppy with a gelato, Lena laughing, a vespa parked behind."
+ },
+ {
+  "id": "honeymoon",
+  "choice": "c",
+  "out": "chance/honeymoon-c-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Patagonian glacier lake and jagged peaks; Choppy and Lena in hiking gear, Choppy struggling under a huge backpack, Lena ahead pointing at the view."
+ },
+ {
+  "id": "phish",
+  "choice": "a",
+  "out": "chance/phish-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy at a laptop in a dark room, red warning glow on his face, gloves on his head in horror, ghostly coins flying out of the screen."
+ },
+ {
+  "id": "phish",
+  "choice": "b",
+  "out": "chance/phish-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy dramatically dragging an envelope icon into a trash can on a big monitor, Paco watching approvingly; no text on screen."
+ },
+ {
+  "id": "courage",
+  "choice": "a",
+  "out": "chance/courage-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy marching out of Marek's apartment building at night with determined stride, jacket on; Marek leaning on the doorframe with a wine glass, smirking."
+ },
+ {
+  "id": "islandInspection",
+  "choice": "a",
+  "out": "chance/islandInspection-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy, Marek and Nico on the island's high point at sunset, Choppy planting a small blank flag pole; Paco runs through the pines."
+ },
+ {
+  "id": "protectIsland",
+  "choice": "a",
+  "out": "chance/protectIsland-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Island volunteers in mismatched gear drilling on the beach under Marek's direction; Choppy with a whistle; a small patrol boat at the dock."
+ },
+ {
+  "id": "protectIsland",
+  "choice": "b",
+  "out": "chance/protectIsland-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Professional private security guards in dark uniforms with radios patrolling the repaired dock; new floodlights; Choppy shaking a guard's hand."
+ },
+ {
+  "id": "protectIsland",
+  "choice": "c",
+  "out": "chance/protectIsland-c-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Paco proudly wearing a tiny high-visibility security vest, sitting at the end of the dock at night; Choppy holding a flashlight beside him."
+ },
+ {
+  "id": "citadelQuestion",
+  "choice": "a",
+  "out": "chance/citadelQuestion-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Construction of stone walls and a hardened central keep around the settlement; cranes, workers, Marek with blueprints; Choppy in a hard hat."
+ },
+ {
+  "id": "citadelQuestion",
+  "choice": "b",
+  "out": "chance/citadelQuestion-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Blueprints rolled up and stored in a tube on a shelf; outside the window the open settlement with café and children playing; Choppy looking out."
+ },
+ {
+  "id": "anOffer",
+  "choice": "a",
+  "out": "chance/anOffer-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Corporate boardroom on a yacht; consortium suits shaking Choppy's glove over a signed contract; through the window the island, now with corporate signage shapes (no text)."
+ },
+ {
+  "id": "anOffer",
+  "choice": "b",
+  "out": "chance/anOffer-b-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy tearing the contract in half on the dock, the consortium's sleek boat leaving; Madame Luck and Marek standing behind him."
+ },
+ {
+  "id": "theQuestion",
+  "choice": "a",
+  "out": "chance/theQuestion-a-wide.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Scene: Choppy signing a large document at a wooden table under a lamp, the cabinet (Marek, Nico, Paco) gathered around, island flag shape draped behind (no text, no real flag)."
+ }
+]

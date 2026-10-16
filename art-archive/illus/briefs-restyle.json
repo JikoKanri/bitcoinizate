@@ -1,0 +1,877 @@
+{
+ "count": 38,
+ "method": "visual review of all 67 existing card images (contact sheets) vs refs",
+ "on_model_ok": [
+  "chess",
+  "justInCase",
+  "nothingToHide",
+  "somethingBetter",
+  "timeTraveler",
+  "temporaryMeasures",
+  "citadelProblem",
+  "pieceWorld",
+  "islandInspection",
+  "nobodyKnows",
+  "theOg",
+  "extensionCord",
+  "principality",
+  "stateVisit",
+  "firstBloc",
+  "protectIsland",
+  "citadelQuestion",
+  "rearmament",
+  "anOffer",
+  "ambassador",
+  "threeColors",
+  "ortegaCalls",
+  "declaration",
+  "theAnswer",
+  "blocReplies",
+  "blocAssault",
+  "battleWon",
+  "blocTriumph",
+  "notYet"
+ ],
+ "cards": [
+  {
+   "rank": 1,
+   "priority": 1,
+   "id": "poker",
+   "title": "Poker",
+   "issue": "Marek off-model (hoodie/sweater/older cartoon look, not the black-tee semi-realistic design)",
+   "characters": [
+    "choppy",
+    "marek"
+   ],
+   "current_file": "choppy-bitcoin/chance/poker.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/poker-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/marek.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/poker.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Marek: the attached Marek reference exactly — lean man in his late 20s, messy dark hair, black rectangular glasses, plain black T-shirt, black shorts or dark trousers, dark sneakers. Scene: Marek invites you to a poker game. Not a casino. Just people he knows, sitting around a table late at night. He is already there when you arrive, drinking wine and watching the game. He looks at your chips. \"You're playing?\" \"I guess.\" He nods. \"Good.\" Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 2,
+   "priority": 1,
+   "id": "wine",
+   "title": "Wine",
+   "issue": "Marek off-model (hoodie/sweater/older cartoon look, not the black-tee semi-realistic design)",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/wine.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/wine-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/wine.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 3,
+   "priority": 1,
+   "id": "courage",
+   "title": "Courage",
+   "issue": "Marek off-model (hoodie/sweater/older cartoon look, not the black-tee semi-realistic design)",
+   "characters": [
+    "choppy",
+    "marek",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/courage.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/courage-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/marek.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/courage.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Marek: the attached Marek reference exactly — lean man in his late 20s, messy dark hair, black rectangular glasses, plain black T-shirt, black shorts or dark trousers, dark sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: You are at Marek's apartment. There is wine on the table and 12 Monkeys paused on the TV. You end up talking about A.I., futurism, and whether people actually know what they want. Eventually you mention Lena. Marek looks at you. \"So?\" You shrug. \"We've been together for years.\" He takes a sip. \"Maybe you're waiting for certainty.\" Then he presses play again. You keep thinking about it. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 4,
+   "priority": 1,
+   "id": "tetris",
+   "title": "Tetris",
+   "issue": "Marek off-model (hoodie/sweater/older cartoon look, not the black-tee semi-realistic design)",
+   "characters": [
+    "choppy",
+    "marek"
+   ],
+   "current_file": "choppy-bitcoin/chance/tetris.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/tetris-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/marek.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/tetris.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Marek: the attached Marek reference exactly — lean man in his late 20s, messy dark hair, black rectangular glasses, plain black T-shirt, black shorts or dark trousers, dark sneakers. Scene: Marek takes you to an old bar with an arcade machine in the back. There is a Tetris cabinet nobody seems to use. He starts playing. He gets unusually focused. \"Trying not to make it worse.\" After a few minutes he steps aside. \"Your turn.\" Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 5,
+   "priority": 1,
+   "id": "theQuestion",
+   "title": "The Question",
+   "issue": "Marek in long-sleeve sweater, face differs from reference",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/theQuestion-wide.png",
+   "current_size": "1920x800",
+   "target_path": "choppy-bitcoin/chance/theQuestion-wide.png",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/theQuestion-wide.png"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the only unchecked line: independence. Crossing it out will turn the island from a project into a country. It will also force all three blocs to decide what they think that country is. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 6,
+   "priority": 1,
+   "id": "fourthColor",
+   "title": "A Fourth Color",
+   "issue": "Marek face/outfit drift (sweater)",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/fourthColor-wide.png",
+   "current_size": "1920x800",
+   "target_path": "choppy-bitcoin/chance/fourthColor-wide.png",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/fourthColor-wide.png"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: It is over. One bloc filed its final protest and lost the sea lane. Another ran out of ships it was willing to acknowledge. The third, which never apologizes, stopped answering the radio.  The island still stands. By morning, statements begin to arrive. Some governments call for negotiations; others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a moment, then points to the new bord Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 7,
+   "priority": 2,
+   "id": "landfill",
+   "title": "The Landfill",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "nico",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/landfill.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/landfill-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": true,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/landfill.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: At 1:14 a.m., Nico sends a voice message with a dark photo of a truck and a shovel leaning against its hood.  \"I'm in Wales,\" he says. \"They let me dig at Docksway. A USB that held 8,000 BTC was supposedly lost here in 2009. I need a partner, not a spectator.\"  Lena opens one eye from the other side of the bed. \"If you fund a treasure hunt at 1:14 a.m., the next time you're about to come, I'm calling you Fartface.\"   Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 8,
+   "priority": 2,
+   "id": "phish",
+   "title": "Account Verification",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/phish.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/phish-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": true,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/phish.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: A customer support email says there is a problem with your account. The logo, formatting, and urgent tone all look legitimate. To verify your identity, the message asks you to open a link and enter your seed phrase. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 9,
+   "priority": 2,
+   "id": "crash",
+   "title": "A Low-Speed Collision",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/crash.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/crash-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/crash.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: A delivery scooter clips your car at very low speed. Nobody is hurt. The driver apologizes six times; you apologize twice. Neither of you knows why you apologized, but the bumper still needs to be repaired. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 10,
+   "priority": 2,
+   "id": "flu",
+   "title": "A Day with the Flu",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "lena",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/flu.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/flu-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/flu.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Paco: scruffy tan-and-white mid-size dog. Scene: Lena wakes with the flu. You spend the day bringing her water, medicine, soup, and anything else she needs. By evening she is resting, the pharmacy receipt is longer than expected, and Paco has quietly eaten half the soup. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 11,
+   "priority": 2,
+   "id": "roof",
+   "title": "Roof",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/roof.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/roof-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/roof.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Paco: scruffy tan-and-white mid-size dog. Scene: Paco finds the leak in the roof before you do. He sits directly underneath it. The workers arrive. He moves. He immediately finds another place to sit. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 12,
+   "priority": 2,
+   "id": "proposal",
+   "title": "Proposal",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/proposal.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/proposal-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": true,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/proposal.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: The lake is getting dark. You and Lena are standing by the water. The date went well enough that you are starting to worry. The ring is in your pocket. You have not asked yet. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 13,
+   "priority": 2,
+   "id": "pregnancy",
+   "title": "Being Four",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/pregnancy.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/pregnancy-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/pregnancy.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: Two lines on a test change everything. You and Lena are going to have a baby. For a few seconds neither of you says anything. Paco yawns. You look at him and say, “Four.” Lena smiles. There will be doctors, appointments, preparations, and a lot of things to pay for. The first costs come to $450. You sleep surprisingly well that night. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 14,
+   "priority": 2,
+   "id": "honeymoon",
+   "title": "Honeymoon",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "lena",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/honeymoon.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/honeymoon-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/honeymoon.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Paco: scruffy tan-and-white mid-size dog. Scene: You and Lena finally leave. For several days you agree on one rule: no checking the portfolio. You immediately wonder whether looking at the total counts. Lena takes your phone away. You have three possible itineraries. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 15,
+   "priority": 2,
+   "id": "baby",
+   "title": "The night must fade and give to light a brand new day",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "lena",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/baby.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/baby-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": true,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/baby.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Paco: scruffy tan-and-white mid-size dog. Scene: The baby arrives. You are tired, Lena is tired, and Paco is confused. Kids grow fast. You start thinking about the kind of future you want to build. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 16,
+   "priority": 2,
+   "id": "school",
+   "title": "School Trip",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "sofi",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/school.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/school-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/school.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Sofi: a schoolgirl around 10. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: Sofi is going on a school trip to the Mint Museum. Her family is a little short this month. Lena thinks you should help. You agree, or you don't. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 17,
+   "priority": 2,
+   "id": "ring",
+   "title": "The Ring",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/ring.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/ring-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/ring.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: You go to the jewelry store. You know exactly why you are there. You do not know what size of diamond makes you look responsible without looking ridiculous. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 18,
+   "priority": 2,
+   "id": "speeding",
+   "title": "Six Miles Per Hour",
+   "issue": "old flat-cartoon square style; Choppy without sunglasses or with cartoon eyes / off-model",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/speeding.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/speeding-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/speeding.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: You are six miles per hour over the limit. Same corner. Same officer. Same bad decision. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 19,
+   "priority": 3,
+   "id": "paperwork",
+   "title": "Paperwork",
+   "issue": "wide card; Nico rendered in exaggerated anime/cartoon style vs. semi-realistic modern art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/paperwork-wide.jpg",
+   "current_size": "1920x800",
+   "target_path": "choppy-bitcoin/chance/paperwork-wide.jpg",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/paperwork-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.” Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 20,
+   "priority": 3,
+   "id": "peopleAsking",
+   "title": "People Start Asking",
+   "issue": "wide card; Nico rendered in exaggerated anime/cartoon style vs. semi-realistic modern art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/peopleAsking-wide.png",
+   "current_size": "1920x800",
+   "target_path": "choppy-bitcoin/chance/peopleAsking-wide.png",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/peopleAsking-wide.png"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.” Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 21,
+   "priority": 3,
+   "id": "obviously",
+   "title": "Obviously",
+   "issue": "wide card; Nico rendered in exaggerated anime/cartoon style vs. semi-realistic modern art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/obviously-wide.png",
+   "current_size": "1920x800",
+   "target_path": "choppy-bitcoin/chance/obviously-wide.png",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/obviously-wide.png"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 22,
+   "priority": 3,
+   "id": "placeNow",
+   "title": "This Is Apparently a Place Now",
+   "issue": "wide card; Nico rendered in exaggerated anime/cartoon style vs. semi-realistic modern art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/placeNow-wide.png",
+   "current_size": "1920x800",
+   "target_path": "choppy-bitcoin/chance/placeNow-wide.png",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/placeNow-wide.png"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: At fifty nodes, daily life begins filling the spaces you never planned. A coffee shop opens near the dock, followed by a bakery, a bar, and a newspaper. Its first editorial complains that the generators are too loud and your decisions are too quiet. Nico reads it twice, delighted. “You made it. You have opposition.” Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 23,
+   "priority": 4,
+   "id": "taxbill",
+   "title": "Quarterly Tax Bill",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/taxbill.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/taxbill-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/taxbill.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: Your quarterly tax bill arrives in an official-looking envelope. You read the total, close it, then open it again in case the number has changed. The number has not changed. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 24,
+   "priority": 4,
+   "id": "nicoWedding",
+   "title": "Nico Gets Married",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "nico",
+    "lena",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/nicoWedding.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/nicoWedding-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/nicoWedding.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Paco: scruffy tan-and-white mid-size dog. Scene: Nico is getting married. You arrive with Lena and Paco, who has already decided he dislikes the venue. There are 400 guests, and you recognize about twelve. The DJ is playing CDs from 1998. Near the bar, Nico is pitching an elaborate idea to a stranger who did not ask. Lena looks at you. \"Do not let your cousin talk you into anything tonight.\" At the gift table, you decide how much to give. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 25,
+   "priority": 4,
+   "id": "mexico",
+   "title": "Five Days in Tulum",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "lena",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/mexico.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/mexico-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": true,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/mexico.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Paco: scruffy tan-and-white mid-size dog. Scene: Lena proposes five days in Tulum: warm water, white sand, small restaurants, and a hotel whose photos look pricier than the rooms probably are. It sounds like a good place to forget the ColdCard randomness incident. You compare flights while Paco watches from the floor. Three days seem enough to you; Lena wants five. Paco eats a brochure, which settles his vote. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 26,
+   "priority": 4,
+   "id": "casino",
+   "title": "Nico Finds a Table",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "nico"
+   ],
+   "current_file": "choppy-bitcoin/chance/casino.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/casino-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/casino.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Scene: Nico calls at 11:40 P.M. \"I found a table.\" You ask where. \"A casino.\" You should probably ask more questions. Instead, you go. He has already found a game that he considers interesting. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 27,
+   "priority": 4,
+   "id": "uncle",
+   "title": "Uncle Héctor",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "hector"
+   ],
+   "current_file": "choppy-bitcoin/chance/uncle.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/uncle-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/uncle.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Uncle Héctor: older man, grey mustache, brown blazer. Scene: Uncle Héctor sends a message. No explanation. Just: \"Check your account.\" He has transferred you some money. You call him. He refuses to explain why. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 28,
+   "priority": 4,
+   "id": "hospital",
+   "title": "Four Stitches",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/hospital.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/hospital-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/hospital.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\" Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 29,
+   "priority": 4,
+   "id": "startup",
+   "title": "Startup",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "nico"
+   ],
+   "current_file": "choppy-bitcoin/chance/startup.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/startup-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/startup.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Scene: Nico calls. \"I have a plan.\" You already know this is going somewhere. He has built a 47-slide presentation for an app that combines subscriptions, artificial intelligence, and something he calls community ownership. He says the upside is massive. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 30,
+   "priority": 4,
+   "id": "tow",
+   "title": "Nine Minutes",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/tow.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/tow-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/tow.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: You parked in the wrong place for nine minutes. You check the sign again. It was very clear. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 31,
+   "priority": 4,
+   "id": "date",
+   "title": "Date",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "lena"
+   ],
+   "current_file": "choppy-bitcoin/chance/date.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/date-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/date.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Scene: You plan a proper date. A nice restaurant. A walk. The lake at sunset. The restaurant is nice. The walk is quiet. The lake looks good at sunset. Nothing goes wrong. This feels suspicious. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 32,
+   "priority": 4,
+   "id": "wedding",
+   "title": "Wedding",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "lena",
+    "nico",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/wedding.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/wedding-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/wedding.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Paco: scruffy tan-and-white mid-size dog. Scene: You and Lena are getting married. There are invitations, food, relatives, flowers, music, and several decisions you did not realize were decisions. Lena has opinions. You have some opinions. Most of hers win. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 33,
+   "priority": 4,
+   "id": "cousin",
+   "title": "Nico's New Thing",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "nico"
+   ],
+   "current_file": "choppy-bitcoin/chance/cousin.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/cousin-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/cousin.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Scene: Nico calls again. \"I found something.\" Of course he did. This time it is a new token. He says it will do ten times by Friday. You ask what it actually does. He says that is not the important part. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 34,
+   "priority": 4,
+   "id": "wallet",
+   "title": "Found It",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy"
+   ],
+   "current_file": "choppy-bitcoin/chance/wallet.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/wallet-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/wallet.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Scene: You leave your wallet on bus seat 14. You realize it three stops later. You call the company. Someone found it. The cash is gone. Your cards are still there. You consider this a partial victory. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 35,
+   "priority": 4,
+   "id": "potluck",
+   "title": "Neighborhood Potluck",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "lena",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/potluck.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/potluck-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/potluck.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Lena: young woman with long wavy dark hair, warm brown skin, cream sweater (match existing game art). Paco: scruffy tan-and-white mid-size dog. Scene: Lena signs both of you up for a neighborhood potluck. She also signs Paco up. You explain that Paco cannot cook. She says: \"He can attend.\" Paco eats half of what you brought before you arrive. Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 36,
+   "priority": 4,
+   "id": "usedcar",
+   "title": "The Used Car",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "nico"
+   ],
+   "current_file": "choppy-bitcoin/chance/usedcar.jpg",
+   "current_size": "768x768",
+   "target_path": "choppy-bitcoin/chance/usedcar-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/usedcar.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Scene: Nico has another opportunity. A 2009 Honda Fit. The seller says it has a new timing belt. Nico looks under the hood. \"It has Sharpie.\" You are not sure what that means. Nico says it means \"basically new.\" Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 37,
+   "priority": 4,
+   "id": "unclemike",
+   "title": "Fancy Dinner with Uncle Mike",
+   "issue": "old flat-cartoon square style; Choppy roughly on-model but style mismatches modern wide art",
+   "characters": [
+    "choppy",
+    "mike"
+   ],
+   "current_file": "choppy-bitcoin/chance/unclemike.jpg",
+   "current_size": "1024x1024",
+   "target_path": "choppy-bitcoin/chance/unclemike-wide.png",
+   "target_format": "PNG 1920x800 (needs id added to WIDE_ART_PNG + ARC_ART_VERSIONS bump); alternatively keep square JPG at current path/size with no code change",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/unclemike.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Uncle Mike: older man, white hair, navy suit. Scene: Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customer Recreate the composition of the attached current image but in the modern style with on-model characters."
+  },
+  {
+   "rank": 38,
+   "priority": 5,
+   "id": "cabinet",
+   "title": "The Cabinet",
+   "issue": "wide card; style older/darker painting, minor mismatch, no main characters",
+   "characters": [
+    "marek",
+    "nico",
+    "paco"
+   ],
+   "current_file": "choppy-bitcoin/chance/cabinet-wide.jpg",
+   "current_size": "2128x912",
+   "target_path": "choppy-bitcoin/chance/cabinet-wide.jpg",
+   "target_format": "same file, same size",
+   "is_video_poster": false,
+   "refs": [
+    "refs/choppy.png",
+    "refs/marek.png",
+    "refs/style-citadelProblem-wide.jpg",
+    "chance/cabinet-wide.jpg"
+   ],
+   "prompt": "Cinematic semi-realistic digital painting, warm golden-hour lighting, rich detail, shallow depth of field, same art style as the attached style reference (citadelProblem-wide). Panoramic 2.4:1 composition, 1920x800. No text, no captions, no logos, no watermark. Choppy: the attached Choppy reference exactly — an orange-gold Bitcoin coin character with a white ₿ on the face, red bandana with trailing knot, black sunglasses, thin orange arms and legs, white cartoon gloves, white socks and brown sneakers. Marek: the attached Marek reference exactly — lean man in his late 20s, messy dark hair, black rectangular glasses, plain black T-shirt, black shorts or dark trousers, dark sneakers. Nico: young man with spiky messy black hair, olive-green hoodie, big grin (match existing game art, rendered semi-realistic). Paco: scruffy tan-and-white mid-size dog. Scene: The declaration needs a government—and names beside every office.  You become Head of State. Marek takes Finance and asks you not to spend the first week proving why the job is necessary. Nico claims Commerce and repeats the title as if the ministry had been his idea. Paco is Minister of Defense. He says it once and laughs, then says it again. The second time, he does not.  Lena declines a ministry. She says the isla Recreate the composition of the attached current image but in the modern style with on-model characters."
+  }
+ ]
+}

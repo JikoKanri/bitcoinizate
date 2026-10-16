@@ -1,0 +1,13 @@
+[
+ {
+  "id": "proposal",
+  "out": "chance/proposal-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/proposal-wide.jpg",
+  "refs": [
+   "/workspace/bitcoinizate/choppy-bitcoin/chance/proposal-wide.jpg (Lena face/outfit)",
+   "/workspace/bitcoinizate/choppy-bitcoin/chance/wedding-wide.jpg (Lena)",
+   "/workspace/illus/refs/choppy.png"
+  ],
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text anywhere. Lakeside at dusk, purple-orange sky, pines, rocky shore. Choppy: a perfectly round flat orange Bitcoin coin character, white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts (clothes allowed). Fresh scene-specific pose, never the reference pose. Choppy stands a step behind Lena, one gloved hand hidden behind his back holding a small ring box, the other hand nervously scratching the edge of the coin, weight on one sneaker. Lena: same design as in proposal-wide.jpg/wedding-wide.jpg (long dark curly hair, warm brown eyes, stylized semi-realistic cartoon). Lena in cream knit sweater and long brown skirt, FULL FIGURE visible head to toe: both lower legs, ankles and feet in brown ankle boots clearly drawn standing on the pebbles, framing leaves space below her feet; she looks at the lake, unaware. Do not crop anyone at the knees; no question asked yet, no kneeling."
+ }
+]
