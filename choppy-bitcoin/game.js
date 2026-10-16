@@ -2134,7 +2134,7 @@
     hospital: ["lena"], startup: ["nico"], tow: [], courage: ["marek", "lena"],
     ring: ["lena"], date: ["lena"], proposal: ["lena"], wedding: ["lena", "nico", "paco"],
     honeymoon: ["lena", "paco"], pregnancy: ["lena"], baby: ["lena", "paco"], cousin: ["nico"],
-    speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"],
+    speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"], chess: ["marek"],
     unclemike: ["mike"]
   };
   function cleanCountryName(raw){
@@ -2234,6 +2234,7 @@
     potluck: { en: "Lena signs you and Paco up for the neighborhood potluck. He eats half of what you brought before you arrive.", es: "Lena los anota a ti y a Paco en la comida comunitaria del vecindario. Paco se come la mitad de lo que prepararon antes de llegar." },
     usedcar: { en: "Nico has found a 2009 Honda Fit. He looks under the hood, sees Sharpie, and calls it basically new.", es: "Nico encontró un Honda Fit 2009. Mira debajo del capó, ve una marca de Sharpie y lo considera básicamente nuevo." },
     tetris: { en: "Marek takes you to a bar with a Tetris cabinet nobody uses. He plays, then says it is your turn.", es: "Marek te lleva a un bar con una máquina de Tetris que nadie usa. Juega un rato y luego te cede el turno." },
+    chess: { en: "Marek sets up Morphy's Opera Game (Paris, 1858) and offers 1 BTC if you find White's first move in a mate in three. A miss costs nothing.", es: "Marek arma la partida de la ópera de Morphy (París, 1858) y te ofrece 1 BTC si encuentras la primera jugada de un mate en tres. Fallar no cuesta nada." },
     unclemike: { en: "Dinner with Uncle Mike is excellent until the check. He will not tip, because he thinks the restaurant should pay its staff. The waiter is still standing there.", es: "La cena con el tío Mike es excelente hasta que llega la cuenta. Se niega a dejar propina porque cree que el restaurante debería pagarle sueldos dignos a los empleados. El mesero sigue esperando de pie." },
 
   };
@@ -2483,6 +2484,16 @@
       opts: [
         { k: "a", label: "Put money in", labelEs: "Insertar monedas" },
         { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek jugar" }
+      ] },
+    { id: "chess", kind: "choice", after: ["tetris", "poker"], artId: "wine",
+      title: "The Opera Game", titleEs: "La partida de la ópera",
+      body: "Marek clears the wine glasses off the table and sets up a chessboard from memory. \"Paris, 1858. Paul Morphy, in a box at the opera, against the Duke of Brunswick and Count Isouard.\" He moves the last piece into place: the position after 14...Qe6. \"White to play and mate in three.\" He refills his glass. \"Find the first move and I'll give you a bitcoin. Miss it and you owe me nothing but an apology to Morphy.\" He leaves the clock off. He wants you to think.",
+      bodyEs: "Marek retira las copas de la mesa y arma un tablero de ajedrez de memoria. \"París, 1858. Paul Morphy, en un palco de la ópera, contra el duque de Brunswick y el conde Isouard\". Coloca la última pieza: la posición después de 14...De6. \"Juegan las blancas y dan mate en tres\". Vuelve a llenar su copa. \"Si encuentras la primera jugada, te doy un bitcoin. Si fallas, solo le debes una disculpa a Morphy\". No enciende el reloj. Quiere que pienses.",
+      opts: [
+        { k: "a", label: "Play 15. Qb8+", labelEs: "Jugar 15. Db8+" },
+        { k: "b", label: "Play 15. Bxd7+", labelEs: "Jugar 15. Axd7+" },
+        { k: "c", label: "Play 15. Bxf6", labelEs: "Jugar 15. Axf6" },
+        { k: "d", label: "Decline", labelEs: "No jugar" }
       ] },
     { id: "unclemike", kind: "choice",
       title: "Fancy Dinner with Uncle Mike", titleEs: "Cena elegante con el tío Mike",
@@ -2836,6 +2847,19 @@
         return say("The well stays clean. +" + money(stake * 3) + ".", "El pozo queda limpio. +" + money(stake * 3) + ".");
       }
       return say("A long bar would have saved you. −" + costLabel(stake) + ".", "Una pieza larga te habría salvado. −" + costLabel(stake) + ".");
+    }
+    if (card.id === "chess") {
+      const line = es ? "15. Axd7+ Cxd7 16. Db8+!! Cxb8 17. Td8#" : "15. Bxd7+ Nxd7 16. Qb8+!! Nxb8 17. Rd8#";
+      if (opt === "d") return say("Marek shrugs and plays it out alone: " + line + " \"Morphy did it at the opera. You didn't even have to miss the second act.\"",
+        "Marek se encoge de hombros y la resuelve solo: " + line + " \"Morphy lo hizo en la ópera. Tú ni siquiera tenías que perderte el segundo acto\".");
+      if (opt === "b") {
+        const out = creditBtc(1);
+        return say("Marek stares at the board, then finishes the line for you: " + line + " He slides the bitcoin across the table. \"I was hoping you'd play the queen first.\" +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
+          "Marek mira el tablero y termina la línea por ti: " + line + " Te pasa el bitcoin por la mesa. \"Esperaba que jugaras primero la dama\". +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
+      }
+      // a wrong move costs nothing: Marek keeps his bitcoin, you keep yours
+      return say("Marek resets the pieces and shows you Morphy's line: " + line + " \"The sacrifice comes first. Then the queen.\" He waves off the bet. \"You can pay me in wine.\"",
+        "Marek vuelve a colocar las piezas y te muestra la línea de Morphy: " + line + " \"Primero el sacrificio. Después la dama\". Perdona la apuesta. \"Págame con vino\".");
     }
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
