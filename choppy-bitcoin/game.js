@@ -2060,7 +2060,7 @@
       pieceWorld: { a: 1800 }, nobodyKnows: { a: 5000 }, stateVisit: { a: 15000, b: 5000 },
       protectIsland: { b: 50000 }, ortegaCalls: { a: 25000 }, school: { a: 300 },
       date: { a: 180, b: 60 }, wine: { b: 17, c: 25 }, tetris: { a: 20 },
-      unclemike: { a: 220, b: 180, c: 195 },
+      unclemike: { a: 216, b: 180, c: 198 },
       blocReplies: { a: 40000 }
     };
     if (card.id === "islandInspection" && k === "a") return S.bcIslandOffer || 0;
@@ -2489,12 +2489,12 @@
       bodyEs: "Marek retira las copas de la mesa y arma un tablero de ajedrez de memoria.\n\n\"París, 1858. La ópera, durante El barbero de Sevilla. Paul Morphy tiene veintiún años, es estadounidense y es invitado del duque de Brunswick en su palco. El duque y el conde Isouard juegan juntos contra él y discuten cada jugada. Morphy preferiría estar mirando la ópera, así que no se demora\".\n\nColoca la última pieza: la posición después de 14...De6.\n\n\"Juegan las blancas y dan mate en tres. Escribe la primera jugada. Si la encuentras, el bitcoin es tuyo. Si fallas, solo le debes una disculpa a Morphy\"." },
     { id: "unclemike", kind: "choice",
       title: "Fancy Dinner with Uncle Mike", titleEs: "Cena elegante con el tío Mike",
-      body: "Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customers. You agree with him. You also want to go home. The waiter is still standing there, and you look at the tip line again.",
-      bodyEs: "El tío Mike está de visita en la ciudad y se reúnen en un restaurante elegante. La comida y el vino son excelentes, hasta que llega la cuenta. La revisa con detenimiento, mira la línea de la propina y suelta el bolígrafo. Pregunta con molestia por qué tiene que pagar él los sueldos de los empleados. Le explicas que la propina es habitual. Ese, insiste él, es el verdadero problema, y empieza un discurso sobre restaurantes que deberían pagarles sueldos dignos a sus empleados en lugar de transferirles la carga a los clientes. Estás de acuerdo con él, pero también quieres irte a casa. El mesero sigue ahí de pie, y tú vuelves a mirar la línea de la propina.",
+      body: "Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives: $180 before tip. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customers. You agree with him. You also want to go home. The waiter is still standing there, and you look at the tip line again.",
+      bodyEs: "El tío Mike está de visita en la ciudad y se reúnen en un restaurante elegante. La comida y el vino son excelentes, hasta que llega la cuenta: $180 sin propina. La revisa con detenimiento, mira la línea de la propina y suelta el bolígrafo. Pregunta con molestia por qué tiene que pagar él los sueldos de los empleados. Le explicas que la propina es habitual. Ese, insiste él, es el verdadero problema, y empieza un discurso sobre restaurantes que deberían pagarles sueldos dignos a sus empleados en lugar de transferirles la carga a los clientes. Estás de acuerdo con él, pero también quieres irte a casa. El mesero sigue ahí de pie, y tú vuelves a mirar la línea de la propina.",
       opts: [
         { k: "a", label: "Leave a 20% tip", labelEs: "Dejar 20% de propina" },
         { k: "b", label: "Leave no tip", labelEs: "No dejar propina" },
-        { k: "c", label: "Leave a small tip", labelEs: "Dejar una propina modesta" }
+        { k: "c", label: "Leave a 10% tip", labelEs: "Dejar 10% de propina" }
       ] }
 ,
     { id:"justInCase", kind:"report", title:"Just in Case", titleEs:"Por si acaso", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years.", bodyEs:"Tras tres días de debate, se aprueba una nueva ley de emergencia. Amplía las facultades del Estado durante períodos de inestabilidad económica. La presentan como temporal. Lees la definición dos veces: parece abarcar casi todos los años." },
@@ -2859,14 +2859,14 @@
         (typed ? "\"¿" + typed + "?\" Marek niega con la cabeza" : "Marek espera y luego se encoge de hombros") + " y te muestra la línea de Morphy: " + line + " \"Primero el sacrificio. Después la dama. Págame con vino\".");
     }
     if (card.id === "unclemike") {
-      const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
+      const bill = opt === "a" ? 216 : opt === "c" ? 198 : 180;
       cutBill(bill);
-      if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.",
-        "El tío Mike te mira firmar.\n\n“Eso solo alimenta el sistema”.\n\nSalen del restaurante.\n\n−$220.");
+      if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$216.",
+        "El tío Mike te mira firmar.\n\n“Eso solo alimenta el sistema”.\n\nSalen del restaurante.\n\n−$216.");
       if (opt === "b") return say("Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.",
         "El tío Mike parece satisfecho.\n\nEl mesero no.\n\nSolo quieres irte a casa.\n\n−$180.");
-      return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.",
-        "El tío Mike asiente.\n\n“Eso es distinto”.\n\nNo estás seguro de que lo sea.\n\nÉl sí.\n\n−$195.");
+      return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$198.",
+        "El tío Mike asiente.\n\n“Eso es distinto”.\n\nNo estás seguro de que lo sea.\n\nÉl sí.\n\n−$198.");
     }
     return say("Nothing else happens.", "No pasa nada más.");
   }
