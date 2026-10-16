@@ -1055,10 +1055,12 @@
       if (S.dcaOn && S.have.dca > 0 && clampPx(S.price) > 0) {
         const price = clampPx(S.price);
         const out = creditBtc(n / price);
-        if (out.take <= 0 && out.cash <= 0) S.cash += n;
-      } else {
-        S.cash += n;
+        if (out.take > 0) pop(px, py, "+" + fmtAmt(out.take, "btc"), PAL.hud || BTC, "gain");
+        if (out.cash > 0) pop(px, py + (out.take > 0 ? 14 : 0), wholeUsd(out.cash), CASH_GREEN, "gain");
+        if (out.take <= 0 && out.cash <= 0) { S.cash += n; pop(px, py, wholeUsd(n), CASH_GREEN, "gain"); }
+        return n;
       }
+      S.cash += n;
       pop(px, py, wholeUsd(n), CASH_GREEN, "gain");
       return n;
     }
@@ -2208,7 +2210,7 @@
     mexico: { en: "Lena proposes five days in Tulum. You think three days are enough. Paco votes by eating a brochure.", es: "Lena propone pasar cinco días en Tulum. Para ti bastan tres días. Paco vota comiéndose un folleto." },
     flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
     phish: { en: "A polished support email claims there is a problem with your account and asks for your seed phrase. You must decide whether to trust it or delete it.", es: "Un correo de soporte muy convincente afirma que hay un problema con tu cuenta y solicita tu frase semilla. Debes decidir si confiar en el mensaje o eliminarlo." },
-    crash: { en: "A delivery scooter clips your car at low speed. Nobody is hurt, but the bumper needs to be repaired.", es: "Un repartidor en motoneta golpea tu automóvil a baja velocidad. Nadie resulta herido, pero el parachoques necesita reparación." },
+    crash: { en: "A delivery rider bumps your car at a red light and cannot stop apologizing.", es: "Un repartidor en moto te choca el auto en un semáforo y no para de pedir perdón." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Deberías hacer más preguntas, pero vas igual." },
     poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a una partida de póker de madrugada con gente conocida. No es un casino. Asiente cuando dices que vas a jugar." },
@@ -2316,8 +2318,8 @@
       ] },
     { id: "crash", kind: "report",
       title: "A Low-Speed Collision", titleEs: "Choque a baja velocidad",
-      body: "A delivery scooter clips your car at very low speed. Nobody is hurt. The driver apologizes six times; you apologize twice. Neither of you knows why you apologized, but the bumper still needs to be repaired.",
-      bodyEs: "Un repartidor en motoneta golpea tu automóvil a muy baja velocidad. Nadie resulta herido. El repartidor se disculpa seis veces; tú, dos. Ninguno de los dos sabe por qué se disculpó, pero el parachoques necesita reparación." },
+      body: "At a red light, a delivery rider rolls into your rear bumper at walking pace. He gets off, stares at the dent, and apologizes six times. You apologize twice without knowing why. You swap numbers while his order goes cold in his backpack.",
+      bodyEs: "En un semáforo, un repartidor en moto se te viene encima a paso de hombre y te abolla el parachoques trasero. Se baja, mira el golpe y se disculpa seis veces. Tú te disculpas dos, sin saber bien por qué. Intercambian teléfonos mientras su pedido se enfría en la mochila." },
     { id: "wine", kind: "choice", after: ["landfill"],
       title: "Wine", titleEs: "Vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less.",
@@ -2609,8 +2611,8 @@
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
-      return say("Nobody is hurt. Bumper repair: −" + costLabel(paid) + ".",
-        "Nadie resulta herido. Reparación del parachoques: −" + costLabel(paid) + ".");
+      return say("The body shop replaces the bumper. −" + costLabel(paid) + ".",
+        "El taller cambia el parachoques. −" + costLabel(paid) + ".");
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
@@ -2737,7 +2739,7 @@
       return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + costLabel(paid) + ".",
         "Desaparecen todo el fin de semana. El domingo, Lena te hace volver por el pastel. −" + costLabel(paid) + ".");
     }
-    if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","La idea se queda contigo.");
+    if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say(card.id==="justInCase"?"You close the news tab. The definition stays open in your head.":card.id==="nothingToHide"?"You sign up for the ID anyway. The question takes longer to leave.":"The trail ends at the river. The idea keeps running.",card.id==="justInCase"?"Cierras la pestaña de noticias. La definición sigue abierta en tu cabeza.":card.id==="nothingToHide"?"Igual tramitas el documento. La pregunta tarda más en irse.":"El sendero termina en el río. La idea sigue corriendo.");
     if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","THE BITCOIN STATE ya está en el Mercado por "+costLabel(666)+".");}
     if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","Los mercados caen. Bitcoin no.");
     if(card.id==="citadelProblem")return say("Now the idea has a checklist.","Ahora la idea tiene una lista.");
