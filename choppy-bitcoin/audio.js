@@ -45,8 +45,14 @@
   window.ArcadeAudio = {
     unlock() {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (!ctx) ctx = new AC({ latencyHint: "interactive" });
-      if (ctx.state === "suspended") ctx.resume();
+      if (!AC) return;
+      if (!ctx) {
+        ctx = new AC({ latencyHint: "interactive" });
+        // iOS Safari: a silent buffer played inside the gesture fully unlocks output.
+        try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch (e) {}
+      }
+      // iOS reports "interrupted" after calls, Siri or backgrounding; treat it like "suspended".
+      if (ctx.state !== "running" && ctx.state !== "closed") try { ctx.resume(); } catch (e) {}
       if (window.speechSynthesis) {
         window.speechSynthesis.getVoices();
         pickVoice();
@@ -2216,4 +2222,11 @@ E,2 [E,G,B,]2 E,2 [E,G,B,]2 | C,2 [C,E,G,]2 C,2 [E,G,C]2 | B,,2 [D,F,A,]2 B,,2 [
     document.addEventListener("touchstart", warm, { passive: true });
     document.addEventListener("pointerdown", warm, { passive: true });
   }
+})();
+(() => {
+  // Re-unlock on any user gesture (iOS only honors resume() inside touchend/click/keydown) and when returning to the tab.
+  const kick = () => { try { if (window.ArcadeAudio && window.ArcadeAudio.unlock) window.ArcadeAudio.unlock(); } catch (e) {} };
+  ["touchend", "click", "keydown"].forEach((ev) => document.addEventListener(ev, kick, { passive: true, capture: true }));
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") kick(); });
+  window.addEventListener("pageshow", kick);
 })();
