@@ -493,10 +493,6 @@
     animHero: "3D",
     hero2d: "2D",
     tapHero: "Tap the hero to switch 2D / 3D",
-    textSize: "TEXT SIZE",
-    textSmall: "SMALL",
-    textMed: "MEDIUM",
-    textLarge: "LARGE",
     candleText: "CANDLE INCOME",
     tradeText: "BUY / SELL",
     priceShow: "PRICES",
@@ -514,7 +510,7 @@
     aidTitle: "San Arnaldo",
     aidNote: "The beach fell. San Arnaldo offers military help for {n}. ({i}/3)",
     aidPay: "Accept help",
-    aidShort: "Not enough BTC. You hold {have}.",
+    aidShort: "Not enough BTC and cash. Together they cover {have}.",
     aidDecline: "Refuse",
     tut5: "Cold storage saves a hit. Ten colds become one multisig life.",
     tut6: "Laser eyes eat a bear and unlock a perk.",
@@ -526,7 +522,7 @@
     tutB1: "On land you drive the tank. Sea battles put you in a ship — those maps keep water on at least two edges. The stick moves you. The right side of the screen fires.",
     tutB2: "You start with 3 hearts. Each hit empties one. Empty hearts means you lose. The citadel shield is separate — if it breaks, the island falls.",
     tutB3: "Sand is beach. Grass and dirt paths are open. Brick breaks. Metal does not. Trees block movement and shots. Tanks cannot cross water. Ships sail on water and stop at land.",
-    tutB4: "One pickup at a time. After the field is empty, the next waits a random 5–15 seconds, then lasts 10 seconds. + restores a heart, or adds a fourth at 3/3. S stays: faster shot, then two bullets, then it breaks metal and one-shots heavies and trees. The star is 7.5s of invulnerability. F freezes enemies for 7.5s. X blows up every enemy. W wraps the citadel in metal for 7.5s, then that metal becomes ordinary brick.",
+    tutB4: "One pickup at a time. After the field is empty, the next waits a random 5–15 seconds, then lasts 12.5 seconds. + restores a heart, or adds a fourth at 3/3. S stays: faster shot, then two bullets, then it breaks metal and one-shots heavies and trees. The star is 7.5s of invulnerability. F freezes enemies for 7.5s. X blows up every enemy. W wraps the citadel in metal for 7.5s, then that metal becomes ordinary brick.",
     tutB5: "Some land battles send helicopters. They ignore normal shots. The anti-air button sits above the stick. Hold it for 3 seconds until the ring fills. A red circle appears, about ten times the helicopter. Move it with the stick until the helicopter is inside, then press anti-air once.",
     tutB6: "Red tanks, gold fast tanks, gray heavy tanks and purple elites come in waves. Sea battles send ships instead. KIA is how many you destroyed in this battle, over how many were sent."
   };
@@ -692,7 +688,7 @@
         return "+" + g.cold + " cold storage";
       }
       if (id === "aibud") {
-        if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
+        if (tier <= 1) return es ? "Mira arriba/abajo + pistas de perk" : "Look up/down + perk hints";
         if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
         if (tier === 3) return es ? "DCA y tendencia solos" : "auto DCA and trend";
         if (tier === 4) return es ? "trade cada 10 velas" : "trade every 10 candles";
@@ -1016,6 +1012,8 @@
 
   function burst(x, y, color, n, solid) {
     n = n || 10;
+    const cap = LOW_END ? 90 : 180;
+    if (S.particles.length > cap) S.particles.splice(0, S.particles.length - cap + n);
     for (let i = 0; i < n; i++) S.particles.push({ x, y, vx: (Math.random() - 0.5) * 180, vy: (Math.random() - 0.5) * 180 - 20, life: 0.35 + Math.random() * 0.3, color, solid: !!solid });
   }
   function heroFill() { return heroSkin(HERO_SKIN).fill || "#f2a900"; }
@@ -1892,9 +1890,9 @@
   function jobPay() {
     return jobPayAt(currentJob(), S.have.job || 0);
   }
-  function fillJob(text) {
+  function fillJob(text, tierOverride) {
     const job = currentJob();
-    const tier = Math.max(1, Math.min(7, S.have.job || 1));
+    const tier = Math.max(1, Math.min(7, tierOverride || S.have.job || 1));
     const es = chanceLang();
     const title = job ? jobTitleAt(job, tier) : (es ? "el puesto" : "the job");
     const career = job ? (es ? (job.nameEs || job.name) : job.name) : (es ? "el trabajo" : "work");
@@ -2051,7 +2049,7 @@
     const pct = {
       landfill: { a: .25, b: .75 }, nicoWedding: { a: .04, b: .006 }, mexico: { a: .08 },
       phish: { a: .18 }, casino: { a: .1, b: .3 }, poker: { a: .08, b: .25 }, startup: { a: .2 },
-      courage: { a: .06 }, ring: { a: .08, b: .03 }, proposal: { a: .02, c: .01 },
+      ring: { a: .08, b: .03 }, proposal: { a: .02, c: .01 },
       wedding: { a: .12, b: .05, c: .01 }, honeymoon: { a: .1, b: .06, c: .04 },
       baby: { a: .05, b: .02 }, cousin: { a: .4 }, potluck: { a: .05 }, usedcar: { a: .12 },
       peopleAsking: { a: .03 }, extensionCord: { a: .04 }, obviously: { a: .05 },
@@ -2094,7 +2092,7 @@
     lena: {
       names: ["Lena"],
       en: ["Lena, the love of your life", "Lena, who still calls you Fartface", "Lena, your person since the cheap-rent years"],
-      es: ["Lena, el amor de tu vida", "Lena, la que todavía te dice Fartface", "Lena, tu compañera desde el depto de reja"]
+      es: ["Lena, el amor de tu vida", "Lena, la que todavía te dice Cara de Pedo", "Lena, tu compañera desde los años de alquiler barato"]
     },
     paco: {
       names: ["Paco"],
@@ -2109,17 +2107,17 @@
     nico: {
       names: ["Nico"],
       en: ["Nico, your cousin", "Nico, who always has three things going before lunch", "Nico, family by blood and by group chat"],
-      es: ["Nico, tu primo", "Nico, el que siempre tiene tres cosas antes del mediodía", "Nico, familia de sangre y de grupo"]
+      es: ["Nico, tu primo", "Nico, el que siempre tiene tres proyectos en marcha antes del mediodía", "Nico, familia de sangre y de chat grupal"]
     },
     sofi: {
       names: ["Sofi"],
-      en: ["Sofi, your niece", "Sofi, Nico's kid who sends photos you cannot parse", "Sofi, the niece who treats you like an uncle"],
-      es: ["Sofi, tu sobrina", "Sofi, la nena de Nico que manda fotos que no entendés", "Sofi, la sobrina que te trata de tío"]
+      en: ["Sofi, Nico's daughter", "Sofi, Nico's kid who sends photos you cannot parse", "Sofi, who treats you like an uncle"],
+      es: ["Sofi, la hija de Nico", "Sofi, la hija de Nico que manda fotos que no entiendes", "Sofi, la que te trata como a un tío"]
     },
     hector: {
       names: ["Uncle Héctor", "Uncle Hector", "tío Héctor", "Tío Héctor", "El tío Héctor", "el tío Héctor"],
       en: ["Uncle Héctor, your mother's brother", "Uncle Héctor, who wires money with no explanation", "Uncle Héctor, family from your mother's side"],
-      es: ["El tío Héctor, el hermano de tu vieja", "El tío Héctor, el que gira plata sin explicar", "El tío Héctor, familia del lado de tu mamá"]
+      es: ["El tío Héctor, el hermano de tu mamá", "El tío Héctor, el que transfiere dinero sin explicar", "El tío Héctor, familia del lado de tu mamá"]
     },
     mike: {
       names: ["Uncle Mike", "tío Mike", "Tío Mike"],
@@ -2130,11 +2128,11 @@
   const CHANCE_WHO = {
     landfill: ["nico", "lena"], taxbill: [], nicoWedding: ["nico", "lena", "paco"], mexico: ["lena", "paco"],
     flu: ["lena", "paco"], phish: [], crash: [], casino: ["nico"], poker: ["marek"],
-    uncle: ["hector"], school: ["sofi", "lena"], roof: ["paco"], lotto: ["marek"],
+    uncle: ["hector"], school: ["sofi", "lena"], roof: ["paco"],
     hospital: ["lena"], startup: ["nico"], tow: [], courage: ["marek", "lena"],
     ring: ["lena"], date: ["lena"], proposal: ["lena"], wedding: ["lena", "nico", "paco"],
     honeymoon: ["lena", "paco"], pregnancy: ["lena"], baby: ["lena", "paco"], cousin: ["nico"],
-    speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"],
+    speeding: [], wallet: [], potluck: ["lena", "paco"], usedcar: ["nico"], tetris: ["marek"], chess: ["marek"],
     unclemike: ["mike"]
   };
   function cleanCountryName(raw){
@@ -2173,91 +2171,84 @@
   }
   function weaveCast(text) { return text; }
   const CHANCE_TLDR = {
-    justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una ley de emergencia amplía el poder del Estado cuando la economía se ve inestable. La llaman temporal. La definición parece cubrir casi todos los años." },
-    nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un DNI digital opcional hace más fáciles los viajes y los bancos, y los trámites empiezan a mudarse ahí. No tenés nada que ocultar. La pregunta igual molesta." },
-    somethingBetter: { en: "On a run with Marek you say that, with enough money, you could build something better than a company or a charity. You do not yet know what.", es: "En una corrida con Marek decís que, con suficiente plata, podrías construir algo mejor que una empresa o una ONG. Todavía no sabés qué." },
-    timeTraveler: { en: "An old post claims to be from a future of citadels. A search turns up a self-published book, THE BITCOIN STATE, for $666.", es: "Un post viejo dice venir de un futuro de ciudadelas. Una búsqueda te lleva a un libro autoeditado, THE BITCOIN STATE, a $666." },
-    temporaryMeasures: { en: "A financial emergency brings transfer limits and payment apps that stop working. Officials say it is temporary. Bitcoin does not fall with the markets.", es: "Una emergencia financiera trae límites a las transferencias y apps de pago que dejan de andar. Dicen que es temporal. Bitcoin no cae con los mercados." },
-    citadelProblem: { en: "You tell Marek you want to build a country. He laughs, then asks how much land. The stupid idea now has a checklist.", es: "Le decís a Marek que querés construir un país. Se ríe, y después pregunta cuánta tierra. La idea estúpida ahora tiene una lista." },
-    pieceWorld: { en: "Nico finds a listing for an isolated island that calls itself a sovereign opportunity. It is not sovereign.", es: "Nico encuentra el aviso de una isla aislada que se vende como una oportunidad soberana. No es soberana." },
-    islandInspection: { en: "At sunrise the island is more beautiful than the listing. At sunset the seller's offer arrives.", es: "Al amanecer la isla es más linda que el aviso. Al atardecer llega la oferta del vendedor." },
-    paperwork: { en: "Lawyers turn the purchase into something that looks serious. Nico signs in the wrong place. Paco eats a corner of the last page.", es: "Los abogados hacen que la compra se vea seria. Nico firma en el lugar equivocado. Paco se come una esquina de la última hoja." },
-    nobodyKnows: { en: "You have land and paperwork, and almost no reason for anyone to care. The only name you are given is Madame Luck.", es: "Tenés tierra y papeles, y casi ningún motivo para que a alguien le importe. El único nombre que te dan es Madame Luck." },
-    theOg: { en: "Madame Luck asks very good questions, says she will tell some people, and your phone starts vibrating.", es: "Madame Luck hace muy buenas preguntas, dice que se lo va a contar a alguna gente, y el teléfono empieza a vibrar." },
-    peopleAsking: { en: "People ask if they can move in. Nico makes a spreadsheet. There are no houses.", es: "La gente pregunta si puede mudarse. Nico arma una planilla. No hay casas." },
-    extensionCord: { en: "The new residents bring more machines than the island can feed. The lights go out. Someone asks who was mining.", es: "Los residentes nuevos traen más máquinas de las que la isla puede alimentar. Se corta la luz. Alguien pregunta quién estaba minando." },
-    obviously: { en: "The grid works. Nico says you should mine Bitcoin. The proposal is four words: cheap power, we mine.", es: "La red anda. Nico dice que habría que minar Bitcoin. La propuesta tiene cuatro palabras: energía barata, minamos." },
-    principality: { en: "Mr Ortega & Gambette writes from San Arnaldo. They have a flag, an anthem, and a website. They would like relations.", es: "Escribe el señor Ortega & Gambette desde San Arnaldo. Tienen bandera, himno y sitio web. Quieren relaciones." },
-    stateVisit: { en: "San Arnaldo wants Bitcoin infrastructure. Their government building may have been a restaurant. You want friends.", es: "San Arnaldo quiere infraestructura Bitcoin. El edificio de gobierno pudo haber sido un restorán. Vos querés amigos." },
-    firstBloc: { en: "Seven capitals announce the Meridian Stability Pact. Chancellor Voss never raises his voice. The Pact looks like a form, and the form is mandatory.", es: "Siete capitales anuncian el Pacto de Estabilidad Meridiano. El canciller Voss no alza la voz. El Pacto parece un formulario, y el formulario es obligatorio." },
-    protectIsland: { en: "Someone steals a boat. The island's security is one camera and Paco, and Paco was asleep.", es: "Alguien se roba un bote. La seguridad de la isla es una cámara y Paco, y Paco estaba dormido." },
-    placeNow: { en: "A coffee shop, a bakery, a bar, and a newspaper appear. The first editorial criticizes you. Nico is delighted.", es: "Aparecen un café, una panadería, un bar y un diario. El primer editorial te critica. Nico está encantado." },
-    citadelQuestion: { en: "Marek brings plans for walls and a hardened center and calls it a citadel. A wall can keep people out, or keep them safe.", es: "Marek trae planos de muros y un centro reforzado y lo llama ciudadela. Un muro puede dejar gente afuera, o cuidarla." },
-    rearmament: { en: "The Pact launches frigates and calls it maintenance. Five states answer with the Red Ledger and a language of purity. Both sides lay keels.", es: "El Pacto lanza fragatas y lo llama mantenimiento. Cinco Estados responden con el Libro Rojo y un idioma de pureza. Los dos lados ponen quillas." },
-    anOffer: { en: "A private group offers {offer} for the whole project. Madame Luck asks why you built it.", es: "Un grupo privado ofrece {offer} por todo el proyecto. Madame Luck pregunta por qué lo construiste." },
-    ambassador: { en: "A real ambassador visits and says that if this ever becomes more than a project, call her first.", es: "Visita una embajadora de verdad y dice que si esto alguna vez es más que un proyecto, la llames primero." },
-    threeColors: { en: "The Crown Lattice closes the map. High Warden Soren Pell does not wave. He thinks a people who will not kneel are a clerical error.", es: "La Celosía de la Corona cierra el mapa. El Alto Guardián Soren Pell no saluda. Cree que un pueblo que no se arrodilla es un error de archivo." },
-    ortegaCalls: { en: "Mr Ortega & Gambette calls with a thick stack of advice about recognition, treaties, fisheries, and seating.", es: "El señor Ortega & Gambette llama con un montón de consejos sobre reconocimiento, tratados, pesca y quién se sienta dónde." },
-    theQuestion: { en: "The checklist is finally dangerous. Marek looks at the last open line. Independence.", es: "La lista por fin es peligrosa. Marek mira la última línea abierta. Independencia." },
-    cabinet: { en: "You are Head of State. Marek takes Finance, Nico takes Commerce, and Paco is Minister of Defense.", es: "Vos sos Jefe de Estado. Marek se queda con Hacienda, Nico con Comercio, y Paco es Ministro de Defensa." },
-    declaration: { en: "You declare independence. San Arnaldo recognizes Bitcoin Country almost at once. Ortega sends a thumbs-up and an attachment.", es: "Declarás la independencia. San Arnaldo reconoce Bitcoin Country casi enseguida. Ortega manda un pulgar arriba y un adjunto." },
-    theAnswer: { en: "The blocs have already answered.", es: "Los bloques ya contestaron." },
-    fourthColor: { en: "All three blocs attacked and failed. The island is still standing, and Bitcoin Country is independent.", es: "Los tres bloques atacaron y fallaron. La isla sigue en pie, y Bitcoin Country es independiente." },
-    notYet: { en: "The defense fails. The run ends.", es: "La defensa falla. La partida termina." },
-    landfill: { en: "At 1:14 a.m. Nico wants a partner to dig for a USB that supposedly held 8,000 BTC.", es: "A la 1:14 a.m. Nico quiere un socio para excavar un USB que supuestamente tenía 8.000 BTC." },
-    taxbill: { en: "The quarterly tax bill arrives. You open it twice. The number has not changed. It is {gift}.", es: "Llega la boleta trimestral. La abrís dos veces. El número no cambió. Son {gift}." },
-    nicoWedding: { en: "Nico is getting married. You barely know the room. Lena asks you not to let him talk you into anything.", es: "Nico se casa. Casi no conocés a nadie en el salón. Lena te pide que no lo dejes convencerte de nada." },
-    mexico: { en: "Lena wants a few days in Tulum, and she wants to stay longer than you do. Paco eats one of the brochures.", es: "Lena quiere unos días en Tulum, y quiere quedarse más de lo que vos querés. Paco se come uno de los folletos." },
-    flu: { en: "Lena has the flu. You spend the day on soup and medicine. Paco eats half the soup.", es: "A Lena le da gripe. Pasás el día con sopa y remedio. Paco se come la mitad de la sopa." },
-    phish: { en: "Support emails you and asks for your seed phrase. It looks extremely convincing.", es: "Soporte te escribe y pide tu seed. Se ve extremadamente convincente." },
-    crash: { en: "A delivery scooter hits the car slowly. Nobody is really hurt. Everyone apologizes more than they need to.", es: "Un scooter de delivery pega el auto despacio. Nadie sale realmente lastimado. Todos se disculpan de más." },
-    wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "El viernes en lo de Marek hay vino y 12 Monkeys en pausa. La charla deriva a la I.A., como siempre. Ninguno gana." },
-    casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde. Encontró una mesa en un casino y ya decidió que el juego es interesante." },
-    poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a un póker de madrugada con gente que conoce. No es un casino. Asiente cuando decís que jugás." },
-    uncle: { en: "Uncle Héctor wires you {gift} and refuses to say why.", es: "El tío Héctor te gira {gift} y se niega a decir por qué." },
-    school: { en: "Sofi is going on a school trip to the Mint Museum, and her family is short this month. Lena thinks you should help.", es: "Sofi se va de viaje de estudio al museo de la Casa de Moneda, y en casa este mes están justos. Lena cree que deberías ayudar." },
-    roof: { en: "Paco finds the leak and sits under it. When the workers arrive, he finds another place to sit.", es: "Paco encuentra la gotera y se sienta debajo. Cuando llegan los de la obra, encuentra otro lugar donde sentarse." },
-    lotto: { en: "Over wine with Marek you buy a scratch ticket. In the morning he asks if you checked the numbers. You did not.", es: "Tomando vino con Marek comprás un raspa y gana. A la mañana pregunta si miraste los números. No los miraste." },
-    hospital: { en: "You need stitches. Lena drives you to the hospital and, on the way home, tells you not to bleed on anything.", es: "Necesitás puntos. Lena te lleva al hospital y, de vuelta, te dice que no sangres sobre nada." },
-    startup: { en: "Nico has a long deck for an app that mixes subscriptions, A.I., and something he calls community ownership. He says the upside is enormous.", es: "Nico tiene una presentación larga para una app que mezcla suscripciones, I.A. y algo que llama community ownership. Dice que el upside es enorme." },
-    tow: { en: "You were parked in the wrong place. The sign was very clear.", es: "Estacionaste mal. El cartel estaba muy claro." },
-    courage: { en: "At Marek's, with 12 Monkeys paused, you mention Lena. He says you may be waiting for certainty, then presses play.", es: "En lo de Marek, con 12 Monkeys en pausa, nombrás a Lena. Dice que capaz estás esperando certeza, y le da play." },
-    ring: { en: "You are in the jewelry store, and you know why. You do not know which diamond looks responsible.", es: "Estás en la joyería y sabés por qué. No sabés qué diamante te hace ver responsable." },
-    date: { en: "The restaurant, the walk, and the lake all go fine. Nothing goes wrong. That feels suspicious.", es: "El restorán, la caminata y el lago salen bien. No pasa nada malo. Eso se siente sospechoso." },
-    proposal: { en: "The lake is getting dark and the ring is in your pocket. You ask Lena to marry you. She says yes.", es: "El lago se oscurece y el anillo está en el bolsillo. Le pedís a Lena que se case con vos. Dice que sí." },
-    wedding: { en: "You and Lena are getting married. There are more decisions than you expected. Most of hers win.", es: "Se casan con Lena. Hay más decisiones de las que esperabas. Ganan casi todas las de ella." },
-    honeymoon: { en: "You and Lena leave with one rule: no checking the portfolio. She takes your phone. There are three possible trips.", es: "Se van con una regla: no mirar el portfolio. Ella te saca el teléfono. Hay tres viajes posibles." },
-    pregnancy: { en: "Two lines on a test. You and Lena are going to have a baby. The first costs come to $450.", es: "Dos rayas en un test. Van a tener un hijo con Lena. Los primeros gastos son $450." },
-    baby: { en: "The baby arrives. Everyone is tired, including Paco. You start thinking about the future you want.", es: "Llega el bebé. Todos están cansados, Paco también. Empezás a pensar en el futuro que querés." },
-    cousin: { en: "Nico found a new token. He says it will multiply by Friday. What it does, he says, is not the important part.", es: "Nico encontró un token nuevo. Dice que se multiplica para el viernes. Qué hace, dice, no es la parte importante." },
-    speeding: { en: "You are a little over the limit. Same corner. Same officer. Same bad decision.", es: "Vas un poco arriba del límite. La misma esquina. El mismo oficial. La misma mala decisión." },
-    wallet: { en: "You leave your wallet on the bus. Someone finds it. The cash is gone. The cards are still there.", es: "Dejás la billetera en el bondi. Alguien la encuentra. El efectivo no está. Las tarjetas sí." },
-    potluck: { en: "Lena signs you and Paco up for the neighborhood potluck. He eats half of what you brought before you arrive.", es: "Lena los anota a vos y a Paco en la olla de la cuadra. Él se come la mitad de lo que llevaron antes de llegar." },
-    usedcar: { en: "Nico has found a 2009 Honda Fit. He looks under the hood, sees Sharpie, and calls it basically new.", es: "Nico encontró un Honda Fit 2009. Mira bajo el capó, ve Sharpie, y lo llama casi nuevo." },
-    tetris: { en: "Marek takes you to a bar with a Tetris cabinet nobody uses. He plays, then says it is your turn.", es: "Marek te lleva a un bar con un cabinet de Tetris que nadie usa. Juega, y después dice que es tu turno." },
-    unclemike: { en: "Dinner with Uncle Mike is excellent until the check. He will not tip, because he thinks the restaurant should pay its staff. The waiter is still standing there.", es: "La cena con el tío Mike está excelente hasta la cuenta. No quiere dejar propina, porque cree que el restorán debería pagarles a los empleados. El mozo sigue ahí parado." },
-    jobBadge: { en: "They hand you a badge and ask you to say the title. {title}. The wage is {pay}.", es: "Te dan una credencial y te piden que digas el cargo. {title}. El sueldo es {pay}." },
-    jobLunch: { en: "Someone from {career} wants to know what a {title} actually does. You have a sandwich.", es: "Alguien de {career} quiere saber qué hace de verdad un {title}. Vos tenés un sándwich." },
-    jobLate: { en: "The shift does not end. Staying, they say, would add {half}.", es: "El turno no termina. Quedarse, dicen, sumaría {half}." },
-    jobReview: { en: "They read the title back to you, {title}, and slide a bonus across the table. {pay}.", es: "Te leen el cargo, {title}, y deslizan un bono sobre la mesa. {pay}." },
-    jobStation: { en: "They give you a better corner. People start using {title} without smiling first.", es: "Te dan un rincón mejor. La gente empieza a usar {title} sin sonreír primero." },
-    jobPoach: { en: "Someone who already knows the wage, {pay}, offers {double} to do the same work under newer lights.", es: "Alguien que ya sabe el sueldo, {pay}, ofrece {double} por hacer el mismo trabajo con luces más nuevas." },
-    jobNight: { en: "Tonight {title} is not a costume. When it is over, someone leaves {pay} on the bench.", es: "Esta noche {title} no es un disfraz. Cuando termina, alguien deja {pay} en el banco." },
-    jobCrown: { en: "Nothing sits above {title}. The wage is {pay}. It feels smaller than the quiet.", es: "No hay nadie por encima de {title}. El sueldo es {pay}. Se siente más chico que el silencio." }
+    justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una nueva ley de emergencia amplía las facultades del Estado ante la inestabilidad económica. La llaman temporal, aunque la definición parece abarcar casi todos los años." },
+    nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un documento de identidad digital opcional agiliza los viajes y las operaciones bancarias, mientras los servicios públicos comienzan a adoptarlo. No tienes nada que ocultar, pero la pregunta aún te incomoda." },
+    somethingBetter: { en: "On a run with Marek you say that, with enough money, you could build something better than a company or a charity. You do not yet know what.", es: "Mientras corres con Marek, dices que con suficiente dinero podrías construir algo mejor que una empresa o una organización benéfica. Aún no sabes qué sería." },
+    timeTraveler: { en: "An old post claims to be from a future of citadels. A search turns up a self-published book, THE BITCOIN STATE, for $666.", es: "Una publicación antigua describe un futuro de ciudadelas y gobiernos debilitados. La búsqueda te lleva a un libro autoeditado, THE BITCOIN STATE, por $666." },
+    temporaryMeasures: { en: "A financial emergency brings transfer limits and payment apps that stop working. Officials say it is temporary. Bitcoin does not fall with the markets.", es: "Una emergencia financiera impone límites a las transferencias y al efectivo, mientras varias aplicaciones de pago dejan de funcionar. Las autoridades prometen noventa días; las medidas temporales anteriores llevan casi cuatro años. Los mercados caen, pero Bitcoin no." },
+    citadelProblem: { en: "You tell Marek you want to build a country. He laughs, then asks how much land. The stupid idea now has a checklist.", es: "Le dices a Marek que quieres construir un país. Se ríe, pero luego pregunta cuánta tierra necesitarían. La idea absurda ya tiene una lista de requisitos." },
+    pieceWorld: { en: "Nico finds a listing for an isolated island that calls itself a sovereign opportunity. It is not sovereign.", es: "Nico encuentra el anuncio de una isla aislada que se presenta como una oportunidad para una vida soberana. La isla no es soberana." },
+    islandInspection: { en: "At sunrise the island is more beautiful than the listing. At sunset the seller's offer arrives.", es: "Al amanecer, la isla resulta más hermosa que en el anuncio. Después de recorrerla, al atardecer llega la oferta del vendedor." },
+    paperwork: { en: "Lawyers turn the purchase into something that looks serious. Nico signs in the wrong place. Paco eats a corner of the last page.", es: "Los abogados formalizan la compra. Nico firma donde no corresponde y Paco se come una esquina del documento final." },
+    nobodyKnows: { en: "You have land and paperwork, and almost no reason for anyone to care. The only name you are given is Madame Luck.", es: "Tienes tierra y documentos, pero aún no tienes ciudadanos, reconocimiento ni atención. La única pista es Madame Luck." },
+    theOg: { en: "Madame Luck asks very good questions, says she will tell some people, and your phone starts vibrating.", es: "Madame Luck hace preguntas muy acertadas, dice que hablará del proyecto con algunas personas y tu teléfono empieza a vibrar." },
+    peopleAsking: { en: "People ask if they can move in. Nico makes a spreadsheet. There are no houses.", es: "Desarrolladores, mineros y familias quieren mudarse a la isla. Nico organiza los nombres, pero Marek señala que no hay viviendas." },
+    extensionCord: { en: "The new residents bring more machines than the island can feed. The lights go out. Someone asks who was mining.", es: "Los nuevos residentes conectan más equipos de los que la isla puede abastecer. La energía se corta y alguien pregunta quién estaba minando." },
+    obviously: { en: "The grid works. Nico says you should mine Bitcoin. The proposal is four words: cheap power, we mine.", es: "La red eléctrica funciona y Nico propone minar Bitcoin. Su propuesta se resume en cuatro palabras: energía barata, minamos Bitcoin." },
+    principality: { en: "Mr Ortega & Gambette writes from San Arnaldo. They have a flag, an anthem, and a website. They would like relations.", es: "El señor Ortega & Gambette escribe desde San Arnaldo. Tienen bandera, himno, sitio web y 614 ciudadanos declarados; quieren establecer relaciones." },
+    stateVisit: { en: "San Arnaldo asks for help building Bitcoin infrastructure. The principality needs a node; Bitcoin Country needs its first diplomatic ally.", es: "San Arnaldo solicita ayuda para desarrollar infraestructura de Bitcoin. El principado necesita un nodo; Bitcoin Country necesita su primer aliado diplomático." },
+    firstBloc: { en: "Germany, France, Italy, Spain, the Netherlands, Belgium, and Austria form the Meridian Stability Pact. Its language is administrative; its restrictions are not optional.", es: "Alemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria forman el Pacto de Estabilidad Meridiano. Su lenguaje es administrativo, pero sus restricciones no son opcionales." },
+    protectIsland: { en: "A boat disappears from the dock overnight. One camera caught nothing, and Paco slept through it. The island now needs a security plan.", es: "Un bote desaparece del muelle durante la noche. La única cámara no registró nada y Paco no despertó. La isla necesita un plan de seguridad." },
+    placeNow: { en: "At fifty nodes, the island gains a coffee shop, a bakery, a bar, and a newspaper. Its first editorial criticizes you. Nico calls that progress.", es: "Al alcanzar cincuenta nodos, la isla ya tiene cafetería, panadería, bar y periódico. Su primer editorial te critica. Nico considera que eso es progreso." },
+    citadelQuestion: { en: "Marek proposes a citadel with protected power, walls, and a hardened center. It could defend the community, but it would also turn the settlement into a fortress.", es: "Marek propone una ciudadela con energía protegida, muros y un centro reforzado. Podría defender a la comunidad, pero también convertiría el asentamiento en una fortaleza." },
+    rearmament: { en: "The Meridian Pact announces a frigate program and calls it maintenance. Russia, Belarus, China, North Korea, and Cuba answer by forming the Red Ledger Compact. Both blocs begin building warships.", es: "El Pacto Meridiano anuncia un programa de fragatas y lo llama mantenimiento. Rusia, Bielorrusia, China, Corea del Norte y Cuba responden con el Compacto del Libro Rojo. Ambos bloques comienzan a construir buques de guerra." },
+    anOffer: { en: "A private consortium offers {offer} for the island and everything built on it. Selling would secure the profit and end Bitcoin Country. Madame Luck asks why you began.", es: "Un consorcio privado ofrece {offer} por la isla y todo lo construido en ella. Vender aseguraría la ganancia y pondría fin a Bitcoin Country. Madame Luck pregunta por qué comenzaste." },
+    ambassador: { en: "An ambassador makes an unofficial visit, inspects the island, and leaves a direct number. If Bitcoin Country becomes more than a project, she wants the first call.", es: "Una embajadora realiza una visita extraoficial, recorre la isla y deja un número directo. Si Bitcoin Country se convierte en algo más que un proyecto, quiere recibir la primera llamada." },
+    threeColors: { en: "Saudi Arabia, Jordan, Morocco, Thailand, and Brunei form the Crown Lattice, the third bloc surrounding Bitcoin Country. High Warden Soren Pell calls unclaimed territory an administrative error.", es: "Arabia Saudita, Jordania, Marruecos, Tailandia y Brunéi forman la Celosía de la Corona, el tercer bloque que rodea a Bitcoin Country. El Alto Guardián Soren Pell considera que un territorio sin dueño es un error administrativo." },
+    ortegaCalls: { en: "Mr Ortega & Gambette offers a ninety-three-page diplomatic package covering recognition, treaties, fisheries, and protocol. The complete service costs $25,000; a shorter review may still help.", es: "El señor Ortega & Gambette ofrece un paquete diplomático de 93 páginas sobre reconocimiento, tratados, pesca y protocolo. El servicio completo cuesta $25,000; una revisión parcial también podría ayudar." },
+    theQuestion: { en: "Land, power, people, money, rules, security, and recognition are in place. Only one line remains: independence. Declaring it will turn the project into a country—and make the three blocs respond.", es: "Ya existen tierra, energía, población, dinero, normas, seguridad y reconocimiento. Solo queda una línea: independencia. Declararla convertirá el proyecto en un país y obligará a los tres bloques a responder." },
+    cabinet: { en: "Bitcoin Country forms its first cabinet: you become Head of State, Marek takes Finance, Nico takes Commerce, and Paco becomes Minister of Defense. Lena declines a ministry.", es: "Bitcoin Country forma su primer gabinete: asumes la jefatura de Estado, Marek asume Finanzas, Nico se encarga de Comercio y Paco se convierte en ministro de Defensa. Lena rechaza un ministerio." },
+    declaration: { en: "The declaration is signed and published. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Ortega replies with a thumbs-up and a fourteen-page protocol memo.", es: "La declaración queda firmada y publicada. San Arnaldo reconoce a Bitcoin Country 37 segundos después. Ortega responde con un pulgar arriba y un memorando de protocolo de 14 páginas." },
+    theAnswer: { en: "The three blocs use different words, but their answer is the same: Bitcoin Country will not be allowed to stand outside their map. Their fleets are already moving.", es: "Los tres bloques usan palabras distintas, pero su respuesta es la misma: no permitirán que Bitcoin Country permanezca fuera de su mapa. Sus flotas ya están en movimiento." },
+    fourthColor: { en: "All three blocs attacked and failed. The island still stands: Bitcoin Country is independent.", es: "Los tres bloques atacaron y fracasaron. La isla sigue en pie: Bitcoin Country es independiente." },
+    notYet: { en: "The defense collapses, Bitcoin Country loses the island, and the run ends.", es: "La defensa colapsa, Bitcoin Country pierde la isla y la partida termina." },
+    landfill: { en: "Nico asks you to risk 25% or 75% of your net worth on a search for a USB that supposedly held 8,000 BTC.", es: "Nico te pide arriesgar el 25% o el 75% de tu patrimonio para buscar una memoria USB que supuestamente contenía 8,000 BTC." },
+    taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
+    nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
+    mexico: { en: "Lena proposes five days in Tulum. Booking costs 8% of your net worth and grants four seconds of invulnerability; staying home costs nothing.", es: "Lena propone pasar cinco días en Tulum. Reservar cuesta el 8% de tu patrimonio y otorga cuatro segundos de invulnerabilidad; quedarse en casa no cuesta nada." },
+    flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
+    phish: { en: "A polished support email claims there is a problem with your account and asks for your seed phrase. You must decide whether to trust it or delete it.", es: "Un correo de soporte muy convincente afirma que hay un problema con tu cuenta y solicita tu frase semilla. Debes decidir si confiar en el mensaje o eliminarlo." },
+    crash: { en: "A delivery scooter clips your car at low speed. Nobody is hurt, but the bumper needs a $650 repair.", es: "Un repartidor en motoneta golpea tu automóvil a baja velocidad. Nadie resulta herido, pero reparar el parachoques cuesta $650." },
+    wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
+    casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Puedes apostar el 10% o el 30% de tu patrimonio, o salir sin apostar." },
+    poker: { en: "Marek invites you to a late poker game with people he knows. It is not a casino. He nods when you say you are playing.", es: "Marek te invita a una partida de póker de madrugada con gente conocida. No es un casino. Asiente cuando dices que vas a jugar." },
+    uncle: { en: "Uncle Héctor wires you {gift} and refuses to say why.", es: "El tío Héctor te transfiere {gift} y se niega a decir por qué." },
+    school: { en: "Sofi is going on a school trip to the Mint Museum, and her family is short this month. Lena thinks you should help.", es: "Sofi tiene una excursión escolar al museo de la Casa de Moneda y el dinero está ajustado en su casa este mes. Lena cree que deberías ayudar." },
+    roof: { en: "Paco finds the leak and sits under it. When the workers arrive, he finds another place to sit.", es: "Paco encuentra la gotera y se sienta debajo. Cuando llegan los reparadores, busca otro lugar donde sentarse." },
+    hospital: { en: "You need stitches. Lena drives you to the hospital and, on the way home, tells you not to bleed on anything.", es: "Necesitas puntos de sutura. Lena te lleva al hospital y, de regreso, te pide que no sangres sobre nada." },
+    startup: { en: "Nico has a long deck for an app that mixes subscriptions, A.I., and something he calls community ownership. He says the upside is enormous.", es: "Nico preparó una presentación para una app que combina suscripciones, IA y propiedad comunitaria. Dice que el potencial de ganancias es enorme." },
+    tow: { en: "You were parked in the wrong place. The sign was very clear.", es: "Te estacionaste en el lugar equivocado. El letrero era muy claro." },
+    courage: { en: "At Marek's, with 12 Monkeys paused, you mention Lena. He says you may be waiting for certainty, then presses play.", es: "En casa de Marek, con 12 Monkeys en pausa, mencionas a Lena. Dice que tal vez esperas certeza absoluta y reanuda la película." },
+    ring: { en: "You are in the jewelry store, and you know why. You do not know which diamond looks responsible.", es: "Estás en la joyería y sabes por qué. No sabes qué diamante te hace ver responsable." },
+    date: { en: "The restaurant, the walk, and the lake all go fine. Nothing goes wrong. That feels suspicious.", es: "El restaurante, la caminata y el lago salen bien. Nada sale mal. Eso parece sospechoso." },
+    proposal: { en: "The lake is getting dark and the ring is in your pocket. You ask Lena to marry you. She says yes.", es: "El lago se oscurece y el anillo está en tu bolsillo. Le pides matrimonio a Lena. Ella dice que sí." },
+    wedding: { en: "You and Lena are getting married. There are more decisions than you expected. Most of hers win.", es: "Lena y tú se van a casar. Hay más decisiones de las que esperabas. Casi todas las de ella ganan." },
+    honeymoon: { en: "You and Lena leave with one rule: no checking the portfolio. She takes your phone. There are three possible trips.", es: "Se van de viaje con una sola regla: no revisar el portafolio. Ella te quita el teléfono. Hay tres viajes posibles." },
+    pregnancy: { en: "Two lines on a test. You and Lena are going to have a baby. The first costs come to $450.", es: "Dos líneas en una prueba. Lena y tú van a tener un bebé. Los primeros gastos suman $450." },
+    baby: { en: "The baby arrives. Everyone is tired, including Paco. You start thinking about the future you want.", es: "Llega el bebé. Todos están cansados, incluido Paco. Empiezas a pensar en el futuro que quieres." },
+    cousin: { en: "Nico found a new token. He says it will multiply by Friday. What it does, he says, is not the important part.", es: "Nico encontró un nuevo token. Dice que multiplicará su valor para el viernes. Qué hace exactamente no es lo importante, según él." },
+    speeding: { en: "You are a little over the limit. Same corner. Same officer. Same bad decision.", es: "Vas un poco sobre el límite de velocidad. La misma esquina. El mismo oficial. La misma mala decisión." },
+    wallet: { en: "You leave your wallet on the bus. Someone finds it. The cash is gone. The cards are still there.", es: "Dejas tu billetera en el autobús. Alguien la encuentra. El dinero en efectivo desapareció, pero las tarjetas siguen ahí." },
+    potluck: { en: "Lena signs you and Paco up for the neighborhood potluck. He eats half of what you brought before you arrive.", es: "Lena los anota a ti y a Paco en la comida comunitaria del vecindario. Paco se come la mitad de lo que prepararon antes de llegar." },
+    usedcar: { en: "Nico has found a 2009 Honda Fit. He looks under the hood, sees Sharpie, and calls it basically new.", es: "Nico encontró un Honda Fit 2009. Mira debajo del capó, ve una marca de Sharpie y lo considera básicamente nuevo." },
+    tetris: { en: "Marek takes you to a bar with a Tetris cabinet nobody uses. He plays, then says it is your turn.", es: "Marek te lleva a un bar con una máquina de Tetris que nadie usa. Juega un rato y luego te cede el turno." },
+    chess: { en: "Marek sets up Morphy's Opera Game (Paris, 1858) and offers 1 BTC if you type White's first move in a mate in three. A miss costs nothing.", es: "Marek arma la partida de la ópera de Morphy (París, 1858) y te ofrece 1 BTC si escribes la primera jugada de las blancas en un mate en tres. Fallar no cuesta nada." },
+    unclemike: { en: "Dinner with Uncle Mike is excellent until the check. He will not tip, because he thinks the restaurant should pay its staff. The waiter is still standing there.", es: "La cena con el tío Mike es excelente hasta que llega la cuenta. Se niega a dejar propina porque cree que el restaurante debería pagarle sueldos dignos a los empleados. El mesero sigue esperando de pie." },
+
   };
   function cardTldr(card) {
     if (!card) return "";
     if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return stampNation(warTldr(card.id));
-    const row = CHANCE_TLDR[card.id];
+    const row = card.tldr || CHANCE_TLDR[card.id];
     if (!row) return "";
     let line = chanceLang() ? (row.es || row.en) : row.en;
-    if (card.job) line = fillJob(line);
+    if (card.job) line = fillJob(line, card.jobTier);
     if (line.indexOf("{offer}") >= 0) line = line.replace(/\{offer\}/g, formatPayCost(wealthUsd() * 1.35));
     if (line.indexOf("{gift}") >= 0) {
       const gift = S.arcPending ? formatBagDelta(bagSnap(), S.arcPending) : "";
       if (gift) line = line.replace(/\{gift\}/g, gift);
       else if (card.id === "uncle") line = chanceLang()
-        ? "El tío Héctor te gira plata y se niega a decir por qué."
+        ? "El tío Héctor te transfiere dinero y se niega a decir por qué."
         : "Uncle Héctor wires you money and refuses to say why.";
       else line = line.replace(/\s*(It is|Son)\s*\{gift\}\.?/g, "").replace(/\s+/g, " ").trim();
     }
@@ -2267,282 +2258,302 @@
     const s = String(text || "");
     return s.length >= 220 || s.split(/\n+/).filter(Boolean).length >= 4;
   }
+  const JOB_ARC_MILESTONES = [2, 4, 6];
+  const JOB_ARC_STORIES = [{"slug":"acting","cards":[{"tier":2,"title":"The Missing Cue","titleEs":"La entrada perdida","body":"On opening night, the cue sheet skips a page just before {title} enters. You listen for the breath before the line and carry the scene. The director asks you to teach the company how.","bodyEs":"En el estreno, el libreto técnico salta una página justo antes de la entrada de {title}. Esperas la respiración previa a la frase y sostienes la escena. El director te pide que enseñes al elenco cómo lo resolviste.","tldr":"A missed stage cue becomes a lesson for the company.","tldrEs":"Una entrada perdida se convierte en una lección para el elenco."},{"tier":4,"title":"One Quiet Take","titleEs":"Una toma en silencio","body":"The sound cart dies during the festival film's final setup. As {title}, you keep the camera rolling and play the scene without its planned line. The editor says the silence tells the story better.","bodyEs":"El sonido falla durante la última escena de la película del festival. Como {title}, mantienes la cámara grabando y haces la escena sin la frase prevista. La editora dice que el silencio cuenta mejor la historia.","tldr":"A sound failure improves the scene when you keep filming.","tldrEs":"Una falla de sonido mejora la escena cuando decides seguir filmando."},{"tier":6,"title":"The Stunt Delay","titleEs":"El retraso de la escena","body":"A delayed rig leaves the blockbuster setup without its stunt performer. As {title}, you reset the scene and give the crew a safer mark, keeping production moving without taking a risk that is not yours.","bodyEs":"Un retraso del equipo deja la escena del éxito de taquilla sin especialista. Como {title}, reorganizas la escena y marcas una posición más segura, sin asumir un riesgo que no te corresponde.","tldr":"You keep a film set moving while protecting the stunt crew.","tldrEs":"Mantienes el rodaje en marcha y proteges al equipo de especialistas."}]},{"slug":"diving","cards":[{"tier":2,"title":"The Mooring Line","titleEs":"La línea de amarre","body":"A workboat keeps drifting from its berth. As {title}, you find an old mooring line caught beneath a piling and bring it up before the next tide. The harbor master stops calling your dives practice.","bodyEs":"Una lancha de trabajo se aleja una y otra vez de su amarre. Como {title}, encuentras una línea enganchada bajo un pilote y la sacas antes de la siguiente marea. El jefe del puerto deja de llamar prácticas a tus inmersiones.","tldr":"You find the snagged line that kept a workboat drifting.","tldrEs":"Encuentras la línea enganchada que hacía derivar una lancha."},{"tier":4,"title":"The Pressure Check","titleEs":"La revisión de presión","body":"The intake-frame weld looks sound from shore, but the gauge twitches underwater. As {title}, you stop the repair and find a hairline leak before the pump goes back online.","bodyEs":"La soldadura del marco de entrada parece firme desde la costa, pero el medidor vibra bajo el agua. Como {title}, detienes la reparación y encuentras una fuga mínima antes de reiniciar la bomba.","tldr":"A restless gauge reveals a leak before the pump restarts.","tldrEs":"Un medidor inestable revela una fuga antes de reiniciar la bomba."},{"tier":6,"title":"The Wreck Map","titleEs":"El mapa del naufragio","body":"The survey team loses its bearing where the wreck splits into two dark passages. As {title}, you mark the current against the hull, guide the divers back to the entry line, and save the survey slate.","bodyEs":"El equipo pierde el rumbo donde el naufragio se divide en dos pasajes oscuros. Como {title}, marcas la corriente junto al casco, guías a los buzos hasta la línea de entrada y salvas la tablilla de registro.","tldr":"You guide a survey team out of a split passage and save its records.","tldrEs":"Guías al equipo fuera del pasaje y salvas sus registros."}]},{"slug":"science","cards":[{"tier":2,"title":"The Labeled Control","titleEs":"La muestra de control","body":"A result looks extraordinary until you notice the control tube has yesterday's label. As {title}, you rerun the samples before anyone writes the headline. The corrected result is smaller, but sound.","bodyEs":"Un resultado parece extraordinario hasta que notas que el tubo de control tiene la etiqueta de ayer. Como {title}, repites las pruebas antes de que alguien redacte el anuncio. El resultado es menos llamativo, pero confiable.","tldr":"You catch a mislabeled control before the lab publishes a false result.","tldrEs":"Detectas una muestra mal rotulada antes de publicar un resultado falso."},{"tier":4,"title":"The Drifting Instrument","titleEs":"El instrumento descalibrado","body":"Three runs disagree by the same small amount. As {title}, you trace the difference to a drifting calibration lamp, not the samples. The corrected series answers the team's real question.","bodyEs":"Tres pruebas discrepan por el mismo margen pequeño. Como {title}, descubres que la causa es una lámpara de calibración inestable, no las muestras. La serie corregida responde la pregunta del equipo.","tldr":"You trace a repeated discrepancy to a calibration fault.","tldrEs":"Encuentras una falla de calibración detrás de una discrepancia repetida."},{"tier":6,"title":"The Freezer Alarm","titleEs":"La alarma del congelador","body":"A brief power dip trips the archive freezer alarm after the night crew has left. As {title}, you move the vulnerable samples to backup storage and log the temperature excursion before morning.","bodyEs":"Una breve caída de tensión activa la alarma del congelador cuando el turno nocturno ya se fue. Como {title}, trasladas las muestras más vulnerables al respaldo y registras la variación antes de la mañana.","tldr":"You protect archived samples after a power interruption.","tldrEs":"Proteges las muestras archivadas tras un corte de energía."}]},{"slug":"law","cards":[{"tier":2,"title":"The Filing Date","titleEs":"La fecha de presentación","body":"The hearing packet is ready, but a service receipt is dated one day late. As {title}, you compare the docket against the courier log and catch the mismatch before it reaches the judge.","bodyEs":"El expediente está listo, pero un comprobante de notificación tiene una fecha con un día de diferencia. Como {title}, comparas el registro judicial con el del mensajero y detectas el error antes de que llegue al juez.","tldr":"You catch a date mismatch before filing the hearing packet.","tldrEs":"Detectas una fecha incorrecta antes de presentar el expediente."},{"tier":4,"title":"The Missing Witness","titleEs":"El testigo ausente","body":"A witness changes the meeting time on trial morning. As {title}, you rebuild the sequence from the call log, tell the court what can be verified, and keep the argument inside the facts.","bodyEs":"Un testigo cambia la hora de la reunión la mañana del juicio. Como {title}, reconstruyes la secuencia con el registro de llamadas, informas qué puede verificarse y mantienes el argumento dentro de los hechos.","tldr":"You rebuild the timeline when a witness changes their account.","tldrEs":"Reconstruyes la cronología cuando un testigo cambia su versión."},{"tier":6,"title":"The Settlement Room","titleEs":"La sala de negociación","body":"Both sides bring a draft that solves the loudest problem and hides the expensive one. As {title}, you point out the overlooked term, explain its cost, and give your client room to decide.","bodyEs":"Ambas partes presentan un borrador que resuelve el problema más visible y oculta el más costoso. Como {title}, señalas la cláusula olvidada, explicas su costo y dejas que tu cliente decida.","tldr":"You surface a costly term and give your client a clear choice.","tldrEs":"Señalas una cláusula costosa y das a tu cliente una decisión clara."}]},{"slug":"culinary","cards":[{"tier":2,"title":"The Dead Burner","titleEs":"El quemador apagado","body":"The dinner rush starts just as one burner goes cold. As {title}, you rearrange the pans, call the delay early, and serve every table without sending out undercooked fish.","bodyEs":"El servicio empieza justo cuando se apaga un quemador. Como {title}, reorganizas las sartenes, avisas la demora a tiempo y atiendes todas las mesas sin servir pescado a medio cocinar.","tldr":"You reorganize service around a failed burner.","tldrEs":"Reorganizas el servicio tras la falla de un quemador."},{"tier":4,"title":"The Allergy Ticket","titleEs":"La orden por alergia","body":"A regular dish comes back with an allergy note the kitchen has not seen. As {title}, you stop the plate, check every sauce, and remake the order on a clean station.","bodyEs":"Una orden habitual vuelve con una nota de alergia que la cocina no había visto. Como {title}, detienes el plato, revisas cada salsa y preparas la orden en una estación limpia.","tldr":"You catch an allergy note and remake the dish safely.","tldrEs":"Detectas una alergia y preparas el plato de forma segura."},{"tier":6,"title":"The Galley in Weather","titleEs":"La cocina con mal tiempo","body":"The yacht rolls hard as the weather closes in. As {title}, you secure the hot pans, switch to a meal that can be served in a calmer interval, and keep the crew fed safely.","bodyEs":"El yate se balancea con fuerza cuando empeora el tiempo. Como {title}, aseguras las sartenes calientes, cambias a un plato que puede servirse durante la pausa y alimentas al equipo sin riesgos.","tldr":"You adapt the galley service to rough seas.","tldrEs":"Adaptas el servicio de cocina al oleaje."}]},{"slug":"aviation","cards":[{"tier":2,"title":"The Short Strip","titleEs":"La pista corta","body":"Weather closes the ridge route while a survey crew waits at the far strip. As {title}, you check the wind against the short runway, call the diversion early, and land with fuel to spare.","bodyEs":"El clima cierra la ruta sobre la sierra mientras un equipo espera en la pista remota. Como {title}, comparas el viento con la pista corta, decides desviarte a tiempo y aterrizas con combustible de sobra.","tldr":"You divert early when weather closes the short runway.","tldrEs":"Te desvías a tiempo cuando el clima cierra la pista corta."},{"tier":4,"title":"The Go-Around","titleEs":"La aproximación frustrada","body":"The runway appears through the rain, but a crosswind is pushing the aircraft off center. As {title}, you call a go-around before landing becomes a correction, then brief the crew for another approach.","bodyEs":"La pista aparece entre la lluvia, pero el viento cruzado desplaza el avión del centro. Como {title}, ordenas frustrar la aproximación antes de tener que corregir el aterrizaje y preparas al equipo para intentarlo otra vez.","tldr":"You reject an unstable approach and prepare a safer landing.","tldrEs":"Interrumpes una aproximación inestable y preparas un aterrizaje más seguro."},{"tier":6,"title":"The Medical Diversion","titleEs":"El desvío médico","body":"A passenger becomes seriously ill halfway across the ocean. As {title}, you compare nearby airports, coordinate with the cabin crew, and divert while the medical team is still on the line.","bodyEs":"Un pasajero se enferma gravemente a mitad del cruce oceánico. Como {title}, comparas los aeropuertos cercanos, coordinas con la tripulación de cabina y cambias el rumbo mientras el equipo médico sigue en línea.","tldr":"You coordinate a medical diversion before the passenger worsens.","tldrEs":"Coordinas un desvío médico antes de que empeore el pasajero."}]},{"slug":"music","cards":[{"tier":2,"title":"The Silent Ballroom","titleEs":"El salón sin sonido","body":"The ballroom loses power between the first dance and the speeches. As {title}, you move the band closer, switch to an unplugged set, and give the venue time to restore the lights.","bodyEs":"El salón se queda sin electricidad entre el primer baile y los discursos. Como {title}, acercas a la banda, cambias a un repertorio acústico y das tiempo al lugar para restablecer la luz.","tldr":"You keep a wedding set going through a power outage.","tldrEs":"Mantienes la música de una boda durante un corte de luz."},{"tier":4,"title":"The Wrong Chart","titleEs":"La partitura equivocada","body":"The touring set begins in a new key, but the chart on your stand is yesterday's arrangement. As {title}, you follow the singer's cue and bring the band back together before the chorus.","bodyEs":"El concierto empieza en una tonalidad nueva, pero la partitura de tu atril es del arreglo de ayer. Como {title}, sigues la señal de la cantante y reúnes a la banda antes del estribillo.","tldr":"You recover a live set when the chart does not match.","tldrEs":"Recuperas el concierto cuando la partitura no coincide."},{"tier":6,"title":"The Broken String","titleEs":"La cuerda rota","body":"The solo begins and a string snaps under the hall lights. As {title}, you shift the phrase to the open strings, meet the orchestra on the next entrance, and finish without stopping.","bodyEs":"El solo empieza y una cuerda se rompe bajo las luces. Como {title}, adaptas la frase a las cuerdas al aire, vuelves a entrar con la orquesta y terminas sin detener la función.","tldr":"You adapt a solo after a string breaks.","tldrEs":"Adaptas el solo tras romperse una cuerda."}]},{"slug":"athletic","cards":[{"tier":2,"title":"The Scouting Note","titleEs":"La nota de observación","body":"The other team steals the same base whenever the pitcher looks home. As {title}, you spot the runner's first step in the video, share it with the coach, and turn it into a better pickoff drill.","bodyEs":"El otro equipo roba la misma base cada vez que el lanzador mira al home. Como {title}, detectas en el video el primer movimiento del corredor, se lo muestras al entrenador y lo conviertes en un mejor ejercicio de control.","tldr":"You turn a repeatable move on film into a useful drill.","tldrEs":"Conviertes un movimiento repetido en video en un ejercicio útil."},{"tier":4,"title":"The Shape of the Press","titleEs":"La forma de la presión","body":"The opposing defense changes its press after every timeout. As {title}, you recognize the same weak side in both setups, call the switch before the inbound, and open a path through the trap.","bodyEs":"La defensa rival cambia la presión después de cada tiempo muerto. Como {title}, reconoces el mismo punto débil en ambas formaciones, indicas el cambio antes del saque y abres una salida de la trampa.","tldr":"You read the defense's weak side before the trap closes.","tldrEs":"Lees el punto débil de la defensa antes de que cierre la trampa."},{"tier":6,"title":"The Sponsor's Clock","titleEs":"El horario del patrocinador","body":"A sponsor asks the team to add an appearance before the final, cutting into warm-ups. As {title}, you set a firm end time, protect preparation, and still give the sponsor a moment worth filming.","bodyEs":"Un patrocinador pide una aparición antes de la final y reduce el calentamiento. Como {title}, acuerdas una hora de cierre, proteges la preparación y aun así le das un momento que pueda grabar.","tldr":"You protect final preparation while meeting a sponsor's request.","tldrEs":"Proteges la preparación para la final y atiendes al patrocinador."}]},{"slug":"medical","cards":[{"tier":2,"title":"The Medication List","titleEs":"La lista de medicamentos","body":"A patient says the new tablet is the same one they already take, but the label lists another dose. As {title}, you pause the handoff, compare the medication record, and call the nurse.","bodyEs":"Un paciente dice que la nueva pastilla es igual a la que ya toma, pero la etiqueta indica otra dosis. Como {title}, detienes la entrega, comparas el registro y avisas a enfermería.","tldr":"You catch a medication mismatch before the next round.","tldrEs":"Detectas una discrepancia en la medicación antes de la siguiente ronda."},{"tier":4,"title":"The Returning Fever","titleEs":"La fiebre que regresa","body":"A patient's fever drops, then rises again just before discharge. As {title}, you compare the latest readings with the morning labs and ask the team to wait for one more result.","bodyEs":"La fiebre de un paciente baja y vuelve a subir justo antes del alta. Como {title}, comparas las últimas mediciones con los análisis y pides esperar un resultado más.","tldr":"You connect a returning fever with the latest labs before discharge.","tldrEs":"Relacionas el regreso de la fiebre con los análisis antes del alta."},{"tier":6,"title":"The Night Roster","titleEs":"El turno nocturno","body":"Two emergencies arrive as a nurse calls out sick and the night roster is already thin. As {title}, you move the float team, keep critical beds staffed, and make the handoff unmistakable.","bodyEs":"Llegan dos emergencias mientras una enfermera avisa que está enferma y el turno nocturno ya tiene poco personal. Como {title}, reorganizas al equipo de apoyo, cubres las camas críticas y dejas instrucciones claras.","tldr":"You rebalance a thin night roster during two emergencies.","tldrEs":"Reorganizas un turno nocturno reducido durante dos emergencias."}]},{"slug":"maritime","cards":[{"tier":2,"title":"The Frayed Line","titleEs":"El cabo desgastado","body":"A deckhand says the mooring line is sound, but one strand is lifting near the cleat. As {title}, you stop departure, replace it, and test the knot under load.","bodyEs":"Un marinero dice que el cabo está bien, pero una hebra se levanta junto a la cornamusa. Como {title}, detienes la salida, lo cambias y pruebas el nudo bajo carga.","tldr":"You replace a damaged mooring line before departure.","tldrEs":"Cambias un cabo dañado antes de la partida."},{"tier":4,"title":"The Shifting Hold","titleEs":"La carga que se mueve","body":"A rough patch sends a pallet against the hold braces. As {title}, you reduce speed, secure the cargo, and check the rest of the bay before the next swell.","bodyEs":"Un tramo agitado empuja una tarima contra los soportes de la bodega. Como {title}, reduces la velocidad, aseguras la carga y revisas el compartimento antes de la siguiente ola.","tldr":"You secure a shifted pallet before the next swell.","tldrEs":"Aseguras una tarima desplazada antes de la siguiente ola."},{"tier":6,"title":"The Fishing Boat","titleEs":"El barco pesquero","body":"A fishing boat reports engine trouble as the weather turns and the harbor channel begins to close. As {title}, you send a launch with a towline and bring the crew in before dark.","bodyEs":"Un barco pesquero informa una falla de motor cuando empeora el clima y el canal del puerto empieza a cerrar. Como {title}, envías una lancha con un cabo de remolque y llevas a la tripulación a puerto antes de anochecer.","tldr":"You bring a disabled fishing boat safely through a closing harbor.","tldrEs":"Llevas a puerto un pesquero averiado antes del cierre del canal."}]}];
+  function jobArcCardId(jobIndex, tier) {
+    const pack = JOB_ARC_STORIES[jobIndex];
+    return pack && JOB_ARC_MILESTONES.indexOf(tier) >= 0 ? "jobCareer" + pack.slug + "Tier" + tier : "";
+  }
+  const JOB_ARC_CARDS = JOBS.flatMap((job, jobIndex) => JOB_ARC_STORIES[jobIndex].cards.map((story) => {
+    const id = jobArcCardId(jobIndex, story.tier);
+    return { id, job:true, jobMilestone:true, jobTrack:jobIndex, jobTier:story.tier, kind:"report",
+      when:() => S.jobTrack === jobIndex && (S.have.job || 0) === story.tier,
+      title:story.title, titleEs:story.titleEs, body:story.body, bodyEs:story.bodyEs,
+      tldr:{en:story.tldr, es:story.tldrEs} };
+  }));
   const CHANCE_CARDS = [
     { id: "landfill", kind: "choice",
-      title: "The Landfill", titleEs: "The Landfill",
-      body: "At 1:14 a.m., Nico sends a voice message. The photo is dark: a truck, and a shovel leaning against the hood.\n\n\"I'm in Wales,\" he says. \"They let me dig Docksway. A USB with 8,000 BTC was supposedly lost there in 2009. I want a partner, not a spectator.\"\n\nFrom the other side of the bed, Lena opens one eye. \"If you put money into a treasure hunt at 1:14 a.m., the next time you're about to come I'm calling you Fartface.\"\n\nYou look at the photo again. The shovel does look surprisingly convincing.",
-      bodyEs: "A la 1:14 a.m., Nico manda un audio. La foto está oscura: un camión, y una pala apoyada en el capó.\n\n\"Estoy en Gales\", dice. \"Me dejaron excavar Docksway. Ahí se habría perdido en 2009 un USB con 8.000 BTC. Quiero un socio, no un espectador.\"\n\nDel otro lado de la cama, Lena abre un ojo. \"Si metés plata en una búsqueda del tesoro a la 1:14 a.m., la próxima vez que estés por acabar te voy a decir Cara de pedo.\"\n\nVolvés a mirar la foto. La pala se ve, sorprendentemente, convincente.",
+      title: "The Landfill", titleEs: "El basurero",
+      body: "At 1:14 a.m., Nico sends a voice message with a dark photo of a truck and a shovel leaning against its hood.\n\n\"I'm in Wales,\" he says. \"They let me dig at Docksway. A USB that held 8,000 BTC was supposedly lost here in 2009. I need a partner, not a spectator.\"\n\nLena opens one eye from the other side of the bed. \"If you fund a treasure hunt at 1:14 a.m., the next time you're about to come, I'm calling you Fartface.\"\n\nYou look at the photo again. Somehow, the shovel makes the plan seem credible.",
+      bodyEs: "A la 1:14 a. m., Nico envía un mensaje de voz con una foto oscura de un camión y una pala apoyada en el capó.\n\n\"Estoy en Gales\", dice. \"Me dejaron excavar en Docksway. Al parecer, aquí se perdió en 2009 una memoria USB que contenía 8,000 BTC. Necesito un socio, no un espectador.\"\n\nDesde el otro lado de la cama, Lena abre un ojo: \"Si financias una búsqueda del tesoro a la 1:14 a. m., la próxima vez que estés a punto de terminar te llamaré Cara de Pedo.\"\n\nMiras la foto otra vez. Por alguna razón, la pala hace que el plan parezca creíble.",
       opts: [
-        { k: "a", label: "Put in 25% of net worth", labelEs: "Poner el 25% del patrimonio" },
-        { k: "b", label: "Put in 75% of net worth", labelEs: "Poner el 75% del patrimonio" },
-        { k: "c", label: "Don't participate", labelEs: "No participar" }
+        { k: "a", label: "Risk 25% of net worth", labelEs: "Arriesgar el 25% del patrimonio" },
+        { k: "b", label: "Risk 75% of net worth", labelEs: "Arriesgar el 75% del patrimonio" },
+        { k: "c", label: "Stay out", labelEs: "No participar" }
       ] },
     { id: "taxbill", kind: "report",
-      title: "Quarterly Tax Bill", titleEs: "La boleta trimestral",
-      body: "Your quarterly tax bill arrives. You open it, stare at it, close it, then open it again as if the number might have changed. It has not.",
-      bodyEs: "Llega la boleta trimestral. La abrís, la mirás, la cerrás y la volvés a abrir por si el número cambió. No cambió." },
+      title: "Quarterly Tax Bill", titleEs: "La factura trimestral",
+      body: "Your quarterly tax bill arrives in an official-looking envelope. You read the total, close it, then open it again in case the number has changed. The number has not changed.",
+      bodyEs: "La factura trimestral de impuestos llega en un sobre de aspecto oficial. Lees el total, la cierras y vuelves a abrirla por si el monto cambió. El monto no cambió." },
     { id: "nicoWedding", kind: "choice", after: ["landfill"],
-      title: "Nico Gets Married", titleEs: "Se casa Nico",
-      body: "Nico is getting married. He has always had too much energy and at least three things going on at once. You arrive with Lena and Paco, who has already decided he dislikes the venue. The salon holds 400 people. You recognize maybe twelve. The DJ is playing old CDs from 1998. Nico is near the bar explaining an extremely complicated idea to a stranger who did not ask. Lena looks at you. \"Please don't let your cousin talk you into anything tonight.\" At the envelope table, you have to decide how much to give.",
-      bodyEs: "Nico se casa. Siempre tuvo demasiada energía y al menos tres cosas al mismo tiempo. Llegan con Lena y Paco, que ya decidió que el salón no le gusta. Entran 400. Reconocés doce. El DJ pone CDs de 1998. Nico está en la barra explicándole una idea complicada a un desconocido que no preguntó. Lena te mira. \"Esta noche no dejes que tu primo te convenza de nada.\" En la mesa de sobres hay que decidir cuánto dejar.",
+      title: "Nico Gets Married", titleEs: "La boda de Nico",
+      body: "Nico is getting married. You arrive with Lena and Paco, who has already decided he dislikes the venue. There are 400 guests, and you recognize about twelve. The DJ is playing CDs from 1998. Near the bar, Nico is pitching an elaborate idea to a stranger who did not ask. Lena looks at you. \"Do not let your cousin talk you into anything tonight.\" At the gift table, you decide how much to give.",
+      bodyEs: "Nico se casa. Llegas con Lena y Paco, quien ya decidió que el lugar no le gusta. Hay 400 invitados y apenas reconoces a unos doce. El DJ pone música de 1998. Cerca de la barra, Nico le explica una idea complicadísima a un desconocido que no preguntó nada. Lena te mira: \"No permitas que tu primo te convenza de nada esta noche\". En la mesa de regalos debes decidir cuánto dar.",
       opts: [
-        { k: "a", label: "Be generous · 4%", labelEs: "Ser generoso · 4%" },
-        { k: "b", label: "Give less · 0.6%", labelEs: "Dar menos · 0.6%" },
-        { k: "c", label: "Skip the gift", labelEs: "No dejar sobre" }
+        { k: "a", label: "Give a generous gift", labelEs: "Dar un regalo generoso" },
+        { k: "b", label: "Give a modest gift", labelEs: "Dar un regalo modesto" },
+        { k: "c", label: "Skip the gift", labelEs: "No dar regalo" }
       ] },
     { id: "mexico", kind: "choice", after: ["landfill"],
-      title: "Mexico", titleEs: "México",
-      body: "Lena suggests a few days in the Mexican Riviera. Tulum. Warm water, white sand, small restaurants, and a hotel that looks more expensive in the photos than it probably is. Sounds like a nice place to leave a ColdCard randomness incident behind. You look at the flights together. Paco watches from the floor. Lena wants five days. You think three would be enough. Paco eats one of the travel brochures. You take that as his vote.",
-      bodyEs: "Lena propone unos días en la Riviera Mexicana. Tulum. Agua tibia, arena blanca, restoranes chicos y un hotel que en las fotos se ve más caro de lo que probablemente es. Un buen lugar para dejar atrás el incidente de aleatoriedad del ColdCard. Miran los vuelos juntos. Paco observa desde el piso. Lena quiere cinco días. Vos pensás que con tres alcanza. Paco se come uno de los folletos. Lo tomás como su voto.",
+      title: "Five Days in Tulum", titleEs: "Cinco días en Tulum",
+      body: "Lena proposes five days in Tulum: warm water, white sand, small restaurants, and a hotel whose photos look pricier than the rooms probably are. It sounds like a good place to forget the ColdCard randomness incident. You compare flights while Paco watches from the floor. Three days seem enough to you; Lena wants five. Paco eats a brochure, which settles his vote.",
+      bodyEs: "Lena propone pasar cinco días en Tulum: agua tibia, arena blanca, restaurantes pequeños y un hotel cuyas fotos parecen más costosas de lo que en realidad son las habitaciones. Suena como un buen lugar para olvidar el incidente con la aleatoriedad de la ColdCard. Comparan vuelos mientras Paco observa desde el piso. Para ti, tres días serían suficientes; Lena quiere cinco. Paco se come un folleto y deja claro su voto.",
       opts: [
-        { k: "a", label: "Book the trip · 8%", labelEs: "Reservar · 8%" },
-        { k: "b", label: "Stay home", labelEs: "Quedarnos" }
+        { k: "a", label: "Book five days · 8%", labelEs: "Reservar cinco días · 8%" },
+        { k: "b", label: "Stay home with Paco", labelEs: "Quedarse en casa con Paco" }
       ] },
     { id: "flu", kind: "report", after: ["landfill"],
-      title: "Flu", titleEs: "Gripe",
-      body: "Lena gets the flu. You spend the day bringing her water, medicine, soup, and whatever else she asks for. By evening you have spent money you will not get back. Paco eats half the soup. Lena does not notice.",
-      bodyEs: "A Lena le da gripe. Pasás el día llevándole agua, remedio, sopa y lo que pida. A la noche ya gastaste plata que no vuelve. Paco se come la mitad de la sopa. Lena no se da cuenta." },
+      title: "A Day with the Flu", titleEs: "Un día de gripe",
+      body: "Lena wakes with the flu. You spend the day bringing her water, medicine, soup, and anything else she needs. By evening she is resting, the pharmacy receipt is longer than expected, and Paco has quietly eaten half the soup.",
+      bodyEs: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas, sopa y todo lo que necesita. Al anochecer, ella descansa, la cuenta de la farmacia es más alta de lo esperado y Paco se comió la mitad de la sopa sin que nadie lo notara." },
     { id: "phish", kind: "choice",
-      title: "Support", titleEs: "Soporte",
-      body: "You receive an email from customer support. They say there is a problem with your account. They need your seed phrase to verify your identity. The email looks extremely convincing.",
-      bodyEs: "Llega un mail de soporte. Dicen que hay un problema con tu cuenta. Necesitan tu seed para verificar la identidad. El mail se ve extremadamente convincente.",
+      title: "Account Verification", titleEs: "Verificación de cuenta",
+      body: "A customer support email says there is a problem with your account. The logo, formatting, and urgent tone all look legitimate. To verify your identity, the message asks you to open a link and enter your seed phrase.",
+      bodyEs: "Un correo del equipo de soporte afirma que hay un problema con tu cuenta. El logotipo, el formato y el tono urgente parecen legítimos. Para verificar tu identidad, el mensaje te pide abrir un enlace e ingresar tu frase semilla.",
       opts: [
-        { k: "a", label: "Open the link", labelEs: "Abrir el enlace" },
-        { k: "b", label: "Delete it", labelEs: "Borrarlo" }
+        { k: "a", label: "Enter the seed phrase", labelEs: "Ingresar la frase semilla" },
+        { k: "b", label: "Delete the email", labelEs: "Eliminar el correo" }
       ] },
     { id: "crash", kind: "report",
-      title: "Scooter Crash", titleEs: "El scooter",
-      body: "A delivery scooter hits your car at a very low speed. Nobody is seriously hurt. The scooter driver apologizes six times. You apologize twice. Nobody knows why you apologized.",
-      bodyEs: "Un scooter de delivery pega tu auto a muy baja velocidad. Nadie sale realmente lastimado. El pibe se disculpa seis veces. Vos te disculpás dos. Nadie sabe por qué lo hiciste." },
+      title: "A Low-Speed Collision", titleEs: "Choque a baja velocidad",
+      body: "A delivery scooter clips your car at very low speed. Nobody is hurt. The driver apologizes six times; you apologize twice. Neither of you knows why you apologized, but the bumper still needs to be repaired.",
+      bodyEs: "Un repartidor en motoneta golpea tu automóvil a muy baja velocidad. Nadie resulta herido. El repartidor se disculpa seis veces; tú, dos. Ninguno de los dos sabe por qué se disculpó, pero el parachoques necesita reparación." },
     { id: "wine", kind: "choice", after: ["landfill"],
-      title: "Wine", titleEs: "Wine",
+      title: "Wine", titleEs: "Vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins.",
-      bodyEs: "Es viernes a la noche en lo de Marek. Hay una botella de vino, la cena a medias y 12 Monkeys en pausa. Así suelen pasar el tiempo: vino, películas viejas y una charla que se alarga más de lo planeado. Esta noche, como siempre, termina en una discusión sobre la I.A. y el futuro. Vos sos el entusiasta. Marek sabe más, y confía menos en la gente. Ninguno gana.",
+      bodyEs: "Es viernes por la noche en casa de Marek. Hay una botella de vino, la cena a medio terminar y 12 Monkeys en pausa. Así suelen pasar el tiempo: vino, películas antiguas y una conversación que siempre se alarga más de lo previsto. Esta vez, como de costumbre, terminan debatiendo sobre la IA y el futuro. Tú eres el entusiasta; Marek sabe más, pero confía menos en la gente. Ninguno convence al otro.",
       opts: [
-        { k: "a", label: "Keep talking", labelEs: "Keep talking" },
-        { k: "b", label: "Get ice cream", labelEs: "Get ice cream" },
-        { k: "c", label: "Cab home", labelEs: "Cab home" }
+        { k: "a", label: "Keep talking", labelEs: "Seguir conversando" },
+        { k: "b", label: "Get ice cream", labelEs: "Comprar helado" },
+        { k: "c", label: "Cab home", labelEs: "Tomar un taxi a casa" }
       ] },
     { id: "casino", kind: "choice", after: ["landfill"],
-      title: "Nico Finds a Table", titleEs: "Nico encontró una mesa",
+      title: "Nico Finds a Table", titleEs: "Nico encuentra una mesa",
       body: "Nico calls at 11:40 P.M. \"I found a table.\" You ask where. \"A casino.\" You should probably ask more questions. Instead, you go. He has already found a game that he considers interesting.",
-      bodyEs: "Nico llama a las 23:40. \"Encontré una mesa.\" Preguntás dónde. \"Un casino.\" Deberías hacer más preguntas. En vez de eso, vas. Ya encontró un juego que considera interesante.",
+      bodyEs: "Nico llama a las 11:40 p. m.: \"Encontré una mesa\". Le preguntas en dónde: \"En un casino\". Deberías hacer más preguntas, pero decides acompañarlo. Cuando llegas, Nico ya eligió un juego que le parece interesante.",
       opts: [
-        { k: "a", label: "Bet 10%", labelEs: "Apostar 10%" },
-        { k: "b", label: "Bet 30%", labelEs: "Apostar 30%" },
-        { k: "c", label: "Leave", labelEs: "Irte" }
+        { k: "a", label: "Bet 10% of net worth", labelEs: "Apostar el 10% del patrimonio" },
+        { k: "b", label: "Bet 30% of net worth", labelEs: "Apostar el 30% del patrimonio" },
+        { k: "c", label: "Leave", labelEs: "Salir del casino" }
       ] },
     { id: "poker", kind: "choice", after: ["wine", "casino"],
       title: "Poker", titleEs: "Póker",
       body: "Marek invites you to a poker game. Not a casino. Just people he knows, sitting around a table late at night. He is already there when you arrive, drinking wine and watching the game. He looks at your chips. \"You're playing?\" \"I guess.\" He nods. \"Good.\"",
-      bodyEs: "Marek te invita a un póker. No es un casino. Gente que él conoce, mesa de madrugada. Ya está cuando llegás, con vino, mirando el juego. Mira tus fichas. \"¿Jugás?\" \"Supongo.\" Asiente. \"Bien.\"",
+      bodyEs: "Marek te invita a una partida de póker. No es en un casino: es con gente conocida alrededor de una mesa de madrugada. Ya está ahí cuando llegas, tomando vino y observando la partida. Mira tus fichas: \"¿Juegas?\". \"Supongo\". Asiente con la cabeza: \"Bien\".",
       opts: [
-        { k: "a", label: "Buy in · 8%", labelEs: "Buy-in · 8%" },
-        { k: "b", label: "Buy in · 25%", labelEs: "Buy-in · 25%" },
-        { k: "c", label: "Stay at the pier", labelEs: "Quedarte en el muelle" }
+        { k: "a", label: "Buy in · 8%", labelEs: "Comprar fichas · 8%" },
+        { k: "b", label: "Buy in · 25%", labelEs: "Comprar fichas · 25%" },
+        { k: "c", label: "Sit this one out", labelEs: "No jugar esta vez" }
       ] },
     { id: "uncle", kind: "report",
       title: "Uncle Héctor", titleEs: "El tío Héctor",
       body: "Uncle Héctor sends a message. No explanation. Just: \"Check your account.\" He has transferred you some money. You call him. He refuses to explain why.",
-      bodyEs: "El tío Héctor manda un mensaje. Sin explicación. Solo: \"Fijate la cuenta.\" Te giró plata. Lo llamás. Se niega a decir por qué." },
+      bodyEs: "El tío Héctor envía un mensaje sin explicación: \"Revisa tu cuenta\". Te transfirió dinero. Lo llamas, pero se niega a decirte por qué." },
     { id: "school", kind: "choice", after: ["nicoWedding"],
-      title: "School Trip", titleEs: "El viaje de estudio",
+      title: "School Trip", titleEs: "La excursión escolar",
       body: "Sofi is going on a school trip to the Mint Museum. Her family is a little short this month. Lena thinks you should help. You agree, or you don't.",
-      bodyEs: "Sofi se va de viaje de estudio al museo de la Casa de Moneda. En casa este mes están justos. Lena cree que deberías ayudar. Aceptás, o no.",
+      bodyEs: "Sofi tiene una excursión escolar al museo de la Casa de Moneda. En su casa este mes el dinero está ajustado. Lena cree que deberías ayudar. Aceptas, o no.",
       opts: [
-        { k: "a", label: "Cover the trip", labelEs: "Cubrir el viaje" },
-        { k: "b", label: "Let them handle it", labelEs: "Que se arreglen" }
+        { k: "a", label: "Cover the trip", labelEs: "Pagar la excursión" },
+        { k: "b", label: "Let them handle it", labelEs: "Que lo resuelvan ellos" }
       ] },
     { id: "roof", kind: "report",
-      title: "Roof", titleEs: "El techo",
+      title: "Roof", titleEs: "La gotera en el techo",
       body: "Paco finds the leak in the roof before you do. He sits directly underneath it. The workers arrive. He moves. He immediately finds another place to sit.",
-      bodyEs: "Paco encuentra la gotera antes que vos. Se sienta justo debajo. Llegan los de la obra. Se corre. Enseguida encuentra otro lugar donde sentarse." },
-    { id: "lotto", kind: "report", after: ["wine"],
-      title: "Lottery Ticket", titleEs: "El raspa y gana",
-      body: "You are having wine with Marek. At some point the conversation turns to probability. You buy a lottery ticket. The next morning Marek asks if you checked the numbers. You did not.",
-      bodyEs: "Estás tomando vino con Marek. En algún momento la charla vira a probabilidad. Comprás un raspa y gana. A la mañana Marek pregunta si miraste los números. No los miraste." },
+      bodyEs: "Paco encuentra la gotera en el techo antes que tú. Se sienta justo debajo. Llegan los reparadores. Se quita de ahí, pero de inmediato encuentra otro lugar donde sentarse." },
     { id: "hospital", kind: "report", after: ["landfill"],
-      title: "Four Stitches", titleEs: "Cuatro puntos",
+      title: "Four Stitches", titleEs: "Cuatro puntos de sutura",
       body: "You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\"",
-      bodyEs: "Necesitás cuatro puntos. Lena te lleva al hospital. Espera con vos. De vuelta a casa dice: \"Tratá de no sangrar sobre nada.\"" },
+      bodyEs: "Necesitas cuatro puntos de sutura. Lena te lleva al hospital y espera contigo. De regreso a casa te dice: \"Intenta no sangrar sobre nada\"." },
     { id: "startup", kind: "choice", after: ["landfill"],
       title: "Startup", titleEs: "La startup",
       body: "Nico calls. \"I have a plan.\" You already know this is going somewhere. He has built a 47-slide presentation for an app that combines subscriptions, artificial intelligence, and something he calls community ownership. He says the upside is massive.",
-      bodyEs: "Llama Nico. \"Tengo un plan.\" Ya sabés que esto va a algún lado. Armó una presentación de 47 diapositivas para una app que combina suscripciones, inteligencia artificial y algo que llama community ownership. Dice que el upside es enorme.",
+      bodyEs: "Llama Nico: \"Tengo un plan\". Ya sabes hacia dónde va esto. Preparó una presentación de 47 diapositivas para una app que combina suscripciones, inteligencia artificial y algo que llama propiedad comunitaria. Dice que el potencial de ganancias es enorme.",
       opts: [
-        { k: "a", label: "Invest 20%", labelEs: "Invertir 20%" },
-        { k: "b", label: "Pass", labelEs: "Paso" }
+        { k: "a", label: "Invest 20% of net worth", labelEs: "Invertir el 20% del patrimonio" },
+        { k: "b", label: "Pass", labelEs: "Dejar pasar la oportunidad" }
       ] },
     { id: "tow", kind: "report",
       title: "Nine Minutes", titleEs: "Nueve minutos",
       body: "You parked in the wrong place for nine minutes. You check the sign again. It was very clear.",
-      bodyEs: "Estacionaste mal durante nueve minutos. Volvés a mirar el cartel. Estaba muy claro." },
+      bodyEs: "Te estacionaste en el lugar equivocado durante nueve minutos. Vuelves a mirar el letrero: estaba muy claro." },
     { id: "courage", kind: "choice", after: ["landfill","nicoWedding","mexico","flu","school","hospital","potluck","wine","justInCase","nothingToHide","somethingBetter"],
       title: "Courage", titleEs: "Coraje",
       body: "You are at Marek's apartment. There is wine on the table and 12 Monkeys paused on the TV. You end up talking about A.I., futurism, and whether people actually know what they want. Eventually you mention Lena. Marek looks at you. \"So?\" You shrug. \"We've been together for years.\" He takes a sip. \"Maybe you're waiting for certainty.\" Then he presses play again. You keep thinking about it.",
-      bodyEs: "Estás en el depto de Marek. Hay vino en la mesa y 12 Monkeys en pausa. Terminan hablando de I.A., futurismo y si la gente sabe lo que quiere. En algún momento nombrás a Lena. Marek te mira. \"¿Y?\" Te encogés de hombros. \"Hace años que estamos.\" Toma un sorbo. \"Capaz estás esperando certeza.\" Vuelve a darle play. Segís pensándolo.",
+      bodyEs: "Estás en el departamento de Marek. Hay vino en la mesa y 12 Monkeys en pausa. Terminan hablando de IA, futurismo y de si la gente realmente sabe lo que quiere. En algún momento mencionas a Lena. Marek te mira: \"¿Y bien?\". Te encoges de hombros: \"Llevamos años juntos\". Da un sorbo: \"Quizá estás esperando tener certeza absoluta\". Vuelve a poner la película. Te quedas pensándolo.",
       opts: [
-        { k: "a", label: "Buy the ring · 6%", labelEs: "Comprar el anillo · 6%" },
+        { k: "a", label: "Go buy a ring", labelEs: "Ir a comprar un anillo" },
         { k: "b", label: "Wait", labelEs: "Esperar" }
       ] },
     { id: "ring", kind: "choice", after: ["courage"], when:()=>!!S.hasRing,
       title: "The Ring", titleEs: "El anillo",
       body: "You go to the jewelry store. You know exactly why you are there. You do not know what size of diamond makes you look responsible without looking ridiculous.",
-      bodyEs: "Vas a la joyería. Sabés exactamente por qué estás ahí. No sabés qué tamaño de diamante te hace parecer responsable sin parecer ridículo.",
+      bodyEs: "Vas a la joyería. Sabes con exactitud por qué estás ahí. Lo que no sabes es qué tamaño de diamante te hace ver responsable sin parecer ridículo.",
       opts: [
         { k: "a", label: "Buy the ring · 8%", labelEs: "Comprar el anillo · 8%" },
-        { k: "b", label: "Buy the cheaper one · 3%", labelEs: "El más barato · 3%" }
+        { k: "b", label: "Buy the cheaper one · 3%", labelEs: "Comprar el más económico · 3%" }
       ] },
     { id: "date", kind: "choice", after: ["ring"],
       title: "Date", titleEs: "La cita",
       body: "You plan a proper date. A nice restaurant. A walk. The lake at sunset. The restaurant is nice. The walk is quiet. The lake looks good at sunset. Nothing goes wrong. This feels suspicious.",
-      bodyEs: "Planeás una cita en forma. Un restorán bueno. Una caminata. El lago al atardecer. El restorán está bien. La caminata es silenciosa. El lago se ve bien. No pasa nada malo. Eso se siente sospechoso.",
+      bodyEs: "Planeas una cita formal: un buen restaurante, una caminata y el lago al atardecer. El restaurante está bien. La caminata es tranquila. El lago se ve hermoso al atardecer. Nada sale mal. Eso te parece sospechoso.",
       opts: [
-        { k: "a", label: "Nice restaurant", labelEs: "Restorán bueno" },
-        { k: "b", label: "Keep it simple", labelEs: "Dejarlo simple" },
-        { k: "c", label: "Cancel", labelEs: "Cancelar" }
+        { k: "a", label: "Nice restaurant", labelEs: "Buen restaurante" },
+        { k: "b", label: "Keep it simple", labelEs: "Mantenerlo sencillo" },
+        { k: "c", label: "Cancel (try another day)", labelEs: "Cancelar (otro día)" }
       ] },
     { id: "proposal", kind: "choice", after: ["date"],
       title: "Proposal", titleEs: "La propuesta",
       body: "The lake is getting dark. You and Lena are standing by the water. The date went well enough that you are starting to worry. The ring is in your pocket. You have not asked yet.",
-      bodyEs: "El lago se oscurece. Están parados junto al agua. La cita salió lo bastante bien como para que empieces a preocuparte. El anillo está en el bolsillo. Todavía no preguntaste.",
+      bodyEs: "El lago se va oscureciendo. Lena y tú están de pie junto al agua. La cita salió tan bien que comienzas a preocuparte. El anillo está en tu bolsillo. Todavía no has hecho la pregunta.",
       opts: [
-        { k: "a", label: "Propose properly · 2%", labelEs: "Proponerlo en forma · 2%" },
-        { k: "b", label: "Panic and stand there", labelEs: "Entrar en pánico y quedarte" },
-        { k: "c", label: "Make a joke and run · 1%", labelEs: "Hacer un chiste y correr · 1%" }
+        { k: "a", label: "Propose properly · 2%", labelEs: "Pedirle matrimonio formalmente · 2%" },
+        { k: "b", label: "Panic and stand there", labelEs: "Entrar en pánico y quedarte callado" },
+        { k: "c", label: "Make a joke and run · 1%", labelEs: "Hacer una broma y salir corriendo · 1%" }
       ] },
     { id: "wedding", kind: "choice", after: ["proposal"], when:()=>!!S.engaged,
       title: "Wedding", titleEs: "La boda",
       body: "You and Lena are getting married. There are invitations, food, relatives, flowers, music, and several decisions you did not realize were decisions. Lena has opinions. You have some opinions. Most of hers win.",
-      bodyEs: "Se casan con Lena. Hay invitaciones, comida, parientes, flores, música y varias decisiones que no sabías que eran decisiones. Lena tiene opiniones. Vos tenés algunas. Ganan casi todas las de ella.",
+      bodyEs: "Lena y tú se van a casar. Hay invitaciones, comida, familiares, flores, música y varias decisiones que ni siquiera sabías que eran decisiones. Lena tiene opiniones firmes. Tú tienes algunas. Casi todas las de ella ganan.",
       opts: [
-        { k: "a", label: "The wedding Lena wants · 12%", labelEs: "La boda que quiere Lena · 12%" },
-        { k: "b", label: "Keep it small · 5%", labelEs: "Hacerla chica · 5%" },
-        { k: "c", label: "Run · 1%", labelEs: "Correr · 1%" }
+        { k: "a", label: "The wedding Lena wants · 12%", labelEs: "La boda que Lena quiere · 12%" },
+        { k: "b", label: "Keep it small · 5%", labelEs: "Hacer una fiesta pequeña · 5%" },
+        { k: "c", label: "Run (ends the family arc)", labelEs: "Salir huyendo (termina el arco familiar)" }
       ] },
     { id: "honeymoon", kind: "choice", after: ["wedding"], when:()=>!!S.familyPath&&!S.familyClosed,
       title: "Honeymoon", titleEs: "La luna de miel",
       body: "You and Lena finally leave. For several days you agree on one rule: no checking the portfolio. You immediately wonder whether looking at the total counts. Lena takes your phone away. You have three possible itineraries.",
-      bodyEs: "Por fin se van. Durante varios días acuerdan una regla: no mirar el portfolio. Enseguida te preguntás si mirar solo el total cuenta. Lena te saca el teléfono. Hay tres itinerarios posibles.",
+      bodyEs: "Por fin se van de viaje. Acuerdan una sola regla para esos días: no revisar el portafolio. De inmediato te preguntas si ver solo el total cuenta como trampa. Lena te quita el teléfono. Hay tres itinerarios posibles.",
       opts: [
         { k: "a", label: "Japan · 10%", labelEs: "Japón · 10%" },
         { k: "b", label: "Italy · 6%", labelEs: "Italia · 6%" },
         { k: "c", label: "Patagonia · 4%", labelEs: "Patagonia · 4%" }
       ] },
     { id: "pregnancy", kind: "report", after: ["honeymoon"],
-      title: "Being Four", titleEs: "Being Four",
-      body: "Two lines on a test change everything. You and Lena are going to have a baby. For a few seconds neither of you says anything. Paco yawns. You look at him and say, four. Lena smiles. There will be doctors, appointments, preparations, and a lot of things to pay for. The first costs come to $450. You sleep surprisingly well that night.",
-      bodyEs: "Dos rayas en un test lo cambian todo. Van a tener un hijo con Lena. Por unos segundos ninguno dice nada. Paco bosteza. Lo mirás y decís: cuatro. Lena sonríe. Van a venir médicos, turnos, preparativos y un montón de cosas para pagar. Los primeros gastos son $450. Esa noche dormís sorprendentemente bien." },
+      title: "Being Four", titleEs: "Ahora somos cuatro",
+      body: "Two lines on a test change everything. You and Lena are going to have a baby. For a few seconds neither of you says anything. Paco yawns. You look at him and say, “Four.” Lena smiles. There will be doctors, appointments, preparations, and a lot of things to pay for. The first costs come to $450. You sleep surprisingly well that night.",
+      bodyEs: "Dos líneas en una prueba de embarazo lo cambian todo. Lena y tú van a tener un bebé. Durante unos segundos ninguno dice nada. Paco bosteza. Lo miras y dices: \"cuatro\". Lena sonríe. Vendrán médicos, citas, preparativos y muchas cosas que pagar. Los primeros gastos suman $450. Esa noche duermes sorprendentemente bien." },
     { id: "baby", kind: "choice", after: ["pregnancy"],
       title: "The night must fade and give to light a brand new day",
-      titleEs: "The night must fade and give to light a brand new day",
+      titleEs: "Un nuevo amanecer",
       body: "The baby arrives. You are tired, Lena is tired, and Paco is confused. Kids grow fast. You start thinking about the kind of future you want to build.",
-      bodyEs: "Llega el bebé. Vos estás cansado, Lena está cansada y Paco está confundido. Los chicos crecen rápido. Empezás a pensar en el futuro que querés construir.",
+      bodyEs: "Llega el bebé. Tú estás agotado, Lena está agotada y Paco está confundido. Los niños crecen muy rápido. Empiezas a pensar en la clase de futuro que quieres construir.",
       opts: [
-        { k: "a", label: "Set things up properly", labelEs: "Set things up properly" },
-        { k: "b", label: "Keep it simple", labelEs: "Keep it simple" },
-        { k: "c", label: "Send a PDF of financial advice", labelEs: "Send a PDF of financial advice" }
+        { k: "a", label: "Set things up properly", labelEs: "Organizar todo debidamente" },
+        { k: "b", label: "Keep it simple", labelEs: "Mantenerlo sencillo" },
+        { k: "c", label: "Send a PDF of financial advice", labelEs: "Enviar un PDF con consejos financieros" }
       ] },
     { id: "cousin", kind: "choice", after: ["landfill"],
-      title: "Nico's New Thing", titleEs: "La nueva de Nico",
+      title: "Nico's New Thing", titleEs: "La nueva idea de Nico",
       body: "Nico calls again. \"I found something.\" Of course he did. This time it is a new token. He says it will do ten times by Friday. You ask what it actually does. He says that is not the important part.",
-      bodyEs: "Nico llama de nuevo. \"Encontré algo.\" Claro que sí. Esta vez es un token nuevo. Dice que hace x10 para el viernes. Preguntás qué hace. Dice que esa no es la parte importante.",
+      bodyEs: "Nico llama otra vez: \"Encontré algo\". Por supuesto que sí. Esta vez se trata de un nuevo token. Asegura que multiplicará por diez su valor para el viernes. Le preguntas qué hace realmente. Responde que esa no es la parte importante.",
       opts: [
-        { k: "a", label: "Invest 40%", labelEs: "Invertir 40%" },
-        { k: "b", label: "Walk away", labelEs: "Salir de ahí" }
+        { k: "a", label: "Invest 40% of net worth", labelEs: "Invertir el 40% del patrimonio" },
+        { k: "b", label: "Walk away", labelEs: "Rechazar la oferta" }
       ] },
     { id: "speeding", kind: "report", after: ["tow"],
-      title: "Six Miles Per Hour", titleEs: "Diez kilómetros de más",
+      title: "Six Miles Per Hour", titleEs: "Exceso de velocidad",
       body: "You are six miles per hour over the limit. Same corner. Same officer. Same bad decision.",
-      bodyEs: "Vas diez kilómetros arriba del límite. La misma esquina. El mismo oficial. La misma mala decisión." },
+      bodyEs: "Vas diez kilómetros por hora sobre el límite de velocidad. La misma esquina. El mismo oficial. La misma mala decisión." },
     { id: "wallet", kind: "report",
-      title: "Found It", titleEs: "La encontraron",
+      title: "Found It", titleEs: "Billetera encontrada",
       body: "You leave your wallet on bus seat 14. You realize it three stops later. You call the company. Someone found it. The cash is gone. Your cards are still there. You consider this a partial victory.",
-      bodyEs: "Dejás la billetera en el asiento 14 del bondi. Te das cuenta tres paradas después. Llamás. Alguien la encontró. El efectivo no está. Las tarjetas sí. Lo considerás una victoria parcial." },
+      bodyEs: "Dejas tu billetera en el asiento 14 del autobús. Te das cuenta tres paradas después. Llamas a la empresa: alguien la encontró. El dinero en efectivo desapareció, pero tus tarjetas siguen ahí. Lo consideras una victoria parcial." },
     { id: "potluck", kind: "choice", after: ["landfill"],
-      title: "Neighborhood Potluck", titleEs: "La olla de la cuadra",
+      title: "Neighborhood Potluck", titleEs: "Comida vecinal",
       body: "Lena signs both of you up for a neighborhood potluck. She also signs Paco up. You explain that Paco cannot cook. She says: \"He can attend.\" Paco eats half of what you brought before you arrive.",
-      bodyEs: "Lena los anota a los dos en la olla de la cuadra. También anota a Paco. Explicás que Paco no cocina. Dice: \"Puede asistir.\" Paco se come la mitad de lo que llevaron antes de llegar.",
+      bodyEs: "Lena los inscribe a los dos en una comida comunitaria del vecindario. También inscribe a Paco. Le explicas que Paco no sabe cocinar. Ella responde: \"Puede asistir\". Paco se come la mitad de lo que prepararon antes de que alcancen a llegar.",
       opts: [
-        { k: "a", label: "Donate generously · 5%", labelEs: "Donar en serio · 5%" },
+        { k: "a", label: "Donate generously · 5%", labelEs: "Donar generosamente · 5%" },
         { k: "b", label: "Bring nothing", labelEs: "No llevar nada" }
       ] },
     { id: "usedcar", kind: "choice", after: ["landfill"],
-      title: "The Used Car", titleEs: "El usado",
+      title: "The Used Car", titleEs: "El auto usado",
       body: "Nico has another opportunity. A 2009 Honda Fit. The seller says it has a new timing belt. Nico looks under the hood. \"It has Sharpie.\" You are not sure what that means. Nico says it means \"basically new.\"",
-      bodyEs: "Nico tiene otra oportunidad. Un Honda Fit 2009. El vendedor dice que tiene correa nueva. Nico mira bajo el capó. \"Tiene Sharpie.\" No sabés qué significa. Nico dice que significa \"casi nuevo.\"",
+      bodyEs: "Nico tiene otra oportunidad: un Honda Fit 2009. El vendedor afirma que tiene una correa de distribución nueva. Nico mira debajo del capó: \"Está marcado con Sharpie\". No sabes qué significa eso. Nico asegura que significa \"básicamente nuevo\".",
       opts: [
         { k: "a", label: "Buy it · 12%", labelEs: "Comprarlo · 12%" },
-        { k: "b", label: "Walk away", labelEs: "Irte" }
+        { k: "b", label: "Walk away", labelEs: "Dejarlo pasar" }
       ] },
     { id: "tetris", kind: "choice", after: ["wine"],
       title: "Tetris", titleEs: "Tetris",
       body: "Marek takes you to an old bar with an arcade machine in the back. There is a Tetris cabinet nobody seems to use. He starts playing. He gets unusually focused. \"Trying not to make it worse.\" After a few minutes he steps aside. \"Your turn.\"",
-      bodyEs: "Marek te lleva a un bar viejo con una máquina de arcade al fondo. Hay un cabinet de Tetris que nadie usa. Empieza a jugar. Se concentra de un modo raro. \"Trato de no empeorarlo.\" A los minutos se corre. \"Tu turno.\"",
+      bodyEs: "Marek te lleva a un bar antiguo con una máquina de arcade al fondo. Hay una máquina de Tetris que nadie parece usar. Empieza a jugar y se concentra de una manera inusual: \"Intento no arruinarlo\". Tras unos minutos, se hace a un lado: \"Tu turno\".",
       opts: [
-        { k: "a", label: "Put money in", labelEs: "Meterle plata" },
-        { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek" }
+        { k: "a", label: "Put money in", labelEs: "Insertar monedas" },
+        { k: "b", label: "Watch Marek play", labelEs: "Mirar a Marek jugar" }
       ] },
+    { id: "chess", kind: "choice", after: ["tetris", "poker"], input: "move",
+      title: "The Opera Game", titleEs: "La partida de la ópera",
+      body: "Marek clears the wine glasses off the table and sets up a chessboard from memory.\n\n\"Paris, 1858. The opera house, during The Barber of Seville. Paul Morphy is twenty-one, American, and the guest of the Duke of Brunswick in his private box. The duke and Count Isouard play him together, consulting on every move. Morphy would rather be watching the opera, so he doesn't take long.\"\n\nHe places the last piece: the position after 14...Qe6.\n\n\"White to move and mate in three. Type the first move. Find it and the bitcoin is yours. Miss it and you owe me nothing but an apology to Morphy.\"",
+      bodyEs: "Marek retira las copas de la mesa y arma un tablero de ajedrez de memoria.\n\n\"París, 1858. La ópera, durante El barbero de Sevilla. Paul Morphy tiene veintiún años, es estadounidense y es invitado del duque de Brunswick en su palco. El duque y el conde Isouard juegan juntos contra él y discuten cada jugada. Morphy preferiría estar mirando la ópera, así que no se demora\".\n\nColoca la última pieza: la posición después de 14...De6.\n\n\"Juegan las blancas y dan mate en tres. Escribe la primera jugada. Si la encuentras, el bitcoin es tuyo. Si fallas, solo le debes una disculpa a Morphy\"." },
     { id: "unclemike", kind: "choice",
-      title: "Fancy Dinner with Uncle Mike", titleEs: "Fancy Dinner with Uncle Mike",
+      title: "Fancy Dinner with Uncle Mike", titleEs: "Cena elegante con el tío Mike",
       body: "Uncle Mike is in town, so you meet him at a fancy restaurant. The food is excellent and the wine is excellent, right up until the check arrives. He studies it, looks at the tip line, and puts the pen down. Why, he wants to know, is he paying their salary? You tell him the tip is expected. That, he says, is the problem, and he goes on about restaurants that should pay their people instead of leaving it to the customers. You agree with him. You also want to go home. The waiter is still standing there, and you look at the tip line again.",
-      bodyEs: "El tío Mike está de paso y se encuentran en un restorán caro. La comida es excelente y el vino es excelente, hasta que llega la cuenta. La estudia, mira la línea de la propina y deja la lapicera. ¿Por qué, quiere saber, les está pagando el sueldo? Le explicás que la propina se espera. Ese, dice, es el problema, y arranca con un discurso sobre restoranes que deberían pagarles a sus empleados en vez de dejárselo a los clientes. Estás de acuerdo. También te querés ir a casa. El mozo sigue ahí parado, y volvés a mirar la línea de la propina.",
+      bodyEs: "El tío Mike está de visita en la ciudad y se reúnen en un restaurante elegante. La comida y el vino son excelentes, hasta que llega la cuenta. La revisa con detenimiento, mira la línea de la propina y suelta el bolígrafo. Pregunta con molestia por qué tiene que pagar él los sueldos de los empleados. Le explicas que la propina es habitual. Ese, insiste él, es el verdadero problema, y empieza un discurso sobre restaurantes que deberían pagarles sueldos dignos a sus empleados en lugar de transferirles la carga a los clientes. Estás de acuerdo con él, pero también quieres irte a casa. El mesero sigue ahí de pie, y tú vuelves a mirar la línea de la propina.",
       opts: [
-        { k: "a", label: "Leave a 20% tip", labelEs: "Leave a 20% tip" },
-        { k: "b", label: "Leave no tip", labelEs: "Leave no tip" },
-        { k: "c", label: "Leave a small voluntary tip", labelEs: "Leave a small voluntary tip" }
+        { k: "a", label: "Leave a 20% tip", labelEs: "Dejar el 20% de propina" },
+        { k: "b", label: "Leave no tip", labelEs: "No dejar propina" },
+        { k: "c", label: "Leave a small tip", labelEs: "Dejar una propina modesta" }
       ] }
 ,
-    { id:"justInCase", kind:"report", title:"Just in Case", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years." },
-    { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you." },
-    { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what." },
-    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published." },
-    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not." },
-    { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist." },
-    { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", opts:[{k:"a",label:"Go see the island · $1,800"},{k:"b",label:"This is insane"}] },
-    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way.” Positively. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", opts:[{k:"a",label:"Buy the island"},{k:"b",label:"Walk away"}] },
-    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”" },
-    { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", opts:[{k:"a",label:"Make contact · $5,000"},{k:"b",label:"Post about it"}] },
-    { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating." },
-    { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", opts:[{k:"a",label:"Build a settlement · 3%"},{k:"b",label:"Not yet"}] },
-    { id:"extensionCord", kind:"choice", after:["peopleAsking"], when:()=>!!S.bcSettlement, title:"The Extension Cord Problem", body:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. Someone asks who was mining.", opts:[{k:"a",label:"Build proper power · 4%"},{k:"b",label:"More extension cords"}] },
-    { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", opts:[{k:"a",label:"Build the mine · 5%"},{k:"b",label:"Not yet"}] },
-    { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations." },
-    { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", body:"San Arnaldo has a coastal town, hills, and a government building that may have been a restaurant three months ago. They want Bitcoin infrastructure. You want friends.", opts:[{k:"a",label:"Build a node · $15,000"},{k:"b",label:"Help a little · $5,000"},{k:"c",label:"Just visit"}] },
-    { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", titleEs:"El primer bloque", body:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is short. The annexes are not.\n\nValden, Osterbruck, Lior, Maren, Holt, the Sable Coast, and the River Republic of Dun. Trade, energy, a shared payments rail, and a defense clause nobody reads out loud.\n\nChancellor Ivo Voss chairs the first session. He does not raise his voice. He thanks the cameras for their patience and says instability is a kind of violence. Then he lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, uncooperative newspapers.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.", bodyEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es corto. Los anexos no.\n\nValden, Osterbruck, Lior, Maren, Holt, la Costa Sable y la República Fluvial de Dun. Comercio, energía, un riel de pagos común y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. No alza la voz. Agradece a las cámaras por la paciencia y dice que la inestabilidad es una forma de violencia. Después enumera lo que ahora necesita permiso: transferencias grandes, cuentas en el exterior, puertos no autorizados, diarios poco cooperativos.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
-    { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", body:"Someone steals a boat. Your current security system is one camera and Paco. Paco was asleep.", opts:[{k:"a",label:"Build a defense force · 2%"},{k:"b",label:"Hire private security · $50,000"},{k:"c",label:"Give Paco a vest"}] },
-    { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", body:"Coffee shops appear. Then a bakery. Then a bar. Then a newspaper. Its first editorial criticizes you. Nico is delighted. “You made it. You have opposition.”" },
-    { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", body:"Marek brings plans for protected power, walls and a hardened center. “Citadel.” A wall can keep people out. It can also keep people safe.", opts:[{k:"a",label:"Build it · 8%"},{k:"b",label:"Not now"}] },
-    { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", titleEs:"Rearme", body:"The Pact launches a new frigate program and calls it maintenance.\n\nAcross the water, five states answer with a different kind of order. Karth, Vire, the Collective Coast, Namm, and Solenne sign the Red Ledger Compact in a hall with the lights too bright. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, then the person who decides which shortages are patriotic.\n\nThe Ledger does not talk about stability. It talks about purity. Hoarding is treason. Private mines are unfinished revolutions. Posters go up before the bread does. Police notebooks get thicker. The speeches are beautiful. The queues are not.\n\nBoth blocs lay keels. Neither calls it an arms race.", bodyEs:"El Pacto bota un programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua, cinco Estados responden con otro tipo de orden. Karth, Vire, la Costa Colectiva, Namm y Solenne firman el Compacto del Libro Rojo en un salón con las luces demasiado fuertes. La mariscal Amina Kade lee el preámbulo ella misma. Fue oficial de muelle, después fiscal, después la persona que decide qué escasez es patriótica.\n\nEl Libro no habla de estabilidad. Habla de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los afiches llegan antes que el pan. Los cuadernos de la policía se ponen más gruesos. Los discursos son hermosos. Las filas no.\n\nLos dos bloques ponen quillas. Ninguno lo llama carrera armamentista." },
-    { id:"anOffer", kind:"choice", after:["rearmament"], title:"An Offer", body:"A private group offers to buy everything for 35% more than your current net worth. Madame Luck asks one question: “Why did you build it?”", opts:[{k:"a",label:"Sell"},{k:"b",label:"Bitcoin Country is not for sale"}] },
-    { id:"ambassador", kind:"report", after:["anOffer"], when:()=>!S.bcArcClosed&&S.bcNodes>=75, title:"The Ambassador", body:"A real ambassador visits. Before leaving, she says: “If you ever decide this is more than a project, call me first.”" },
-    { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", titleEs:"Tres colores", body:"A third color closes the map.\n\nThe Crown Lattice is older than the press releases. The Crown of Ashen, Bryn March, the Isle Keels, Vesper, and Orth have shared blood rites, harbor law, and a habit of calling their neighbors unfinished. High Warden Soren Pell walks at the front of the procession and does not wave. He believes borders are inherited, not argued, and that a people who will not kneel are a clerical error.\n\nWhere the Pact files a form and the Ledger prints a poster, the Lattice holds a parade and then a silence. Dissent is not debated. It is omitted. The gray spots on the map, including a small island that has been buying generators, are now described as unassigned.\n\nThree tyrannies. Three philosophies. One ocean.", bodyEs:"Un tercer color cierra el mapa.\n\nLa Celosía de la Corona es más vieja que los comunicados. La Corona de Ashen, Bryn March, las Quillas de la Isla, Vesper y Orth comparten ritos de sangre, derecho de puerto y la costumbre de llamar inconclusos a los vecinos. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Cree que las fronteras se heredan, no se discuten, y que un pueblo que no se arrodilla es un error de archivo.\n\nDonde el Pacto presenta un formulario y el Libro imprime un afiche, la Celosía hace un desfile y después un silencio. La disidencia no se debate. Se omite. Las manchas grises del mapa, incluida una isla chica que viene comprando generadores, ahora figuran como sin asignar.\n\nTres tiranías. Tres filosofías. Un océano." },
-    { id:"ortegaCalls", kind:"choice", after:["threeColors"], title:"Mr Ortega & Gambette Calls", body:"Mr Ortega & Gambette calls with ninety-three pages of advice about recognition, treaties, fisheries and ceremonial precedence.", opts:[{k:"a",label:"Take the full package · $25,000"},{k:"b",label:"Take the useful pages"},{k:"c",label:"Decline politely"}] },
-    { id:"theQuestion", kind:"choice", after:["ortegaCalls"], when:()=>S.bcNodes>=100&&!S.bcIndependent&&!S.bcVictory, title:"The Question", body:"The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the last unchecked line. Independence.", opts:[{k:"a",label:"Declare independence"},{k:"b",label:"Not yet"}] },
-    { id:"cabinet", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent&&!S.bcVictory, title:"The Cabinet", titleEs:"El gabinete", body:"The declaration needs names.\n\nYou are Head of State. Marek takes Finance and asks you not to spend the first week proving it. Nico takes Commerce, and says the title out loud as if the job had been his idea. Paco is Minister of Defense. He tries it once, then again. The second time he does not laugh.\n\nLena does not take a ministry. She says the island already has enough titles.", bodyEs:"La declaración necesita nombres.\n\nVos sos Jefe de Estado. Marek se queda con Hacienda y te pide que no pases la primera semana demostrándolo. Nico se queda con Comercio, y lo dice en voz alta como si el cargo hubiera sido idea de él. Paco es Ministro de Defensa. Lo prueba una vez, y después otra. La segunda no se ríe.\n\nLena no acepta un ministerio. Dice que la isla ya tiene suficientes títulos." },
-    { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", body:"You declare independence. San Arnaldo recognizes Bitcoin Country thirty-seven seconds later. Mr Ortega & Gambette sends a thumbs-up and a 14-page attachment." },
-    { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The blocs have already answered." },
-    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The blocs answer the declaration." },
-    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming", titleEs:"Ataque", body:"A bloc opens fire." },
-    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa aguanta", body:"The landing fails." },
-    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Broken", titleEs:"Bloque roto", body:"A bloc falls back." },
-    { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. The Meridian Stability Pact filed its last protest and lost the sea lane. The Red Ledger Compact ran out of ships it was willing to admit it had. The Crown Lattice, which does not apologize, stopped answering the radio.\n\nThe island is still standing. By morning, statements arrive. Some governments say negotiations. Others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a while, then points to the new border. “You actually did it.” By noon, the bakery is open again for reasons nobody can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se terminó. El Pacto de Estabilidad Meridiano presentó su última protesta y perdió el canal. El Compacto del Libro Rojo se quedó sin barcos que estuviera dispuesto a admitir. La Celosía de la Corona, que no pide perdón, dejó de contestar la radio.\n\nLa isla sigue en pie. A la mañana llegan los comunicados. Algunos gobiernos hablan de negociaciones. Otros evitan con cuidado la palabra país. San Arnaldo no. Marek estudia el mapa un rato y señala la frontera nueva. “De verdad lo hiciste.” Al mediodía la panadería abre de nuevo por razones que nadie explica.\n\nTres bloques atacaron. Tres fallaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: THE FOURTH COLOR. SEGUÍ JUGANDO." },
-    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defense fails. The run ends." },
-    { id:"jobBadge", job:true, kind:"report", when:()=>(S.have.job||0)>=1, title:"The Badge", titleEs:"La credencial", body:"On the first morning they hand you a badge and ask you to say the title out loud. {title}. It sounds like it already belongs to someone else. A woman in the hallway nods as if she has heard worse. The wage, when you finally find it, is {pay}.", bodyEs:"La primera mañana te dan una credencial y te piden que digas el cargo en voz alta. {title}. Suena a alguien que ya hizo esto. Una mujer en el pasillo asiente como si hubiera oído peores. El sueldo, cuando por fin lo encontrás, es {pay}." },
-    { id:"jobLunch", job:true, kind:"choice", after:["jobBadge"], when:()=>(S.have.job||0)>=1, title:"Lunch", titleEs:"El almuerzo", body:"At lunch someone from {career} sits down without asking. They want to know what a {title} actually does between the parts people notice. You have a sandwich. They have time.", bodyEs:"En el almuerzo alguien de {career} se sienta sin preguntar. Quiere saber qué hace de verdad un {title} entre las partes que la gente nota. Vos tenés un sándwich. Ellos tienen tiempo.", opts:[{k:"a",label:"Tell them the truth",labelEs:"Decirles la verdad"},{k:"b",label:"Eat in silence",labelEs:"Comer en silencio"}] },
-    { id:"jobLate", job:true, kind:"choice", after:["jobLunch"], when:()=>(S.have.job||0)>=2, title:"After Hours", titleEs:"Después de hora", body:"The shift was supposed to end. It does not. Someone senior says the {title} should be the one who stays, and that staying would add {half}. The building gets quiet enough to feel like a decision.", bodyEs:"El turno tenía que terminar. No termina. Alguien con más rango dice que el {title} debería ser quien se queda, y que quedarse suma {half}. El edificio se calla lo suficiente como para que se sienta una decisión.", opts:[{k:"a",label:"Stay",labelEs:"Quedarse"},{k:"b",label:"Go home",labelEs:"Irse a casa"}] },
-    { id:"jobReview", job:true, kind:"report", after:["jobLate"], when:()=>(S.have.job||0)>=3, title:"The Review", titleEs:"La evaluación", body:"The review is shorter than the wait outside the door. They read the title back to you, {title}, as if checking that you still answer to it. Then they slide a bonus across the table. {pay}.", bodyEs:"La evaluación es más corta que la espera afuera de la puerta. Te leen el cargo, {title}, como para ver si todavía respondés a ese nombre. Después deslizan un bono sobre la mesa. {pay}." },
-    { id:"jobStation", job:true, kind:"report", after:["jobReview"], when:()=>(S.have.job||0)>=4, title:"A Better Corner", titleEs:"Un rincón mejor", body:"They move you. The new corner has a window, a chair that does not wobble, and a plaque with nothing on it until you say the title. {title}. In {career}, people start using it without smiling first.", bodyEs:"Te mudan. El rincón nuevo tiene una ventana, una silla que no se mueve, y una placa vacía hasta que decís el cargo. {title}. En {career}, la gente empieza a usarlo sin sonreír primero." },
-    { id:"jobPoach", job:true, kind:"choice", after:["jobStation"], when:()=>(S.have.job||0)>=5, title:"The Other Table", titleEs:"La otra mesa", body:"A stranger already knows the title, {title}, and the wage that comes with it, {pay}. They offer {double} to do the same work where the lights are newer. They do not ask you to leave {career}.", bodyEs:"Un desconocido ya sabe el cargo, {title}, y el sueldo que lo acompaña, {pay}. Ofrece {double} por hacer el mismo trabajo donde las luces son más nuevas. No te pide que dejes {career}.", opts:[{k:"a",label:"Hear them out",labelEs:"Escucharlos"},{k:"b",label:"Stay where you are",labelEs:"Quedarte donde estás"}] },
-    { id:"jobNight", job:true, kind:"report", after:["jobPoach"], when:()=>(S.have.job||0)>=6, title:"The Night It Counts", titleEs:"La noche que importa", body:"It is late, and the building has that hollow sound. Tonight {title} is not a costume. Something in {career} goes wrong if you treat it like one. When it is over, someone who never thanks anyone leaves {pay} on the bench.", bodyEs:"Es tarde, y el edificio tiene ese sonido hueco. Esta noche {title} no es un disfraz. Algo en {career} sale mal si lo tratás como si lo fuera. Cuando termina, alguien que nunca agradece deja {pay} en el banco." },
-    { id:"jobCrown", job:true, kind:"report", after:["jobNight"], when:()=>(S.have.job||0)>=7, title:"The Top of It", titleEs:"La cima", body:"There is no one left above a {title}. The ladder of {career} ends where your name should be. People wait for you to speak first. The wage is {pay}. It feels smaller than the quiet.", bodyEs:"No queda nadie por encima de un {title}. La escalera de {career} termina donde debería estar tu nombre. La gente espera que hables primero. El sueldo es {pay}. Se siente más chico que el silencio." }
+    { id:"justInCase", kind:"report", title:"Just in Case", titleEs:"Por si acaso", body:"A new emergency law passes after three days of debate. It gives government broader powers during economic instability. Temporary. You read the definition twice. It seems to include most years.", bodyEs:"Tras tres días de debate, se aprueba una nueva ley de emergencia. Amplía las facultades del Estado durante períodos de inestabilidad económica. La presentan como temporal. Lees la definición dos veces: parece abarcar casi todos los años." },
+    { id:"nothingToHide", kind:"report", after:["justInCase"], title:"Nothing to Hide", titleEs:"Nada que ocultar", body:"A new digital ID rolls out as optional. Airports get faster. Banks offer discounts. Government services begin moving to it. A TV host asks: “If you've got nothing to hide, what's the problem?” You have nothing to hide. The question still bothers you.", bodyEs:"Se lanza un nuevo documento de identidad digital. Es opcional. Los controles en los aeropuertos se agilizan. Los bancos ofrecen descuentos. Los servicios públicos comienzan a trasladarse al sistema. Un presentador de televisión pregunta: «Si no tienes nada que ocultar, ¿cuál es el problema?». No tienes nada que ocultar. Aun así, la pregunta te incomoda." },
+    { id:"somethingBetter", kind:"report", after:["nothingToHide","wine"], title:"Something Better", titleEs:"Algo mejor", body:"You are running with Marek through the woods. The trail follows a river between low hills. “Given enough money,” you say, “you could actually build something better.” Marek glances over. “A company?” “No.” “A charity?” “No.” You keep running. You do not yet know what.", bodyEs:"Corres con Marek por el bosque. El sendero sigue un río entre colinas bajas. «Con suficiente dinero», dices, «podrías construir algo mejor». Marek te mira de reojo. «¿Una empresa?». «No». «¿Una organización benéfica?». «No». Sigues corriendo. Aún no sabes qué sería." },
+    { id:"timeTraveler", kind:"report", after:["wedding"], when:()=>!!S.familyClosed, title:"The Time Traveler", titleEs:"El viajero del tiempo", body:"Late at night you find an old Bitcoin forum post. The author claims to be writing from the future. Bitcoin is enormous. Governments are weaker. Rich holders live in Citadels that began as mining compounds, then fortified communities, then something else. What bothers you is not the walls. It is that they stopped trying to fix the places they lived in. A search leads to a book: THE BITCOIN STATE — $666. It looks self-published.", bodyEs:"Una noche encuentras una publicación antigua en un foro de Bitcoin. El autor asegura escribir desde el futuro: Bitcoin es enorme, los gobiernos son más débiles y los grandes tenedores viven en ciudadelas que comenzaron como complejos mineros, se convirtieron en comunidades fortificadas y luego en algo más. Lo que te inquieta no son los muros, sino que dejaron de intentar mejorar los lugares donde vivían. La búsqueda te conduce a un libro: THE BITCOIN STATE — $666. Parece autoeditado." },
+    { id:"temporaryMeasures", kind:"report", after:["timeTraveler"], when:()=>!!S.familyClosed, title:"Temporary Measures", titleEs:"Medidas temporales", body:"A financial emergency is declared. Transfer restrictions arrive. Cash limits follow. Several payment apps stop working. Officials say the measures will last ninety days. The previous temporary measures are entering their fourth year. Markets fall. Bitcoin does not.", bodyEs:"Se declara una emergencia financiera. Primero llegan las restricciones a las transferencias; después, los límites al uso de efectivo. Varias aplicaciones de pago dejan de funcionar. Las autoridades aseguran que las medidas durarán noventa días. Las medidas temporales anteriores están por cumplir cuatro años. Los mercados caen. Bitcoin no." },
+    { id:"citadelProblem", kind:"report", after:["timeTraveler","temporaryMeasures"], when:()=>!!S.bcBook&&!!S.familyClosed, title:"The Citadel Problem", titleEs:"El problema de la ciudadela", body:"The book arrives. Four hundred and seventeen pages. It uses the word sovereignty 186 times. You send Marek several questionable pages. Later, on a run through the hills, you say it anyway. “A country.” Marek laughs once, then realizes you are serious. Twenty minutes later he asks: “How much land?” You make a checklist: Land. Power. Water. People. Money. Rules. Security. Recognition. Marek adds Flag. “No.” “You need a flag.” Something that was previously a stupid idea is now a stupid idea with a checklist.", bodyEs:"El libro llega: 417 páginas y 186 usos de la palabra «soberanía». Le envías a Marek varias páginas dudosas. Más tarde, mientras corren por las colinas, lo dices de todos modos: «Un país». Marek se ríe una vez y después comprende que hablas en serio. Veinte minutos más tarde pregunta: «¿Cuánta tierra?». Preparas una lista: tierra, energía, agua, población, dinero, normas, seguridad y reconocimiento. Marek añade una bandera. «No». «Necesitas una bandera». Lo que antes era una idea absurda ahora es una idea absurda con una lista." },
+    { id:"pieceWorld", kind:"choice", after:["citadelProblem"], title:"A Piece of the World", titleEs:"Un pedazo del mundo", body:"Nico finds an isolated island listing. Two coves. A bad dock. Green hills. The phrase UNIQUE SOVEREIGN LIFESTYLE OPPORTUNITY appears twice. It is not sovereign. You check. Three times.", bodyEs:"Nico encuentra el anuncio de una isla aislada. Dos caletas. Un muelle en mal estado. Colinas verdes. La frase OPORTUNIDAD ÚNICA PARA UN ESTILO DE VIDA SOBERANO aparece dos veces. La isla no es soberana. Lo verificas. Tres veces.", opts:[{k:"a",label:"Go see the island · $1,800",labelEs:"Ir a conocer la isla · $1,800"},{k:"b",label:"This is insane",labelEs:"Esto es una locura"}] },
+    { id:"islandInspection", kind:"choice", after:["pieceWorld"], when:()=>!!S.chanceMet.islandTrip&&!S.bcIsland, title:"Island Inspection", titleEs:"Inspección de la isla", body:"The boat reaches the island at sunrise. Nico jumps onto the dock. It makes a bad noise. Green hills rise behind two coves. Pine and coastal forest cover most of the interior. Cliffs run along the eastern side. It is more beautiful than the listing. Marek looks around. “No way,” he says, in the best possible sense. Paco disappears into the trees. At sunset you stand on the high point with water in every direction. The seller's offer arrives.", bodyEs:"El barco llega a la isla al amanecer. Nico salta al muelle. La estructura emite un crujido preocupante. Detrás de dos caletas se elevan colinas verdes. Pinos y bosque costero cubren casi todo el interior; los acantilados recorren el lado oriental. Es más hermosa que en el anuncio. Marek observa alrededor. «No puede ser», dice, en el buen sentido. Paco desaparece entre los árboles. Al atardecer, están en el punto más alto, rodeados de agua. Entonces llega la oferta del vendedor.", opts:[{k:"a",label:"Buy the island",labelEs:"Comprar la isla"},{k:"b",label:"Walk away",labelEs:"Rechazar la oferta"}] },
+    { id:"paperwork", kind:"report", after:["islandInspection"], when:()=>!!S.bcIsland, title:"Paperwork", titleEs:"Los trámites", body:"Lawyers spend several weeks turning the purchase into something that looks increasingly serious on paper. Nico signs in the wrong place. Paco eats the corner of the final document. “Country,” Nico says. “Island,” you say. “For now.”", bodyEs:"Durante varias semanas, los abogados convierten la compra en algo que se ve cada vez más serio sobre el papel. Nico firma donde no corresponde. Paco se come una esquina del documento final. «País», dice Nico. «Isla», respondes. «Por ahora»." },
+    { id:"nobodyKnows", kind:"choice", after:["paperwork"], title:"Nobody Knows We Exist", titleEs:"Nadie sabe que existimos", body:"You have land. You have paperwork. You do not have citizens, recognition, or much reason for anyone to care. An old contact gives you one name: Madame Luck. Marek reads the name twice. Nico says he knows her. Of course he does.", bodyEs:"Tienes tierra. Tienes documentos. No tienes ciudadanos, reconocimiento ni demasiadas razones para que alguien se interese. Un antiguo contacto te da un solo nombre: Madame Luck. Marek lo lee dos veces. Nico dice que la conoce. Por supuesto que sí.", opts:[{k:"a",label:"Make contact · $5,000",labelEs:"Contactar a Madame Luck · $5,000"},{k:"b",label:"Post about it",labelEs:"Publicar sobre el proyecto"}] },
+    { id:"theOg", kind:"report", after:["nobodyKnows"], when:()=>!!S.bcOg, title:"The OG", titleEs:"La veterana", body:"Madame Luck joins seventeen minutes late and asks very good questions. Then she says she will tell some people. Your phone starts vibrating.", bodyEs:"Madame Luck se conecta diecisiete minutos tarde y hace preguntas muy acertadas. Después dice que hablará del proyecto con algunas personas. Tu teléfono empieza a vibrar." },
+    { id:"peopleAsking", kind:"choice", after:["theOg"], when:()=>S.bcNodes>=10, title:"People Start Asking", titleEs:"La gente empieza a preguntar", body:"Developers, miners and families ask whether they can move in. Nico makes a spreadsheet. Marek finds the problem. “We do not have houses.”", bodyEs:"Desarrolladores, mineros y familias preguntan si pueden mudarse a la isla. Nico prepara una hoja de cálculo. Marek detecta el problema. «No tenemos viviendas».", opts:[{k:"a",label:"Build a settlement · 3%",labelEs:"Construir un asentamiento · 3%"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
+    { id:"extensionCord", kind:"choice", after:["peopleAsking"], when:()=>!!S.bcSettlement, title:"The Extension Cord Problem", titleEs:"El problema de los cables de extensión", body:"Residents bring refrigerators, computers, pumps, servers and a sauna nobody admits owning. At 8:43 P.M. the island goes dark. Someone asks who was mining.", bodyEs:"Los residentes llevan refrigeradores, computadoras, bombas, servidores y un sauna que nadie admite que sea suyo. A las 8:43 p. m., toda la isla queda a oscuras. Alguien pregunta quién estaba minando.", opts:[{k:"a",label:"Build proper power · 4%",labelEs:"Construir una red eléctrica adecuada · 4%"},{k:"b",label:"More extension cords",labelEs:"Añadir más cables de extensión"}] },
+    { id:"obviously", kind:"choice", after:["extensionCord"], when:()=>!!S.bcPower, title:"Obviously", titleEs:"Era obvio", body:"The grid works. Nico says you should mine Bitcoin. Obviously. One proposal contains only four words: CHEAP POWER. WE MINE.", bodyEs:"La red eléctrica funciona. Nico dice que deberían minar Bitcoin. Era obvio. Una de las propuestas contiene solo cuatro palabras: ENERGÍA BARATA. MINAMOS BITCOIN.", opts:[{k:"a",label:"Build the mine · 5%",labelEs:"Construir la mina · 5%"},{k:"b",label:"Not yet",labelEs:"Todavía no"}] },
+    { id:"principality", kind:"report", after:["theOg"], when:()=>S.bcNodes>=25, title:"The Principality", titleEs:"El principado", body:"An email arrives from Mr Ortega & Gambette, Foreign Minister of San Arnaldo. San Arnaldo has a flag, an anthem, a website and 614 claimed citizens. They would like relations.", bodyEs:"Llega un correo del señor Ortega & Gambette, ministro de Relaciones Exteriores de San Arnaldo. San Arnaldo tiene bandera, himno, sitio web y 614 ciudadanos declarados. Quieren establecer relaciones." },
+    { id:"stateVisit", kind:"choice", after:["principality"], title:"State Visit", titleEs:"Visita de Estado", body:"San Arnaldo is a coastal town nestled among hills. Its government building was a restaurant three months ago; the menu board still hangs behind the ministerial desk. Ortega & Gambette asks for help building Bitcoin infrastructure. The principality needs a node. Bitcoin Country needs its first diplomatic ally.", bodyEs:"San Arnaldo es un pueblo costero entre colinas. Su edificio de gobierno era un restaurante hace tres meses; el menú aún cuelga detrás del escritorio ministerial. Ortega & Gambette solicita ayuda para desarrollar infraestructura de Bitcoin. El principado necesita un nodo. Bitcoin Country necesita su primer aliado diplomático.", opts:[{k:"a",label:"Build and install a node · $15,000",labelEs:"Construir e instalar un nodo · $15,000"},{k:"b",label:"Fund basic equipment · $5,000",labelEs:"Financiar equipamiento básico · $5,000"},{k:"c",label:"Make a courtesy visit",labelEs:"Realizar una visita de cortesía"}] },
+    { id:"firstBloc", kind:"report", after:["stateVisit"], title:"The First Bloc", titleEs:"El primer bloque", body:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is brief. Its annexes are not.\n\nGermany, France, Italy, Spain, the Netherlands, Belgium, and Austria coordinate trade, energy, a shared payment network, and a defense clause nobody reads aloud.\n\nChancellor Ivo Voss chairs the first session. He never raises his voice. After thanking the cameras for their patience, he calls instability a form of violence and lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, and newspapers that refuse to cooperate.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.", bodyEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es breve. Sus anexos no.\n\nAlemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria coordinan el comercio, la energía, una red de pagos compartida y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. Nunca alza la voz. Tras agradecer la paciencia de las cámaras, define la inestabilidad como una forma de violencia y enumera lo que ahora requiere autorización: grandes transferencias, cuentas en el extranjero, puertos no autorizados y periódicos que se nieguen a cooperar.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
+    { id:"protectIsland", kind:"choice", after:["firstBloc"], title:"Who Protects the Island?", titleEs:"¿Quién protege la isla?", body:"At sunrise, an empty mooring line is all that remains of a boat. The island’s only camera was aimed at the wrong section of the dock. Paco, officially the night watch, slept through everything. Marek says the problem is no longer the missing boat: a growing settlement needs a real security plan.", bodyEs:"Al amanecer, una amarra vacía es lo único que queda de un bote. La única cámara de la isla apuntaba al sector equivocado del muelle. Paco, encargado oficialmente de la guardia nocturna, durmió durante todo el incidente. Marek señala que el problema ya no es el bote desaparecido: un asentamiento en crecimiento necesita un verdadero plan de seguridad.", opts:[{k:"a",label:"Establish a defense force · 2%",labelEs:"Establecer una fuerza de defensa · 2%"},{k:"b",label:"Hire private security · $50,000",labelEs:"Contratar seguridad privada · $50,000"},{k:"c",label:"Issue Paco a security vest",labelEs:"Entregarle a Paco un chaleco de seguridad"}] },
+    { id:"placeNow", kind:"report", after:["protectIsland"], when:()=>S.bcNodes>=50, title:"This Is Apparently a Place Now", titleEs:"Esto ya parece un lugar", body:"At fifty nodes, daily life begins filling the spaces you never planned. A coffee shop opens near the dock, followed by a bakery, a bar, and a newspaper. Its first editorial complains that the generators are too loud and your decisions are too quiet. Nico reads it twice, delighted. “You made it. You have opposition.”", bodyEs:"Al alcanzar cincuenta nodos, la vida cotidiana comienza a ocupar los espacios que nunca planificaste. Cerca del muelle abre una cafetería; después llegan una panadería, un bar y un periódico. Su primer editorial se queja de que los generadores hacen demasiado ruido y tus decisiones se explican demasiado poco. Nico lo lee dos veces, encantado. «Lo lograste. Ya tienes oposición»." },
+    { id:"citadelQuestion", kind:"choice", after:["placeNow"], title:"The Citadel Question", titleEs:"La cuestión de la ciudadela", body:"Marek unrolls plans for protected power, perimeter walls, and a hardened center supplied for a siege. “Citadel.” The island now has families, shops, and a newspaper. The same walls that could protect that community would also turn its home into a fortress.", bodyEs:"Marek despliega planos para proteger la red eléctrica, levantar muros perimetrales y construir un centro reforzado con suministros para resistir un asedio. «Ciudadela». La isla ya tiene familias, comercios y un periódico. Los mismos muros que podrían proteger a esa comunidad también convertirían su hogar en una fortaleza.", opts:[{k:"a",label:"Build the citadel · 8%",labelEs:"Construir la ciudadela · 8%"},{k:"b",label:"Keep the plans on hold",labelEs:"Dejar los planos en espera"}] },
+    { id:"rearmament", kind:"report", after:["citadelQuestion"], title:"Rearmament", titleEs:"Rearme", body:"The Meridian Stability Pact announces a new frigate program and calls it maintenance.\n\nAcross the water, Russia, Belarus, China, North Korea, and Cuba answer with a different kind of order. They sign the Red Ledger Compact in a hall lit too brightly. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, and now decides which shortages count as patriotic.\n\nThe Compact does not speak of stability. It speaks of purity. Hoarding is treason. Private mines are unfinished revolutions. Posters appear before bread does. Police notebooks grow thicker. The speeches are beautiful. The queues are not.\n\nBoth blocs begin building warships. Neither calls it an arms race.", bodyEs:"El Pacto de Estabilidad Meridiano anuncia un nuevo programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua, Rusia, Bielorrusia, China, Corea del Norte y Cuba responden con otro tipo de orden. Firman el Compacto del Libro Rojo en un salón iluminado en exceso. La mariscal Amina Kade lee personalmente el preámbulo. Primero fue oficial de muelle, después fiscal y ahora decide qué escasez cuenta como patriótica.\n\nEl Compacto no habla de estabilidad, sino de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los carteles aparecen antes que el pan. Los cuadernos de la policía se vuelven más gruesos. Los discursos son hermosos. Las filas no.\n\nAmbos bloques comienzan a construir buques de guerra. Ninguno lo llama carrera armamentista." },
+    { id:"anOffer", kind:"choice", after:["rearmament"], title:"An Offer", titleEs:"Una oferta", body:"A private consortium sends a contract to buy the island, settlement, power grid, mine, and every other part of the project for 35% more than your current net worth. The sale would secure the profit and end Bitcoin Country. Madame Luck reads the final page and asks one question: “Why did you build it?”", bodyEs:"Un consorcio privado envía un contrato para comprar la isla, el asentamiento, la red eléctrica, la mina y todo lo demás por 35% más que tu patrimonio actual. La venta aseguraría la ganancia y pondría fin a Bitcoin Country. Madame Luck lee la última página y hace una sola pregunta: «¿Por qué lo construiste?»", opts:[{k:"a",label:"Accept the offer (ends the Bitcoin Country arc: no independence, no wars)",labelEs:"Aceptar la oferta (termina el arco de Bitcoin Country: sin independencia ni guerras)"},{k:"b",label:"Bitcoin Country is not for sale",labelEs:"Bitcoin Country no está en venta"}] },
+    { id:"ambassador", kind:"report", after:["anOffer"], when:()=>!S.bcArcClosed&&S.bcNodes>=75, title:"The Ambassador", titleEs:"La embajadora", body:"An ambassador arrives without flags, cameras, or an official announcement. She walks through the settlement, inspects the port, power grid, and mine, and asks careful questions about the people who live here. Before boarding her boat, she hands you a direct number. “If you ever decide this is more than a project, call me first.”", bodyEs:"Una embajadora llega sin banderas, cámaras ni anuncio oficial. Recorre el asentamiento, inspecciona el puerto, la red eléctrica y la mina, y hace preguntas precisas sobre las personas que viven aquí. Antes de subir a su barco, te entrega un número directo. «Si alguna vez decides que esto es más que un proyecto, llámame primero»." },
+    { id:"threeColors", kind:"report", after:["ambassador"], title:"Three Colors", titleEs:"Tres colores", body:"A third color closes the map.\n\nSaudi Arabia, Jordan, Morocco, Thailand, and Brunei form the Crown Lattice around dynastic authority, port agreements, and the belief that borders are inherited rather than negotiated. High Warden Soren Pell walks at the front of the procession and does not wave. To him, a people who will not kneel are an administrative error.\n\nWhere the Meridian Pact files a form and the Red Ledger prints a poster, the Crown Lattice holds a parade and then imposes silence. Dissent is not debated. It is omitted. Gray areas on the map—including a small island that keeps buying generators—are now labeled unassigned.\n\nThree blocs. Three doctrines. One ocean.", bodyEs:"Un tercer color cierra el mapa.\n\nArabia Saudita, Jordania, Marruecos, Tailandia y Brunéi forman la Celosía de la Corona en torno a la autoridad dinástica, los acuerdos portuarios y la idea de que las fronteras se heredan en lugar de negociarse. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Para él, un pueblo que no se arrodilla es un error administrativo.\n\nMientras el Pacto Meridiano presenta formularios y el Libro Rojo imprime carteles, la Celosía de la Corona organiza un desfile y después impone silencio. La disidencia no se debate: se omite. Las zonas grises del mapa —incluida una pequeña isla que continúa comprando generadores— ahora aparecen como territorios sin asignar.\n\nTres bloques. Tres doctrinas. Un océano." },
+    { id:"ortegaCalls", kind:"choice", after:["threeColors"], title:"Mr Ortega & Gambette Calls", titleEs:"Llama el señor Ortega & Gambette", body:"Mr Ortega & Gambette calls after studying the three blocs now surrounding the island. He has prepared ninety-three pages on recognition, treaties, fisheries, ceremonial precedence, and the exact order in which ministers should enter a room. He offers the complete diplomatic package, though he admits that a shorter review could still be useful.", bodyEs:"El señor Ortega & Gambette llama después de estudiar los tres bloques que ahora rodean la isla. Ha preparado 93 páginas sobre reconocimiento, tratados, pesca, precedencia ceremonial y el orden exacto en que los ministros deben entrar a una sala. Ofrece el paquete diplomático completo, aunque admite que una revisión más breve también podría ser útil.", opts:[{k:"a",label:"Hire him for the full package · $25,000",labelEs:"Contratar el paquete completo · $25,000"},{k:"b",label:"Review only the essential pages",labelEs:"Revisar solo las páginas esenciales"},{k:"c",label:"Decline diplomatic assistance",labelEs:"Rechazar la asistencia diplomática"}] },
+    { id:"theQuestion", kind:"choice", after:["ortegaCalls"], when:()=>S.bcNodes>=100&&!S.bcIndependent&&!S.bcVictory, title:"The Question", titleEs:"La pregunta", body:"The checklist is complete enough to become dangerous. Land. Power. People. Money. Rules. Security. Recognition. Marek looks at the only unchecked line: independence. Crossing it out will turn the island from a project into a country. It will also force all three blocs to decide what they think that country is.", bodyEs:"La lista está lo bastante completa como para volverse peligrosa. Tierra. Energía. Población. Dinero. Normas. Seguridad. Reconocimiento. Marek observa la única línea pendiente: independencia. Marcarla convertirá la isla de un proyecto en un país. También obligará a los tres bloques a decidir qué representa ese país para ellos.", opts:[{k:"a",label:"Declare independence",labelEs:"Declarar la independencia"},{k:"b",label:"Not yet",labelEs:"Aún no"}] },
+    { id:"cabinet", kind:"report", after:["theQuestion"], when:()=>!!S.bcIndependent&&!S.bcVictory, title:"The Cabinet", titleEs:"El gabinete", body:"The declaration needs a government—and names beside every office.\n\nYou become Head of State. Marek takes Finance and asks you not to spend the first week proving why the job is necessary. Nico claims Commerce and repeats the title as if the ministry had been his idea. Paco is Minister of Defense. He says it once and laughs, then says it again. The second time, he does not.\n\nLena declines a ministry. She says the island already has enough titles and someone should remember why all of this began.", bodyEs:"La declaración necesita un gobierno y un nombre junto a cada cargo.\n\nAsumes la jefatura de Estado. Marek asume Finanzas y te pide que no pases la primera semana demostrando por qué su cargo es necesario. Nico reclama Comercio y repite el título como si el ministerio hubiera sido idea suya. Paco es ministro de Defensa. Lo dice una vez y se ríe; después lo repite. La segunda vez ya no se ríe.\n\nLena rechaza un ministerio. Dice que la isla ya tiene suficientes títulos y que alguien debería recordar por qué comenzó todo esto." },
+    { id:"declaration", kind:"report", after:["cabinet"], when:()=>!!S.bcIndependent, title:"Declaration", titleEs:"La declaración", body:"The cabinet gathers around the final page. You sign the declaration and publish it to the world. For thirty-seven seconds, nothing happens. Then San Arnaldo recognizes Bitcoin Country. Mr Ortega & Gambette responds with a thumbs-up and a fourteen-page attachment on the proper protocol for receiving recognition.", bodyEs:"El gabinete se reúne alrededor de la última página. Firmas la declaración y la publicas para el mundo. Durante 37 segundos no ocurre nada. Entonces San Arnaldo reconoce a Bitcoin Country. El señor Ortega & Gambette responde con un pulgar arriba y un documento adjunto de 14 páginas sobre el protocolo adecuado para recibir un reconocimiento." },
+    { id:"theAnswer", kind:"report", after:["declaration"], when:()=>false, title:"The Answer", titleEs:"La respuesta", body:"The statements arrive in different formats: a formal rejection, a request for time, a recognition with conditions. The wording changes from bloc to bloc. The consequence does not. None of them will accept Bitcoin Country outside the borders they drew, and their fleets are already leaving port.", bodyEs:"Los comunicados llegan en formatos distintos: un rechazo formal, una solicitud de tiempo, un reconocimiento sujeto a condiciones. Las palabras cambian de un bloque a otro. La consecuencia no. Ninguno aceptará a Bitcoin Country fuera de las fronteras que trazó, y sus flotas ya están saliendo de puerto." },
+    { id:"blocReplies", kind:"report", when:()=>false, title:"The Replies", titleEs:"Las respuestas", body:"The three blocs answer the declaration in different ways, but every response conceals the same military preparation.", bodyEs:"Los tres bloques responden a la declaración de maneras distintas, pero todas las respuestas ocultan la misma preparación militar." },
+    { id:"blocAssault", kind:"report", when:()=>false, title:"Incoming Fire", titleEs:"Fuego enemigo", body:"A bloc opens fire while its prepared communiqué declares the attack unavoidable. Bitcoin Country must hold the island.", bodyEs:"Un bloque abre fuego mientras su comunicado preparado declara que el ataque era inevitable. Bitcoin Country debe defender la isla." },
+    { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa resiste", body:"The landing is repelled. Bitcoin Country holds the shore, but the campaign is not over.", bodyEs:"El desembarco es rechazado. Bitcoin Country conserva la costa, pero la campaña aún no ha terminado." },
+    { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Defeated", titleEs:"Bloque derrotado", body:"After its third failed assault, a bloc withdraws and recognizes Bitcoin Country as a nation.", bodyEs:"Tras su tercer ataque fallido, un bloque se retira y reconoce a Bitcoin Country como nación." },
+    { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. One bloc filed its final protest and lost the sea lane. Another ran out of ships it was willing to acknowledge. The third, which never apologizes, stopped answering the radio.\n\nThe island still stands. By morning, statements begin to arrive. Some governments call for negotiations; others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a moment, then points to the new border. “You really did it.” By noon, the bakery has reopened, for reasons no one can explain.\n\nThree blocs attacked. Three blocs failed. Bitcoin Country is independent.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se acabó. Un bloque presentó su última protesta y perdió la ruta marítima. Otro se quedó sin barcos que estuviera dispuesto a reconocer. El tercero, que nunca se disculpa, dejó de responder por radio.\n\nLa isla sigue en pie. Por la mañana comienzan a llegar comunicados. Algunos gobiernos piden negociaciones; otros evitan cuidadosamente la palabra país. San Arnaldo no. Marek estudia el mapa por un momento y señala la nueva frontera. «De verdad lo lograste». Al mediodía, la panadería vuelve a abrir por razones que nadie puede explicar.\n\nTres bloques atacaron. Tres bloques fracasaron. Bitcoin Country es independiente.\n\nLOGRO DESBLOQUEADO: EL CUARTO COLOR. CONTINÚA JUGANDO." },
+    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defensive line breaks. The last defenders fall back from the shore as the fleet takes the port. By nightfall, the flag is down and the transmitters are silent. Bitcoin Country's bid for independence ends here. The run is over.", bodyEs:"La línea defensiva se rompe. Los últimos defensores retroceden desde la costa mientras la flota toma el puerto. Al caer la noche, la bandera ha sido retirada y los transmisores están en silencio. El intento de independencia de Bitcoin Country termina aquí. La partida ha terminado." },
+    
   ];
+  CHANCE_CARDS.push(...JOB_ARC_CARDS);
+  // Opera Game (Morphy, Paris 1858), position after 14...Qe6: the only accepted answer is 15. Bxd7+ (bishop b5 to d7).
+  // Accepts SAN in English or Spanish (B/A), with or without x/×/+/#/!, long algebraic (b5d7, Bb5xd7), and a "15." prefix.
+  function chessMoveOk(raw) {
+    const v = String(raw || "").toLowerCase().replace(/^\s*15\s*\.*\s*/, "").replace(/[\s+#!?×x:\-]/g, "");
+    return ["bd7", "ad7", "b5d7", "bb5d7", "ab5d7"].indexOf(v) >= 0;
+  }
   function resolveChance(card, opt) {
     const es = chanceLang();
     const say = (en, esTxt) => (es && esTxt ? esTxt : en);
+    if (card && card.jobMilestone) {
+      const job = currentJob();
+      const title = jobTitleAt(job, card.jobTier);
+      const pay = jobPayAt(job, card.jobTier);
+      arcPay(pay);
+      return say("You handle the moment as " + title + " and earn " + money(pay) + ".", "Resuelves el momento como " + title + " y ganas " + money(pay) + ".");
+    }
     if (card.id === "landfill") {
-      if (opt === "c") return say("You stay in bed. Nico can dig Docksway without you.",
-        "Te quedás en la cama. Nico puede excavar Docksway sin vos.");
+      if (opt === "c") return say("You stay in bed. Nico can dig at Docksway without you.",
+        "Te quedas en la cama. Nico puede excavar en Docksway sin ti.");
       const pct = opt === "b" ? 0.75 : 0.25;
       const cashCut = (S.cash || 0) * pct;
       const btcCut = (S.btc || 0) * pct;
@@ -2552,66 +2563,66 @@
       if (r < 0.00029) {
         const share = opt === "b" ? 4000 : (4000 / 3);
         creditBtc(share);
-        return say("Find the USB. +" + share.toFixed(2) + " BTC.",
-          "Find the USB. +" + share.toFixed(2) + " BTC.");
+        return say("You find the USB. +" + share.toFixed(2) + " BTC.",
+          "Encuentras la memoria USB. +" + share.toFixed(2) + " BTC.");
       }
       if (r < 0.00029 + 0.22) {
         arcPay(8);
-        return say("Find old Nokia. +$8.",
-          "Find old Nokia. +$8.");
+        return say("You find an old Nokia. +$8.",
+          "Encuentras un Nokia viejo. +$8.");
       }
-      return say("Three weeks digging through clay and nothing.",
-        "Three weeks digging through clay and nothing.");
+      return say("Three weeks of digging through clay turn up nothing.",
+        "Tres semanas excavando arcilla no dan ningún resultado.");
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
-      return say("It has not changed. −" + costLabel(paid) + ".", "No cambió. −" + costLabel(paid) + ".");
+      return say("The amount is unchanged. −" + costLabel(paid) + ".", "El monto no cambió. −" + costLabel(paid) + ".");
     }
     if (card.id === "nicoWedding") {
-      if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "El resto de la noche evitás a Nico en la barra.");
+      if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "Pasas el resto de la noche evitando a Nico cerca de la barra.");
       if (opt === "a") {
         const paid = cutPct(0.04);
         S.cold += 1;
         return say("They toast you. −" + costLabel(paid) + ". Nico hands you a cold-storage device. \"Part of the wedding experience.\"",
-          "Brindan por vos. −" + costLabel(paid) + ". Nico te pasa un cold storage. \"Parte de la experiencia.\"");
+          "Brindan por ti. −" + costLabel(paid) + ". Nico te entrega un dispositivo de almacenamiento en frío. \"Es parte de la experiencia.\"");
       }
       const paid = cutPct(0.006);
       return say("Nico looks at the envelope, then at you. \"Fair.\" −" + costLabel(paid) + ".",
-        "Nico mira el sobre, después a vos. \"Justo.\" −" + costLabel(paid) + ".");
+        "Nico mira el sobre y luego te mira a ti. \"Es justo.\" −" + costLabel(paid) + ".");
     }
     if (card.id === "mexico") {
-      if (opt === "b") return say("You stay home. Paco destroys a cushion.", "Se quedan. Paco destruye un almohadón.");
+      if (opt === "b") return say("You stay home. Paco celebrates by destroying a cushion.", "Se quedan en casa. Paco lo celebra destruyendo un cojín.");
       const paid = cutPct(0.08);
       S.invuln = Math.max(S.invuln || 0, 4);
-      return say("Five days in Tulum. −" + costLabel(paid) + ". About four seconds of feeling untouchable.",
-        "Cinco días en Tulum. −" + costLabel(paid) + ". Unos cuatro segundos de sentirte intocable.");
+      return say("Five days in Tulum. −" + costLabel(paid) + ". For four seconds, nothing can touch you.",
+        "Cinco días en Tulum. −" + costLabel(paid) + ". Durante cuatro segundos, nada puede tocarte.");
     }
     if (card.id === "flu") {
       const paid = cutBill(120);
-      return say("Soup, medicine, half eaten by Paco. −" + costLabel(paid) + ".", "Sopa, remedio, la mitad se la comió Paco. −" + costLabel(paid) + ".");
+      return say("Water, medicine, and soup—half of it eaten by Paco. −" + costLabel(paid) + ".", "Agua, medicinas y sopa; Paco se comió la mitad. −" + costLabel(paid) + ".");
     }
     if (card.id === "phish") {
-      if (opt === "b") return say("Deleted. You stare at the empty inbox for thirty seconds anyway.", "Borrado. Igual mirás la bandeja treinta segundos.");
+      if (opt === "b") return say("You delete it, then spend thirty seconds checking that it is really gone.", "Lo eliminas y pasas treinta segundos comprobando que realmente desapareció.");
       const paid = cutPct(0.18);
-      return say("The site looked convincing. So did the transaction. −" + costLabel(paid) + ".",
-        "El sitio se veía convincente. La transacción también. −" + costLabel(paid) + ".");
+      return say("The page looked convincing. The transfer was real. −" + costLabel(paid) + ".",
+        "La página parecía convincente. La transferencia fue real. −" + costLabel(paid) + ".");
     }
     if (card.id === "crash") {
       const paid = cutBill(650);
-      return say("Nobody was hurt. The bumper still wants money. −" + costLabel(paid) + ".",
-        "Nadie se lastimó. El paragolpes igual quiere plata. −" + costLabel(paid) + ".");
+      return say("Nobody is hurt. Bumper repair: −" + costLabel(paid) + ".",
+        "Nadie resulta herido. Reparación del parachoques: −" + costLabel(paid) + ".");
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
-        "The conversation eventually turns to free will and incentives.");
+        "Al final, la conversación deriva hacia el libre albedrío y los incentivos.");
       if (opt === "b") {
         cutBill(17);
         return say("You finish the movie. Marek says the ending is overrated.\n\n−$17.",
-          "You finish the movie. Marek says the ending is overrated.\n\n−$17.");
+          "Terminan la película. Marek dice que el final está sobrevalorado.\n\n−$17.");
       }
       cutBill(25);
       return say("You leave thinking Marek may have made a good point.\n\n−$25.",
-        "You leave thinking Marek may have made a good point.\n\n−$25.");
+        "Te vas pensando que quizá Marek tenía razón.\n\n−$25.");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
@@ -2625,188 +2636,179 @@
     }
     if (card.id === "poker") {
       if (opt === "c") return say("Marek joins you ten minutes later. \"Probably better.\" He says it without looking at you.",
-        "Marek te alcanza a los diez minutos. \"Mejor.\" Lo dice sin mirarte.");
+        "Marek se levanta de la mesa diez minutos después. \"Probablemente fue mejor así.\" Lo dice sin mirarte.");
       const stake = cutPct(opt === "b" ? 0.25 : 0.08);
       const r = Math.random();
-      if (r < 0.06) { arcPay(stake * 8); return say("You scoop the table. +" + money(stake * 8) + ".", "Te llevás la mesa. +" + money(stake * 8) + "."); }
-      if (r < 0.28) { arcPay(stake * 3); return say("+" + money(stake * 3) + " on a " + costLabel(stake) + " buy-in.", "+" + money(stake * 3) + " sobre " + costLabel(stake) + "."); }
-      if (r < 0.52) { arcPay(stake * 1.4); return say("Min-cash. +" + money(stake * 1.4) + ".", "Min-cash. +" + money(stake * 1.4) + "."); }
-      return say("Busted. −" + costLabel(stake) + ".", "Afuera. −" + costLabel(stake) + ".");
+      if (r < 0.06) { arcPay(stake * 8); return say("You scoop the table. +" + money(stake * 8) + ".", "Te llevas toda la mesa. +" + money(stake * 8) + "."); }
+      if (r < 0.28) { arcPay(stake * 3); return say("+" + money(stake * 3) + " on a " + costLabel(stake) + " buy-in.", "+" + money(stake * 3) + " con una entrada de " + costLabel(stake) + "."); }
+      if (r < 0.52) { arcPay(stake * 1.4); return say("Min-cash. +" + money(stake * 1.4) + ".", "Cobras un premio menor. +" + money(stake * 1.4) + "."); }
+      return say("Busted. −" + costLabel(stake) + ".", "Eliminado. −" + costLabel(stake) + ".");
     }
     if (card.id === "uncle") {
       if (Math.random() < 0.55) {
         const n = grantWealthPct(0.07);
-        return say("Check your account. +" + money(n) + ".", "Fijate la cuenta. +" + money(n) + ".");
+        return say("Check your account. +" + money(n) + ".", "Revisa tu cuenta. +" + money(n) + ".");
       }
       const b = Math.max(0.0001, (wealthUsd() * 0.07) / clampPx(S.price));
       const out = creditBtc(b);
       return say("He sent sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
-        "Mandó sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
+        "Te envió sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
     }
     if (card.id === "school") {
-      if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Se arreglan. Sofi igual manda una foto que no entendés.");
+      if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Lo resuelven solos. Sofi te envía de todos modos una foto que no entiendes.");
       const paid = cutBill(300);
       return say("Sofi sends a photo from the museum. You have no idea what is in it. −" + costLabel(paid) + ".",
-        "Sofi manda una foto del museo. No sabés qué hay en la foto. −" + costLabel(paid) + ".");
+        "Sofi te envía una foto del museo. No tienes idea de qué aparece en ella. −" + costLabel(paid) + ".");
     }
     if (card.id === "roof") {
       const paid = cutBill(900);
       return say("Paco found it first. −" + costLabel(paid) + ".", "Paco lo encontró primero. −" + costLabel(paid) + ".");
     }
-    if (card.id === "lotto") {
-      const r = Math.random();
-      if (r < 0.04) { const n = grantWealthPct(0.35); return say("Marek reads the numbers. Not bad. +" + money(n) + ".", "Marek lee los números. Nada mal. +" + money(n) + "."); }
-      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Marek: \"Not bad.\" He meant the odds. +" + money(n) + ".", "Marek: \"Nada mal.\" Hablaba de las probas. +" + money(n) + "."); }
-      return say("You lost the ticket price. Marek was referring to the odds.", "Perdiste el ticket. Marek hablaba de las probas.");
-    }
     if (card.id === "hospital") {
       const paid = cutBill(250);
-      return say("Four stitches. Try not to bleed on anything. −" + costLabel(paid) + ".", "Cuatro puntos. Tratá de no sangrar sobre nada. −" + costLabel(paid) + ".");
+      return say("Four stitches. Try not to bleed on anything. −" + costLabel(paid) + ".", "Cuatro puntos. Intenta no sangrar sobre nada. −" + costLabel(paid) + ".");
     }
     if (card.id === "startup") {
       if (opt === "b") return say("Nico says: \"Your loss.\" You are fairly sure that is not how losses work.",
-        "Nico: \"Tu pérdida.\" Estás bastante seguro de que las pérdidas no funcionan así.");
+        "Nico: \"Tú te lo pierdes\". Estás bastante seguro de que perder no funciona así.");
       const paid = cutPct(0.2);
       if (Math.random() < 0.28) {
         arcPay(paid * 4);
-        return say("They actually ship. 4× on " + costLabel(paid) + ".", "De verdad publican. 4× sobre " + costLabel(paid) + ".");
+        return say("They actually ship. 4× on " + costLabel(paid) + ".", "De verdad lanzan la app. 4× sobre " + costLabel(paid) + ".");
       }
-      return say("The domain expired. " + costLabel(paid) + " is a case study.", "Venció el dominio. " + costLabel(paid) + " es un caso de estudio.");
+      return say("The domain expired. " + costLabel(paid) + " is a case study.", "El dominio venció. " + costLabel(paid) + " ahora es un caso de estudio.");
     }
     if (card.id === "tow") {
       const paid = cutBill(85);
-      return say("Nine minutes. The sign was very clear. −" + costLabel(paid) + ".", "Nueve minutos. El cartel estaba muy claro. −" + costLabel(paid) + ".");
+      return say("Nine minutes. The sign was very clear. −" + costLabel(paid) + ".", "Nueve minutos. El letrero estaba muy claro. −" + costLabel(paid) + ".");
     }
     if (card.id === "courage") {
-      if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","");}
-      S.hasRing=true;
-      if (opt === "b") return say("You go home. Lena asks why you are quiet. You say you are tired. \"Sure, Fartface.\"",
-        "Volvés. Lena pregunta por qué estás callado. Decís que estás cansado. \"Claro, Fartface.\"");
-      const paid = cutPct(0.06);
-      return say("You are officially doing this. −" + costLabel(paid) + ".", "Oficialmente lo estás haciendo. −" + costLabel(paid) + ".");
+      if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","Esperas. La pregunta no desaparece.");}
+      S.hasRing=true; // opt "b" already returned above; the ring itself is paid once, on the Ring card
+      return say("You are officially doing this. Next stop: the jewelry store.", "Es oficial: vas a hacerlo. Próxima parada: la joyería.");
     }
     if (card.id === "ring") {
       const paid = cutPct(opt === "b" ? 0.03 : 0.08);
       if (opt === "b") return say("You still have a ring. Lena later finds the receipt. She says nothing. She just looks at you. −" + costLabel(paid) + ".",
-        "Igual hay anillo. Lena después encuentra el ticket. No dice nada. Solo te mira. −" + costLabel(paid) + ".");
-      return say("You now have a ring. −" + costLabel(paid) + ".", "Ahora hay anillo. −" + costLabel(paid) + ".");
+        "Aun así tienes anillo. Más tarde, Lena encuentra el recibo. No dice nada. Solo te mira. −" + costLabel(paid) + ".");
+      return say("You now have a ring. −" + costLabel(paid) + ".", "Ya tienes el anillo. −" + costLabel(paid) + ".");
     }
     if (card.id === "date") {
-      if (opt === "c") { delete S.chanceUsed.date; return say("Tomorrow is probably better.", "Mañana probablemente esté mejor."); }
+      if (opt === "c") { delete S.chanceUsed.date; return say("Tomorrow is probably better.", "Mañana probablemente sea mejor día."); }
       const paid = cutBill(opt === "a" ? 180 : 60);
       if (opt === "a") return say("Everything goes according to plan. That still feels suspicious. −" + costLabel(paid) + ".",
-        "Todo sale según el plan. Sigue sintiéndose sospechoso. −" + costLabel(paid) + ".");
-      return say("Dinner is good anyway. −" + costLabel(paid) + ".", "La cena está bien igual. −" + costLabel(paid) + ".");
+        "Todo sale según lo planeado. Aun así, te parece sospechoso. −" + costLabel(paid) + ".");
+      return say("Dinner is good anyway. −" + costLabel(paid) + ".", "La cena sale bien de todos modos. −" + costLabel(paid) + ".");
     }
     if (card.id === "proposal") {
       if (opt === "b") {
         delete S.chanceUsed.proposal;
         S.engaged = false;
         return say("You forget every word. You eventually say, \"So… anyway.\" The moment passes. The ring stays in your pocket.",
-          "Se te olvidan las palabras. Terminás diciendo: \"Bueno… eso.\" Se pasa el momento. El anillo sigue en el bolsillo.");
+          "Se te olvidan todas las palabras. Terminas diciendo: \"Bueno… en fin\". El momento pasa. El anillo sigue en tu bolsillo.");
       }
       if (opt === "c") {
         delete S.chanceUsed.proposal;
         S.engaged = false;
         const paid = cutPct(0.01);
         return say("You make a joke and start walking. She lets you go. The question is still there. The ring is still in your pocket. −" + costLabel(paid) + ".",
-          "Hacés un chiste y arrancás. Te deja ir. La pregunta sigue ahí. El anillo sigue en el bolsillo. −" + costLabel(paid) + ".");
+          "Haces una broma y empiezas a caminar. Ella te deja ir. La pregunta sigue ahí. El anillo sigue en tu bolsillo. −" + costLabel(paid) + ".");
       }
       S.engaged = true;
       const paid = cutPct(0.02);
       return say("You put the ring on her finger. \"Yes, Fartface.\" There will be a wedding. −" + costLabel(paid) + ".",
-        "Le ponés el anillo. \"Sí, Fartface.\" Va a haber una boda. −" + costLabel(paid) + ".");
+        "Le pones el anillo. \"Sí, Cara de Pedo\". Habrá boda. −" + costLabel(paid) + ".");
     }
     if (card.id === "wedding") {
-      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;S.arcBias="timeTraveler";return say("You look at Lena. Then at the room. The flowers, the tables, the relatives, the life waiting on the other side of the ceremony. It is a good life. That's the problem. For months, another thought has been getting harder to ignore. That conversation with Marek. Building something. Not a company. Not a charity. Something else. You still don't know what. You tell Lena. There is a very long silence. Then she looks at you. “I'll miss you, Fartface.” You leave. Paco comes with you. You are not entirely sure whether that was his decision. FAMILY ARC CLOSED. Something else is now possible. −"+costLabel(p)+".","Miras a Lena. Después el salón: las flores, las mesas, los parientes, la vida que espera del otro lado de la ceremonia. Es una buena vida. Ese es el problema. Hace meses que otra idea se hace más difícil de ignorar. Aquella conversación con Marek. Construir algo. No una empresa. No una ONG. Otra cosa. Todavía no sabés qué. Se lo decís a Lena. Hay un silencio muy largo. Después te mira. “Te voy a extrañar, Fartface.” Te vas. Paco se va con vos. No estás del todo seguro de que haya sido decisión de él. ARCO FAMILIAR CERRADO. Ahora es posible otra cosa. −"+costLabel(p)+".");}
+      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;S.arcBias="timeTraveler";return say("You look at Lena. Then at the room. The flowers, the tables, the relatives, the life waiting on the other side of the ceremony. It is a good life. That's the problem. For months, another thought has been getting harder to ignore. That conversation with Marek. Building something. Not a company. Not a charity. Something else. You still don't know what. You tell Lena. There is a very long silence. Then she looks at you. “I'll miss you, Fartface.” You leave. Paco comes with you. You are not entirely sure whether that was his decision. FAMILY ARC CLOSED. Something else is now possible. −"+costLabel(p)+".","Miras a Lena. Después el salón: las flores, las mesas, los parientes, la vida que espera del otro lado de la ceremonia. Es una buena vida. Ese es el problema. Hace meses que otra idea se hace más difícil de ignorar. Aquella conversación con Marek. Construir algo. No una empresa. No una organización benéfica. Otra cosa. Todavía no sabes qué. Se lo dices a Lena. Hay un silencio muy largo. Después te mira. “Te voy a extrañar, Cara de Pedo”. Te vas. Paco se va contigo. No estás del todo seguro de que haya sido decisión de él. ARCO FAMILIAR CERRADO. Ahora es posible otra cosa. −"+costLabel(p)+".");}
       S.familyPath=true;
       S.arcBias="honeymoon";
       if (opt === "a") {
         const paid = cutPct(0.12);
         return say("Everyone has a good time. Even Nico. His speech lasts eleven minutes. −" + costLabel(paid) + ".",
-          "Todos la pasan bien. Hasta Nico. El discurso dura once minutos. −" + costLabel(paid) + ".");
+          "Todos la pasan bien. Incluso Nico. Su discurso dura once minutos. −" + costLabel(paid) + ".");
       }
       if (opt === "b") {
         const paid = cutPct(0.05);
         return say("Fewer people. Less noise. Paco is not allowed to attend. He does not know why. −" + costLabel(paid) + ".",
-          "Menos gente. Menos ruido. Paco no puede entrar. No sabe por qué. −" + costLabel(paid) + ".");
+          "Menos gente. Menos ruido. A Paco no lo dejan entrar. No entiende por qué. −" + costLabel(paid) + ".");
       }
       const paid = cutPct(0.01);
       return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + costLabel(paid) + ".",
-        "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + costLabel(paid) + ".");
+        "Desaparecen todo el fin de semana. El domingo, Lena te hace volver por el pastel. −" + costLabel(paid) + ".");
     }
-    if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","");
-    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","");}
-    if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","");
-    if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","");
-    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Nico te manda el aviso otra vez mañana.");}
-    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+costLabel(p)+".","");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","");}
-    if(card.id==="paperwork")return say("Country. Island. For now.","");
-    if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+costLabel(p)+".","");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","");}
-    if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","");}
-    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. -"+costLabel(p)+".","");}delete S.chanceUsed.peopleAsking;return say("Not yet.","");}
-    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+costLabel(p)+".","");}delete S.chanceUsed.extensionCord;return say("More extension cords.","");}
-    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. -"+costLabel(p)+".","");}delete S.chanceUsed.obviously;return say("Not yet.","");}
-    if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","");
-    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("+10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+costLabel(p)+".","");}return say("Nico takes some stamps.","");}
-    if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;return say("Army unlocked. -"+costLabel(p)+".","");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now. -"+costLabel(p)+".","");}return say("Paco gets a SECURITY vest.","");}
-    if(card.id==="placeNow"){S.bcNodes=Math.min(100,S.bcNodes+5);return say("+5 Liberty Nodes.","");}
-    if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built. -"+costLabel(p)+".","");}return say("The plans stay on the table.","");}
-    if(card.id==="rearmament"){S.bcWorld+=6;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed. +35% net worth.","");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","");}
-    if(card.id==="ambassador")return say("Diplomatic contact unlocked.","");
-    if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","");}
-    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);return say("A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","");}
-    if(card.id==="theQuestion"){if(S.bcVictory||S.bcIndependent){return say(stampNation("Bitcoin Country is already independent."),"");}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declarás.":"You declare.","");}return say(chanceLang()?"Todavía no.":"Not yet.","");}
+    if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","La idea se queda contigo.");
+    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","THE BITCOIN STATE ya está en el Mercado por "+costLabel(666)+".");}
+    if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","Los mercados caen. Bitcoin no.");
+    if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","Bitcoin Country desbloqueado.");
+    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Mañana, Nico te enviará el anuncio otra vez.");}
+    if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+costLabel(p)+".","Tienes una isla. −"+costLabel(p)+".");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","La isla sigue en el Mercado a "+costLabel(S.bcIslandOffer)+".");}
+    if(card.id==="paperwork")return say("Country. Island. For now.","País. Isla. Por ahora.");
+    if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. −"+costLabel(p)+".","INTERESANTE. LLÁMAME. −"+costLabel(p)+".");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","Tres seguidores. Uno es Nico.");}
+    if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","Nodos de Libertad: "+S.bcNodes+"/100.");}
+    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. −"+costLabel(p)+".","Asentamiento construido. −"+costLabel(p)+".");}delete S.chanceUsed.peopleAsking;return say("Not yet.","Todavía no.");}
+    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. −"+costLabel(p)+".","Red eléctrica construida. −"+costLabel(p)+".");}delete S.chanceUsed.extensionCord;return say("More extension cords.","Más cables de extensión.");}
+    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. −"+costLabel(p)+".","Mina de bitcoin en línea. −"+costLabel(p)+".");}delete S.chanceUsed.obviously;return say("Not yet.","Todavía no.");}
+    if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","Misión secundaria de San Arnaldo desbloqueada.");
+    if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("+10 Liberty Nodes. World Military Strength −2. −"+costLabel(p)+".","+10 Nodos de Libertad. Fuerza militar mundial −2. −"+costLabel(p)+".");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. −"+costLabel(p)+".","El nodo no está enchufado. +4 Nodos de Libertad. −"+costLabel(p)+".");}return say("Nico takes some stamps.","Nico se lleva unas estampillas.");}
+    if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
+    if(card.id==="protectIsland"){if(opt==="a"){let p=cutPct(.02);S.bcArmyUnlocked=true;if(S.bcArmyTier==null)S.bcArmyTier=0;return say("Army unlocked. −"+costLabel(p)+".","Ejército desbloqueado. −"+costLabel(p)+".");}if(opt==="b"){let p=cutBill(50000);return say("Private security. For now. −"+costLabel(p)+".","Seguridad privada. Por ahora. −"+costLabel(p)+".");}return say("Paco gets a SECURITY vest.","Paco recibe un chaleco de SEGURIDAD.");}
+    if(card.id==="placeNow"){S.bcNodes=Math.min(100,S.bcNodes+5);return say("+5 Liberty Nodes.","+5 Nodos de Libertad.");}
+    if(card.id==="citadelQuestion"){if(opt==="a"){let p=cutPct(.08);S.bcCitadel=true;return say("Citadel built. −"+costLabel(p)+".","Ciudadela construida. −"+costLabel(p)+".");}return say("The plans stay on the table.","Los planos se quedan sobre la mesa.");}
+    if(card.id==="rearmament"){S.bcWorld+=S.bcArmyUnlocked?8:4;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
+    if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed. +35% net worth.","Arco de Bitcoin Country cerrado. +35% de patrimonio.");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","BITCOIN COUNTRY NO ESTÁ EN VENTA. +10 Nodos de Libertad.");}
+    if(card.id==="ambassador")return say("Diplomatic contact unlocked.","Contacto diplomático desbloqueado.");
+    if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
+    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("World Military Strength −2. A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. −"+costLabel(p)+".","Fuerza militar mundial −2. Un Ministerio de Pesca pregunta si Bitcoin Country produce lanzón de aleta azul en escabeche. Dices que sí. Parece que ayuda. +10 Nodos de Libertad. −"+costLabel(p)+".");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","+4 Nodos de Libertad.");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","El señor Ortega & Gambette te envía las 93 páginas de todos modos.");}
+    if(card.id==="theQuestion"){if(S.bcVictory||S.bcIndependent){return say(stampNation("Bitcoin Country is already independent."),stampNation("Bitcoin Country ya es independiente."));}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declaras.":"You declare.","");}return say(chanceLang()?"Todavía no.":"Not yet.","");}
     if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
     if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
-    if(card.id==="theAnswer"){return say("The blocs already answered.","");}
+    if(card.id==="theAnswer"){return say("The blocs already answered.","Los bloques ya respondieron.");}
     if(card.id==="blocReplies"){
-      if(opt==="a"){const p=cutBill(40000);return say("The letter gets warmer. The fleets do not. −"+costLabel(p)+".","La carta se pone más cálida. Las flotas no. −"+costLabel(p)+".");}
-      if(opt==="b")return say("You refuse. The fleets were never waiting on your answer.","Rechazás. Las flotas no estaban esperando tu respuesta.");
-      return say("The statements are in. The ships are already moving.","Los comunicados llegaron. Los barcos ya se mueven.");
+      if(opt==="a"){const p=cutBill(40000);return say("The recognition letter grows warmer. The fleets do not change course. −"+costLabel(p)+".","La carta de reconocimiento adopta un tono más cordial. Las flotas no cambian de rumbo. −"+costLabel(p)+".");}
+      if(opt==="b")return say("You refuse the payment. The fleets were never waiting for your answer.","Rechazas el pago. Las flotas nunca estuvieron esperando tu respuesta.");
+      return say("All three statements have arrived. Their ships are already moving.","Ya llegaron los tres comunicados. Sus barcos ya están en movimiento.");
     }
-    if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The attack begins.","Empieza el ataque.");}
-    if(card.id==="battleWon"){return say("The beach holds.","La playa aguanta.");}
-    if(card.id==="blocTriumph"){return say("The bloc falls back.","El bloque retrocede.");}
-    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("THE FOURTH COLOR. Bitcoin Country es independiente. SEGUÍ JUGANDO."));}
-    if(card.id==="notYet"){return say("Not yet.","");}
+    if(card.id==="blocAssault"){S.bcDefensePending=true;return say("The defense begins as the first ships enter range.","La defensa comienza cuando los primeros barcos entran en alcance.");}
+    if(card.id==="battleWon"){return say("The island holds the line.","La isla mantiene la línea defensiva.");}
+    if(card.id==="blocTriumph"){return say("The defeated bloc withdraws and recognizes the nation.","El bloque derrotado se retira y reconoce a la nación.");}
+    if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("EL CUARTO COLOR. Bitcoin Country es independiente. CONTINÚA JUGANDO."));}
+    if(card.id==="notYet"){return say("The defense failed. Bitcoin Country fell.","La defensa fracasó. Bitcoin Country cayó.");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
       const paid = cutPct(map[opt] || 0.04);
       if (opt === "a") return say("Tokyo, Kyoto, too many trains. The system works better than you do. −" + costLabel(paid) + ".",
-        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que vos. −" + costLabel(paid) + ".");
+        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que tú. −" + costLabel(paid) + ".");
       if (opt === "b") return say("Rome, Florence, long dinners. Lena buys something she refuses to explain until dinner. −" + costLabel(paid) + ".",
-        "Roma, Florencia, cenas largas. Lena compra algo que no explica hasta la cena. −" + costLabel(paid) + ".");
+        "Roma, Florencia, cenas largas. Lena compra algo que se niega a explicar hasta la cena. −" + costLabel(paid) + ".");
       return say("Mountains, lakes, fewer people. You miss Paco after two days. He does not appear to miss you. −" + costLabel(paid) + ".",
-        "Montañas, lagos, menos gente. Extrañás a Paco a los dos días. Él no parece extrañarte. −" + costLabel(paid) + ".");
+        "Montañas, lagos, menos gente. A los dos días extrañas a Paco. Él no parece extrañarte. −" + costLabel(paid) + ".");
     }
     if (card.id === "pregnancy") {
       const paid = cutBill(450);
-      return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos rayas. Después la planificación. −" + costLabel(paid) + ".");
+      return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos líneas. Después, la planificación. −" + costLabel(paid) + ".");
     }
     if (card.id === "baby") {
-      if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.", "Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.");
+      if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you. She is furious.\n\n\"Classic Fartface.\"", "Lena mira el PDF.\n\nLuego te mira a ti. Está furiosa.\n\n\"Típico de Cara de Pedo\".");
       if (opt === "a") {
         const paid = cutPct(0.05);
         S.cold += 1;
         return say("Money aside, and a cold-storage device in the house. −" + costLabel(paid) + ".",
-          "Plata de lado y un cold storage en casa. −" + costLabel(paid) + ".");
+          "Dinero apartado y un dispositivo de almacenamiento en frío en casa. −" + costLabel(paid) + ".");
       }
       const paid = cutPct(0.02);
       return say("You buy what you need and figure out the rest later. −" + costLabel(paid) + ".",
-        "Compran lo que hace falta y el resto después. −" + costLabel(paid) + ".");
+        "Compran lo necesario y resuelven el resto después. −" + costLabel(paid) + ".");
     }
     if (card.id === "cousin") {
       if (opt === "b") return say("Three hours later Nico texts. The token is already down 40%. \"Temporary.\"",
-        "A las tres horas Nico escribe. El token ya va −40%. \"Temporal.\"");
+        "Tres horas después, Nico escribe. El token ya cayó un 40%. \"Es temporal\".");
       const paid = cutPct(0.4);
       if (Math.random() < 0.5) {
         arcPay(paid * 2.2);
         return say("Friday arrives early. 2.2× on " + costLabel(paid) + ".", "El viernes llega temprano. 2.2× sobre " + costLabel(paid) + ".");
       }
-      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendido. " + costLabel(paid) + " ahora es un screenshot.");
+      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendieron el token. " + costLabel(paid) + " ahora es solo una captura de pantalla.");
     }
     if (card.id === "speeding") {
       const paid = cutBill(75);
@@ -2818,111 +2820,204 @@
         "El efectivo no está. Las tarjetas sí. Victoria parcial. −" + costLabel(paid) + ".");
     }
     if (card.id === "potluck") {
-      if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Sos increíble.\"");
+      if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Eres increíble\".");
       const paid = cutPct(0.05);
       return say("People remember your name. Paco remembers the food. −" + costLabel(paid) + ".",
-        "La gente se acuerda de tu nombre. Paco, de la comida. −" + costLabel(paid) + ".");
+        "La gente recuerda tu nombre. Paco recuerda la comida. −" + costLabel(paid) + ".");
     }
     if (card.id === "usedcar") {
-      if (opt === "b") return say("You walk. Nico buys it anyway.", "Te vas. Nico lo compra igual.");
+      if (opt === "b") return say("You walk. Nico buys it anyway.", "Te vas. Nico lo compra de todos modos.");
       const paid = cutPct(0.12);
       if (Math.random() < 0.3) {
         const back = grantWealthPct(0.03);
-        return say("It works. −" + costLabel(paid) + " then +" + money(back) + ".", "Anda. −" + costLabel(paid) + " y después +" + money(back) + ".");
+        return say("It works. −" + costLabel(paid) + " then +" + money(back) + ".", "Funciona. −" + costLabel(paid) + " y después +" + money(back) + ".");
       }
       const extra = cutPct(0.04);
       return say("Lemon. The Sharpie was the honest part. −" + costLabel(paid + extra) + ".",
-        "Limón. Lo honesto era el Sharpie. −" + costLabel(paid + extra) + ".");
+        "Es un cacharro. Lo único honesto era el Sharpie. −" + costLabel(paid + extra) + ".");
     }
     if (card.id === "tetris") {
       if (opt === "b") return say("Marek gets to level 18. Then loses. He nods. \"Good enough.\"",
-        "Marek llega al nivel 18. Pierde. Asiente. \"Alcanza.\"");
+        "Marek llega al nivel 18. Pierde. Asiente: \"Suficiente\".");
       const stake = cutBill(20);
       if (Math.random() < 0.42) {
         arcPay(stake * 3);
         return say("The well stays clean. +" + money(stake * 3) + ".", "El pozo queda limpio. +" + money(stake * 3) + ".");
       }
-      return say("A long bar would have saved you. −" + costLabel(stake) + ".", "Una barra larga te salvaba. −" + costLabel(stake) + ".");
+      return say("A long bar would have saved you. −" + costLabel(stake) + ".", "Una pieza larga te habría salvado. −" + costLabel(stake) + ".");
+    }
+    if (card.id === "chess") {
+      const line = es ? "15. Axd7+ Cxd7 16. Db8+!! Cxb8 17. Td8#" : "15. Bxd7+ Nxd7 16. Qb8+!! Nxb8 17. Rd8#";
+      const typed = String(opt || "").replace(/^move:/, "").trim().slice(0, 16).replace(/[<>&"]/g, "");
+      if (chessMoveOk(typed)) {
+        const out = creditBtc(1);
+        return say("Marek looks at the board for a long moment, then plays it out for you: " + line + " \"The bishop first, then the queen, then the rook. Morphy saw it from a box seat.\" He slides the bitcoin across the table. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
+          "Marek mira el tablero un largo rato y luego lo juega por ti: " + line + " \"Primero el alfil, después la dama, después la torre. Morphy lo vio desde un palco\". Te pasa el bitcoin por la mesa. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
+      }
+      // a wrong move costs nothing: Marek shows the line and waves off the bet
+      return say((typed ? "\"" + typed + "?\" Marek shakes his head" : "Marek waits, then shrugs") + " and shows you Morphy's line: " + line + " \"The sacrifice comes first. Then the queen. You can pay me in wine.\"",
+        (typed ? "\"¿" + typed + "?\" Marek niega con la cabeza" : "Marek espera y luego se encoge de hombros") + " y te muestra la línea de Morphy: " + line + " \"Primero el sacrificio. Después la dama. Págame con vino\".");
     }
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
       cutBill(bill);
       if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.",
-        "Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.");
+        "El tío Mike te mira firmar.\n\n“Eso solo alimenta el sistema”.\n\nSalen del restaurante.\n\n−$220.");
       if (opt === "b") return say("Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.",
-        "Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.");
+        "El tío Mike parece satisfecho.\n\nEl mesero no.\n\nSolo quieres irte a casa.\n\n−$180.");
       return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.",
-        "Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.");
-    }
-    if (card.job) {
-      const job = currentJob();
-      const tier = Math.max(1, Math.min(7, S.have.job || 1));
-      const pay = jobPayAt(job, tier);
-      const half = Math.max(1, Math.round(pay / 2));
-      const title = job ? jobTitleAt(job, tier) : (es ? "el puesto" : "the job");
-      if (card.id === "jobLunch") {
-        if (opt === "b") return say("You eat the sandwich. They eventually talk about the weather instead.", "Te comés el sándwich. Al final hablan del clima.");
-        return say("You tell them what a " + title + " actually does. They look disappointed that it is mostly work.", "Les contás qué hace de verdad un " + title + ". Se ven decepcionados de que sea, sobre todo, trabajo.");
-      }
-      if (card.id === "jobLate") {
-        if (opt === "b") return say("You go home. The building will still be there.", "Te vas a casa. El edificio va a seguir ahí.");
-        arcPay(half);
-        return say("You stay until the lights in the other rooms go out. +" + money(half) + ".", "Te quedás hasta que se apagan las luces de las otras salas. +" + money(half) + ".");
-      }
-      if (card.id === "jobReview") {
-        arcPay(pay);
-        return say("You sign where they point. +" + money(pay) + ".", "Firmás donde te indican. +" + money(pay) + ".");
-      }
-      if (card.id === "jobPoach") {
-        if (opt === "b") return say("You go back upstairs. The old chair is still yours.", "Volvés arriba. La silla vieja sigue siendo tuya.");
-        arcPay(pay * 2);
-        return say("You never leave. They pay you once, so the story stays boring. +" + money(pay * 2) + ".", "No te vas. Te pagan una vez, para que la historia siga siendo aburrida. +" + money(pay * 2) + ".");
-      }
-      if (card.id === "jobNight") {
-        arcPay(pay);
-        return say("You do the thing the title was for. +" + money(pay) + ".", "Hacés lo que el cargo pedía. +" + money(pay) + ".");
-      }
-      if (card.id === "jobCrown") return say("You let them wait one second longer than you need to. Then you start.", "Los hacés esperar un segundo más de lo necesario. Después empezás.");
-      return say("You pin the badge on. It is crooked.", "Te ponés la credencial. Queda torcida.");
+        "El tío Mike asiente.\n\n“Eso es distinto”.\n\nNo estás seguro de que lo sea.\n\nÉl sí.\n\n−$195.");
     }
     return say("Nothing else happens.", "No pasa nada más.");
   }
 
-  const ARC_VID = { landfill: 1, proposal: 1, mexico: 1, phish: 1, baby: 1 };
+  const ARC_VID = { mexico: 1 };
+  const WIDE_ART_PNG = new Set([]);  // all wide art is JPG now (mobile weight)
+  const WIDE_ART_JPG = new Set([
+    "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
+    "ortegaCalls", "ambassador", "anOffer",
+    "cabinet", "blocReplies", "blocAssault", "battleWon", "blocTriumph",
+    // job-career milestone art (1920x800 JPG; PNG could not stay under 400KB for mobile)
+    "jobCareeractingTier2", "jobCareeractingTier4", "jobCareeractingTier6",
+    "jobCareerdivingTier2", "jobCareerculinaryTier6", "jobCareeraviationTier2",
+    "jobCareeraviationTier4", "jobCareeraviationTier6", "jobCareermusicTier2",
+    "jobCareermusicTier4", "jobCareermusicTier6", "jobCareerathleticTier2",
+    "jobCareerathleticTier4", "jobCareerathleticTier6", "jobCareermedicalTier2",
+    "jobCareermedicalTier4", "jobCareermedicalTier6", "jobCareermaritimeTier2",
+    "jobCareermaritimeTier4", "jobCareermaritimeTier6",
+    // former PNG panoramas + Marek restyles
+    "landfill", "phish", "crash", "flu", "roof", "proposal",
+    "pregnancy", "honeymoon", "baby", "school", "ring", "speeding",
+    "citadelQuestion", "declaration", "justInCase", "nothingToHide", "extensionCord",
+    "firstBloc", "somethingBetter", "temporaryMeasures", "timeTraveler", "nobodyKnows",
+    "theOg", "obviously", "peopleAsking", "placeNow", "principality",
+    "stateVisit", "protectIsland", "rearmament", "threeColors", "notYet",
+    "theAnswer", "festival", "chess", "poker", "wine",
+    "courage", "tetris", "theQuestion", "fourthColor",
+    "jobCareerdivingTier4", "jobCareerdivingTier6", "jobCareerscienceTier2",
+    "jobCareerscienceTier4", "jobCareerscienceTier6", "jobCareerlawTier2",
+    "jobCareerlawTier4", "jobCareerlawTier6", "jobCareerculinaryTier2",
+    "jobCareerculinaryTier4"
+  ]);
+  const ARC_ART_ALIAS = {};
+  const ARC_ART_VERSIONS = {
+    justInCase: "gpt6",
+    somethingBetter: "gpt5",
+    protectIsland: "gpt5",
+    theOg: "gpt5",
+    fourthColor: "gpt5",
+    notYet: "gpt5",
+    theAnswer: "gpt5",
+    festival: "gpt5",
+    chess: "board1"
+  };
+
+  const PRELOADED_ART = new Map();
+
+  function getChanceArtMeta(cardOrId) {
+    const card = typeof cardOrId === "object" && cardOrId ? cardOrId : (CHANCE_CARDS.find((c) => c.id === cardOrId) || null);
+    const id = typeof cardOrId === "string" ? cardOrId : (card ? card.id : "");
+    const artId = ARC_ART_ALIAS[id] || (card && card.artId) || id;
+
+    if (card && card.art) {
+      const isWide = !!(card.wide || card.panoramic || card.art.includes("-wide"));
+      return { id, artId, src: card.art, wide: isWide, isVideo: false };
+    }
+
+    if (ARC_VID[id]) {
+      const poster = "chance/" + artId + ".jpg?v=mp86";
+      return { id, artId, src: "chance/" + id + ".mp4", poster, wide: false, isVideo: true };
+    }
+
+    const isWide = !!(card && (card.wide || card.panoramic)) || WIDE_ART_PNG.has(artId) || WIDE_ART_JPG.has(artId) || (artId && artId.endsWith("-wide"));
+
+    let src = "";
+    if (WIDE_ART_PNG.has(artId) || (card && card.artFormat === "png") || (isWide && !WIDE_ART_JPG.has(artId) && !artId.endsWith(".jpg"))) {
+      const v = ARC_ART_VERSIONS[artId] || "gpt4";
+      src = "chance/" + artId + "-wide.png?v=" + v;
+    } else if (isWide) {
+      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin11";
+    } else {
+      src = "chance/" + artId + ".jpg?v=mp86";
+    }
+
+    return { id, artId, src, wide: isWide, isVideo: false };
+  }
+
+  function preloadSingleArt(src, eager = false) {
+    if (!src || PRELOADED_ART.has(src)) return PRELOADED_ART.get(src);
+    const im = new Image();
+    im.loading = eager ? "eager" : "auto";
+    im.decoding = "async";
+    PRELOADED_ART.set(src, im);
+    im.src = src;
+    if ("decode" in im) {
+      im.decode().catch(() => {});
+    }
+    return im;
+  }
+
   let chanceArtBusy = false;
   function preloadChanceArt() {
     if (chanceArtBusy) return;
     chanceArtBusy = true;
-    const ids = CHANCE_CARDS.map((c) => c.id);
-    ids.push("hero");
-    let i = 0;
-    const kick = (n) => {
-      while (n-- > 0 && i < ids.length) {
-        const im = new Image();
-        im.decoding = "async";
-        im.onload = im.onerror = () => kick(1);
-        const id=ids[i++]; im.src="chance/"+id+".jpg?v=mp55";
+
+    const allMetas = CHANCE_CARDS.map((c) => getChanceArtMeta(c));
+    Object.keys(ARC_ART_ALIAS).forEach((aliasId) => {
+      allMetas.push(getChanceArtMeta(aliasId));
+    });
+    allMetas.push({ src: "chance/hero.jpg?v=mp86", wide: false, isVideo: false });
+
+    // Deduplicate image sources
+    const seen = new Set();
+    const queue = [];
+    // Prioritize panoramic wide images first
+    allMetas.filter((m) => m && m.wide && !m.isVideo).forEach((m) => {
+      if (!seen.has(m.src)) { seen.add(m.src); queue.push(m.src); }
+    });
+    // Then standard images
+    allMetas.filter((m) => m && !m.wide && !m.isVideo).forEach((m) => {
+      if (!seen.has(m.src)) { seen.add(m.src); queue.push(m.src); }
+    });
+
+    let qIdx = 0;
+    const kick = (concurrency) => {
+      while (concurrency-- > 0 && qIdx < queue.length) {
+        const src = queue[qIdx++];
+        const im = preloadSingleArt(src);
+        if (im) {
+          im.onload = im.onerror = () => kick(1);
+        } else {
+          kick(1);
+        }
       }
     };
-    kick(4);
+    kick(3);
+
+    // Videos
     Object.keys(ARC_VID).forEach((id) => {
       const v = document.createElement("video");
       v.muted = true;
       v.preload = "auto";
       v.playsInline = true;
-      v.src = "chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "");
+      v.src = "chance/" + id + ".mp4";
     });
   }
+
+  function arcAltText(id) {
+    const c = typeof id === "object" && id ? id : CHANCE_CARDS.find((x) => x.id === id);
+    const tt = c ? (chanceLang() ? (c.titleEs || c.title) : c.title) : "";
+    return String(tt || "").replace(/[<>&"]/g, "");
+  }
   function chanceArtHtml(id) {
-    const artId = id === "cabinet" ? "declaration" : id === "blocReplies" ? "threeColors" : id === "blocAssault" ? "theAnswer" : id === "battleWon" ? "theAnswer" : id;
-    if (id === "blocTriumph") {
-      return "<img class=\"chance-art fest-art\" src=\"chance/festival.jpg?v=mp77\" alt=\"\">";
+    const meta = getChanceArtMeta(id);
+    if (meta.isVideo) {
+      return "<video class=\"chance-art\" src=\"" + meta.src + "\" poster=\"" + meta.poster + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
     }
-    const jpg="chance/"+artId+".jpg?v=mp55";
-    if (ARC_VID[id]) {
-      return "<video class=\"chance-art\" src=\"chance/" + id + ".mp4" + (id === "landfill" ? "?v=mp46" : "") + "\" poster=\"" + jpg + "\" autoplay muted loop playsinline preload=\"auto\"></video>";
-    }
-    return "<img class=\"chance-art\" src=\"" + jpg + "\" alt=\"\" onerror=\"this.src='chance/hero.jpg'\">";
+    const wideClass = meta.wide ? " wide-art" : "";
+    const festClass = (id === "blocTriumph" || meta.artId === "festival") ? " fest-art" : "";
+    const fallback = meta.artId && meta.artId !== "hero" ? "chance/" + meta.artId + ".jpg?v=mp86" : "chance/hero.jpg";
+    return "<img class=\"chance-art" + festClass + wideClass + "\" src=\"" + meta.src + "\" alt=\"" + arcAltText(id) + "\" loading=\"eager\" decoding=\"async\" onerror=\"this.onerror=null;this.src='" + fallback + "';\">";
   }
 
   const WAR_BLOCS = [
@@ -2953,16 +3048,16 @@
   function reactionLine(bloc, kind, es){
     const name=es?bloc.es:bloc.en, who=es?bloc.leaderEs:bloc.leader;
     if(kind==="accept") return es
-      ? name+" manda una nota fría de reconocimiento. "+who+" lo llama una cortesía provisional. El agregado que la trae no se sienta."
+      ? name+" envía una nota fría de reconocimiento. "+who+" la llama una cortesía provisional. El agregado que la entrega no toma asiento."
       : name+" sends a cold note of recognition. "+who+" calls it a provisional courtesy. The attaché who delivers it does not sit down.";
     if(kind==="reject") return es
-      ? name+" rechaza la declaración en una oración. "+who+" agrega una segunda sobre consecuencias."
+      ? name+" rechaza la declaración en una sola oración. "+who+" añade otra sobre las consecuencias."
       : name+" rejects the declaration in one sentence. "+who+" adds a second sentence about consequences.";
     if(kind==="time") return es
-      ? name+" pide tiempo para preparar un comunicado. "+who+" se refiere a tiempo para contar barcos."
+      ? name+" solicita tiempo para preparar un comunicado. "+who+" en realidad necesita tiempo para contar barcos."
       : name+" asks for time to prepare a statement. "+who+" means time to count ships.";
     return es
-      ? name+" ofrece reconocimiento político a cambio de un aporte a la estabilidad regional. "+who+" pone una cifra y no lo llama soborno."
+      ? name+" ofrece reconocimiento político a cambio de una contribución a la estabilidad regional. "+who+" fija una cifra y evita llamarla soborno."
       : name+" offers political recognition in exchange for a contribution to regional stability. "+who+" names a figure and does not call it a bribe.";
   }
   function repliesText(){
@@ -2970,8 +3065,8 @@
     const r=S.bcReactions||{pact:"reject",ledger:"time",lattice:"accept"};
     const lines=WAR_BLOCS.map((b)=>reactionLine(b, r[b.key], es));
     const tail=es
-      ? "Nada de eso importa al final de la semana. Los reconocimientos son notas al pie. Las demoras son calendarios de carga. La plata, si la pagás, compra una carta más linda. Los tres bloques igual arman la flota."
-      : "None of it matters by the end of the week. The recognitions are footnotes. The delays are loading schedules. The money, if you pay it, buys a nicer letter. All three blocs still arm.";
+      ? "Nada de eso cambia el final de la semana. Los reconocimientos quedan como notas al pie. Las demoras encubren calendarios de carga. El pago, si lo realizas, solo compra una carta más cordial. Los tres bloques continúan armando sus flotas."
+      : "None of it changes the end of the week. Recognition becomes a footnote. Delays conceal loading schedules. Payment, if you make it, only buys a warmer letter. All three blocs continue arming their fleets.";
     return lines.join("\n\n")+ "\n\n"+tail;
   }
   function assaultText(){
@@ -2984,8 +3079,8 @@
       ? (slot===0?"Los barcos ya se ven desde el muelle.":slot===1?"Vuelven por otra cala, y no avisan la hora.":"El mar se vuelve a llenar de cascos.")
       : (slot===0?"The ships are already visible from the dock.":slot===1?"They come back through another cove, and they do not name the hour.":"The sea fills with hulls again.");
     return es
-      ? name+" abre fuego. "+who+" ya escribió el comunicado. No negocia bajo fuego.\n\n"+beat+"\n\nLa isla tiene que aguantar."
-      : "The "+name+" opens fire. "+who+" has already written the communiqué. There is no negotiation under fire.\n\n"+beat+"\n\nThe island has to hold.";
+      ? name+" abre fuego antes de que terminen los canales diplomáticos. "+who+" publica un comunicado preparado de antemano y afirma que el ataque era inevitable.\n\n"+beat+"\n\nLa flota se acerca. La isla debe resistir."
+      : "The "+name+" opens fire before the diplomatic channels have closed. "+who+" releases a communiqué prepared in advance and calls the attack unavoidable.\n\n"+beat+"\n\nThe fleet is closing in. The island must hold.";
   }
   function battleReportText(){
     const es=chanceLang();
@@ -2994,28 +3089,28 @@
     const slot=(won-1)%3;
     const packs=[
       [
-        { enT:"The Beach Holds", esT:"La playa aguanta",
-          en:"A landing dies in the sand. The occupation order was already stamped. Paco brings one stamp back and does not say where the clerk went.\n\nThe beach goes quiet enough to hear the bakery.",
-          es:"Un desembarco muere en la arena. La orden de ocupación ya estaba sellada. Paco vuelve con un sello y no dice dónde quedó el funcionario.\n\nLa playa se calla lo suficiente como para oír la panadería." },
+        { enT:"The Beach Holds", esT:"La playa resiste",
+          en:"The first landing collapses on the beach. The occupation order had already been stamped. Paco returns with one of its seals and does not explain what happened to the clerk.\n\nThe shore grows quiet enough to hear the bakery.",
+          es:"El primer desembarco fracasa en la playa. La orden de ocupación ya estaba sellada. Paco regresa con uno de sus sellos y no explica qué ocurrió con el funcionario.\n\nLa costa queda lo bastante silenciosa como para oír la panadería." },
         { enT:"The Other Cove", esT:"La otra cala",
-          en:"They try another cove before noon. The tanks that make the road do not make the hill. Marek watches what the tide returns and does not call it a victory. Nico opens the bar anyway.",
-          es:"Prueban otra cala antes del mediodía. Los tanques que llegan al camino no llegan a la loma. Marek mira lo que devuelve la marea y no lo llama victoria. Nico abre el bar igual." }
+          en:"A second landing reaches another cove before noon. The tanks make it to the road but never clear the hill. Marek watches what the tide returns and refuses to call it a victory. Nico opens the bar anyway.",
+          es:"Un segundo desembarco alcanza otra cala antes del mediodía. Los tanques llegan al camino, pero no superan la colina. Marek observa lo que devuelve la marea y se niega a llamarlo victoria. Nico abre el bar de todos modos." }
       ],
       [
-        { enT:"The Posters", esT:"Los afiches",
-          en:"The Ledger comes in shouting. The posters hit the water before the soldiers do. Marshal Kade is still on the radio when the radio goes into the sea.\n\nSomeone on the dock starts laughing and cannot stop.",
-          es:"El Libro entra gritando. Los afiches caen al agua antes que los soldados. La mariscal Kade sigue en la radio cuando la radio se va al mar.\n\nAlguien en el muelle se larga a reír y no puede parar." },
-        { enT:"The Line Breaks", esT:"La fila se corta",
-          en:"They come back thinner and louder. The line breaks at the wall. Paco sits on a turret that is no longer moving and eats an orange.\n\nThe island does not cheer. It exhales.",
-          es:"Vuelven más flacos y más ruidosos. La fila se corta en el muro. Paco se sienta en una torreta que ya no se mueve y se come una naranja.\n\nLa isla no festeja. Suelta el aire." }
+        { enT:"The Posters", esT:"Los carteles",
+          en:"The Red Ledger attacks under its own slogans. The posters reach the water before the soldiers. Marshal Kade is still speaking over the radio when the radio falls into the sea.\n\nSomeone on the dock begins laughing and cannot stop.",
+          es:"El Libro Rojo ataca bajo sus propias consignas. Los carteles llegan al agua antes que los soldados. La mariscal Kade todavía habla por radio cuando el aparato cae al mar.\n\nAlguien en el muelle comienza a reír y no puede detenerse." },
+        { enT:"The Line Breaks", esT:"La línea cede",
+          en:"They return with fewer troops and more noise. The assault line breaks against the wall. Paco sits on a disabled turret and eats an orange.\n\nThe island does not celebrate. It exhales.",
+          es:"Regresan con menos tropas y más ruido. La línea de ataque se rompe contra el muro. Paco se sienta sobre una torreta inmóvil y come una naranja.\n\nLa isla no celebra. Respira aliviada." }
       ],
       [
         { enT:"The Parade Stops", esT:"El desfile se detiene",
-          en:"The Lattice arrives as if this were a procession. It is not. The gray ships turn when the citadel does not kneel.\n\nSoren Pell does not speak. The silence, for once, is yours.",
-          es:"La Celosía llega como si esto fuera un desfile. No lo es. Los barcos grises giran cuando la ciudadela no se arrodilla.\n\nSoren Pell no habla. El silencio, por una vez, es de ustedes." },
+          en:"The Crown Lattice arrives as if the invasion were a procession. It is not. Its gray ships turn when the citadel refuses to kneel.\n\nSoren Pell says nothing. For once, the silence belongs to the island.",
+          es:"La Celosía de la Corona llega como si la invasión fuera una procesión. No lo es. Sus barcos grises retroceden cuando la ciudadela se niega a arrodillarse.\n\nSoren Pell no dice nada. Por una vez, el silencio pertenece a la isla." },
         { enT:"Ash on the Water", esT:"Ceniza en el agua",
-          en:"They return without the music. The hulls burn low and even. By dusk the eastern cliff is just a cliff again.\n\nLena watches the smoke and says nothing, which on this island counts as a toast.",
-          es:"Vuelven sin la música. Los cascos arden bajos y parejos. Al anochecer el acantilado del este vuelve a ser solo un acantilado.\n\nLena mira el humo y no dice nada, que en esta isla cuenta como un brindis." }
+          en:"The Crown Lattice returns without music. Its hulls burn in a low, even line. By dusk, the eastern cliff belongs to the island again.\n\nLena watches the smoke without speaking. On this island, that counts as a toast.",
+          es:"La Celosía de la Corona regresa sin música. Sus cascos arden en una línea baja y uniforme. Al anochecer, el acantilado oriental vuelve a pertenecer a la isla.\n\nLena observa el humo en silencio. En esta isla, eso cuenta como un brindis." }
       ]
     ];
     const row=packs[Math.max(0,Math.min(2,bloc))][slot===1?1:0];
@@ -3035,25 +3130,25 @@
     S.chanceTitle=titles[b.key]||titles.pact;
     const recog=es
       ? (b.key==="ledger"
-        ? "La firma de "+who+" queda en un papel que llama a la isla una nación y a la campaña un error de cálculo. En casa van a tener que reimprimir los afiches."
+        ? "La firma de "+who+" aparece en un documento que llama nación a la isla y error de cálculo a la campaña. En su país deberán volver a imprimir los carteles."
         : b.key==="lattice"
-        ? who+" no pide perdón. Lo hace un heraldo, una sola vez, en un puerto que la Celosía ya no controla. La palabra es reconocimiento. La dice como si fuera una corrección de archivo."
-        : who+" manda una nota de una línea. Usa la palabra reconocimiento. No usa la palabra rendición. Bitcoin Country queda escrito como un país, con la tipografía que usan para los países que no les gustan.")
+        ? who+" no ofrece disculpas. Un heraldo pronuncia una sola palabra en un puerto que la Celosía ya no controla: reconocimiento. La presenta como si fuera una corrección administrativa."
+        : who+" envía una nota de una línea. Incluye la palabra reconocimiento y evita la palabra rendición. Bitcoin Country aparece como país, con la tipografía reservada para los países que no les agradan.")
       : (b.key==="ledger"
         ? who+" signs a paper that calls the island a nation and the campaign a miscalculation. The posters at home will have to be reprinted."
         : b.key==="lattice"
         ? who+" does not apologize. A herald does it once, in a harbor the Lattice no longer holds. The word is recognition. He makes it sound like a clerical correction."
         : who+" sends a one-line note. It uses the word recognition. It does not use the word surrender. Bitcoin Country is set in the type they use for countries they dislike.");
     const holiday=es
-      ? "La panadería cierra al mediodía. Alguien apoya un parlante en un cajón junto al muelle. Los chicos corren la playa con banderas que no coinciden. Es día de celebración nacional. Nadie espera a que el calendario esté de acuerdo."
+      ? "La panadería cierra al mediodía. Alguien coloca un altavoz sobre una caja junto al muelle. Los niños recorren la playa con banderas diferentes. Es un día de celebración nacional. Nadie espera la aprobación del calendario."
       : "The bakery closes at noon. Someone sets a speaker on a crate by the dock. Children run the beach with flags that do not match. It is a national day of celebration. Nobody waits for the calendar to agree.";
     const tail=won>=9
-      ? (es?"La radio queda lo bastante quieta como para oír la panadería.":"The radio goes quiet enough to hear the bakery.")
+      ? (es?"La radio queda lo bastante silenciosa como para oír la panadería.":"The radio goes quiet enough to hear the bakery.")
       : won>=6
-      ? (es?"La Celosía todavía puede decidir que esta derrota fue de otro. Si vienen, va a ser dentro de 210 velas.":"The Lattice may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
-      : (es?"El mar no terminó con ustedes. Otro bloque puede decidir que esta derrota fue de otro. Si vienen, va a ser dentro de 210 velas.":"The sea is not finished with you. Another bloc may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.");
+      ? (es?"La Celosía aún puede decidir que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":"The Lattice may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
+      : (es?"La guerra en el mar aún no termina. Otro bloque puede considerar que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":"The sea is not finished with you. Another bloc may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.");
     const open=es
-      ? name+" está derrotado. Los barcos dan la vuelta con las banderas todavía arriba, porque bajarlas pediría un formulario que nadie quiere firmar."
+      ? name+" ha sido derrotado. Sus barcos regresan con las banderas aún izadas, porque bajarlas exigiría un formulario que nadie quiere firmar."
       : "The "+name+" is beaten. The ships turn for home with the flags still up, because taking them down would require a form nobody wants to sign.";
     return open+"\n\n"+recog+"\n\n"+holiday+"\n\n"+rebuildNote()+"\n\n"+tail;
   }
@@ -3061,32 +3156,32 @@
     const es=chanceLang();
     const n=(S.bcBattlesWon||0);
     if(id==="blocReplies") return es
-      ? "Los tres bloques no contestan igual. Para el fin de la semana, los tres están armando igual."
-      : "The three blocs do not answer the same way. By the end of the week, all three are arming anyway.";
+      ? "Los tres bloques responden de forma distinta: reconocimiento, rechazo, demora o una exigencia de pago. Al final de la semana, los tres están movilizando sus flotas."
+      : "The three blocs answer differently: recognition, rejection, delay, or a demand for payment. By the end of the week, all three are mobilizing their fleets.";
     if(id==="blocAssault") return es
-      ? "Abren fuego. El comunicado ya está escrito. La isla tiene que aguantar."
-      : "They open fire. The communiqué is already written. The island has to hold.";
+      ? "Un bloque abre fuego y publica un comunicado preparado de antemano. La flota se acerca; la isla debe resistir."
+      : "A bloc opens fire and releases a communiqué prepared in advance. The fleet is closing in; the island must hold.";
     if(id==="battleWon"){
       const i=Math.max(0,(S.bcBattlesWon||1)-1);
       const en=[
-        "A landing dies in the sand. Paco brings one stamp back.",
-        "They try another cove. The tanks do not make the hill.",
+        "The first landing collapses on the beach. Paco returns with a stamp from the occupation order.",
+        "A second landing reaches another cove, but its tanks never clear the hill.",
         "",
-        "The posters hit the water before the soldiers do.",
-        "The line breaks at the wall. The island exhales.",
+        "The Red Ledger attacks under its own slogans. Its posters reach the water before its soldiers.",
+        "The assault line breaks against the wall. The island does not celebrate; it exhales.",
         "",
-        "The gray ships turn when the citadel does not kneel.",
-        "They return without the music. By dusk the cliff is just a cliff."
+        "The Crown Lattice arrives like a procession. Its gray ships turn when the citadel refuses to kneel.",
+        "The Crown Lattice returns without music. By dusk, the eastern cliff belongs to the island again."
       ];
       const sp=[
-        "Un desembarco muere en la arena. Paco vuelve con un sello.",
-        "Prueban otra cala. Los tanques no llegan a la loma.",
+        "El primer desembarco fracasa en la playa. Paco regresa con un sello de la orden de ocupación.",
+        "Un segundo desembarco alcanza otra cala, pero sus tanques no superan la colina.",
         "",
-        "Los afiches caen al agua antes que los soldados.",
-        "La fila se corta en el muro. La isla suelta el aire.",
+        "El Libro Rojo ataca bajo sus propias consignas. Sus carteles llegan al agua antes que sus soldados.",
+        "La línea de ataque se rompe contra el muro. La isla no celebra; respira aliviada.",
         "",
-        "Los barcos grises giran cuando la ciudadela no se arrodilla.",
-        "Vuelven sin la música. Al anochecer el acantilado vuelve a ser un acantilado."
+        "La Celosía de la Corona llega como una procesión. Sus barcos grises retroceden cuando la ciudadela se niega a arrodillarse.",
+        "La Celosía de la Corona regresa sin música. Al anochecer, el acantilado oriental vuelve a pertenecer a la isla."
       ];
       return (es?sp:en)[i] || (es?sp[0]:en[0]);
     }
@@ -3095,10 +3190,10 @@
       const b=warBloc(((won-1)/3)|0);
       const name=es?b.es:b.en;
       if(won>=9) return es
-        ? name+" reconoce a la nación. La panadería cierra. Es día de celebración nacional.\n\n"+rebuildNote()
+        ? name+" reconoce a la nación. La panadería cierra y comienza la celebración nacional.\n\n"+rebuildNote()
         : "The "+name+" recognizes the nation. The bakery closes. It is a national day of celebration.\n\n"+rebuildNote();
       return es
-        ? name+" reconoce a la nación. Es día de celebración nacional. Si vuelve otro bloque, va a ser dentro de 210 velas.\n\n"+rebuildNote()
+        ? name+" reconoce a la nación. Comienza una celebración nacional. Si otro bloque ataca, lo hará dentro de 210 velas.\n\n"+rebuildNote()
         : "The "+name+" recognizes the nation. It is a national day of celebration. If another bloc comes, it will be within 210 candles.\n\n"+rebuildNote();
     }
     return "";
@@ -3109,8 +3204,8 @@
       const report=blocReplyIsReport();
       card.kind=report?"report":"choice";
       card.opts=report?[]:[
-        {k:"a", label:"Pay for recognition", labelEs:"Pagar el reconocimiento"},
-        {k:"b", label:"Refuse", labelEs:"Rechazar"}
+        {k:"a", label:"Pay for formal recognition", labelEs:"Pagar por el reconocimiento formal"},
+        {k:"b", label:"Refuse the payment", labelEs:"Rechazar el pago"}
       ];
       return repliesText();
     }
@@ -3118,8 +3213,8 @@
       if((S.bcBattlesWon||0)===0){
         card.kind="choice";
         card.opts=[
-          {k:"go", label:"Hold the beach", labelEs:"Aguantar la playa"},
-          {k:"tut", label:"Battle tutorial", labelEs:"Tutorial de batalla"}
+          {k:"go", label:"Defend the beach", labelEs:"Defender la playa"},
+          {k:"tut", label:"Review the battle tutorial", labelEs:"Revisar el tutorial de batalla"}
         ];
       }else{
         card.kind="report";
@@ -3167,6 +3262,7 @@
   }
   function closeArc(card){
     const id=card&&card.id;
+    if(id==="notYet"&&S.bcLostPending){S.bcLostPending=false;S.battleTutOpen=false;finishArcHold();battleLostScreen();return;}
     const launch=(id==="theAnswer"||id==="blocAssault")&&S.bcDefensePending;
     const chainCabinet=id==="theQuestion"&&!!S.bcIndependent&&!S.chanceUsed.cabinet;
     const chainDecl=id==="cabinet";
@@ -3267,8 +3363,9 @@
     const chaining = !!(window.__arcForce && S.phase === "chance");
     if (S.phase !== "play" && !chaining) return;
     if (!S.chanceUsed) S.chanceUsed = {};
-    const pool = CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && arcUnlocked(c) && arcInPool(c));
-    const src = pool.length ? pool : CHANCE_CARDS.filter((c) => arcUnlocked(c) && !S.chanceUsed[c.id]);
+    const weighted = (cards) => cards.flatMap((c) => c.jobMilestone ? [c, c, c] : [c]);
+    const pool = weighted(CHANCE_CARDS.filter((c) => !S.chanceUsed[c.id] && arcUnlocked(c) && arcInPool(c)));
+    const src = pool.length ? pool : weighted(CHANCE_CARDS.filter((c) => arcUnlocked(c) && !S.chanceUsed[c.id]));
     if (!src.length && !window.__arcForce) return;
     const forced = window.__arcForce && CHANCE_CARDS.find((c) => c.id === window.__arcForce);
     let card = forced || (src.length ? src[(Math.random() * src.length) | 0] : null);
@@ -3283,6 +3380,7 @@
     if (card.id === S.arcBias) S.arcBias = "";
     noteArcSeen(card.id);
     S.chanceCard = card;
+    try { preloadSingleArt(getChanceArtMeta(card).src, true); } catch (e) {}
     S.chanceNote = "";
     S.chanceReadyNote = "";
     S.chanceLead = "";
@@ -3294,23 +3392,12 @@
     const es0 = chanceLang();
     const warBody = applyWarCard(card);
     let body = warBody != null ? warBody : weaveCast(es0 ? (card.bodyEs || card.body) : card.body);
-    if (card.job) body = fillJob(body);
+    if (card.job) body = fillJob(body, card.jobTier);
     if (card.kind === "report") {
       const before = bagSnap();
       S.chanceReadyNote = stampNation(resolveChance(card, "ok"));
       S.arcPending = bagSnap();
       S.arcTldr = formatArcTldr(before, S.arcPending);
-      const gift = formatBagDelta(before, S.arcPending);
-      if (card.id === "uncle" && gift) {
-        body = es0
-          ? body.replace("Te giró plata.", "Te giró " + gift + ".")
-          : body.replace("some money", gift);
-      }
-      if (card.id === "taxbill" && gift) {
-        body = es0
-          ? body.replace("No cambió.", "No cambió. Son " + gift + ".")
-          : body.replace("It has not.", "It has not. It is " + gift + ".");
-      }
       S.cash = before.cash; S.btc = before.btc; S.cold = before.cold;
       S.invuln = before.invuln;
       S.msig = before.msig;
@@ -3356,7 +3443,35 @@
     if ((after.invuln || 0) > (before.invuln || 0) + 0.4) {
       bits.push(es ? "unos segundos de invulnerabilidad" : "a few seconds of invuln");
     }
-    return bits.join(" · ");
+    if (!bits.length) return "";
+    return (es ? "Resultado · " : "Result · ") + bits.join(" · ");
+  }
+  function stripOutcomeMoney(text) {
+    if (!String(S.arcTldr || "").trim()) return String(text || "").trim();
+    let s = String(text || "");
+    s = s.replace(/\s*(?:\d+(?:\.\d+)?×)\s+(?:on|sobre)\s+(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)\b\.?/gi, "");
+    s = s.replace(/\s+(?:on|sobre|on a)\s+(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)(?:\s+buy-in)?\.?/gi, "");
+    s = s.replace(/\s+(?:then|y después)\s+\+?(?:\$[\d.,]+[kMBT]?|[\d.,]+\s*BTC)\b\.?/gi, "");
+    s = s.replace(/\s*[+\-−–]\s*\$[\d.,]+[kMBT]?\b\.?/g, "");
+    s = s.replace(/\s*[+\-−–]\s*[\d.,]+\s*BTC\b\.?/gi, "");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+is\b/gi, "That money is");
+    s = s.replace(/[\d.,]+\s*BTC\s+is\b/gi, "That money is");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+es\b/gi, "Esa plata es");
+    s = s.replace(/[\d.,]+\s*BTC\s+es\b/gi, "Esa plata es");
+    s = s.replace(/\$[\d.,]+[kMBT]?\s+ahora es\b/gi, "Esa plata ahora es");
+    s = s.replace(/[\d.,]+\s*BTC\s+ahora es\b/gi, "Esa plata ahora es");
+    s = s.replace(/\.\s*(?:and|y)\s*\.?$/gi, ".");
+    s = s.replace(/\s+(?:and|y)\s*\.?$/gi, ".");
+    s = s.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").replace(/[ \t]{2,}/g, " ").replace(/\s+\./g, ".");
+    return s.trim();
+  }
+  function arcMoneyHtml(prose) {
+    const story = stripOutcomeMoney(prose);
+    const d = String(S.arcTldr || "").trim();
+    const show = !!(d && story.indexOf(d) < 0);
+    let html = story ? "<p class=\"arc-body\">" + story + "</p>" : "";
+    if (show) html += "<p class=\"arc-result\">" + d + "</p>";
+    return html;
   }
   function peelArcNote(note) {
     return String(note || "")
@@ -3382,8 +3497,10 @@
   }
   function arcTldrBtn() {
     const size = ARC_TEXT === "s" ? "S" : ARC_TEXT === "l" ? "L" : "M";
-    return "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\">" + t("chanceTldr") + "</button>"
-      + "<button type=\"button\" class=\"arc-size-tog\" id=\"arc-size-tog\">" + size + "</button>";
+    return "<div class=\"arc-top-actions\">"
+      + "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\" title=\"" + (chanceLang() ? "Resumen corto" : "Short summary") + "\">" + t("chanceTldr") + "</button>"
+      + "<button type=\"button\" class=\"arc-size-tog\" id=\"arc-size-tog\" aria-label=\"" + (chanceLang() ? "Tamaño del texto: " : "Text size: ") + size + "\" title=\"" + (chanceLang() ? "Tamaño del texto (S/M/L)" : "Text size (S/M/L)") + "\">" + size + "</button>"
+      + "</div>";
   }
   function arcStoryHtml(card, body) {
     const tldr = cardTldr(card);
@@ -3391,16 +3508,17 @@
     return "<p class=\"arc-body\">" + text + "</p>";
   }
   function arcOutcomeHtml() {
-    const shown = peelArcNote(S.chanceNote) || S.chanceNote || "";
+    const raw = peelArcNote(S.chanceNote) || S.chanceNote || "";
     let text;
     if (ARC_TLDR) {
-      const punch = punchline(shown) || shown;
+      const peeled = stripOutcomeMoney(raw);
+      const punch = punchline(peeled) || peeled;
       const tldr = S.chanceCard ? cardTldr(S.chanceCard) : "";
       text = punch || tldr;
     } else {
-      text = shown;
+      text = raw;
     }
-    return "<p class=\"arc-body\">" + withArcDelta(text) + "</p>";
+    return arcMoneyHtml(text);
   }
 
   function commitArcBooks() {
@@ -3490,7 +3608,7 @@
       S.chanceBody=battleTutPlain();
       S.chanceTitle={en:"Battle tutorial", es:"Tutorial de batalla"};
       card.kind="choice";
-      card.opts=[{k:"go", label:"Hold the beach", labelEs:"Aguantar la playa"}];
+      card.opts=[{k:"go", label:"Begin the defense", labelEs:"Iniciar la defensa"}];
       S.chanceNote="";
       renderOverlay();
       return;
@@ -3893,19 +4011,11 @@
     } catch (e) {}
   }
 
-  function defenseProfile(){
-    const delta=(S.bcArmy||0)-(S.bcWorld||20);
-    if(delta<=-30)return {waves:8,rate:.72,enemy:1.30};
-    if(delta<=-15)return {waves:7,rate:.80,enemy:1.20};
-    if(delta<=-5)return {waves:6,rate:.88,enemy:1.12};
-    if(delta<10)return {waves:6,rate:1,enemy:1};
-    if(delta<25)return {waves:5,rate:1.08,enemy:.92};
-    return {waves:4,rate:1.16,enemy:.84};
-  }
   function armyBattleMods(tier){
     tier=Math.max(0,Math.min(7,tier|0));
     const lives=Math.floor(tier/2);
-    return {speed:tier*5,shot:0,shield:tier*5,power:1,medic:lives>0,wall:false,lives,hearts:3+lives};
+    // Every tier now matters: shot speed, fewer attackers, the citadel wall from tier 5 and double-damage shells at tier 7.
+    return {speed:tier*5,shot:tier*4,shield:tier*5,power:tier>=7?2:1,medic:lives>0,wall:tier>=5,fewer:tier*0.04,lives,hearts:3+lives};
   }
   function armyTier(){
     let tier=S.bcArmyTier|0;
@@ -3917,7 +4027,9 @@
   function armyTierQuote(){
     const px=clampPx(S.price);
     const net=Math.max(0,netUsd());
-    const usd=Math.max(1000*px, net*0.05);
+    // Scales with the tier being bought: 250, 500 … 1750 BTC (same 7000 BTC total as the old flat 1000/tier, cheaper to start).
+    const nextTier=Math.min(7,armyTier()+1);
+    const usd=Math.max(250*nextTier*px, net*0.05);
     const cash=Math.max(0,S.cash||0);
     const btcUsd=Math.max(0,(S.btc||0)*px);
     const preferBtc=preferBtcDisplay();
@@ -4024,27 +4136,36 @@
     }
     return a;
   }
+  // Coherent island geography: each bloc invades a different zone of the island, and its three
+  // battles move inland from open coast -> mixed land/water -> closed or labyrinthine ground (the finale stays on land).
+  const MAP_ZONES=[
+    {key:"north", en:"NORTH PORT", es:"PUERTO NORTE",
+     open:["harbor","bay"], mixed:["roadstead","twinPiers","seaHarbor"], closed:["docks","brickYard"]},
+    {key:"west", en:"WEST WILDS", es:"MONTE OESTE",
+     open:["cove","peninsula"], mixed:["seaBay","archipelago","channel"], closed:["riverWoods","canalMaze"]},
+    {key:"east", en:"EAST CAPITAL", es:"CAPITAL ESTE",
+     open:["beachAirport","headland"], mixed:["seaPeninsula","caribbean","openSea","seaVillage"], closed:["cliffs","seatown","blockFort"]}
+  ];
+  const MAP_STAGE_NAME={open:["OPEN COAST","COSTA ABIERTA"],mixed:["LAND AND SEA","TIERRA Y MAR"],closed:["INLAND","TIERRA ADENTRO"]};
   function ensureMapPlan(){
-    if(S.bcMapPlan&&S.bcMapPlan.length===9)return S.bcMapPlan;
+    if(S.bcMapPlan&&S.bcMapPlan.length===9&&S.bcMapPlan[0].zone)return S.bcMapPlan;
     if(!S.bcMapSeed)S.bcMapSeed=(Math.random()*0x7fffffff)|1;
     const rng=mapMulberry(S.bcMapSeed);
-    const land=shuffleIds(rng,MAP_TYPES.filter((t)=>!t.naval));
-    const naval=shuffleIds(rng,MAP_TYPES.filter((t)=>t.naval));
-    const mids=shuffleIds(rng,[0,1,3,4,6,7]);
-    const navalSet={};
-    mids.slice(0,3).forEach((n)=>{navalSet[n]=1;});
-    let li=0,ni=0;
+    const byId={};MAP_TYPES.forEach((t)=>{byId[t.id]=t;});
     const plan=[];
+    const order=shuffleIds(rng,[0,1,2]); // which zone each bloc lands on varies per run
+    const seaAt=[0,1,2].map(()=>rng()<0.5?0:1); // exactly one sea battle per bloc: its 1st or 2nd, never the finale
     for(let level=0;level<9;level++){
-      const finale=(level%3)===2;
-      const isNaval=!finale&&!!navalSet[level];
-      const pool=isNaval?naval:land;
-      const idx=isNaval?ni++:li++;
-      const type=pool[idx%pool.length];
+      const zone=MAP_ZONES[order[(level/3)|0]];
+      const slot=level%3;
+      const stage=slot===2?"closed":(slot===seaAt[(level/3)|0]?"mixed":"open");
+      const pool=zone[stage];
+      const type=byId[pool[(rng()*pool.length)|0]]||MAP_TYPES[0];
       plan.push({
-        id:type.id, naval:isNaval, theme:type.theme, river:!!type.river,
+        id:type.id, naval:!!type.naval, theme:type.theme, river:!!type.river,
         fx:rng()<0.5, fy:rng()<0.5,
-        dress:type.theme, light:type.theme==="caribbean"?rng()<0.85:rng()<0.5
+        dress:type.theme, light:type.theme==="caribbean"?rng()<0.85:rng()<0.5,
+        zone:zone.key, zoneEn:zone.en, zoneEs:zone.es, stage
       });
     }
     S.bcMapPlan=plan;
@@ -4068,8 +4189,8 @@
       mfill(m,10,14,19,24,3);
       mfill(m,6,6,6,14,7);
       mfill(m,22,6,22,14,7);
-      mfill(m,10,16,10,23,7);
-      mfill(m,19,16,19,23,7);
+      mfill(m,13,18,13,24,7); // basin docks: straight from the south quay into open basin water
+      mfill(m,16,18,16,24,7);
     }else if(id==="docks"){
       mfill(m,0,12,29,39,6);
       mfill(m,6,3,6,12,7);
@@ -4555,8 +4676,8 @@
       if(out.some((q)=>Math.hypot(q.x-p.x,q.y-p.y)<72))continue;
       out.push({x:p.x,y:p.y});
     }
-    if(out.length<3){
-      for(let y=1;y<BC_R-1&&out.length<3;y+=2)for(let x=1;x<BC_C-1&&out.length<3;x+=2){
+    if(out.length<4){
+      for(let y=1;y<BC_R-1&&out.length<4;y+=2)for(let x=1;x<BC_C-1&&out.length<4;x+=2){
         const t=m[y*BC_C+x];
         const ok=naval?t===3:(t===0||t===6||t===7);
         if(!ok)continue;
@@ -4626,6 +4747,28 @@
       }
       if(land===1&&coastHash(x,y,salt+3)<12)m[y*BC_C+x]=6;
     }
+  }
+  // Straight orthogonal bridge from any cell of `cells` to the first tile accepted by `isTarget`,
+  // crossing only open water. Picks the shortest such span; no staircases.
+  function straightBridge(m,cells,isTarget,maxLen){
+    let best=null;
+    for(const i of cells){
+      const x0=i%BC_C,y0=(i/BC_C)|0;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const span=[];let x=x0+dx,y=y0+dy;
+        while(x>0&&y>0&&x<BC_C-1&&y<BC_R-1&&span.length<=maxLen&&m[y*BC_C+x]===3){span.push(y*BC_C+x);x+=dx;y+=dy;}
+        if(!span.length||span.length>maxLen)continue;
+        if(x<0||y<0||x>=BC_C||y>=BC_R)continue;
+        const j=y*BC_C+x;
+        if(!isTarget(j))continue;
+        // keep water on both sides of the span so it reads as a bridge, not a causeway glued to land
+        const px=dy?1:0,py=dx?1:0;
+        if(span.some((k)=>{const kx=k%BC_C,ky=(k/BC_C)|0;return m[(ky+py)*BC_C+kx+px]!==3||m[(ky-py)*BC_C+kx-px]!==3;}))continue;
+        if(!best||span.length<best.length)best=span;
+      }
+    }
+    if(best)for(const k of best)m[k]=7;
+    return best?best.length:0;
   }
   function seedIslands(m,rng){
     const N=BC_C*BC_R;
@@ -4725,62 +4868,15 @@
       else if(idx%2===0)link=true;
       else link=rng()<0.4;
       if(!link)return;
-      let from=cells[0], best=-1, bd=1e9;
-      for(const i of cells){
-        const x=i%BC_C, y=(i/BC_C)|0;
-        for(let j=0;j<N;j+=2){
-          if(!main[j])continue;
-          const dx=x-(j%BC_C), dy=y-((j/BC_C)|0);
-          const d=dx*dx+dy*dy;
-          if(d<bd){bd=d;best=j;from=i;}
-        }
-      }
-      if(best<0||bd>16*16)return;
-      let x=from%BC_C, y=(from/BC_C)|0;
-      const gx=best%BC_C, gy=(best/BC_C)|0;
-      const own={};
-      for(const id of cells)own[id]=1;
-      for(let s=0;s<22;s++){
-        const dx=gx-x, dy=gy-y;
-        if(!dx&&!dy)break;
-        if(Math.abs(dx)>=Math.abs(dy))x+=dx>0?1:-1;
-        else y+=dy>0?1:-1;
-        if(x<0||y<0||x>=BC_C||y>=BC_R)break;
-        const j=y*BC_C+x;
-        if(own[j])continue;
-        if(m[j]!==3)break;
-        m[j]=7;
-      }
+      const own={};for(const id of cells)own[id]=1;
+      straightBridge(m,cells,(j)=>!!main[j]&&!own[j],12);
     });
     let links=0;
     for(let a=0;a<islands.length&&links<2;a++){
       for(let b=a+1;b<islands.length&&links<2;b++){
         if(rng()>0.5)continue;
-        let best=1e9, ia=islands[a][0], ib=islands[b][0];
-        for(const i of islands[a])for(const j of islands[b]){
-          const dx=(i%BC_C)-(j%BC_C), dy=((i/BC_C)|0)-((j/BC_C)|0);
-          const d=dx*dx+dy*dy;
-          if(d<best){best=d;ia=i;ib=j;}
-        }
-        if(best<9||best>10*10)continue;
-        const own={};
-        for(const id of islands[a])own[id]=1;
-        for(const id of islands[b])own[id]=1;
-        let x=ia%BC_C, y=(ia/BC_C)|0;
-        const gx=ib%BC_C, gy=(ib/BC_C)|0;
-        let laid=0;
-        for(let s=0;s<16;s++){
-          const dx=gx-x, dy=gy-y;
-          if(!dx&&!dy)break;
-          if(Math.abs(dx)>=Math.abs(dy))x+=dx>0?1:-1;
-          else y+=dy>0?1:-1;
-          if(x<0||y<0||x>=BC_C||y>=BC_R)break;
-          const j=y*BC_C+x;
-          if(own[j])continue;
-          if(m[j]!==3)break;
-          m[j]=7;
-          laid++;
-        }
+        const inB={};for(const id of islands[b])inB[id]=1;
+        const laid=straightBridge(m,islands[a],(j)=>!!inB[j],8);
         if(laid)links++;
       }
     }
@@ -5492,9 +5588,15 @@
     return {seen,beaches};
   }
   function openMaze(m,sx,sy){
-    for(let pass=0;pass<90;pass++){
+    // only tiles on the shield's own landmass (walls count as land, water does not) must become reachable
+    let walk=0;
+    {const seen=new Uint8Array(m.length),q=[sy*BC_C+sx];seen[q[0]]=1;
+     for(let k=0;k<q.length;k++){const c=q[k],x=c%BC_C,y=(c/BC_C)|0;if(mazeWalk(m[c]))walk++;
+       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;const j=yy*BC_C+xx;if(!seen[j]&&m[j]!==3){seen[j]=1;q.push(j);}}}}
+    for(let pass=0;pass<240;pass++){
       const hit=mazeReach(m,sx,sy);
-      if(hit.beaches>=4)return;
+      let got=0;for(let i=0;i<m.length;i++)if(hit.seen[i])got++;
+      if(hit.beaches>=4&&got>=walk)return;
       let best=null;
       for(let y=1;y<BC_R-1&&!best;y++)for(let x=1;x<BC_C-1;x++){
         const t=m[y*BC_C+x];
@@ -5528,86 +5630,132 @@
       else break;
     }
   }
-  function paintMazeBed(m){
+  // Maze maps are a coherent piece of the island: either the southern half (coast across the north) or a
+  // corner of the island (coast curving between two edges). Land naturally reaches 2-3 map edges.
+  function paintMazeBed(m,rng){
+    const p=rng()*6.28,q=rng()*6.28,corner=rng()<0.5;
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
-      const dx=(x-14.4)/12.4, dy=(y-18.6)/16.2;
-      const e=dx*dx+dy*dy;
-      if(e>1.05)continue;
-      m[y*BC_C+x]=e>0.86?0:6;
+      let land;
+      if(corner){
+        const dx=x+2,dy=(BC_R+1)-y,th=Math.atan2(dy,dx);
+        const R=31+2.4*Math.sin(th*5+p)+1.4*Math.sin(th*11+q);
+        land=Math.hypot(dx,dy)<R;
+      }else{
+        const cy=7.5+2.2*Math.sin(x*0.31+p)+1.3*Math.sin(x*0.83+q);
+        land=y>cy;
+      }
+      m[y*BC_C+x]=land?6:3;
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const i=y*BC_C+x;if(m[i]!==6)continue;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3){m[i]=0;break;}}
     }
   }
-  function carveMazeWater(m,id){
-    const set=(x,y)=>{if(x>=1&&y>=1&&x<BC_C-1&&y<BC_R-1&&m[y*BC_C+x]!==3)m[y*BC_C+x]=3;};
-    if(id==="canalMaze"){
-      for(let y=8;y<=30;y++){set(19,y);set(20,y);}
-      for(let x=19;x<BC_C;x++){set(x,22);set(x,23);}
-    }else if(id==="blockFort"){
-      for(let y=11;y<=15;y++)for(let x=6;x<=9;x++)set(x,y);
-      for(let y=24;y<=28;y++)for(let x=18;x<=22;x++)set(x,y);
-      for(let y=28;y<BC_R;y++){set(20,y);set(21,y);}
-    }else{
-      for(let x=0;x<=9;x++){set(x,15);set(x,16);}
-      for(let y=9;y<=13;y++)for(let x=21;x<=24;x++)set(x,y);
+  // canalMaze gets a real river: it rises at the inland point farthest from the sea and meanders down
+  // the distance field to the coast, widening into an estuary. The other mazes keep dry land.
+  function carveMazeWater(m,id,rng){
+    if(id!=="canalMaze")return;
+    const N=BC_C*BC_R,dist=new Int16Array(N).fill(-1),q=[];
+    for(let i=0;i<N;i++)if(m[i]===3){dist[i]=0;q.push(i);}
+    for(let k=0;k<q.length;k++){const c=q[k],x=c%BC_C,y=(c/BC_C)|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;const j=yy*BC_C+xx;if(dist[j]<0){dist[j]=dist[c]+1;q.push(j);}}}
+    let cur=-1,md=-1;for(let i=0;i<N;i++){const x=i%BC_C,y=(i/BC_C)|0;if(x<7||y<5||x>BC_C-8||y>BC_R-6)continue;if(dist[i]>md){md=dist[i];cur=i;}}
+    if(cur<0)return;
+    const ph=rng()*6.28;
+    for(let step=0;step<120&&cur>=0;step++){
+      const x=cur%BC_C,y=(cur/BC_C)|0,dHere=dist[cur];
+      const w=dHere<=3?3:2;
+      for(let oy=0;oy<w;oy++)for(let ox=0;ox<w;ox++){const xx=x+ox-((w/2)|0),yy=y+oy-((w/2)|0);if(xx>=1&&yy>=1&&xx<BC_C-1&&yy<BC_R-1)m[yy*BC_C+xx]=3;}
+      if(dHere<=0)break;
+      // prefer going downhill, with a sideways swing so the river meanders instead of running straight
+      const swing=Math.sin(step*0.45+ph);
+      let best=-1,bs=1e9;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const xx=x+dx,yy=y+dy;if(xx<1||yy<1||xx>=BC_C-1||yy>=BC_R-1)continue;
+        const j=yy*BC_C+xx;const edgeP=(xx<4||xx>BC_C-5||yy<3||yy>BC_R-4)?2.5:0;const sc=edgeP+dist[j]*1.0-(dist[j]===dHere?0.6:0)*Math.abs(swing)+(dx*swing+dy*swing>0?-0.35:0.35);
+        if(dist[j]<=dHere&&sc<bs){bs=sc;best=j;}
+      }
+      cur=best;
+    }
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const i=y*BC_C+x;if(m[i]!==6)continue;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<BC_C&&yy<BC_R&&m[yy*BC_C+xx]===3){m[i]=0;break;}}
     }
   }
-  function stampMazeWalls(m,id,prot){
-    const wall=(x,y)=>{
-      if(x<2||y<2||x>=BC_C-2||y>=BC_R-2||prot(x,y))return;
-      if(m[y*BC_C+x]===6)m[y*BC_C+x]=1;
+  function pruneMazeStubs(m,prot){
+    // drop wall specks: 4-connected wall pieces of 1-2 tiles read as noise; real walls/blocks are kept whole
+    const seen=new Uint8Array(m.length);
+    for(let i=0;i<m.length;i++){
+      if(seen[i]||(m[i]!==1&&m[i]!==2))continue;
+      const q=[i];seen[i]=1;
+      for(let k=0;k<q.length;k++){const c=q[k],x=c%BC_C,y=(c/BC_C)|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=BC_C||yy>=BC_R)continue;const jj=yy*BC_C+xx;if(!seen[jj]&&(m[jj]===1||m[jj]===2)){seen[jj]=1;q.push(jj);}}}
+      if(q.length<=2&&!q.some((c)=>prot(c%BC_C,(c/BC_C)|0)))for(const c of q)m[c]=6;
+    }
+  }
+  function stampMazeWalls(m,id,prot,rng,fortC){
+    const dry=(x,y)=>{
+      if(x<2||y<2||x>=BC_C-2||y>=BC_R-2||prot(x,y))return false;
+      if(m[y*BC_C+x]!==6)return false;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(mtile(m,x+dx,y+dy)===3)return false;
+      return true;
     };
+    const wall=(x,y)=>{if(dry(x,y))m[y*BC_C+x]=1;};
+    let cx=0,cy=0,n=0;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]===6){cx+=x;cy+=y;n++;}
+    cx=n?Math.round(cx/n):15;cy=n?Math.round(cy/n):22;
     if(id==="blockFort"){
-      for(let y=4;y<BC_R-3;y++){
-        if(((y-4)%5)!==4)continue;
-        for(let x=4;x<BC_C-4;x++){
-          const gap=(x+((y/5)|0)%2*2)%6;
-          if(gap<2)continue;
-          wall(x,y);
+      // Simple geometric fortification in indestructible metal (tile 2): two concentric rectangular rings
+      // around the citadel with fixed 2-tile gates (inner ring N/S, outer ring E/W), plus four straight
+      // blocks between the rings. Walls are only dropped where the coast cuts the ring.
+      const pc=fortC||{x:cx,y:cy};
+      const steel=(x,y)=>{if(dry(x,y))m[y*BC_C+x]=2;};
+      const ring=(hx,hy,gatesNS,gatesEW)=>{
+        for(let x=pc.x-hx;x<=pc.x+hx;x++){
+          const mid=Math.abs(x-pc.x)<=1&&gatesNS;
+          if(!mid){steel(x,pc.y-hy);steel(x,pc.y+hy);}
+        }
+        for(let y=pc.y-hy;y<=pc.y+hy;y++){
+          const mid=Math.abs(y-pc.y)<=1&&gatesEW;
+          if(!mid){steel(pc.x-hx,y);steel(pc.x+hx,y);}
+        }
+      };
+      // size the outer ring so it sits entirely on dry land inside the map; inner ring and blocks scale with it
+      const ringDry=(hx,hy)=>{
+        for(let x=pc.x-hx;x<=pc.x+hx;x++)if(!dry(x,pc.y-hy)||!dry(x,pc.y+hy))return false;
+        for(let y=pc.y-hy;y<=pc.y+hy;y++)if(!dry(pc.x-hx,y)||!dry(pc.x+hx,y))return false;
+        return true;
+      };
+      let ox=Math.min(12,pc.x-2,BC_C-3-pc.x),oy=Math.min(13,pc.y-2,BC_R-3-pc.y);
+      while((ox>7||oy>7)&&!ringDry(ox,oy)){if(ox>7)ox--;if(oy>7)oy--;}
+      const ix=Math.max(6,Math.round(ox*0.62)),iy=Math.max(6,Math.round(oy*0.62)); // >=6 keeps the inner ring clear of the citadel pad
+      ring(ix,iy,true,false);
+      ring(ox,oy,false,true);
+      const bx=Math.round((ix+ox)/2),byy=Math.round((iy+oy)/2);
+      if(ox-ix>=3&&oy-iy>=3)for(const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]]){
+        for(let k=0;k<2;k++){steel(pc.x+sx*bx,pc.y+sy*(byy-k));steel(pc.x+sx*(bx-k),pc.y+sy*byy);}
+      }
+    }else if(id==="brickYard"){
+      // A real town: rows of destructible houses (tile 1) in 2-deep blocks along a street grid,
+      // some blocks left as tree-lined plazas. No walls.
+      const ox=(rng()*4)|0,oy=(rng()*3)|0;
+      for(let by=2+oy;by<BC_R-2;by+=4)for(let bx=2+ox;bx<BC_C-2;bx+=6){
+        if(rng()<0.2){ // plaza: corner trees, open square
+          for(const [tx,ty] of [[bx,by],[bx+3,by],[bx,by+2],[bx+3,by+2]])if(dry(tx,ty))m[ty*BC_C+tx]=4;
+          continue;
+        }
+        for(const hx of [bx,bx+3]){
+          let ok=true;for(let y=by;y<by+2;y++)for(let x=hx;x<hx+2;x++)if(!dry(x,y))ok=false;
+          if(ok)for(let y=by;y<by+2;y++)for(let x=hx;x<hx+2;x++)m[y*BC_C+x]=1;
         }
       }
-      for(let x=4;x<BC_C-4;x++){
-        if(((x-4)%5)!==4)continue;
-        for(let y=4;y<BC_R-3;y++){
-          const gap=(y+((x/5)|0)%2*2)%6;
-          if(gap<2)continue;
-          wall(x,y);
-        }
+    }else{
+      // hedgerows: broken field boundaries
+      for(let y=3;y<BC_R-2;y+=4){
+        let x=2+((rng()*3)|0);
+        while(x<BC_C-2){const len=3+((rng()*4)|0);for(let k=0;k<len;k++)wall(x+k,y);x+=len+2+((rng()*2)|0);}
       }
-      return;
-    }
-    if(id==="canalMaze"){
-      for(let y=5;y<BC_R-3;y++){
-        if(((y-5)%4)!==3)continue;
-        const shift=((y/4)|0)%2;
-        for(let x=3;x<BC_C-3;x++){
-          const gap=(x+shift*3)%9;
-          if(gap<2)continue;
-          wall(x,y);
-        }
-      }
-      for(let x=5;x<BC_C-4;x+=7){
-        for(let y=5;y<BC_R-3;y++){
-          if(((y+x)%5)<2)continue;
-          wall(x,y);
-        }
-      }
-      return;
-    }
-    for(let y=4;y<BC_R-3;y++){
-      if(((y-4)%3)!==2)continue;
-      const shift=((y/3)|0)%2;
-      for(let x=3;x<BC_C-3;x++){
-        const gap=(x+shift*2)%6;
-        if(gap<2)continue;
-        wall(x,y);
-      }
-    }
-    for(let x=4;x<BC_C-3;x++){
-      if(((x-4)%3)!==2)continue;
-      const shift=((x/3)|0)%2;
-      for(let y=4;y<BC_R-3;y++){
-        const gap=(y+shift*2)%7;
-        if(gap<2)continue;
-        wall(x,y);
+      for(let x=4;x<BC_C-2;x+=7){
+        let y=3+((rng()*3)|0);
+        while(y<BC_R-2){const len=2+((rng()*3)|0);for(let k=0;k<len;k++)wall(x,y+k);y+=len+3;}
       }
     }
   }
@@ -5836,18 +5984,144 @@
     built.dir=faceIn(built.home);
     return built;
   }
+  // ---- Geography tidy-up, run on every generated map before spawns are picked ----
+  // Water must be the sea (touching the map edge), a river/canal that reaches it, or a real pond; piers run
+  // straight from land into open water; exactly one lighthouse on a plausible coastal spot.
+  // The harbor's basin is its whole point: later coast/cover passes may silt it up, so re-open it as a
+  // rectangular basin with a mouth to the sea and two straight docks rooted on the south quay.
+  function keepHarborBasin(m,pad){
+    const prot=(x,y)=>pad&&x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
+    const soft=(t)=>t===0||t===6||t===4||t===8||t===7||t===3;
+    for(let y=15;y<=23;y++)for(let x=11;x<=18;x++){if(!prot(x,y)&&soft(m[y*BC_C+x]))m[y*BC_C+x]=3;}
+    for(let x=11;x<=18;x++)for(let y=14;y>=1;y--){const i=y*BC_C+x;if(m[i]===3)break;if(prot(x,y)||!soft(m[i]))break;m[i]=3;}
+    for(const x of [13,16]){for(let y=19;y<=24;y++)if(!prot(x,y))m[y*BC_C+x]=7;}
+    // outer docks at x=6 and x=22 run north from the shore: keep open water in front of and beside them
+    for(const px of [6,22]){
+      let shore=14;for(let y=14;y>=2;y--){if(m[y*BC_C+px]===7||m[y*BC_C+px]===3)continue;shore=y;break;}
+      for(let y=2;y<=13;y++)for(let x=px-1;x<=px+1;x++){if(!prot(x,y)&&soft(m[y*BC_C+x]))m[y*BC_C+x]=3;}
+      for(let y=7;y<=14;y++)if(!prot(px,y))m[y*BC_C+px]=7;
+      void shore;
+    }
+  }
+  function tidyGeography(m,pad,rng,built){
+    const W=BC_C,H=BC_R,N=W*H;
+    const prot=(x,y)=>pad&&x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
+    const at=(x,y)=>(x<0||y<0||x>=W||y>=H)?3:m[y*W+x];
+    const landish=(t)=>t===0||t===6||t===1||t===4||t===5||t===9||t===2;
+    const O4=[[1,0],[-1,0],[0,1],[0,-1]];
+    // 1) water bodies
+    const comp=new Int32Array(N).fill(-1);let cid=0;
+    for(let i=0;i<N;i++){
+      if(m[i]!==3||comp[i]>=0)continue;
+      const q=[i];comp[i]=cid;let edge=false,x0=W,x1=0,y0=H,y1=0;
+      for(let k=0;k<q.length;k++){
+        const c=q[k],cx=c%W,cy=(c/W)|0;
+        if(cx===0||cy===0||cx===W-1||cy===H-1)edge=true;
+        x0=Math.min(x0,cx);x1=Math.max(x1,cx);y0=Math.min(y0,cy);y1=Math.max(y1,cy);
+        for(const [dx,dy] of O4){const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;const j=ny*W+nx;if(m[j]===3&&comp[j]<0){comp[j]=cid;q.push(j);}}
+      }
+      const fill=q.length/((x1-x0+1)*(y1-y0+1));
+      const pond=q.length>=8&&fill>=0.45;
+      if(!edge&&!pond)for(const c of q){const cx=c%W,cy=(c/W)|0;if(!prot(cx,cy))m[c]=6;}
+      cid++;
+    }
+    // notches: a water tile boxed in by land on 3-4 sides is a pixel artefact, not a bay
+    for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
+      if(at(x,y)!==3||prot(x,y))continue;
+      let l=0,pier=false;for(const [dx,dy] of O4){const t=at(x+dx,y+dy);if(landish(t))l++;if(t===7)pier=true;}
+      if(!pier&&l>=4)m[y*W+x]=6;
+    }
+    // lone land specks floating in the sea
+    for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
+      const t=at(x,y);if((t!==0&&t!==6)||prot(x,y))continue;
+      let l=0;for(const [dx,dy] of O4)if(at(x+dx,y+dy)!==3)l++;
+      if(l===0)m[y*W+x]=3;
+    }
+    // 2) piers: straight, uninterrupted, from land out to open water
+    const wetish=(t)=>t===3||t===8;
+    for(const vert of [true,false]){
+      const A=vert?W:H,B=vert?H:W;
+      const g=(a,b)=>vert?at(a,b):at(b,a);
+      const put=(a,b,t)=>{const x=vert?a:b,y=vert?b:a;if(x>=0&&y>=0&&x<W&&y<H&&!prot(x,y))m[y*W+x]=t;};
+      const pierAt=(a,b)=>g(a,b)===7&&wetish(g(a-1,b))&&wetish(g(a+1,b));
+      for(let a=0;a<A;a++){
+        let b=0;
+        while(b<B){
+          if(!pierAt(a,b)){b++;continue;}
+          let s0=b,e0=b;
+          // merge runs split by up to 2 rock/sand/tree tiles that sit in the water
+          for(;;){
+            let k=e0+1;while(k<B&&pierAt(a,k))k++;
+            e0=k-1;let gap=0;
+            while(gap<2&&k+gap<B&&!pierAt(a,k+gap)&&wetish(g(a-1,k+gap))&&wetish(g(a+1,k+gap))&&g(a,k+gap)!==3)gap++;
+            if(gap>0&&k+gap<B&&pierAt(a,k+gap)){e0=k+gap;continue;}
+            break;
+          }
+          const before=g(a,s0-1),after=g(a,e0+1);
+          const rootA=landish(before)||before===7,rootB=landish(after)||after===7;
+          if(rootA&&rootB){for(let k=s0;k<=e0;k++)put(a,k,7);} // a bridge: just make it continuous
+          else if(!rootA&&!rootB){for(let k=s0;k<=e0;k++)put(a,k,3);} // floating plank: drop it
+          else{
+            const dir=rootA?1:-1,start=rootA?s0:e0,len=e0-s0+1;
+            for(let k=0;k<len;k++){const bb=start+dir*k;put(a,bb,7);if(g(a-1,bb)===8)put(a-1,bb,3);if(g(a+1,bb)===8)put(a+1,bb,3);}
+            // the tip must open onto water: clear rocks right past it, or trim the pier back if land is there
+            let tip=start+dir*(len-1);
+            for(let k=1;k<=2;k++){const bb=tip+dir*k;if(g(a,bb)===8)put(a,bb,3);[-1,1].forEach((o)=>{if(g(a+o,bb)===8)put(a+o,bb,3);});}
+            while(len>1&&g(a,tip+dir)!==3){put(a,tip,3);tip-=dir;}
+          }
+          b=e0+1;
+        }
+      }
+    }
+    // 3) exactly one lighthouse, on a coastal point (most water around it), never inland
+    const spawnPts=built?[].concat(built.spawns||[],built.landSpawns||[],built.seaSpawns||[],built.home?[built.home]:[]):[];
+    const lightOk=(x,y)=>{
+      // the sprite is ~3 tiles tall, so also keep the tiles above it clear of docks/roads/bridges
+      for(let dy=-4;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(at(x+dx,y+dy)===7||at(x+dx,y+dy)===5)return false;
+      for(const p of spawnPts){if(Math.hypot(p.x/BC_TS-x,p.y/BC_TS-y)<4)return false;}
+      return x>=2&&y>=2&&x<W-2&&y<H-2;
+    };
+    const lights=[];for(let i=0;i<N;i++)if(m[i]===9){if(lightOk(i%W,(i/W)|0))lights.push(i);else m[i]=0;}
+    const coastScore=(x,y)=>{let w=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&at(x+dx,y+dy)===3)w++;return w;};
+    let keep=-1,best=-1;
+    for(const i of lights){const sc=coastScore(i%W,(i/W)|0);if(sc>best){best=sc;keep=i;}}
+    for(const i of lights)if(i!==keep)m[i]=0;
+    if(keep>=0&&best<2){m[keep]=0;keep=-1;}
+    if(keep<0){
+      let cand=-1,cs=-1;
+      for(let y=2;y<H-2;y++)for(let x=2;x<W-2;x++){
+        const t=at(x,y);if((t!==0&&t!==6&&t!==8)||prot(x,y)||!lightOk(x,y))continue;
+        let land=0;for(const [dx,dy] of O4)if(at(x+dx,y+dy)!==3)land++;
+        if(land<1)continue;
+        const sc=coastScore(x,y)*10+(t===8?15:0)+((x*7+y*13)%7); // rocky points first
+        if(coastScore(x,y)>=4&&sc>cs){cs=sc;cand=y*W+x;}
+      }
+      if(cand<0){ // no headland: settle for any clear beach tile with water on 3 sides of its ring
+        for(let y=2;y<H-2;y++)for(let x=2;x<W-2;x++){
+          const t=at(x,y);if((t!==0&&t!==8)||prot(x,y)||!lightOk(x,y))continue;
+          const sc=coastScore(x,y)*10+((x*7+y*13)%7);
+          if(coastScore(x,y)>=3&&sc>cs){cs=sc;cand=y*W+x;}
+        }
+      }
+      if(cand>=0)m[cand]=9;
+    }
+  }
   function makeMazeIsland(level,fort,plan){
     const m=new Uint8Array(BC_C*BC_R);
     m.fill(3);
-    paintMazeBed(m);
-    carveMazeWater(m,plan.id);
     const salt=(((S.bcMapSeed||1)>>>0)+level*17)>>>0;
     const rng=mapMulberry((salt*131+level*97)>>>0);
+    paintMazeBed(m,rng);
+    carveMazeWater(m,plan.id,rng);
     const clearPad=(p)=>!!(p&&padFits(m,p.x,p.y)&&!citadelHitsUi(p,!!plan.fx,!!plan.fy));
     const candidates=[];
     for(let y=6;y<BC_R-12;y+=2)for(let x=3;x<BC_C-10;x+=2)if(clearPad({x,y}))candidates.push({x,y});
-    candidates.sort((a,b)=>Math.hypot(a.x-11,a.y-14)-Math.hypot(b.x-11,b.y-14));
-    const pool=candidates.slice(0,8);
+    if(plan.id==="blockFort"){
+      const wd=(p)=>{const fx=p.x+3,fy=p.y+2;let best=Math.min(fx,fy,BC_C-1-fx,BC_R-1-fy);for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++)if(m[y*BC_C+x]===3)best=Math.min(best,Math.max(Math.abs(x-(p.x+3)),Math.abs(y-(p.y+2))));return best;};
+      candidates.forEach((c)=>{c.wd=wd(c);});
+      candidates.sort((a,b)=>b.wd-a.wd);
+    }else candidates.sort((a,b)=>Math.hypot(a.x-11,a.y-14)-Math.hypot(b.x-11,b.y-14));
+    const pool=candidates.slice(0,plan.id==="blockFort"?2:8);
     let pad=pool.length?pool[(rng()*pool.length)|0]:fitPad(m,10,14);
     if(!clearPad(pad)){
       pad=null;
@@ -5855,16 +6129,16 @@
     }
     if(!pad)pad={x:10,y:14};
     const prot=(x,y)=>x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
-    stampMazeWalls(m,plan.id,prot);
-    let steel=0;
+    stampMazeWalls(m,plan.id,prot,rng,{x:pad.x+3,y:pad.y+2});
+    if(plan.id!=="brickYard")pruneMazeStubs(m,prot);
+    let steel=plan.id==="canalMaze"?0:99;
     for(let y=2;y<BC_R-2&&steel<12;y++)for(let x=2;x<BC_C-2&&steel<12;x++){
       if(m[y*BC_C+x]!==1||prot(x,y))continue;
       let n=0;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===1)n++;
       if(n>=2&&((x*13+y*7+salt)%11)===0){m[y*BC_C+x]=2;steel++;}
     }
-    carveLane(m,pad.x+2,pad.y+2,15,20);
-    carveLane(m,pad.x+2,pad.y+2,8,28);
+    if(plan.id==="canalMaze"){carveLane(m,pad.x+2,pad.y+2,15,20);carveLane(m,pad.x+2,pad.y+2,8,28);}
     const sx=Math.max(1,Math.min(BC_C-2,pad.x+2)), sy=Math.max(1,Math.min(BC_R-2,pad.y+2));
     if(!mazeWalk(m[sy*BC_C+sx]))m[sy*BC_C+sx]=6;
     openMaze(m,sx,sy);
@@ -5882,7 +6156,7 @@
       m[y*BC_C+x]=4;
       palms++;
     }
-    if(rng()<0.72){
+    {
       const lights=[];
       for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
         if(m[y*BC_C+x]!==0)continue;
@@ -5900,13 +6174,14 @@
         if(tv===3)sea=true;
         if(tv===6||tv===1)land=true;
       }
-      if(sea&&land&&((x+y+salt)%9)===0)m[y*BC_C+x]=7;
+      void sea;void land; // (random beach planks removed: docks are placed as real piers only)
     }
     const gate=inlandGate(pad);
     stampCitadel(m,pad);
     if(fort)addFort(m,pad);
     sealShield(m);
     seedIslands(m,rng);
+    tidyGeography(m,pad,rng);
     const home=homeFrom(m,pad,gate,false);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -5915,11 +6190,14 @@
       seaSpawns:collectSpawns(m,home,true),
       naval:false,skel:plan.id,maze:true
     },!!plan.fx,!!plan.fy);
-    const moved=moveShieldOffUi(built.map);
+    // the fort rings are built around the citadel, so it must not be shifted afterwards
+    const moved=plan.id==="blockFort"?null:moveShieldOffUi(built.map);
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
-    settleCoast(built);
-    built.maze=true;
+    tidyGeography(built.map,null,rng,built);
+    // brickYard is a town: its tile-1 blocks are houses (drawn, burnt and billed as houses), not maze masonry
+    built.maze=plan.id!=="brickYard";
+    built.steel=plan.id==="blockFort";
     return built;
   }
   function makeIslandMap(level, fort){
@@ -5957,16 +6235,20 @@
     if(dress==="village"||dress==="docks"){
       layRoad(m,pad,gate,road);
       placeHouses(m,pad,road);
-      if(rng()<0.4)placeHamlet(m,pad,rng);
+      placeHamlet(m,pad,rng);
+      if(rng()<0.6)placeHamlet(m,pad,rng);
       placeBuildings(m,pad,rng,2);
     }else if(dress==="woods"){
+      if(rng()<0.7)placeHamlet(m,pad,rng); // a clearing village in the woods
       woodsGroves(m,pad,road);
     }else if(dress==="airport"){
       placeRunway(m,pad,rng);
+      if(rng()<0.7)placeHamlet(m,pad,rng);
     }else if(dress==="caribbean"){
-      if(rng()<0.6)placeHamlet(m,pad,rng);
+      placeHamlet(m,pad,rng);
       placeBuildings(m,pad,rng,1);
     }else if(dress!=="cliffs"&&dress!=="sea"){
+      if(rng()<0.75)placeHamlet(m,pad,rng); // fishing village on the open coast
       wildGroves(m,pad,road);
     }
     if(dress!=="airport"&&dress!=="sea")beachTrees(m,pad,road);
@@ -5979,9 +6261,11 @@
     if(dress==="cliffs")cliffShore(m,pad,rng);
     repairEdges(m,!!plan.naval);
     const isles=seedIslands(m,rng);
-    const wantLight=plan.light!=null?!!plan.light:rng()<0.62;
-    if(wantLight)placeLighthouse(m,pad,rng,isles);
+    placeLighthouse(m,pad,rng,isles);
     if(plan.river)carveRiver(m,rng,pad);
+    if(dress==="cliffs"||dress==="sea"){if(rng()<0.6)placeHamlet(m,pad,rng);}
+    if(plan.id==="harbor")keepHarborBasin(m,pad);
+    tidyGeography(m,pad,rng);
     const home=homeFrom(m,pad,gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -5994,6 +6278,7 @@
     if(moved)built.fort=moved;
     nudgeHomeOffUi(built);
     settleCoast(built);
+    tidyGeography(built.map,null,rng,built);
     return built;
   }
 // MAPGEN_END
@@ -6263,12 +6548,12 @@
       if(!moved)break;
     }
   }
-  function battleWaveQuota(level,wave,world){
+  function battleWaveQuota(level,wave,world,fewer){
     const boost=Math.max(0,Math.round((((world|0)||20)-20)/4));
     const base=6+level*2+boost;
     let n=base+(wave<=1?0:wave===2?2:4);
     if((level|0)===0)n=Math.max(1,Math.floor((n*3+(wave<=1?2:1))/4));
-    return Math.max(1,Math.floor(n*0.9));
+    return Math.max(1,Math.floor(n*0.9*(1-Math.max(0,Math.min(0.5,fewer||0)))));
   }
   const shotKeep={tier:0,spread:0};
   function rememberShot(d){
@@ -6332,15 +6617,17 @@
     const bloc=(level/3)|0;
     const u=defenseUpgrades();
     const built=makeIslandMap(level,!!u.wall);
+    const zplan=ensureMapPlan()[level]||{};
     const map=built.map;
     const hp=new Uint8Array(map.length);
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
     S.defHeld={u:0,d:0,l:0,r:0,f:0,aa:0};S.defPtr=null;
     const world=S.bcWorld||20;
-    const quota=battleWaveQuota(level,1,world);
+    const troopMul=zplan.id==="blockFort"?1.5:1; // the fortress draws a bigger assault
+    const quota=Math.ceil(battleWaveQuota(level,1,world,u.fewer)*troopMul);
     const naval=!!built.naval;
     const heliN=(!naval && (level%3===2))?2:0;
-    const ground=battleWaveQuota(level,1,world)+battleWaveQuota(level,2,world);
+    const ground=Math.ceil(battleWaveQuota(level,1,world,u.fewer)*troopMul)+Math.ceil(battleWaveQuota(level,2,world,u.fewer)*troopMul);
     const delta=(S.bcArmy||0)-world;
     const pressure=delta<=-20?1.18:delta<=-5?1.08:delta>=25?.86:delta>=10?.94:1;
     const hearts=u.hearts||3;
@@ -6351,15 +6638,18 @@
     S.bcDefense={
       map,hp,player:{x:built.home.x,y:built.home.y,dir:face0,ang:Math.atan2(faceV[1],faceV[0]),hp:hearts,hearts,maxHearts:hearts,sz:naval?14:13,fire:0,ship:naval,hero:true},
       shots:[],enemies:[],picks:[],wave:1,waves:2,spawn:.6,spawned:0,kills:0,quota,enemyTotal:ground+heliN,
+      fortSteel:!!built.steel,troopMul,
       integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,tier0|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,shotSpread:spread0,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,maze:!!built.maze,
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
       home:built.home,
+      theme:zplan.theme||"wild",zoneEn:zplan.zoneEn||"",zoneEs:zplan.zoneEs||"",stage:zplan.stage||"",
       spawns:built.spawns,
       landSpawns:built.landSpawns&&built.landSpawns.length?built.landSpawns:built.spawns,
       seaSpawns:built.seaSpawns&&built.seaSpawns.length?built.seaSpawns:built.spawns,
-      foreignLeft:Math.floor(ground*0.15),
+      // ~12% of attackers come from the other element: ships on land maps, landing tanks on sea maps.
+      foreignLeft:Math.max(1,Math.round(ground*0.12)),
       groundLeft:ground,
       pickIn:5+Math.random()*10,
       bed:map.bed||null,
@@ -6435,8 +6725,15 @@
     d.aegis=null;
     warSfx("warBrick");
   }
+  const PICK_TTL=12.5; // seconds a battle pickup stays on the ground (was 10, +25%)
   function scatterPickups(d,n){
-    const kinds=["heal","shot","god","freeze","bomb","wall"];
+    // Powerups that already hit their tier cap are left out of the pool (S at tier 3, + at 4/4 hearts).
+    const pl=d.player||{};
+    const kinds=["heal","shot","god","freeze","bomb","wall"].filter((k)=>{
+      if(k==="shot")return (d.shotTier|0)<3;
+      if(k==="heal")return !((pl.maxHearts||3)>=4&&(pl.hearts|0)>=4);
+      return true;
+    });
     const sea=!!(d.naval||(d.player&&d.player.ship));
     const ok=(t)=>sea?t===3:(t===0||t===6||t===7);
     const seen=new Uint8Array(BC_C*BC_R);
@@ -6476,7 +6773,7 @@
     for(let i=0;i<n&&cells.length;i++){
       const k=(Math.random()*cells.length)|0;
       const c=cells.splice(k,1)[0];
-      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:10});
+      d.picks.push({x:c.x,y:c.y,kind:kinds[(Math.random()*kinds.length)|0],life:1,ttl:PICK_TTL});
     }
   }
   function armSpawn(d,e){
@@ -6559,6 +6856,16 @@
     S.dead=false;
     S.ticker=chanceLang()?(nationName()+" cayó."):(nationName()+" fell.");
     try{if(A&&A.sfx&&A.sfx.die)A.sfx.die();}catch(e){}
+    // Show the "Not Yet" report card first; closing it lands on the defeat / military-aid screen.
+    S.bcLostPending=true;
+    S.phase="play";
+    window.__arcForce="notYet";
+    try{dealChance();}catch(e){}finally{window.__arcForce="";}
+    if(S.phase==="chance")return;
+    S.bcLostPending=false;
+    battleLostScreen();
+  }
+  function battleLostScreen(){
     if(field)field.classList.remove("is-play");
     try{setPhase("over");}catch(e){try{renderOverlay();}catch(err){}}
   }
@@ -6603,7 +6910,7 @@
     for(let i=0;i<n;i++){
       const t=d.map[i];
       const x=i%BC_C, y=(i/BC_C)|0;
-      const house=t===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
+      const house=t===1&&!d.maze&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
       if(t===9||house){mark[i]=1;tiles++;}
     }
     d.buildMark=mark;
@@ -6625,7 +6932,7 @@
     const gone=Math.max(0,S.bcRuinGone|0);
     const pct=tiles?Math.max(0,Math.min(100,Math.round(gone*100/tiles))):0;
     const net=Math.max(0,netUsd());
-    const usd=net*pct/100;
+    const usd=net*Math.min(50,pct)/100; // reconstruction never takes more than half of net worth
     if(usd>0){
       const paid=payUsd(usd);
       let left=usd-paid;
@@ -6651,8 +6958,8 @@
     }
     const label=costLabel(b.usd||0);
     return es
-      ? "En los tres mapas, el "+pct+"% de las casas y del faro quedó destruido. La reconstrucción se cobra al mismo porcentaje del patrimonio: "+label+". Ya salió de las cuentas."
-      : "Across the three maps, "+pct+"% of the house and lighthouse tiles are destroyed. Reconstruction is billed at the same share of net worth: "+label+". It is already off the books.";
+      ? "En los tres mapas, el "+pct+"% de las casas y del faro quedó destruido. La reconstrucción se cobra al mismo porcentaje del patrimonio (máximo 50%): "+label+". Ya salió de las cuentas."
+      : "Across the three maps, "+pct+"% of the house and lighthouse tiles are destroyed. Reconstruction is billed at the same share of net worth (capped at 50%): "+label+". It is already off the books.";
   }
   function groundUnder(d,i){
     if(d.bedSet&&d.bedSet[i])return d.bed[i]===0?0:6;
@@ -6688,7 +6995,7 @@
       return true;
     }
     if(t===2||t===9){
-      if(friendly&&(d.shotTier|0)>=3&&t!==9){
+      if(friendly&&(d.shotTier|0)>=3&&t!==9&&!d.fortSteel){
         const i=ty*BC_C+tx;
         d.map[i]=6;
         if(d.seal)d.seal[i]=0;
@@ -6788,21 +7095,23 @@
     return best;
   }
   function gridRoute(d,e,goal,allowTree){
-    const pass=(t)=>e.ship?t===3:(t===0||t===6||t===7||(allowTree&&t===4));
+    const pass=(t)=>e.ship?t===3:(t===0||t===6||t===7||(allowTree&&(t===4||(t===1&&!d.maze))));
     const sx=Math.max(0,Math.min(BC_C-1,Math.floor(e.x/BC_TS)));
     const sy=Math.max(0,Math.min(BC_R-1,Math.floor(e.y/BC_TS)));
-    const dest=nearestWalk(d,e,goal.x,goal.y);
-    if(!dest)return null;
+    // No passable tile near the goal (e.g. an inland fort for a ship): aim the search at the goal tile itself
+    // and let the closest-reachable fallback below bring the unit as near as it can get.
+    const dest=nearestWalk(d,e,goal.x,goal.y)||{x:Math.max(0,Math.min(BC_C-1,Math.floor(goal.x/BC_TS))),y:Math.max(0,Math.min(BC_R-1,Math.floor(goal.y/BC_TS)))};
     const W=BC_C,start=sy*W+sx,destI=dest.y*W+dest.x;
     if(start===destI)return {dir:e.dir,len:0,tree:false,trees:0,wx:goal.x,wy:goal.y};
     const prev=new Int16Array(W*BC_R);
     prev.fill(-1);
     const q=[start];
     prev[start]=start;
-    let found=-1;
-    for(let qi=0;qi<q.length&&qi<700;qi++){
+    let found=-1,near=-1,nearD=1e9;
+    for(let qi=0;qi<q.length;qi++){
       const cur=q[qi];
       if(cur===destI){found=cur;break;}
+      {const ddx=(cur%W)-dest.x,ddy=((cur/W)|0)-dest.y,dd=ddx*ddx+ddy*ddy;if(dd<nearD){nearD=dd;near=cur;}}
       const cx=cur%W,cy=(cur/W)|0;
       const steps=BATTLE_360?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]:[[1,0],[-1,0],[0,1],[0,-1]];
       for(const [dx,dy] of steps){
@@ -6814,7 +7123,9 @@
         prev[ni]=cur;q.push(ni);
       }
     }
-    if(found<0)return null;
+    // Goal unreachable (e.g. a ship whose water does not touch the fort): head for the closest reachable tile
+    // instead of returning null and ramming the old heading.
+    if(found<0){if(near<0||near===start)return null;found=near;}
     const path=[];
     let cur=found,guard=0;
     while(cur!==start&&guard++<500){path.push(cur);cur=prev[cur];}
@@ -6822,9 +7133,37 @@
     const next=path[0];
     const nx=next%W,ny=(next/W)|0;
     let trees=0;
-    for(const c of path)if(bcAt(d.map,c%W,(c/W)|0)===4)trees++;
+    for(const c of path){const pt=bcAt(d.map,c%W,(c/W)|0);if(pt===4)trees++;else if(pt===1)trees+=3;}
     const dir=vecDir(nx-sx,ny-sy);
-    return {dir:dir<0?e.dir:dir,len:path.length,tree:bcAt(d.map,nx,ny)===4,trees,wx:nx*BC_TS+BC_TS/2,wy:ny*BC_TS+BC_TS/2};
+    const nt=bcAt(d.map,nx,ny);
+    return {dir:dir<0?e.dir:dir,len:path.length,tree:nt===4||nt===1,trees,wx:nx*BC_TS+BC_TS/2,wy:ny*BC_TS+BC_TS/2};
+  }
+  // True when a tank/ship can actually drive the straight segment toward (x,y), not just see it.
+  function driveClear(d,e,x,y){
+    const dist=Math.hypot(x-e.x,y-e.y);
+    const reach=Math.min(dist,96);
+    if(reach<4)return true;
+    const n=Math.ceil(reach/8);
+    for(let i=1;i<=n;i++){
+      const px=e.x+(x-e.x)*(reach/dist)*i/n, py=e.y+(y-e.y)*(reach/dist)*i/n;
+      const t=bcAt(d.map,Math.floor(px/BC_TS),Math.floor(py/BC_TS));
+      if(e.ship?t!==3:!(t===0||t===6||t===7))return false;
+    }
+    return true;
+  }
+  function nearHouse(d,e,r){
+    if(d.maze)return null;
+    const tx0=Math.floor(e.x/BC_TS),ty0=Math.floor(e.y/BC_TS),R=Math.ceil(r/BC_TS);
+    let best=null,bd=r*r;
+    for(let y=ty0-R;y<=ty0+R;y++)for(let x=tx0-R;x<=tx0+R;x++){
+      if(bcAt(d.map,x,y)!==1||citadelSkin(d,x,y)||(d.seal&&d.seal[y*BC_C+x]))continue;
+      const cx=x*BC_TS+8,cy=y*BC_TS+8,dd=(cx-e.x)**2+(cy-e.y)**2;
+      if(dd>=bd)continue;
+      const L=Math.sqrt(dd)||1,ex=cx-(cx-e.x)/L*10,ey=cy-(cy-e.y)/L*10;
+      if(!los(d,e,ex,ey))continue;
+      bd=dd;best={x:cx,y:cy};
+    }
+    return best;
   }
   function pathDir(d,e,goal){
     e.fell=false;
@@ -6867,6 +7206,8 @@
       d.aegisT-=dt;
       if(d.aegisT<=0)settleAegis(d);
     }
+    if((d.lrmCd||0)>0)d.lrmCd=Math.max(0,d.lrmCd-dt);
+    if(d.aaCharging&&!d.aaArmed&&(d.lrmCd||0)>0){d.aaCharging=false;d.aaCharge=0;}
     if(d.aaCharging&&!d.aaArmed){
       if(!(S.defHeld&&S.defHeld.aa)){d.aaCharging=false;d.aaCharge=0;}
       else{
@@ -6875,7 +7216,7 @@
         if(d.aaBeep>0.16){d.aaBeep=0;warSfx("warCharge");}
         if(d.aaCharge>=1){
           d.aaCharging=false;d.aaArmed=true;d.aa=1;
-          d.reticle={x:S.W*0.5,y:S.H*0.5};
+          d.reticle={x:d.player.x,y:d.player.y};
           addFx(d,{kind:"scopeOn",x:d.reticle.x,y:d.reticle.y,life:.4});
           warSfx("warAa");
         }
@@ -6907,6 +7248,8 @@
       if(len>1){rdx/=len;rdy/=len;}
       d.reticle.x=Math.max(-40,Math.min(S.W+40,d.reticle.x+rdx*rspd*dt));
       d.reticle.y=Math.max(-40,Math.min(S.H+40,d.reticle.y+rdy*rspd*dt));
+      const rox=d.reticle.x-p.x, roy=d.reticle.y-p.y, rlen=Math.hypot(rox,roy);
+      if(rlen>LRM_RANGE){d.reticle.x=p.x+rox/rlen*LRM_RANGE;d.reticle.y=p.y+roy/rlen*LRM_RANGE;}
     }else{
       if(h.rev){
         const back=aimVec(p);
@@ -6949,6 +7292,20 @@
           pathDir(d,e,goal);
           if(e.fell)e.want=true;
         }
+        // Seeing the target is not the same as being able to drive to it (water, rocks, houses in between):
+        // keep firing at the target but steer along the BFS route instead of ramming the obstacle.
+        e.navAt=null;
+        if(e.type!=="HELI"&&e.want&&e.aimAt&&!driveClear(d,e,e.aimAt.x,e.aimAt.y)){
+          const fireAt=e.aimAt;
+          pathDir(d,e,goal);
+          if(e.aimAt&&e.aimAt!==fireAt)e.navAt=e.aimAt;
+          e.aimAt=fireAt;
+        }
+        // Nothing to shoot at (no line to the hero or the shield): occasionally shell a nearby house/village.
+        if(e.type!=="HELI"&&!e.want&&Math.random()<0.3){
+          const h=nearHouse(d,e,88);
+          if(h){if(e.aimAt)e.navAt=e.aimAt;e.aimAt=h;e.want=true;}
+        }
       }
       const ox=e.x,oy=e.y;
       if(e.type==="HELI"){
@@ -6968,10 +7325,16 @@
           e.backup-=dt;
           if(e.backup<=0)e.slip=null;
         }
-        if(e.aimAt)faceVec(e,e.aimAt.x-e.x,e.aimAt.y-e.y);
+        const steer=e.navAt||e.aimAt;
+        if(steer)faceVec(e,steer.x-e.x,steer.y-e.y);
         const step=aimVec(e);
         const sx=backing?-step[0]:step[0], sy=backing?-step[1]:step[1];
         slideUnit(d,e,sx,sy,e.spd*0.81,dt);
+        // Watchdog: a unit that has not covered 10px in 4s gets a forced re-route (trees/houses allowed) and a short reverse.
+        e.wdT=(e.wdT||0)+dt;
+        if(e.wdX==null){e.wdX=e.x;e.wdY=e.y;}
+        if(Math.hypot(e.x-e.wdX,e.y-e.wdY)>10){e.wdX=e.x;e.wdY=e.y;e.wdT=0;}
+        else if(e.wdT>4&&!iced){e.wdT=0;e.navAt=null;e.backup=0.4;pathDir(d,e,goal);e.want=true;e.think=0.6;}
         if(Math.hypot(e.x-ox,e.y-oy)<0.4){
           const probe=aimVec(e);
           const tx=Math.floor((e.x+probe[0]*12)/BC_TS);
@@ -6979,6 +7342,7 @@
           const kt=bcAt(d.map,tx,ty);
           const beach=e.ship&&e.role==="shield"&&(d.fort||d.home)&&losShield(d,e,(d.fort||d.home).x,(d.fort||d.home).y);
           if(beach){e.aimAt=d.fort||d.home;facePoint(e,e.aimAt.x,e.aimAt.y);e.want=true;e.jam=0;}
+          else if(kt===1&&!e.ship&&!d.maze){e.want=true;e.jam=0;} // a house blocks the route: shell it out of the way
           else if(kt===1||kt===5){e.aimAt=d.fort||d.home;facePoint(e,e.aimAt.x,e.aimAt.y);e.want=true;e.jam=0;}
           else if(kt===4&&!e.ship&&(e.fell||e.jam>0.35)){e.want=true;e.jam=0;}
           else if(!backing){
@@ -6994,14 +7358,17 @@
               }
               e.jam=0;
               e.think=0.32;
+              // Repeatedly jammed: drop the current target and re-route (allowing tree cuts) next think.
+              e.jamN=(e.jamN||0)+1;
+              if(e.jamN>=3){e.jamN=0;e.navAt=null;pathDir(d,e,goal);e.think=0.05;}
             }
           }
-        }else e.jam=0;
+        }else{e.jam=0;e.jamN=0;}
         if(e.ship&&e.role==="shield"&&Math.hypot(e.x-(d.fort||d.home).x,e.y-(d.fort||d.home).y)<36){
           hitBase(d,e.leak||8);if(e.hp>0){e.hp=0;d.kills++;}warSfx("warPop");
         }
       }
-      if(e.want&&!(e.fire>0)){fireTank(d,e);e.want=false;}
+      if(e.want&&!(e.fire>0)){if(e.navAt&&e.aimAt)faceVec(e,e.aimAt.x-e.x,e.aimAt.y-e.y);fireTank(d,e);e.want=false;}
     }
     separateUnits(d);
     function shotHits(s,t){return Math.abs(t.x-s.x)<t.sz+3&&Math.abs(t.y-s.y)<t.sz+3;}
@@ -7069,7 +7436,7 @@
     if(d.picks){
       for(const pk of d.picks){
         if(pk.got||pk.dead)continue;
-        pk.ttl=(pk.ttl==null?10:pk.ttl)-dt;
+        pk.ttl=(pk.ttl==null?PICK_TTL:pk.ttl)-dt;
         if(pk.ttl<=0){pk.dead=true;continue;}
         if(Math.hypot(pk.x-p.x,pk.y-p.y)<18){
           pk.got=true;
@@ -7104,7 +7471,7 @@
     if(d.integrity<=0){finishDefense(false);return;}
     if(d.spawned>=d.quota&&d.enemies.length===0&&!(d.heliLeft>0)){
       if(d.wave>=d.waves){finishDefense(true);return;}
-      d.wave++;d.spawned=0;d.quota=battleWaveQuota(d.level,d.wave,S.bcWorld||20);d.spawn=.8;
+      d.wave++;d.spawned=0;d.quota=Math.ceil(battleWaveQuota(d.level,d.wave,S.bcWorld||20,d.up&&d.up.fewer)*(d.troopMul||1));d.spawn=.8;
       warSfx("warWave");
     }
     syncAaButton(d);
@@ -7115,6 +7482,8 @@
     return tier>=3?1.25:tier>=2?1:0.75;
   }
   function lrmR(d){return AA_R*lrmScale(d);}
+  const LRM_COOLDOWN=5.25; // seconds (was 7, -25%) after each strike before it can charge again
+  const LRM_RANGE=230;    // max reticle distance from the player tank (px)
   function lrmDeg(){return 360;}
   function lrmAim(d,rx,ry){
     const p=d&&d.player;
@@ -7194,7 +7563,7 @@
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       const t=bcAt(d.map,x,y);
       const i=y*BC_C+x;
-      const house=t===1&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
+      const house=t===1&&!d.maze&&!citadelSkin(d,x,y)&&!(d.seal&&d.seal[i]);
       if(t!==9&&!house)continue;
       const b=t===9?beaconBase(x,y):null;
       const cx=b?(b.x0+b.x1)/2:x*BC_TS+8;
@@ -7252,8 +7621,8 @@
       const inArea=circleOverlapFrac(dist,R,r)>=0.5&&inLrmWedge(d,e.x,e.y,rx,ry);
       let ok=false;
       if(cls==="light")ok=onCross||inArea;
-      else if(onCross)ok=true;
-      else if(inArea){
+      else if(onCross&&cls==="medium")ok=true;
+      else if(onCross||inArea){
         e.lrm=(e.lrm|0)+1;
         e.hurt=1;
         addFx(d,{kind:"treeBurn",x:e.x,y:e.y,life:.4,hot:2});
@@ -7265,6 +7634,7 @@
     const burned=scorchTrees(d,rx,ry);
     const lamps=lrmBuildings(d,rx,ry);
     d.aaArmed=false;d.aa=0;d.aaCharge=0;d.aaCharging=false;d.reticle=null;
+    d.lrmCd=LRM_COOLDOWN;
     warSfx("warLrm");
     if(heroHearts){
       const p=d.player;
@@ -7329,10 +7699,18 @@
     if(!btn)return;
     const show=!!(d&&!d.done&&!d.frozen);
     btn.classList.toggle("hide",!show);
-    const pct=d?(d.aaArmed?1:(d.aaCharge||0)):0;
+    const cd=d?(d.lrmCd||0):0;
+    const pct=d?(d.aaArmed?1:cd>0?1-cd/LRM_COOLDOWN:(d.aaCharge||0)):0;
+    btn.classList.toggle("cooldown",cd>0);
     btn.style.setProperty("--aa",(pct*360)+"deg");
     btn.classList.toggle("armed",!!(d&&d.aaArmed));
     btn.classList.toggle("charging",!!(d&&d.aaCharging&&!d.aaArmed));
+    // touch hint under the button: what the next action is (desktop shows the key badge instead)
+    if(!KB_DESK&&show){
+      const es=chanceLang();
+      const h=d.aaArmed?(es?"TOCA PARA LANZAR":"TAP TO FIRE"):cd>0?(es?"RECARGANDO":"RELOADING"):d.aaCharging?(es?"MANTÉN…":"HOLD…"):(es?"MANTÉN 3 s":"HOLD 3 s");
+      if(btn.getAttribute("data-hint")!==h)btn.setAttribute("data-hint",h);
+    }
     const arc=$("def-arc");
     if(arc){
       const on=show&&(d.shotTier|0)>=2;
@@ -7532,17 +7910,106 @@
     ctx.fillStyle="rgba(255,246,232,.16)";
     ctx.fillRect(px+2,py+2,5,1);
   }
-  function drawDefense(ctx){
-    const d=S.bcDefense;if(!d)return;
-    const t=d.t||0;
-    const houseMemo=new Map();
+  // ---- Map polish pass (drawn over the tile grid, under units) ----
+  const THEME_TINT={caribbean:"#2fd8c8",cliffs:"#7d8aa0",woods:"#2f7a34",maze:"#9a5a32",village:"#e0a062",docks:"#5b7fa6",airport:"#b9b9b9",sea:"#1f5fa0",wild:"#93a04c"};
+  function tileHash(x,y){let h=(x*374761393+y*668265263)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967295;}
+  function smoothNoise(x,y){
+    const x0=Math.floor(x),y0=Math.floor(y),fx=x-x0,fy=y-y0;
+    const sx=fx*fx*(3-2*fx),sy=fy*fy*(3-2*fy);
+    const a=tileHash(x0,y0),b=tileHash(x0+1,y0),c=tileHash(x0,y0+1),e=tileHash(x0+1,y0+1);
+    return (a+(b-a)*sx)+((c+(e-c)*sx)-(a+(b-a)*sx))*sy;
+  }
+  function isWater(m,x,y){return bcAt(m,x,y)===3;}
+  function isGround(k){return k===0||k===6||k===4||k===7||k===9;}
+  function drawTerrainPolish(ctx,d,t){
+    const m=d.map,T=BC_TS,seed=(S.bcMapSeed|0)%997;
     ctx.save();
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const k=bcAt(m,x,y),px=x*T,py=y*T;
+      // 1) smooth low-frequency light/shade so big areas stop looking like a flat checkerboard
+      if(k!==3&&k!==5){
+        const n=smoothNoise((x+seed)*0.22,(y+seed)*0.22)*0.6+smoothNoise((x+seed)*0.55,(y-seed)*0.55)*0.4;
+        const v=n-0.5;
+        ctx.fillStyle=v>0?"rgba(255,248,220,"+(v*0.22).toFixed(3)+")":"rgba(20,24,10,"+(-v*0.26).toFixed(3)+")";
+        ctx.fillRect(px,py,T,T);
+      }else if(k===3){
+        const n=smoothNoise((x-seed)*0.18+t*0.05,(y+seed)*0.18)-0.5;
+        ctx.fillStyle=n>0?"rgba(120,210,220,"+(n*0.16).toFixed(3)+")":"rgba(0,10,20,"+(-n*0.2).toFixed(3)+")";
+        ctx.fillRect(px,py,T,T);
+      }
+      // 2) blended sand <-> grass transitions
+      if(k===0){
+        const g=(a)=>a===6||a===4;
+        ctx.fillStyle="rgba(106,118,68,.45)";
+        if(g(bcAt(m,x,y-1)))ctx.fillRect(px,py,T,3);
+        if(g(bcAt(m,x,y+1)))ctx.fillRect(px,py+T-3,T,3);
+        if(g(bcAt(m,x-1,y)))ctx.fillRect(px,py,3,T);
+        if(g(bcAt(m,x+1,y)))ctx.fillRect(px+T-3,py,3,T);
+      }
+      // 3) soft shadows: light from the top-left, so solids cast onto the ground below/right of them
+      if(isGround(k)){
+        const solid=(a)=>a===1||a===2||a===5||a===8;
+        ctx.fillStyle="rgba(10,12,6,.28)";
+        if(solid(bcAt(m,x,y-1)))ctx.fillRect(px,py,T,4);
+        if(solid(bcAt(m,x-1,y)))ctx.fillRect(px,py,4,T);
+      }
+    }
+    // 4) rounded coasts: convex land corners get eaten by water, concave water corners get filled with sand
+    const R=7;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const k=bcAt(m,x,y),px=x*T,py=y*T;
+      const corners=[[-1,-1,px,py],[1,-1,px+T,py],[-1,1,px,py+T],[1,1,px+T,py+T]];
+      if(k!==3&&k!==7){
+        for(const [dx,dy,cx,cy] of corners){
+          if(!(isWater(m,x+dx,y)&&isWater(m,x,y+dy)&&isWater(m,x+dx,y+dy)))continue;
+          ctx.fillStyle="#1f6f74";
+          ctx.beginPath();
+          ctx.moveTo(cx,cy);ctx.lineTo(cx-dx*R,cy);
+          ctx.arc(cx-dx*R,cy-dy*R,R,dy>0?Math.PI/2:-Math.PI/2,dx>0?0:Math.PI,(dx>0)===(dy>0));
+          ctx.closePath();ctx.fill();
+          ctx.strokeStyle="rgba(226,232,220,.55)";ctx.lineWidth=2;
+          ctx.beginPath();ctx.arc(cx-dx*R,cy-dy*R,R,dy>0?Math.PI/2:-Math.PI/2,dx>0?0:Math.PI,(dx>0)===(dy>0));ctx.stroke();
+        }
+      }else if(k===3){
+        for(const [dx,dy,cx,cy] of corners){
+          const l=(a)=>a===0||a===6||a===4||a===9;
+          if(!(l(bcAt(m,x+dx,y))&&l(bcAt(m,x,y+dy))))continue;
+          ctx.fillStyle="#b7a06e";
+          ctx.beginPath();
+          ctx.moveTo(cx,cy);ctx.lineTo(cx-dx*R*0.8,cy);
+          ctx.quadraticCurveTo(cx-dx*R*0.15,cy-dy*R*0.15,cx,cy-dy*R*0.8);
+          ctx.closePath();ctx.fill();
+        }
+      }
+    }
+    // 5) per-theme colour grade so each zone of the island reads differently
+    const tint=THEME_TINT[d.theme]||THEME_TINT.wild;
+    ctx.globalCompositeOperation="soft-light";
+    ctx.globalAlpha=0.42;
+    ctx.fillStyle=tint;ctx.fillRect(0,0,BC_C*T,BC_R*T);
+    ctx.restore();
+  }
+  // ---- Static terrain cache ----
+  // The tile grid + polish pass is ~1200 tiles of fillRect/paths and dominated battle frame time on phones.
+  // It is baked into an offscreen canvas and only repainted when the map/damage changes, or at most
+  // TERRAIN_HZ times a second for the slow water/foam animation. Fires are drawn live on top.
+  let TERRAIN_BAKING=false;
+  const TERRAIN_HZ=2;
+  const terrainCache={cv:null,key:"",tq:-1,dpr:0};
+  function terrainKey(d){
+    let h=2166136261>>>0;
+    const mix=(a)=>{if(!a)return;for(let i=0;i<a.length;i++){h=Math.imul(h^(a[i]|0),16777619);}};
+    mix(d.map);mix(d.hp);mix(d.rubble);mix(d.seal);mix(d.bHits);
+    return (h>>>0)+":"+(d.maze?1:0)+":"+(d.theme||"")+":"+(S.bcMapSeed|0)+":"+d.map.length;
+  }
+  function drawTerrainBase(ctx,d,t,houseMemo){
     ctx.fillStyle="#0c3c46";ctx.fillRect(0,0,S.W,S.H);
     for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       const k=bcAt(d.map,x,y),px=x*BC_TS,py=y*BC_TS;
       if(k===3){
         const n=((x*17+y*13)^((x+y)*3))&7;
-        ctx.fillStyle=n<3?"#0d4550":n<6?"#115564":"#0a3a44";
+        const shore=bcAt(d.map,x,y-1)!==3||bcAt(d.map,x,y+1)!==3||bcAt(d.map,x-1,y)!==3||bcAt(d.map,x+1,y)!==3;
+        ctx.fillStyle=shore?(n<4?"#1f6f74":"#22787b"):(n<3?"#0d4550":n<6?"#115564":"#0a3a44");
         ctx.fillRect(px,py,BC_TS,BC_TS);
         ctx.fillStyle="rgba(170,220,210,.07)";
         if((x*3+y)%5===0)ctx.fillRect(px+3,py+6,3,1);
@@ -7553,11 +8020,12 @@
         if(bcAt(d.map,x-1,y)!==3)foam|=4;
         if(bcAt(d.map,x+1,y)!==3)foam|=8;
         if(foam){
-          ctx.fillStyle="rgba(226,232,220,.42)";
-          if(foam&1)ctx.fillRect(px,py,BC_TS,1);
-          if(foam&2)ctx.fillRect(px,py+BC_TS-1,BC_TS,1);
-          if(foam&4)ctx.fillRect(px,py,1,BC_TS);
-          if(foam&8)ctx.fillRect(px+BC_TS-1,py,1,BC_TS);
+          const wob=Math.sin(t*1.6+x*0.9+y*1.3)>0?1:0;
+          ctx.fillStyle="rgba(226,232,220,.5)";
+          if(foam&1)ctx.fillRect(px,py,BC_TS,2+wob);
+          if(foam&2)ctx.fillRect(px,py+BC_TS-2-wob,BC_TS,2+wob);
+          if(foam&4)ctx.fillRect(px,py,2+wob,BC_TS);
+          if(foam&8)ctx.fillRect(px+BC_TS-2-wob,py,2+wob,BC_TS);
         }
         continue;
       }
@@ -7598,7 +8066,7 @@
           }
           ctx.fillStyle=burn?"#6a3a16":"#24461e";
           ctx.beginPath();ctx.arc(px+8,py+7,2.1,0,Math.PI*2);ctx.fill();
-          if(burn>=1){
+          if(burn>=1&&!TERRAIN_BAKING){
             const flick=0.65+0.35*Math.sin(t*16+x*2.2+y);
             ctx.globalAlpha=flick;
             ctx.fillStyle=burn>=2?"#ffb020":"#e25822";
@@ -7633,13 +8101,13 @@
       if(k===1){
         const sealed=!!(d.seal&&d.seal[y*BC_C+x]);
         let fort=!!d.maze;
-        if(!fort)for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
+        if(!fort)fort=nearFort(d,x,y);
         if(fort||sealed){
           drawMasonry(ctx,px,py,x,y,false);
         }else{
           drawHouseCell(ctx,d.map,x,y,px,py,houseMemo);
           const hi=y*BC_C+x;
-          if((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0))drawHouseFire(ctx,px,py,t,x,y,1);
+          if(!TERRAIN_BAKING&&((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0)))drawHouseFire(ctx,px,py,t,x,y,1);
         }
         continue;
       }
@@ -7665,14 +8133,94 @@
         continue;
       }
     }
+    drawTerrainPolish(ctx,d,t);
+  }
+  // Fort metal (tile 5) is indestructible, so the 7x7 "near a fort" mask is computed once per map.
+  function nearFort(d,x,y){
+    let m=d._nearFort;
+    if(!m||m.n!==d.map.length){
+      m=new Uint8Array(BC_C*BC_R);m.n=d.map.length;
+      for(let yy=0;yy<BC_R;yy++)for(let xx=0;xx<BC_C;xx++){if(bcAt(d.map,xx,yy)!==5)continue;
+        for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){const X=xx+dx,Y=yy+dy;if(X>=0&&Y>=0&&X<BC_C&&Y<BC_R)m[Y*BC_C+X]=1;}}
+      d._nearFort=m;
+    }
+    return m[y*BC_C+x]===1;
+  }
+  function drawTerrainCached(ctx,d,t,houseMemo){
+    const dpr=canvasDpr();
+    const W=BC_C*BC_TS,H=Math.max(S.H,BC_R*BC_TS);
+    const c=terrainCache;
+    // The baked layer is static (t=0) and only rebuilt when tiles change; the shoreline foam wobble is
+    // drawn live on top from a cached list, so water animation no longer forces full-map rebakes.
+    c.fr=(c.fr|0)+1;
+    if(c.key==null||(c.fr&3)===0||c.d!==d){c.k2=terrainKey(d);c.d=d;}
+    const key=c.k2;
+    if(!c.cv||c.dpr!==dpr||c.key!==key){
+      if(!c.cv)c.cv=document.createElement("canvas");
+      if(c.dpr!==dpr||c.cv.width!==Math.round(Math.max(S.W,W)*dpr)){c.cv.width=Math.round(Math.max(S.W,W)*dpr);c.cv.height=Math.round(H*dpr);}
+      const g=c.cv.getContext("2d");
+      g.setTransform(dpr,0,0,dpr,0,0);
+      TERRAIN_BAKING=true;
+      try{drawTerrainBase(g,d,0,houseMemo);}finally{TERRAIN_BAKING=false;}
+      c.dpr=dpr;c.key=key;
+      const foam=[];
+      for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+        if(bcAt(d.map,x,y)!==3)continue;
+        let f=0;
+        if(bcAt(d.map,x,y-1)!==3)f|=1;if(bcAt(d.map,x,y+1)!==3)f|=2;if(bcAt(d.map,x-1,y)!==3)f|=4;if(bcAt(d.map,x+1,y)!==3)f|=8;
+        if(f)foam.push(x,y,f);
+      }
+      c.foam=foam;
+    }
+    ctx.drawImage(c.cv,0,0,c.cv.width,c.cv.height,0,0,c.cv.width/dpr,c.cv.height/dpr);
+    if(c.foam&&c.foam.length){
+      const tw=Math.floor(t*(LOW_END||DPR_CAP<2?2:4))/(LOW_END||DPR_CAP<2?2:4);
+      ctx.fillStyle="rgba(226,232,220,.5)";
+      const F=c.foam,T=BC_TS;
+      for(let i=0;i<F.length;i+=3){
+        const x=F[i],y=F[i+1],f=F[i+2];
+        if(Math.sin(tw*1.6+x*0.9+y*1.3)<=0)continue;
+        const px=x*T,py=y*T;
+        if(f&1)ctx.fillRect(px,py+2,T,1);
+        if(f&2)ctx.fillRect(px,py+T-3,T,1);
+        if(f&4)ctx.fillRect(px+2,py,1,T);
+        if(f&8)ctx.fillRect(px+T-3,py,1,T);
+      }
+    }
+    // live fires (trees and houses), skipped while baking
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const k=bcAt(d.map,x,y);
+      if(k!==4&&k!==1)continue;
+      const hi=y*BC_C+x,px=x*BC_TS,py=y*BC_TS;
+      if(k===4){
+        const burn=d.hp[hi]||0;
+        if(burn>=1){
+          const flick=0.65+0.35*Math.sin(t*16+x*2.2+y);
+          ctx.globalAlpha=flick;
+          ctx.fillStyle=burn>=2?"#ffb020":"#e25822";
+          ctx.beginPath();ctx.arc(px+8,py+6,burn>=2?3.4:2,0,Math.PI*2);ctx.fill();
+          ctx.globalAlpha=1;
+        }
+        continue;
+      }
+      if(d.maze||(d.seal&&d.seal[hi]))continue;
+      if(!((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0)))continue;
+      if(nearFort(d,x,y))continue;
+      drawHouseFire(ctx,px,py,t,x,y,1);
+    }
+  }
+  function drawDefense(ctx){
+    const d=S.bcDefense;if(!d)return;
+    const t=d.t||0;
+    const houseMemo=new Map();
+    ctx.save();
+    drawTerrainCached(ctx,d,t,houseMemo);
     if(!d.maze)for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       if(bcAt(d.map,x,y)!==1)continue;
       if(d.seal&&d.seal[y*BC_C+x])continue;
       const info=houseInfo(d.map,x,y,houseMemo);
       if(x!==info.x0||y!==info.y0||!houseStruck(d,info))continue;
-      let fort=false;
-      for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
-      if(fort)continue;
+      if(nearFort(d,x,y))continue;
       drawHouseFire(ctx,info.x0*BC_TS+info.w*BC_TS/2-8,info.y0*BC_TS+info.h*BC_TS/2-10,t,x,y,1.85);
     }
     drawCitadelShield(ctx,d,t);
@@ -7785,6 +8333,11 @@
     paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,52,PAL.fg);
     paintHaloText(ctx,bname,12,68,PAL.fg);
     if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
+    if(d.zoneEn){
+      const st=MAP_STAGE_NAME[d.stage];
+      const zl=(chanceLang()?d.zoneEs:d.zoneEn)+(st?" · "+st[chanceLang()?1:0]:"");
+      ctx.textAlign="right";paintHaloText(ctx,zl,S.W-12,46,"#f3efe6");ctx.textAlign="left";
+    }
     if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);}
     if((d.shotTier|0)>0){ctx.textAlign="right";paintHaloText(ctx,"S"+(d.shotTier|0),S.W-12,78,"#9befff");}
     if(!d.frozen){
@@ -7822,11 +8375,16 @@
     ctx.beginPath();ctx.moveTo(-11,3);ctx.lineTo(-7,-2);ctx.lineTo(-2,1);ctx.lineTo(3,-4);ctx.lineTo(9,1);ctx.lineTo(12,3);ctx.closePath();ctx.fill();
     ctx.fillStyle="#f6f1e6";
     ctx.beginPath();ctx.moveTo(-6,3);ctx.lineTo(-4,-28);ctx.lineTo(4,-28);ctx.lineTo(6,3);ctx.closePath();ctx.fill();
-    ctx.fillStyle="#c4372c";ctx.fillRect(-4.2,-18,8.4,3.2);
+    ctx.fillStyle="#c4372c";
+    ctx.beginPath();ctx.moveTo(-5.6,-4);ctx.lineTo(-5.2,-10);ctx.lineTo(5.2,-10);ctx.lineTo(5.6,-4);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(-4.9,-16);ctx.lineTo(-4.5,-22);ctx.lineTo(4.5,-22);ctx.lineTo(4.9,-16);ctx.closePath();ctx.fill();
     ctx.fillStyle="#e7e0d2";
     ctx.fillRect(-2.4,-12,1.6,2.4);ctx.fillRect(0.8,-12,1.6,2.4);
     ctx.fillRect(-2.4,-7,1.6,2.4);ctx.fillRect(0.8,-7,1.6,2.4);
     ctx.fillStyle="#2c261e";ctx.fillRect(-6.5,-31,13,3.2);
+    const glow=ctx.createRadialGradient(0,-34,1,0,-34,16);
+    glow.addColorStop(0,"rgba(255,240,170,"+(0.75+0.25*Math.sin((t||0)*3)).toFixed(2)+")");glow.addColorStop(1,"rgba(255,240,170,0)");
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,-34,16,0,Math.PI*2);ctx.fill();
     ctx.fillStyle="#f2d56a";ctx.fillRect(-4,-38,8,7);
     ctx.fillStyle="#fff8d0";ctx.fillRect(-1.6,-36.5,3,4);
     ctx.fillStyle="#8e1e18";ctx.beginPath();ctx.arc(0,-38,4.2,Math.PI,0);ctx.fill();
@@ -8256,10 +8814,18 @@
     const s=v.toLocaleString("en-US",{minimumFractionDigits:whole?0:1,maximumFractionDigits:1});
     return s+" BTC";
   }
+  // Military aid is priced in BTC but can be topped up with cash at the current price.
+  function aidReach(){
+    const px=clampPx(S.price);
+    return (S.btc||0)+Math.max(0,S.cash||0)/px;
+  }
   function payMilitaryAid(){
     const cost=aidOffer();
-    if(!cost||(S.btc||0)+1e-6<cost) return;
-    S.btc=Math.max(0,(S.btc||0)-cost);
+    if(!cost||aidReach()+1e-6<cost) return;
+    const fromBtc=Math.min(S.btc||0,cost);
+    S.btc=Math.max(0,(S.btc||0)-fromBtc);
+    const restUsd=(cost-fromBtc)*clampPx(S.price);
+    if(restUsd>0)S.cash=Math.max(0,(S.cash||0)-restUsd);
     S.bcAidUsed=(S.bcAidUsed|0)+1;
     retryLostBattle();
   }
@@ -8636,6 +9202,7 @@
     const down = f === String(PAL.labelDn || "").toLowerCase() || f === String(RED || "").toLowerCase() || f === String(PAL.red || "").toLowerCase();
     return down ? "#ffd0c8" : "#fff8ef";
   }
+  const wickUp = [], wickDn = [];
   function drawTape(ctx, data, y0, y1, up, dn) {
     if (data.length < 2) return;
     const bucket = 4, cw = 4.75, stepX = 5.1;
@@ -8721,7 +9288,10 @@
 
     const rng = S.tapeHi - S.tapeLo;
     const inv = (y1 - y0) / (rng < 0.01 ? 0.01 : rng);
-    const py = (v) => y1 - (v - S.tapeLo) * inv;
+    // Clamp to just outside the clip rect: a wick with huge off-screen coordinates (tiny range + price shock)
+    // made a single stroke() take seconds on software/mobile rasterizers.
+    const pyLo = y0 - 16, pyHi = y1 + 16;
+    const py = (v) => { const y = y1 - (v - S.tapeLo) * inv; return y < pyLo ? pyLo : y > pyHi ? pyHi : (y === y ? y : y1); };
 
     ctx.save();
     ctx.beginPath();
@@ -8736,16 +9306,22 @@
       const l = i === lastI ? lastL : b.l;
       const c = i === lastI ? lastC : b.c;
       const bull = c >= b.o;
-      ctx.strokeStyle = bull ? up : dn;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x + cw * 0.5, py(h));
-      ctx.lineTo(x + cw * 0.5, py(l));
-      ctx.stroke();
+      // wicks are batched into one path per colour (2 strokes per frame instead of one per candle)
+      const wick = bull ? wickUp : wickDn;
+      wick.push(x + cw * 0.5, py(h), py(l));
       ctx.fillStyle = bull ? up : dn;
       const yO = py(b.o), yC = py(c);
       ctx.fillRect(x, yO < yC ? yO : yC, cw, Math.max(1.2, yO < yC ? yC - yO : yO - yC));
     }
+    ctx.lineWidth = 1;
+    for (const [w, col] of [[wickUp, up], [wickDn, dn]]) {
+      if (!w.length) continue;
+      ctx.strokeStyle = col;
+      ctx.beginPath();
+      for (let k = 0; k < w.length; k += 3) { ctx.moveTo(w[k], w[k + 1]); ctx.lineTo(w[k], w[k + 2]); }
+      ctx.stroke();
+    }
+    wickUp.length = 0; wickDn.length = 0;
     const marks = (S.tapeMarks || []).concat(S.tapeLive ? [S.tapeLive] : []);
     if (marks.length) {
       ctx.font = "700 8px \"IBM Plex Mono\", monospace";
@@ -9673,9 +10249,10 @@
     ctx.restore();
   }
 
-  function drawWorldBg(ctx, wash, w, h) {
-    w = w || S.W;
-    h = h || S.H;
+  // The gradient sky, stars, sun/moon glow and vignette never change for a palette + size, but full-canvas
+  // gradient fills are the most expensive thing to rasterize on phones. Bake them once per palette/size.
+  const BG_CACHE = new Map();
+  function paintBgStatic(ctx, w, h) {
     const g = ctx.createLinearGradient(0, 0, 0, h);
     g.addColorStop(0, PAL.bgTop || PAL.bg);
     g.addColorStop(0.52, PAL.bg);
@@ -9751,6 +10328,24 @@
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, w, h);
     }
+  }
+  function drawWorldBg(ctx, wash, w, h) {
+    w = w || S.W;
+    h = h || S.H;
+    const id = PALETTE_ID;
+    const dpr = canvasDpr();
+    const key = id + "|" + w + "|" + h + "|" + dpr + "|" + PAL.bgTop + PAL.bg + PAL.bgBot + PAL.gold + PAL.green + PAL.fg;
+    let bc = BG_CACHE.get(key);
+    if (!bc) {
+      if (BG_CACHE.size > 6) BG_CACHE.clear();
+      bc = document.createElement("canvas");
+      bc.width = Math.round(w * dpr); bc.height = Math.round(h * dpr);
+      const g = bc.getContext("2d");
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      paintBgStatic(g, w, h);
+      BG_CACHE.set(key, bc);
+    }
+    ctx.drawImage(bc, 0, 0, bc.width, bc.height, 0, 0, w, h);
     if (id === "flower") {
       const tnow = performance.now() * 0.001;
       for (let i = 6; i >= 0; i--) {
@@ -9783,18 +10378,10 @@
       ctx.lineWidth = 1;
       const stepG = id === "terminal" ? 28 : 36;
       const ox = -(((S.bg || 0) * 0.5) % stepG);
-      for (let x = ox; x < w + stepG; x += stepG) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (let y = 0; y < h; y += stepG) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
+      ctx.beginPath();
+      for (let x = ox; x < w + stepG; x += stepG) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+      for (let y = 0; y < h; y += stepG) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+      ctx.stroke();
     }
     if (S.power === "BULL" || S.power === "BEAR") {
       const tint = wash || (S.power === "BULL" ? PAL.green : PAL.red);
@@ -9891,7 +10478,7 @@
   function paintHeroPreview() {
     const el = $("hero-prev");
     if (!el) return;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = canvasDpr();
     const w = 168, h = 120;
     if (el.width !== w * dpr || el.height !== h * dpr) {
       el.width = w * dpr;
@@ -9919,8 +10506,22 @@
   const GAME_H = 640;
 
   let fitW = 0, fitH = 0, fitCtx = null;
+  // Backing-store scale for the main canvas. Capped at 2: DPR 3 phones would otherwise push 2.25x the pixels
+  // every frame for no visible gain on a 480x640 pixel-art stage.
+  // Low-end phones (<=4 cores or <=3GB) start at 1.5x; any device that sustains slow frames steps down to 1x.
+  const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || ((navigator.deviceMemory || 8) <= 3);
+  let DPR_CAP = LOW_END ? 1.5 : 2;
+  let perfEma = 16.7, perfSlow = 0;
+  function perfSample(ms) {
+    if (!(ms > 0 && ms < 250)) return;
+    perfEma += (ms - perfEma) * 0.05;
+    if (perfEma > 24 && DPR_CAP > 1 && Math.min(DPR_CAP, window.devicePixelRatio || 1) > 1) {
+      if (++perfSlow > 180) { DPR_CAP = Math.max(1, DPR_CAP - 0.5); perfSlow = 0; perfEma = 16.7; fitW = 0; }
+    } else perfSlow = 0;
+  }
+  function canvasDpr() { return Math.min(DPR_CAP, window.devicePixelRatio || 1); }
   function fit() {
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = canvasDpr();
     const W = GAME_W, H = GAME_H;
     S.W = W; S.H = H;
     if (fitCtx && W === fitW && H === fitH) return fitCtx;
@@ -9942,13 +10543,52 @@
     const baseW = GAME_W;
     const baseH = app.offsetHeight || (GAME_H + 160);
     const pad = 8;
-    const inset = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    const bs = getComputedStyle(document.body);
+    const inset = (parseFloat(bs.paddingBottom) || 0) + (parseFloat(bs.paddingTop) || 0);
+    const insetX = (parseFloat(bs.paddingLeft) || 0) + (parseFloat(bs.paddingRight) || 0);
     const viewW = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
     const viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-    const sx = (viewW - pad) / baseW;
+    const sx = (viewW - pad - insetX) / baseW;
     const sy = (viewH - pad - inset) / baseH;
     const s = Math.max(0.35, Math.min(sx, sy));
     app.style.transform = "scale(" + s + ")";
+    S.stageScale = s;
+    popOverlay();
+  }
+  // Short landscape screens (phones on their side) shrink the 480px stage to ~0.5x, which made arc cards
+  // and popups 5-7px text. While the overlay is open there, it is lifted out of the stage scale: laid out
+  // in a box sized to the real viewport and scaled to a readable size, centred on screen.
+  function popOverlay() {
+    const o = overlay, fld = $("field"), app = $("app");
+    if (!o || !fld || !app) return;
+    const viewW = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
+    const viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    const s = S.stageScale || 1;
+    const want = o.classList.contains("open") && viewW > viewH * 1.15 && s < 0.8;
+    const was = o.classList.contains("pop");
+    if (!want) {
+      if (was) {
+        o.classList.remove("pop");
+        o.style.left = o.style.top = o.style.width = o.style.height = o.style.transform = "";
+        document.documentElement.classList.remove("ui-pop");
+      }
+      return;
+    }
+    const k = Math.max(0.62, Math.min(1, viewH / 440));
+    const Wn = Math.min(560, (viewW * 0.94) / k), Hn = (viewH * 0.96) / k;
+    if (!document.documentElement.classList.contains("ui-pop")) document.documentElement.classList.add("ui-pop");
+    if (!was) o.classList.add("pop"); // guarded: classList.add re-fires the class observer even when unchanged
+    o.style.transform = "none";
+    const fr = fld.getBoundingClientRect();
+    const visL = (viewW - Wn * k) / 2, visT = (viewH - Hn * k) / 2;
+    o.style.left = ((visL - fr.left) / s) + "px";
+    o.style.top = ((visT - fr.top) / s) + "px";
+    o.style.width = Wn + "px";
+    o.style.height = Hn + "px";
+    o.style.transform = "scale(" + (k / s) + ")";
+  }
+  if (overlay && window.MutationObserver) {
+    new MutationObserver(() => popOverlay()).observe(overlay, { attributes: true, attributeFilter: ["class"] });
   }
 
   function renderBitcoinCountry(){
@@ -10008,7 +10648,7 @@
           steps.push([n,lab]);
         }
         const list=steps.map(([n,lab])=>"<li class=\""+(tierNow>=n?"on":"")+"\">"+(tierNow>=n?"●":"○")+" "+n+" · "+lab+"</li>").join("");
-        const hint=es?"Cada tier suma 5% de velocidad y 5% de defensa del escudo. Los pares suman 1 vida. El precio es el más caro entre 1000 BTC y el 5% del patrimonio, en la moneda que más tenés.":"Each tier adds 5% speed and 5% shield defense. Even tiers add 1 life. The price is the higher of 1000 BTC and 5% of net worth, shown in whichever you hold more of.";
+        const hint=es?"Cada tier suma 5% de velocidad, 5% de defensa del escudo, 4% de velocidad de disparo y 4% menos enemigos. Los pares suman 1 vida, el tier 5 levanta el muro de la ciudadela y el tier 7 duplica el daño. El tier N cuesta N×250 BTC o el 5% del patrimonio (lo que sea mayor), en la moneda que más tienes.":"Each tier adds 5% speed, 5% shield defense, 4% shot speed and 4% fewer attackers. Even tiers add 1 life, tier 5 raises the citadel wall and tier 7 doubles damage. Tier N costs N×250 BTC or 5% of net worth (whichever is higher), shown in whichever you hold more of.";
         ups.innerHTML="<p class=\"bc-up-now\">"+now+"</p><ul class=\"bc-up-list\">"+list+"</ul><p class=\"bc-note\">"+hint+"</p>";
       }
     }
@@ -10999,6 +11639,10 @@
       + "<select id=\"test-perk\">" + testPerkOptionsHtml() + "</select>"
       + "<button type=\"button\" class=\"cta\" id=\"test-grant\">" + t("testGrant") + "</button>"
       + "</div>"
+      + "<p class=\"test-lab\">" + (chanceLang() ? "Forzar arc card" : "Force arc card") + "</p>"
+      + "<div class=\"test-row\"><select id=\"test-force\">" + CHANCE_CARDS.map((c) => "<option value=\"" + c.id + "\">" + escTxt(c.id + " · " + ((chanceLang() ? c.titleEs : 0) || c.title || "")) + "</option>").join("") + "</select>"
+      + "<button type=\"button\" class=\"cta\" id=\"test-force-go\">" + (chanceLang() ? "Mostrar" : "Show") + "</button></div>"
+      + "<p class=\"k\" id=\"test-force-note\"></p>"
       + "<p class=\"test-lab\">" + t("testArc") + "</p>"
       + "<div class=\"test-row\">"
       + "<input id=\"test-arc-n\" type=\"number\" min=\"0\" max=\"999\" inputmode=\"numeric\" value=\"" + arcVal + "\">"
@@ -11148,7 +11792,11 @@
       return "<div class=\"opt-head\">" + optHead(t("gameplay")) + "</div>"
         + "<div class=\"opt-menu\">"
         + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-move\">" + t("battleMove") + " · " + (BATTLE_360 ? "360°" : "↑↓←→") + "</button>"
+        + (KB_DESK || /[?&]kb=1/.test(location.search) ? "<button type=\"button\" class=\"cta opt-item\" id=\"opt-keys\">" + (chanceLang() ? "TECLAS (PC)" : "HOTKEYS (PC)") + "</button>" : "")
         + "</div>";
+    }
+    if (panel === "keys") {
+      return "<div class=\"opt-head\">" + optHead(chanceLang() ? "TECLAS" : "HOTKEYS") + "</div>" + kbRows();
     }
     if (panel === "test") return testMarkup();
     const fromPlay = S.phase === "paused" && (S.optBack === "play" || !S.optBack);
@@ -11187,7 +11835,7 @@
       e.stopPropagation();
       const panel = S.optPanel || "";
       const nested = panel && panel !== "menu" && panel !== "off";
-      if (nested) { S.optPanel = "menu"; renderOverlay(); return; }
+      if (nested) { kbCapture = null; S.optPanel = panel === "keys" ? "game" : "menu"; renderOverlay(); return; }
       S.optPanel = null;
       if (S.phase === "chance" || S.phase === "perk") { renderOverlay(); return; }
       if (S.optBack === "ready" || S.phase === "ready") { S.phase = "ready"; renderOverlay(); return; }
@@ -11292,6 +11940,9 @@
     if (optGfx) optGfx.onclick = (e) => { e.stopPropagation(); S.optPanel = "gfx"; renderOverlay(); };
     const optGame = $("opt-game");
     if (optGame) optGame.onclick = (e) => { e.stopPropagation(); S.optPanel = "game"; renderOverlay(); };
+    const optKeys = $("opt-keys");
+    if (optKeys) optKeys.onclick = (e) => { e.stopPropagation(); kbCapture = null; kbMsg = ""; S.optPanel = "keys"; renderOverlay(); };
+    if (S.optPanel === "keys") kbBind();
     const optMove = $("opt-move");
     if (optMove) optMove.onclick = (e) => {
       e.stopPropagation();
@@ -11341,6 +11992,25 @@
       e.stopPropagation();
       const sel = $("test-perk");
       testGrantPerk(sel ? sel.value : S.testPerkPick);
+      renderOverlay();
+    };
+    const testForceGo = $("test-force-go");
+    if (testForceGo) testForceGo.onclick = (e) => {
+      e.stopPropagation();
+      const sel = $("test-force");
+      const id = sel ? sel.value : "";
+      if (!id || S.ranked) return;
+      if (S.phase !== "paused" || S.optBack !== "play") {
+        const n = $("test-force-note");
+        if (n) n.textContent = chanceLang() ? "Empieza la partida y vuelve a abrir Opciones." : "Start the run, then reopen Options.";
+        return;
+      }
+      // test-only: show the chosen card now, even if it was already seen this run
+      if (S.chanceUsed) delete S.chanceUsed[id];
+      S.optPanel = null;
+      setPhase("play");
+      window.__arcForce = id;
+      try { dealChance(); } finally { window.__arcForce = ""; }
       renderOverlay();
     };
     const testArcSet = $("test-arc-set");
@@ -11988,7 +12658,7 @@
         overlay.classList.remove("chance-options");
         const esN = chanceLang();
         overlay.innerHTML = "<h1>" + (esN ? "El nombre" : "The name") + "</h1>"
-          + "<p class=\"k arc-title\">" + (esN ? "¿Cómo se llama el país?" : "What is the country called?") + "</p>"
+          + "<p class=\"arc-title\">" + (esN ? "¿Cómo se llama el país?" : "What is the country called?") + "</p>"
           + "<p class=\"arc-body\">" + (esN
             ? "Ese nombre queda en la declaración, en las respuestas y en las cartas que siguen."
             : "That name stays on the declaration, the replies, and the cards that follow.") + "</p>"
@@ -12019,25 +12689,39 @@
       let title = es ? (card.titleEs || card.title) : card.title;
       if (S.chanceTitle) title = es ? (S.chanceTitle.es || S.chanceTitle.en || title) : (S.chanceTitle.en || title);
       if (S.battleTutOpen) title = t("tutBattle");
-      if (card.job) title = fillJob(title);
+      if (card.job) title = fillJob(title, card.jobTier);
       title = stampNation(title);
       const body = stampNation(S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body)));
       const pic = chanceArtHtml(card.id);
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
+        overlay.innerHTML = "<div class=\"arc-head\"><h1>" + t("chanceHead") + "</h1>" + arcTldrBtn() + "</div>"
+          + pic + "<p class=\"arc-title\" role=\"heading\" aria-level=\"2\">" + title + "</p>"
           + arcOutcomeHtml()
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
+        if (card.input === "move") {
+          const esM = chanceLang();
+          btns = "<form id=\"arc-move-form\" class=\"nation-ask arc-move\" autocomplete=\"off\">"
+            + "<label for=\"arc-move-in\" class=\"arc-move-label\">" + (esM ? "Tu jugada (blancas, jugada 15)" : "Your move (White, move 15)") + "</label>"
+            + "<input id=\"arc-move-in\" maxlength=\"16\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"none\" spellcheck=\"false\" enterkeyhint=\"done\" inputmode=\"text\" placeholder=\"" + (esM ? "p. ej. Cf3" : "e.g. Nf3") + "\">"
+            + "<button type=\"submit\" class=\"cta\">" + (esM ? "Jugar" : "Play") + "</button>"
+            + "</form>";
+        } else
         btns = (card.opts || []).map((o) => {
-          const lab = arcOptionLabel(card,o,es);
+          const lab = stampNation(arcOptionLabel(card,o,es));
           return "<button class=\"cta\" data-ch=\"" + o.k + "\">" + lab + "</button>";
         }).join("");
         const ack = !btns;
         if (ack) btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
-        overlay.innerHTML = arcTldrBtn() + "<h1>" + t("chanceHead") + "</h1>" + pic + "<p class=\"k arc-title\">" + title + "</p>"
+        const settled = (S.chanceSettled && S.chanceReadyNote && !S.battleTutOpen)
+          ? arcMoneyHtml(ARC_TLDR ? (punchline(stripOutcomeMoney(S.chanceReadyNote)) || S.chanceReadyNote) : S.chanceReadyNote)
+          : "";
+        overlay.innerHTML = "<div class=\"arc-head\"><h1>" + t("chanceHead") + "</h1>" + arcTldrBtn() + "</div>"
+          + pic + "<p class=\"arc-title\" role=\"heading\" aria-level=\"2\">" + title + "</p>"
           + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
+          + settled
           + "<div class=\"arc-actions\">" + btns + "</div>";
       }
       const tog = $("arc-tldr-tog");
@@ -12055,6 +12739,18 @@
         renderOverlay();
       };
       bindArcChoices(card);
+      const mvForm = $("arc-move-form"), mvIn = $("arc-move-in");
+      if (mvForm && mvIn) {
+        // keys typed here never reach the game (the global keydown handler skips inputs); stop bubbling anyway
+        mvIn.addEventListener("keydown", (e) => e.stopPropagation());
+        mvIn.addEventListener("pointerdown", (e) => e.stopPropagation());
+        mvForm.onsubmit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          try { mvIn.blur(); } catch (err) {}
+          pickChance("move:" + (mvIn.value || ""));
+        };
+      }
     } else if (p === "perk") {
       if (S.optPanel) {
         overlay.classList.add("chance-options");
@@ -12095,7 +12791,7 @@
       } catch (e) {}
       if (S.trainBattleLose && aidOffer()) {
         const cost = aidOffer();
-        const have = S.btc || 0;
+        const have = aidReach();
         const ok = have + 1e-6 >= cost;
         const n = aidBtcLabel(cost);
         const note = t("aidNote").replace("{n}", n).replace("{i}", String((S.bcAidUsed | 0) + 1));
@@ -12176,6 +12872,7 @@
       last = now;
       acc = 0;
     } else if (!(S.mp && S.phase === "count")) {
+      perfSample(now - last);
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now; acc += dt;
       while (acc >= 1 / 60) { step(1 / 60); acc -= 1 / 60; }
@@ -12269,53 +12966,169 @@
       setPhase(S.optBack === "play" || S.phase === "paused" ? (S.optBack || "play") : "ready");
     }
   });
+  // ---- keybindings (desktop hotkeys, rebindable in Options > Gameplay) ----
+  const KB_DEFS=[
+    {id:"flap",g:"play",k:"Space",en:"Jump / flap",es:"Saltar / aletear"},
+    {id:"buy",g:"play",k:"KeyB",en:"Buy BTC",es:"Comprar BTC",btn:"buy-btc"},
+    {id:"sell",g:"play",k:"KeyS",en:"Sell BTC",es:"Vender BTC",btn:"sell-btc"},
+    {id:"dca",g:"play",k:"KeyD",en:"DCA on/off",es:"DCA on/off",btn:"dca-btn"},
+    {id:"aibud",g:"play",k:"KeyI",en:"A.I. Bud on/off",es:"A.I. Bud on/off",btn:"iabud-btn"},
+    {id:"trend",g:"play",k:"KeyT",en:"Trend (manipulation)",es:"Tendencia (manipulación)",btn:"trend-btn"},
+    {id:"market",g:"play",k:"KeyM",en:"Market",es:"Mercado",btn:"market-btn"},
+    {id:"pause",g:"play",k:"KeyP",en:"Pause",es:"Pausa",btn:"pause-btn"},
+    {id:"options",g:"play",k:"KeyO",en:"Options",es:"Opciones",btn:"opt-btn"},
+    {id:"up",g:"battle",k:"KeyW",en:"Battle: up",es:"Batalla: arriba"},
+    {id:"down",g:"battle",k:"KeyS",en:"Battle: down",es:"Batalla: abajo"},
+    {id:"left",g:"battle",k:"KeyA",en:"Battle: left",es:"Batalla: izquierda"},
+    {id:"right",g:"battle",k:"KeyD",en:"Battle: right",es:"Batalla: derecha"},
+    {id:"fire",g:"battle",k:"Space",en:"Battle: fire",es:"Batalla: disparar"},
+    {id:"fury",g:"battle",k:"KeyQ",en:"Battle: fury / anti-air",es:"Batalla: furia / antiaéreo",btn:"def-aa"},
+    {id:"confirm",g:"ui",k:"Enter",en:"Confirm / OK",es:"Confirmar / OK"},
+    {id:"close",g:"ui",k:"Escape",en:"Close / back",es:"Cerrar / volver"},
+    {id:"opt1",g:"ui",k:"Digit1",en:"Card option 1",es:"Opción de carta 1"},
+    {id:"opt2",g:"ui",k:"Digit2",en:"Card option 2",es:"Opción de carta 2"},
+    {id:"opt3",g:"ui",k:"Digit3",en:"Card option 3",es:"Opción de carta 3"}
+  ];
+  const KB_STORE="choppy-keys";
+  let KB={};
+  function kbLoad(){KB={};KB_DEFS.forEach(d=>KB[d.id]=d.k);try{const o=JSON.parse(localStorage.getItem(KB_STORE)||"{}");for(const id in o)if(id in KB&&typeof o[id]==="string")KB[id]=o[id];}catch(e){}}
+  function kbSave(){const o={};KB_DEFS.forEach(d=>{if(KB[d.id]!==d.k)o[d.id]=KB[d.id];});try{if(Object.keys(o).length)localStorage.setItem(KB_STORE,JSON.stringify(o));else localStorage.removeItem(KB_STORE);}catch(e){}}
+  kbLoad();
+  function kbLabel(c){if(!c)return"—";if(c==="Space")return chanceLang()?"Espacio":"Space";if(c==="Escape")return"Esc";if(c.startsWith("Key"))return c.slice(3);if(c.startsWith("Digit"))return c.slice(5);if(c.startsWith("Numpad"))return"Num"+c.slice(6);
+    const ar={ArrowUp:"↑",ArrowDown:"↓",ArrowLeft:"←",ArrowRight:"→"};return ar[c]||c;}
+  const kbOverlap=(a,b)=>a===b||a==="ui"||b==="ui";
+  function kbIs(e,id){return e.code===KB[id];}
+  const KB_DESK=(()=>{try{return matchMedia("(hover: hover) and (pointer: fine)").matches;}catch(e){return false;}})();
+  function kbHints(){
+    if(!KB_DESK)return;
+    document.body.classList.add("kb-desk");
+    KB_DEFS.forEach(d=>{if(!d.btn)return;const el=$(d.btn);if(el){el.setAttribute("data-key",kbLabel(KB[d.id]));el.title=(chanceLang()?d.es:d.en)+" ["+kbLabel(KB[d.id])+"]";}});
+  }
+  kbHints();
+  let kbCapture=null,kbMsg="";
+  function kbRows(){
+    const es=chanceLang();
+    const head={play:es?"Juego":"Run",battle:es?"Batalla":"Battle",ui:es?"Menús y cartas":"Menus & cards"};
+    let h="",g="";
+    KB_DEFS.forEach(d=>{
+      if(d.g!==g){g=d.g;h+="<p class=\"kb-sec\">"+head[g]+"</p>";}
+      const cap=kbCapture===d.id;
+      h+="<div class=\"kb-row\"><span>"+(es?d.es:d.en)+"</span><button type=\"button\" class=\"kb-key"+(cap?" cap":"")+"\" data-kb=\""+d.id+"\">"+(cap?(es?"Pulsa una tecla…":"Press a key…"):kbLabel(KB[d.id]))+"</button></div>";
+    });
+    return "<div class=\"kb-list\">"+(kbMsg?"<p class=\"kb-msg\">"+kbMsg+"</p>":"")+h+"</div>"
+      +"<button type=\"button\" class=\"cta opt-item\" id=\"kb-reset\">"+(es?"Restablecer teclas":"Reset to defaults")+"</button>"
+      +"<p class=\"kb-note\">"+(es?"Flechas también mueven en batalla; ↑ también salta. Esc cancela la reasignación.":"Arrow keys also move in battle; ↑ also jumps. Esc cancels rebinding.")+"</p>";
+  }
+  function kbBind(){
+    overlay.querySelectorAll("[data-kb]").forEach(b=>{b.onclick=(e)=>{e.stopPropagation();kbCapture=b.getAttribute("data-kb");kbMsg="";renderOverlay();};});
+    const r=$("kb-reset");if(r)r.onclick=(e)=>{e.stopPropagation();kbCapture=null;try{localStorage.removeItem(KB_STORE);}catch(_){}kbLoad();kbMsg=chanceLang()?"Teclas restablecidas.":"Keys reset.";kbHints();renderOverlay();};
+  }
+  function kbAssign(id,code){
+    const d=KB_DEFS.find(x=>x.id===id);const es=chanceLang();
+    const clash=KB_DEFS.find(x=>x.id!==id&&KB[x.id]===code&&kbOverlap(x.g,d.g));
+    if(clash){KB[clash.id]=KB[id];kbMsg=(es?"Intercambiada con ":"Swapped with ")+"“"+(es?clash.es:clash.en)+"” → "+kbLabel(KB[clash.id]);}
+    else kbMsg="";
+    KB[id]=code;kbSave();kbHints();
+  }
+  // "?" opens a read-only cheat sheet of the current bindings (desktop). Esc, "?" or a click closes it.
+  function kbSheetToggle(force){
+    let el=$("kb-sheet");
+    const show=force!=null?force:!(el&&el.classList.contains("open"));
+    if(!show){if(el)el.classList.remove("open");document.body.classList.remove("kb-sheet-on");return;}
+    if(!el){el=document.createElement("div");el.id="kb-sheet";el.setAttribute("role","dialog");el.onclick=()=>kbSheetToggle(false);document.body.appendChild(el);}
+    const es=chanceLang();
+    const head={play:es?"Juego":"Run",battle:es?"Batalla":"Battle",ui:es?"Menús y cartas":"Menus & cards"};
+    let h="<div class=\"kb-sheet-box\"><p class=\"k\">"+(es?"ATAJOS DE TECLADO":"KEYBOARD SHORTCUTS")+"</p><div class=\"kb-sheet-cols\">",g="";
+    KB_DEFS.forEach(d=>{if(d.g!==g){if(g)h+="</div>";g=d.g;h+="<div><p class=\"kb-sec\">"+head[g]+"</p>";}
+      h+="<div class=\"kb-row\"><span>"+(es?d.es:d.en)+"</span><kbd>"+kbLabel(KB[d.id])+"</kbd></div>";});
+    h+="</div></div><p class=\"kb-note\">"+(es?"? o Esc cierra · Cámbialas en Opciones → Juego → Teclas (PC)":"? or Esc closes · Rebind in Options → Gameplay → Keys (PC)")+"</p></div>";
+    el.innerHTML=h;el.classList.add("open");document.body.classList.add("kb-sheet-on");
+    if(S.phase==="play"&&!S.mp)togglePause();
+  }
+  function kbClickFirst(sel){const el=overlay.querySelector(sel);if(el&&!el.disabled&&el.offsetParent!==null){el.click();return true;}return false;}
   window.addEventListener("keyup", (e) => {
     if(S.phase!=="defense")return;
-    const k=e.key.toLowerCase();
     const h=S.defHeld;if(!h)return;
-    if(e.code==="ArrowUp"||k==="w")h.u=0;
-    if(e.code==="ArrowDown"||k==="s")h.d=0;
-    if(e.code==="ArrowLeft"||k==="a")h.l=0;
-    if(e.code==="ArrowRight"||k==="d")h.r=0;
-    if(e.code==="Space")h.f=0;
-    if(e.code==="KeyQ"||e.code==="KeyE"){
+    if(e.code==="ArrowUp"||kbIs(e,"up"))h.u=0;
+    if(e.code==="ArrowDown"||kbIs(e,"down"))h.d=0;
+    if(e.code==="ArrowLeft"||kbIs(e,"left"))h.l=0;
+    if(e.code==="ArrowRight"||kbIs(e,"right"))h.r=0;
+    if(kbIs(e,"fire"))h.f=0;
+    if(kbIs(e,"fury")||e.code==="KeyE"){
       h.aa=0;
       const d=S.bcDefense;
       if(d&&d.aaCharging&&!d.aaArmed){d.aaCharging=false;d.aaCharge=0;}
     }
   });
   window.addEventListener("keydown", (e) => {
+    if (kbCapture) {
+      e.preventDefault(); e.stopPropagation();
+      if (e.code === "Escape") kbMsg = "";
+      else if (e.code && !/^(Shift|Control|Alt|Meta)/.test(e.code)) kbAssign(kbCapture, e.code);
+      else return;
+      kbCapture = null; renderOverlay(); return;
+    }
     const tag = (e.target && e.target.tagName ? e.target.tagName : "").toLowerCase();
     const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
     if (typing) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const sheet = $("kb-sheet");
+    if (sheet && sheet.classList.contains("open") && (e.code === "Escape" || e.key === "?")) { e.preventDefault(); kbSheetToggle(false); return; }
+    if (e.key === "?" && !e.repeat && S.phase !== "defense") { e.preventDefault(); kbSheetToggle(true); return; }
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
-    const k = e.key.toLowerCase();
     if(S.phase==="defense"){
-      e.preventDefault();
       const h=S.defHeld||(S.defHeld={u:0,d:0,l:0,r:0,f:0});
-      if(e.code==="ArrowUp"||k==="w")h.u=1;
-      if(e.code==="ArrowDown"||k==="s")h.d=1;
-      if(e.code==="ArrowLeft"||k==="a")h.l=1;
-      if(e.code==="ArrowRight"||k==="d")h.r=1;
-      if(e.code==="Space"){h.f=1;if(!e.repeat&&S.bcDefense&&!S.bcDefense.aaArmed)fireTank(S.bcDefense,S.bcDefense.player);}
-      if(e.code==="KeyQ"||e.code==="KeyE"){
+      let hit=true;
+      if(e.code==="ArrowUp"||kbIs(e,"up"))h.u=1;
+      else if(e.code==="ArrowDown"||kbIs(e,"down"))h.d=1;
+      else if(e.code==="ArrowLeft"||kbIs(e,"left"))h.l=1;
+      else if(e.code==="ArrowRight"||kbIs(e,"right"))h.r=1;
+      else if(kbIs(e,"fire")){h.f=1;if(!e.repeat&&S.bcDefense&&!S.bcDefense.aaArmed)fireTank(S.bcDefense,S.bcDefense.player);}
+      else if(kbIs(e,"fury")||e.code==="KeyE"){
         const d=S.bcDefense;
-        if(!d||e.repeat)return;
-        h.aa=1;
-        if(d.aaArmed)d.aaTap=1;
-        else if(!d.aaCharging){
-          d.aaCharging=true;d.aaCharge=0;d.aaArmed=false;d.reticle=null;
+        if(d&&!e.repeat){
+          h.aa=1;
+          if(d.aaArmed)d.aaTap=1;
+          else if(!d.aaCharging){d.aaCharging=true;d.aaCharge=0;d.aaArmed=false;d.reticle=null;}
         }
-      }
+      } else hit=false;
+      if(hit)e.preventDefault();
       return;
     }
-    if (S.arcHold || S.phase === "chance") {
-      if (e.code === "Space" || e.code === "ArrowUp" || k === "p") { e.preventDefault(); return; }
+    const ovOpen = overlay && !overlay.classList.contains("hide") && overlay.offsetParent !== null && overlay.innerHTML.trim() !== "";
+    if (ovOpen && !e.repeat) {
+      if (kbIs(e, "close")) {
+        e.preventDefault();
+        if (kbClickFirst("#opt-x") || kbClickFirst("#opt-close") || kbClickFirst("#help-back")) return;
+        if (S.phase === "paused" && !S.mp) { togglePause(); return; }
+        return;
+      }
+      if (kbIs(e, "confirm")) {
+        e.preventDefault();
+        if (kbClickFirst("#arc-move-form button[type=submit]") || kbClickFirst("[data-ch=\"ok\"]") || kbClickFirst("#go") || kbClickFirst("[data-ch]")) return;
+        return;
+      }
+      const oi = ["opt1","opt2","opt3"].findIndex((id) => kbIs(e, id));
+      if (oi >= 0) {
+        const bs = Array.prototype.filter.call(overlay.querySelectorAll("[data-ch]"), (b) => b.offsetParent !== null);
+        if (bs[oi]) { e.preventDefault(); if (!bs[oi].disabled) bs[oi].click(); return; }
+      }
     }
-    if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
-    else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
-    else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
-    else if (k === "p") { e.preventDefault(); if (!S.mp) togglePause(); }
+    if (S.arcHold || S.phase === "chance") {
+      if (kbIs(e, "flap") || e.code === "ArrowUp" || kbIs(e, "pause")) { e.preventDefault(); return; }
+    }
+    if (!ovOpen && kbIs(e, "close") && S.phase === "play" && !S.mp) { e.preventDefault(); togglePause(); return; }
+    if (kbIs(e, "flap") || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); return; }
+    if (e.repeat) return;
+    const fire = (id) => { const el = $(id); if (el && el.onpointerdown) el.onpointerdown({ stopPropagation(){}, preventDefault(){}, target: el }); };
+    if (kbIs(e, "buy")) { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
+    else if (kbIs(e, "sell")) { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
+    else if (kbIs(e, "pause")) { e.preventDefault(); if (!S.mp) togglePause(); }
+    else if (kbIs(e, "options")) { e.preventDefault(); toggleOptions(); }
+    else if (kbIs(e, "dca")) { e.preventDefault(); fire("dca-btn"); }
+    else if (kbIs(e, "aibud")) { e.preventDefault(); fire("iabud-btn"); }
+    else if (kbIs(e, "trend")) { e.preventDefault(); fire("trend-btn"); }
+    else if (kbIs(e, "market")) { e.preventDefault(); fire("market-btn"); }
   });
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); if (!S.mp) togglePause(); };
   function optionsVisible() {

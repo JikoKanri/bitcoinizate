@@ -22,7 +22,6 @@ html, body {
   height: 100%;
   height: 100dvh;
   min-height: 100dvh;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   background-color: var(--bg);
   background-image:
     radial-gradient(120% 70% at 50% -12%, var(--bg-glow, transparent), transparent 58%),
@@ -35,6 +34,8 @@ html, body {
   overscroll-behavior: none;
 }
 body {
+  /* safe areas applied once, here; layoutStage() subtracts them from the fit */
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,7 +52,6 @@ body {
     radial-gradient(120% 70% at 50% -12%, var(--bg-glow, transparent), transparent 58%),
     linear-gradient(180deg, var(--bg-top, var(--bg)) 0%, var(--bg) 48%, var(--bg-bot, var(--bg)) 100%);
   transform-origin: center center;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   overflow: hidden;
 }
 .hud-grid,
@@ -74,7 +74,7 @@ body {
   min-width: 0;
 }
 .stat span {
-  font-size: clamp(9px, 2.4vw, 12px);
+  font-size: clamp(10px, 2.6vw, 12px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -88,7 +88,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.hud-grid > .stat:nth-child(-n+6) span { font-size: clamp(8.6px, 2.28vw, 11.4px); }
+.hud-grid > .stat:nth-child(-n+6) span { font-size: clamp(10px, 2.5vw, 11.4px); letter-spacing: 0.04em; }
 .hud-grid > .stat:nth-child(-n+6) b { font-size: clamp(12.4px, 3.04vw, 14.25px); }
 .stat span.sub { margin-top: 0; }
 #h-cold-wrap,
@@ -131,7 +131,7 @@ body {
   accent-color: var(--gold); cursor: pointer; background: transparent;
 }
 .opt-btn { width: 100%; flex: 1 1 auto; min-height: 0; border: 1px solid var(--border); background: var(--surface); color: var(--hud); font: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; cursor: pointer; line-height: 1.15; padding: 2px 4px; }
-.opt-btn small { display: block; font-size: 8px; letter-spacing: 0; text-transform: none; font-weight: 700; color: var(--hud); }
+.opt-btn small { display: block; font-size: 10px; letter-spacing: 0; text-transform: none; font-weight: 700; color: var(--hud); }
 .user-link { color: #F2A900; text-decoration: none; font-size: 11px; font-weight: 700; }
 .user-link:hover { text-decoration: underline; }
 .opt-btn:disabled { opacity: 0.35; cursor: default; }
@@ -227,11 +227,11 @@ body {
   border: 1px solid rgba(255, 246, 208, 0.28);
 }
 .lyric-title {
-  margin: 0 0 2px; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 2px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--gold); text-align: left;
 }
 .lyric-side {
-  margin: 0; min-height: 11px; font-size: 9px; color: var(--fg);
+  margin: 0; min-height: 11px; font-size: 10px; color: var(--fg);
   opacity: 0.78;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -275,7 +275,7 @@ body {
 .mp-list li.out { color: var(--muted); text-decoration: line-through; }
 .mp-list li .hero-dot {
   width: 16px; height: 16px; border-radius: 50%; flex: 0 0 16px;
-  border: 1px solid var(--bg); font-size: 9px; font-weight: 700;
+  border: 1px solid var(--bg); font-size: 10px; font-weight: 700;
   display: inline-flex; align-items: center; justify-content: center; line-height: 1;
 }
 .mp-join {
@@ -357,64 +357,99 @@ body {
   filter: none !important;
   mix-blend-mode: normal !important;
 }
-.overlay.dock.chance-ui h1 {
+.overlay.dock.chance-ui .arc-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 8px 0;
+  padding: 0;
+  min-height: 26px;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.overlay.dock.chance-ui h1,
+.overlay.dock.chance-ui .arc-head h1 {
   text-align: left;
-  padding-right: 72px;
+  margin: 0;
+  padding: 0;
+  min-height: 24px;
   font-size: 22px;
   line-height: 1.15;
   font-weight: 700;
   letter-spacing: -0.02em;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.overlay.dock.chance-ui .arc-top-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+  white-space: nowrap;
 }
 .overlay.dock.chance-ui .arc-tldr-tog {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  z-index: 24;
-  min-height: 22px;
-  min-width: 52px;
+  position: static;
+  min-height: 24px;
+  min-width: 48px;
   padding: 2px 8px;
   border: 1px solid var(--gold);
   background: transparent;
   color: var(--gold);
   font: inherit;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  line-height: 1;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .overlay.dock.chance-ui .arc-tldr-tog.on {
   background: var(--gold);
   color: #120c02;
 }
 .overlay.dock.chance-ui .arc-size-tog {
-  position: absolute;
-  top: 32px;
-  right: 8px;
-  z-index: 24;
-  min-height: 22px;
-  min-width: 52px;
-  padding: 2px 8px;
+  position: static;
+  min-height: 24px;
+  min-width: 28px;
+  width: 28px;
+  padding: 2px 0;
+  text-align: center;
   border: 1px solid var(--gold);
   background: transparent;
   color: var(--gold);
   font: inherit;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  line-height: 1;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .overlay.dock.chance-ui .arc-title {
-  text-decoration: underline;
+  text-decoration: none;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
   color: var(--fg);
   font-size: 20px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
+  letter-spacing: 0.005em;
   padding-right: 64px;
 }
 .overlay.dock.chance-ui p { font-size: 12.1px; line-height: 1.38; max-width: none; text-align: left; color: var(--fg); }
@@ -445,6 +480,16 @@ body {
   line-height: 1.5;
   text-align: left;
   white-space: pre-wrap;
+}
+.overlay.dock.chance-ui .arc-result {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--gold);
 }
 .overlay.dock.chance-ui .arc-actions {
   width: 100%;
@@ -818,7 +863,7 @@ video.chance-art {
 .mp-mix-sum { margin: 4px 0 0; font-size: 10px; letter-spacing: 0.06em; color: var(--gold); }
 .mp-mix-sum.bad { color: var(--red); }
 .mp-rules .mute-row { width: 100%; max-width: none; gap: 4px; }
-.mp-rules .mute-tog { min-height: 32px; font-size: 9px; padding: 0 6px; flex: 1 1 auto; min-width: 0; }
+.mp-rules .mute-tog { min-height: 32px; font-size: 10px; padding: 0 6px; flex: 1 1 auto; min-width: 0; }
 .mp-hud-list {
   display: flex; flex-wrap: wrap; gap: 4px; padding: 3px 8px;
   border-bottom: 1px solid var(--line); min-height: 34px; align-items: center;
@@ -995,11 +1040,11 @@ html[data-palette="flower"] #app {
 #bc-open.army-ready{animation:army-titilar 1.15s ease-in-out infinite}
 .bc-panel{position:absolute;z-index:40;left:12px;right:12px;top:54px;background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--border);border-radius:14px;padding:12px;box-shadow:0 16px 45px rgba(0,0,0,.38);backdrop-filter:blur(8px);font-family:"IBM Plex Mono",monospace}
 .bc-panel.hide{display:none}.bc-head{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-size:13px}.bc-head button{background:transparent;border:0;color:var(--fg);font-size:22px}
-.bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:9px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
+.bc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}.bc-grid>div{border:1px solid var(--border);border-radius:8px;padding:8px;background:rgba(0,0,0,.12)}.bc-grid span{display:block;font-size:10px;opacity:.65}.bc-grid b{display:block;margin-top:3px;font-size:12px;color:var(--fg)}
 .bc-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}.bc-actions button{flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:9px 7px;background:var(--surface);color:var(--fg);font:700 10px "IBM Plex Mono",monospace}.bc-actions button:disabled{opacity:.35}.bc-actions #bc-declare{border-color:#f2a900;color:#f2a900}.bc-actions #bc-form-army{border-color:#4f9d6e;color:#8fd4a8}.nation-ask{display:flex;flex-direction:column;gap:10px;width:min(100%,360px);margin:4px auto 0}
 .nation-ask input{font:700 16px "IBM Plex Mono",monospace;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--fg);text-align:center}
 .nation-ask input.bad{border-color:#e23b3b}
-.bc-note{min-height:13px;margin:8px 2px 0;font-size:9px;opacity:.7;white-space:normal;line-height:1.35}
+.bc-note{min-height:13px;margin:8px 2px 0;font-size:10px;opacity:.7;white-space:normal;line-height:1.35}
 .bc-panel{max-height:min(72vh,540px);overflow:auto}
 .bc-up-now{margin:8px 2px 0;font-size:11px;line-height:1.45;color:var(--fg)}
 .bc-up-list{list-style:none;margin:6px 0 0;padding:0}
@@ -1068,6 +1113,7 @@ html[data-palette="flower"] #app {
 }
 .def-aa.charging{border-color:#ffe14a;box-shadow:0 0 0 3px rgba(255,225,74,.4), 0 6px 14px rgba(0,0,0,.45);}
 .def-aa.armed{border-color:#ff2a2a;box-shadow:0 0 0 3px rgba(226,59,59,.55), 0 6px 14px rgba(0,0,0,.45);}
+.def-aa.cooldown{opacity:.55;filter:grayscale(.6);}
 .def-aa.hide{display:none}
 .def-arc{
   position:absolute;left:calc(50% - 88px);bottom:22px;width:42px;height:118px;z-index:40;
@@ -1337,3 +1383,89 @@ html[data-arc-text="l"] .overlay.dock.chance-ui .arc-title { font-size: 24px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui .arc-body { font-size: 17px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
 #bc-panel, #bc-panel * { font-family: "IBM Plex Mono", monospace; }
+
+/* Native 2.4:1 arc compositions; square cards keep their original framing until redrawn. */
+.overlay.dock.chance-ui .chance-art.wide-art,
+.overlay.dock.chance-ui.fest-ui .chance-art.wide-art {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 2.4 / 1;
+  max-height: none;
+  object-fit: cover;
+  align-self: stretch;
+  margin: 0;
+  background: #251e14;
+  display: block;
+}
+
+.overlay.dock.chance-ui .chance-art {
+  background: #251e14;
+}
+
+/* Let a verified wide image reach both edges of the 480px game field. */
+.overlay.dock.chance-ui:has(> .chance-art.wide-art) {
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.overlay.dock.chance-ui:has(> .chance-art.wide-art) > :not(.chance-art) {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Arc cards / popups: keep the header and actions inside the card, keep actions reachable on long text */
+.overlay.dock.chance-ui .arc-head,
+.overlay.dock.chance-ui .arc-actions { width: auto; max-width: 100%; align-self: stretch; }
+.overlay.dock.chance-ui .arc-title { padding-right: 0; overflow-wrap: anywhere; }
+.overlay.dock.chance-ui .arc-body,
+.overlay.dock.chance-ui .arc-tldr { overflow-wrap: break-word; }
+/* Short landscape: overlay lifted out of the stage scale (see popOverlay in game.js) */
+html.ui-pop #app,
+html.ui-pop .field { overflow: visible; }
+.overlay.open.pop {
+  position: absolute;
+  inset: auto;
+  right: auto;
+  bottom: auto;
+  max-height: none;
+  max-width: none;
+  transform-origin: 0 0;
+  box-sizing: border-box;
+  z-index: 60;
+  overflow-y: auto;
+  border: 1px solid rgba(58,58,64,0.7);
+  border-radius: 6px;
+}
+/* Opera Game card: typed chess move */
+.overlay.dock.chance-ui .arc-move { width: min(100%, 300px); }
+.overlay.dock.chance-ui .arc-move-label { font: 700 11px "IBM Plex Mono", monospace; letter-spacing: .06em; color: var(--gold); text-align: center; }
+.overlay.dock.chance-ui .arc-move input { font-size: 16px; text-transform: none; }
+
+/* desktop hotkeys */
+.kb-list{display:flex;flex-direction:column;gap:4px;max-height:52vh;overflow-y:auto;text-align:left;margin:6px 0}
+.kb-sec{margin:8px 0 2px;font-size:.75em;opacity:.7;letter-spacing:.08em;text-transform:uppercase}
+.kb-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.85em}
+.kb-key{min-width:84px;padding:4px 8px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.kb-key.cap{background:#f7931a;color:#000}
+.kb-msg{color:#f7931a;font-size:.8em;margin:0 0 4px}
+.kb-note{font-size:.7em;opacity:.65;margin-top:6px}
+body.kb-desk [data-key]::after{content:attr(data-key);display:inline-block;margin-left:5px;font-size:.62em;line-height:1;padding:2px 3px;border-radius:3px;background:rgba(0,0,0,.55);color:#fff;vertical-align:middle;pointer-events:none;font-weight:700}
+
+#kb-sheet{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:16px}
+#kb-sheet.open{display:flex}
+#kb-sheet .kb-sheet-box{background:var(--card,#1a1a1e);color:var(--card-fg,#f3efe6);border:1px solid var(--gold,#f7931a);border-radius:10px;padding:14px 18px;max-width:min(760px,96vw);max-height:90vh;overflow:auto;font-size:13px}
+#kb-sheet .kb-sheet-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 22px}
+#kb-sheet kbd{min-width:52px;text-align:center;padding:2px 6px;border:1px solid currentColor;border-radius:5px;font:inherit;font-weight:700}
+
+/* mobile fury / anti-air hint */
+.def-aa[data-hint]::after{content:attr(data-hint);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:4px;white-space:nowrap;font:700 10px "IBM Plex Mono",monospace;letter-spacing:.04em;color:#fff6e8;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:4px;pointer-events:none}
+body.kb-desk .def-aa[data-hint]::after{display:none}
+.def-aa:not(.cooldown){opacity:.55}
+.def-aa.charging,.def-aa.armed{opacity:.9}
+/* "?" sheet replaces the pause overlay visually */
+body.kb-sheet-on #overlay{visibility:hidden}
