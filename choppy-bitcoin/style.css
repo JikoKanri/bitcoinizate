@@ -74,7 +74,7 @@ body {
   min-width: 0;
 }
 .stat span {
-  font-size: clamp(9px, 2.4vw, 12px);
+  font-size: clamp(10px, 2.6vw, 12px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -88,7 +88,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.hud-grid > .stat:nth-child(-n+6) span { font-size: clamp(8.6px, 2.28vw, 11.4px); }
+.hud-grid > .stat:nth-child(-n+6) span { font-size: clamp(10px, 2.5vw, 11.4px); letter-spacing: 0.04em; }
 .hud-grid > .stat:nth-child(-n+6) b { font-size: clamp(12.4px, 3.04vw, 14.25px); }
 .stat span.sub { margin-top: 0; }
 #h-cold-wrap,
