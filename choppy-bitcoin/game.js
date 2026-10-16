@@ -2886,7 +2886,15 @@
   const WIDE_ART_JPG = new Set([
     "citadelProblem", "pieceWorld", "islandInspection", "paperwork",
     "ortegaCalls", "ambassador", "anOffer",
-    "cabinet", "blocReplies", "blocAssault", "battleWon", "blocTriumph"
+    "cabinet", "blocReplies", "blocAssault", "battleWon", "blocTriumph",
+    // job-career milestone art (1920x800 JPG; PNG could not stay under 400KB for mobile)
+    "jobCareeractingTier2", "jobCareeractingTier4", "jobCareeractingTier6",
+    "jobCareerdivingTier2", "jobCareerculinaryTier6", "jobCareeraviationTier2",
+    "jobCareeraviationTier4", "jobCareeraviationTier6", "jobCareermusicTier2",
+    "jobCareermusicTier4", "jobCareermusicTier6", "jobCareerathleticTier2",
+    "jobCareerathleticTier4", "jobCareerathleticTier6", "jobCareermedicalTier2",
+    "jobCareermedicalTier4", "jobCareermedicalTier6", "jobCareermaritimeTier2",
+    "jobCareermaritimeTier4", "jobCareermaritimeTier6"
   ]);
   const ARC_ART_ALIAS = {};
   const ARC_ART_VERSIONS = {
