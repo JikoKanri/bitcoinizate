@@ -2042,6 +2042,11 @@
   function formatBagDelta(before, after) {
     const dCash = (after.cash || 0) - (before.cash || 0);
     const dBtc = (after.btc || 0) - (before.btc || 0);
+    const px = clampPx(S.price);
+    if (Math.abs(dCash) > 0.49 && Math.abs(dBtc) > 1e-8 && px > 0) {
+      const net = Math.abs(dCash + dBtc * px);
+      return preferBtcDisplay() ? fmtBtcAmt(net / px) + " BTC" : money(net);
+    }
     const bits = [];
     if (Math.abs(dCash) > 0.49) bits.push(money(Math.abs(dCash)));
     if (Math.abs(dBtc) > 1e-8) bits.push(fmtBtcAmt(Math.abs(dBtc)) + " BTC");
@@ -3459,8 +3464,19 @@
     const dBtc = (after.btc || 0) - (before.btc || 0);
     const dCold = (after.cold || 0) - (before.cold || 0);
     const dMsig = (after.msig || 0) - (before.msig || 0);
-    if (Math.abs(dCash) >= 0.5) bits.push((dCash > 0 ? "+" : "−") + money(Math.abs(dCash)));
-    if (Math.abs(dBtc) >= 1e-8) bits.push((dBtc > 0 ? "+" : "−") + fmtBtcAmt(Math.abs(dBtc)) + " BTC");
+    {
+      // One currency per result: net the cash and BTC deltas into the player's display currency.
+      const px = clampPx(S.price);
+      const mixed = Math.abs(dCash) >= 0.5 && Math.abs(dBtc) >= 1e-8 && px > 0;
+      if (mixed) {
+        const netUsd = dCash + dBtc * px;
+        if (preferBtcDisplay()) { const nb = netUsd / px; if (Math.abs(nb) >= 1e-8) bits.push((nb > 0 ? "+" : "−") + fmtBtcAmt(Math.abs(nb)) + " BTC"); }
+        else if (Math.abs(netUsd) >= 0.5) bits.push((netUsd > 0 ? "+" : "−") + money(Math.abs(netUsd)));
+      } else {
+        if (Math.abs(dCash) >= 0.5) bits.push((dCash > 0 ? "+" : "−") + money(Math.abs(dCash)));
+        if (Math.abs(dBtc) >= 1e-8) bits.push((dBtc > 0 ? "+" : "−") + fmtBtcAmt(Math.abs(dBtc)) + " BTC");
+      }
+    }
     if (dCold) bits.push((dCold > 0 ? "+" : "") + dCold + " cold");
     if (dMsig) bits.push((dMsig > 0 ? "+" : "") + dMsig + " multisig");
     if ((after.invuln || 0) > (before.invuln || 0) + 0.4) {
