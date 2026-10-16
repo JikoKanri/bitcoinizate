@@ -2689,9 +2689,7 @@
     }
     if (card.id === "courage") {
       if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","Esperas. La pregunta no desaparece.");}
-      S.hasRing=true;
-      if (opt === "b") return say("You go home. Lena asks why you are quiet. You say you are tired. \"Sure, Fartface.\"",
-        "Vuelves a casa. Lena pregunta por qué estás tan callado. Dices que estás cansado. \"Claro, Cara de Pedo\".");
+      S.hasRing=true; // opt "b" already returned above
       const paid = cutPct(0.06);
       return say("You are officially doing this. −" + costLabel(paid) + ".", "Es oficial: vas a hacerlo. −" + costLabel(paid) + ".");
     }
@@ -2863,37 +2861,6 @@
         "El tío Mike parece satisfecho.\n\nEl mesero no.\n\nSolo quieres irte a casa.\n\n−$180.");
       return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.",
         "El tío Mike asiente.\n\n“Eso es distinto”.\n\nNo estás seguro de que lo sea.\n\nÉl sí.\n\n−$195.");
-    }
-    if (card.job) {
-      const job = currentJob();
-      const tier = Math.max(1, Math.min(7, S.have.job || 1));
-      const pay = jobPayAt(job, tier);
-      const half = Math.max(1, Math.round(pay / 2));
-      const title = job ? jobTitleAt(job, tier) : (es ? "el puesto" : "the job");
-      if (card.id === "jobLunch") {
-        if (opt === "b") return say("You eat the sandwich. They eventually talk about the weather instead.", "Te comés el sándwich. Al final hablan del clima.");
-        return say("You tell them what a " + title + " actually does. They look disappointed that it is mostly work.", "Les contás qué hace de verdad un " + title + ". Se ven decepcionados de que sea, sobre todo, trabajo.");
-      }
-      if (card.id === "jobLate") {
-        if (opt === "b") return say("You go home. The building will still be there.", "Te vas a casa. El edificio va a seguir ahí.");
-        arcPay(half);
-        return say("You stay until the lights in the other rooms go out. +" + money(half) + ".", "Te quedás hasta que se apagan las luces de las otras salas. +" + money(half) + ".");
-      }
-      if (card.id === "jobReview") {
-        arcPay(pay);
-        return say("You sign where they point. +" + money(pay) + ".", "Firmás donde te indican. +" + money(pay) + ".");
-      }
-      if (card.id === "jobPoach") {
-        if (opt === "b") return say("You go back upstairs. The old chair is still yours.", "Volvés arriba. La silla vieja sigue siendo tuya.");
-        arcPay(pay * 2);
-        return say("You never leave. They pay you once, so the story stays boring. +" + money(pay * 2) + ".", "No te vas. Te pagan una vez, para que la historia siga siendo aburrida. +" + money(pay * 2) + ".");
-      }
-      if (card.id === "jobNight") {
-        arcPay(pay);
-        return say("You do the thing the title was for. +" + money(pay) + ".", "Hacés lo que el cargo pedía. +" + money(pay) + ".");
-      }
-      if (card.id === "jobCrown") return say("You let them wait one second longer than you need to. Then you start.", "Los hacés esperar un segundo más de lo necesario. Después empezás.");
-      return say("You pin the badge on. It is crooked.", "Te ponés la credencial. Queda torcida.");
     }
     return say("Nothing else happens.", "No pasa nada más.");
   }
