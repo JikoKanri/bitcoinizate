@@ -11724,7 +11724,11 @@
       return "<div class=\"opt-head\">" + optHead(t("gameplay")) + "</div>"
         + "<div class=\"opt-menu\">"
         + "<button type=\"button\" class=\"cta opt-item\" id=\"opt-move\">" + t("battleMove") + " · " + (BATTLE_360 ? "360°" : "↑↓←→") + "</button>"
+        + (KB_DESK || /[?&]kb=1/.test(location.search) ? "<button type=\"button\" class=\"cta opt-item\" id=\"opt-keys\">" + (chanceLang() ? "TECLAS (PC)" : "HOTKEYS (PC)") + "</button>" : "")
         + "</div>";
+    }
+    if (panel === "keys") {
+      return "<div class=\"opt-head\">" + optHead(chanceLang() ? "TECLAS" : "HOTKEYS") + "</div>" + kbRows();
     }
     if (panel === "test") return testMarkup();
     const fromPlay = S.phase === "paused" && (S.optBack === "play" || !S.optBack);
@@ -11763,7 +11767,7 @@
       e.stopPropagation();
       const panel = S.optPanel || "";
       const nested = panel && panel !== "menu" && panel !== "off";
-      if (nested) { S.optPanel = "menu"; renderOverlay(); return; }
+      if (nested) { kbCapture = null; S.optPanel = panel === "keys" ? "game" : "menu"; renderOverlay(); return; }
       S.optPanel = null;
       if (S.phase === "chance" || S.phase === "perk") { renderOverlay(); return; }
       if (S.optBack === "ready" || S.phase === "ready") { S.phase = "ready"; renderOverlay(); return; }
@@ -11868,6 +11872,9 @@
     if (optGfx) optGfx.onclick = (e) => { e.stopPropagation(); S.optPanel = "gfx"; renderOverlay(); };
     const optGame = $("opt-game");
     if (optGame) optGame.onclick = (e) => { e.stopPropagation(); S.optPanel = "game"; renderOverlay(); };
+    const optKeys = $("opt-keys");
+    if (optKeys) optKeys.onclick = (e) => { e.stopPropagation(); kbCapture = null; kbMsg = ""; S.optPanel = "keys"; renderOverlay(); };
+    if (S.optPanel === "keys") kbBind();
     const optMove = $("opt-move");
     if (optMove) optMove.onclick = (e) => {
       e.stopPropagation();
@@ -12871,53 +12878,151 @@
       setPhase(S.optBack === "play" || S.phase === "paused" ? (S.optBack || "play") : "ready");
     }
   });
+  // ---- keybindings (desktop hotkeys, rebindable in Options > Gameplay) ----
+  const KB_DEFS=[
+    {id:"flap",g:"play",k:"Space",en:"Jump / flap",es:"Saltar / aletear"},
+    {id:"buy",g:"play",k:"KeyB",en:"Buy BTC",es:"Comprar BTC",btn:"buy-btc"},
+    {id:"sell",g:"play",k:"KeyS",en:"Sell BTC",es:"Vender BTC",btn:"sell-btc"},
+    {id:"dca",g:"play",k:"KeyD",en:"DCA on/off",es:"DCA on/off",btn:"dca-btn"},
+    {id:"aibud",g:"play",k:"KeyI",en:"A.I. Bud on/off",es:"A.I. Bud on/off",btn:"iabud-btn"},
+    {id:"trend",g:"play",k:"KeyT",en:"Trend (manipulation)",es:"Tendencia (manipulación)",btn:"trend-btn"},
+    {id:"market",g:"play",k:"KeyM",en:"Market",es:"Mercado",btn:"market-btn"},
+    {id:"pause",g:"play",k:"KeyP",en:"Pause",es:"Pausa",btn:"pause-btn"},
+    {id:"options",g:"play",k:"KeyO",en:"Options",es:"Opciones",btn:"opt-btn"},
+    {id:"up",g:"battle",k:"KeyW",en:"Battle: up",es:"Batalla: arriba"},
+    {id:"down",g:"battle",k:"KeyS",en:"Battle: down",es:"Batalla: abajo"},
+    {id:"left",g:"battle",k:"KeyA",en:"Battle: left",es:"Batalla: izquierda"},
+    {id:"right",g:"battle",k:"KeyD",en:"Battle: right",es:"Batalla: derecha"},
+    {id:"fire",g:"battle",k:"Space",en:"Battle: fire",es:"Batalla: disparar"},
+    {id:"fury",g:"battle",k:"KeyQ",en:"Battle: fury / anti-air",es:"Batalla: furia / antiaéreo",btn:"def-aa"},
+    {id:"confirm",g:"ui",k:"Enter",en:"Confirm / OK",es:"Confirmar / OK"},
+    {id:"close",g:"ui",k:"Escape",en:"Close / back",es:"Cerrar / volver"},
+    {id:"opt1",g:"ui",k:"Digit1",en:"Card option 1",es:"Opción de carta 1"},
+    {id:"opt2",g:"ui",k:"Digit2",en:"Card option 2",es:"Opción de carta 2"},
+    {id:"opt3",g:"ui",k:"Digit3",en:"Card option 3",es:"Opción de carta 3"}
+  ];
+  const KB_STORE="choppy-keys";
+  let KB={};
+  function kbLoad(){KB={};KB_DEFS.forEach(d=>KB[d.id]=d.k);try{const o=JSON.parse(localStorage.getItem(KB_STORE)||"{}");for(const id in o)if(id in KB&&typeof o[id]==="string")KB[id]=o[id];}catch(e){}}
+  function kbSave(){const o={};KB_DEFS.forEach(d=>{if(KB[d.id]!==d.k)o[d.id]=KB[d.id];});try{if(Object.keys(o).length)localStorage.setItem(KB_STORE,JSON.stringify(o));else localStorage.removeItem(KB_STORE);}catch(e){}}
+  kbLoad();
+  function kbLabel(c){if(!c)return"—";if(c==="Space")return chanceLang()?"Espacio":"Space";if(c==="Escape")return"Esc";if(c.startsWith("Key"))return c.slice(3);if(c.startsWith("Digit"))return c.slice(5);if(c.startsWith("Numpad"))return"Num"+c.slice(6);
+    const ar={ArrowUp:"↑",ArrowDown:"↓",ArrowLeft:"←",ArrowRight:"→"};return ar[c]||c;}
+  const kbOverlap=(a,b)=>a===b||a==="ui"||b==="ui";
+  function kbIs(e,id){return e.code===KB[id];}
+  const KB_DESK=(()=>{try{return matchMedia("(hover: hover) and (pointer: fine)").matches;}catch(e){return false;}})();
+  function kbHints(){
+    if(!KB_DESK)return;
+    document.body.classList.add("kb-desk");
+    KB_DEFS.forEach(d=>{if(!d.btn)return;const el=$(d.btn);if(el){el.setAttribute("data-key",kbLabel(KB[d.id]));el.title=(chanceLang()?d.es:d.en)+" ["+kbLabel(KB[d.id])+"]";}});
+  }
+  kbHints();
+  let kbCapture=null,kbMsg="";
+  function kbRows(){
+    const es=chanceLang();
+    const head={play:es?"Juego":"Run",battle:es?"Batalla":"Battle",ui:es?"Menús y cartas":"Menus & cards"};
+    let h="",g="";
+    KB_DEFS.forEach(d=>{
+      if(d.g!==g){g=d.g;h+="<p class=\"kb-sec\">"+head[g]+"</p>";}
+      const cap=kbCapture===d.id;
+      h+="<div class=\"kb-row\"><span>"+(es?d.es:d.en)+"</span><button type=\"button\" class=\"kb-key"+(cap?" cap":"")+"\" data-kb=\""+d.id+"\">"+(cap?(es?"Pulsa una tecla…":"Press a key…"):kbLabel(KB[d.id]))+"</button></div>";
+    });
+    return "<div class=\"kb-list\">"+(kbMsg?"<p class=\"kb-msg\">"+kbMsg+"</p>":"")+h+"</div>"
+      +"<button type=\"button\" class=\"cta opt-item\" id=\"kb-reset\">"+(es?"Restablecer teclas":"Reset to defaults")+"</button>"
+      +"<p class=\"kb-note\">"+(es?"Flechas también mueven en batalla; ↑ también salta. Esc cancela la reasignación.":"Arrow keys also move in battle; ↑ also jumps. Esc cancels rebinding.")+"</p>";
+  }
+  function kbBind(){
+    overlay.querySelectorAll("[data-kb]").forEach(b=>{b.onclick=(e)=>{e.stopPropagation();kbCapture=b.getAttribute("data-kb");kbMsg="";renderOverlay();};});
+    const r=$("kb-reset");if(r)r.onclick=(e)=>{e.stopPropagation();kbCapture=null;try{localStorage.removeItem(KB_STORE);}catch(_){}kbLoad();kbMsg=chanceLang()?"Teclas restablecidas.":"Keys reset.";kbHints();renderOverlay();};
+  }
+  function kbAssign(id,code){
+    const d=KB_DEFS.find(x=>x.id===id);const es=chanceLang();
+    const clash=KB_DEFS.find(x=>x.id!==id&&KB[x.id]===code&&kbOverlap(x.g,d.g));
+    if(clash){KB[clash.id]=KB[id];kbMsg=(es?"Intercambiada con ":"Swapped with ")+"“"+(es?clash.es:clash.en)+"” → "+kbLabel(KB[clash.id]);}
+    else kbMsg="";
+    KB[id]=code;kbSave();kbHints();
+  }
+  function kbClickFirst(sel){const el=overlay.querySelector(sel);if(el&&!el.disabled&&el.offsetParent!==null){el.click();return true;}return false;}
   window.addEventListener("keyup", (e) => {
     if(S.phase!=="defense")return;
-    const k=e.key.toLowerCase();
     const h=S.defHeld;if(!h)return;
-    if(e.code==="ArrowUp"||k==="w")h.u=0;
-    if(e.code==="ArrowDown"||k==="s")h.d=0;
-    if(e.code==="ArrowLeft"||k==="a")h.l=0;
-    if(e.code==="ArrowRight"||k==="d")h.r=0;
-    if(e.code==="Space")h.f=0;
-    if(e.code==="KeyQ"||e.code==="KeyE"){
+    if(e.code==="ArrowUp"||kbIs(e,"up"))h.u=0;
+    if(e.code==="ArrowDown"||kbIs(e,"down"))h.d=0;
+    if(e.code==="ArrowLeft"||kbIs(e,"left"))h.l=0;
+    if(e.code==="ArrowRight"||kbIs(e,"right"))h.r=0;
+    if(kbIs(e,"fire"))h.f=0;
+    if(kbIs(e,"fury")||e.code==="KeyE"){
       h.aa=0;
       const d=S.bcDefense;
       if(d&&d.aaCharging&&!d.aaArmed){d.aaCharging=false;d.aaCharge=0;}
     }
   });
   window.addEventListener("keydown", (e) => {
+    if (kbCapture) {
+      e.preventDefault(); e.stopPropagation();
+      if (e.code === "Escape") kbMsg = "";
+      else if (e.code && !/^(Shift|Control|Alt|Meta)/.test(e.code)) kbAssign(kbCapture, e.code);
+      else return;
+      kbCapture = null; renderOverlay(); return;
+    }
     const tag = (e.target && e.target.tagName ? e.target.tagName : "").toLowerCase();
     const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
     if (typing) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (document.querySelector(".modal.open, .modal.show, #modal-auth.open, #auth-modal.open")) return;
-    const k = e.key.toLowerCase();
     if(S.phase==="defense"){
-      e.preventDefault();
       const h=S.defHeld||(S.defHeld={u:0,d:0,l:0,r:0,f:0});
-      if(e.code==="ArrowUp"||k==="w")h.u=1;
-      if(e.code==="ArrowDown"||k==="s")h.d=1;
-      if(e.code==="ArrowLeft"||k==="a")h.l=1;
-      if(e.code==="ArrowRight"||k==="d")h.r=1;
-      if(e.code==="Space"){h.f=1;if(!e.repeat&&S.bcDefense&&!S.bcDefense.aaArmed)fireTank(S.bcDefense,S.bcDefense.player);}
-      if(e.code==="KeyQ"||e.code==="KeyE"){
+      let hit=true;
+      if(e.code==="ArrowUp"||kbIs(e,"up"))h.u=1;
+      else if(e.code==="ArrowDown"||kbIs(e,"down"))h.d=1;
+      else if(e.code==="ArrowLeft"||kbIs(e,"left"))h.l=1;
+      else if(e.code==="ArrowRight"||kbIs(e,"right"))h.r=1;
+      else if(kbIs(e,"fire")){h.f=1;if(!e.repeat&&S.bcDefense&&!S.bcDefense.aaArmed)fireTank(S.bcDefense,S.bcDefense.player);}
+      else if(kbIs(e,"fury")||e.code==="KeyE"){
         const d=S.bcDefense;
-        if(!d||e.repeat)return;
-        h.aa=1;
-        if(d.aaArmed)d.aaTap=1;
-        else if(!d.aaCharging){
-          d.aaCharging=true;d.aaCharge=0;d.aaArmed=false;d.reticle=null;
+        if(d&&!e.repeat){
+          h.aa=1;
+          if(d.aaArmed)d.aaTap=1;
+          else if(!d.aaCharging){d.aaCharging=true;d.aaCharge=0;d.aaArmed=false;d.reticle=null;}
         }
-      }
+      } else hit=false;
+      if(hit)e.preventDefault();
       return;
     }
-    if (S.arcHold || S.phase === "chance") {
-      if (e.code === "Space" || e.code === "ArrowUp" || k === "p") { e.preventDefault(); return; }
+    const ovOpen = overlay && !overlay.classList.contains("hide") && overlay.offsetParent !== null && overlay.innerHTML.trim() !== "";
+    if (ovOpen && !e.repeat) {
+      if (kbIs(e, "close")) {
+        e.preventDefault();
+        if (kbClickFirst("#opt-x") || kbClickFirst("#opt-close") || kbClickFirst("#help-back")) return;
+        if (S.phase === "paused" && !S.mp) { togglePause(); return; }
+        return;
+      }
+      if (kbIs(e, "confirm")) {
+        e.preventDefault();
+        if (kbClickFirst("#arc-move-form button[type=submit]") || kbClickFirst("[data-ch=\"ok\"]") || kbClickFirst("#go") || kbClickFirst("[data-ch]")) return;
+        return;
+      }
+      const oi = ["opt1","opt2","opt3"].findIndex((id) => kbIs(e, id));
+      if (oi >= 0) {
+        const bs = Array.prototype.filter.call(overlay.querySelectorAll("[data-ch]"), (b) => b.offsetParent !== null);
+        if (bs[oi]) { e.preventDefault(); if (!bs[oi].disabled) bs[oi].click(); return; }
+      }
     }
-    if (e.code === "Space" || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); }
-    else if (k === "b") { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
-    else if (k === "s") { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
-    else if (k === "p") { e.preventDefault(); if (!S.mp) togglePause(); }
+    if (S.arcHold || S.phase === "chance") {
+      if (kbIs(e, "flap") || e.code === "ArrowUp" || kbIs(e, "pause")) { e.preventDefault(); return; }
+    }
+    if (!ovOpen && kbIs(e, "close") && S.phase === "play" && !S.mp) { e.preventDefault(); togglePause(); return; }
+    if (kbIs(e, "flap") || e.code === "ArrowUp") { e.preventDefault(); if (!e.repeat) flap(); return; }
+    if (e.repeat) return;
+    const fire = (id) => { const el = $(id); if (el && el.onpointerdown) el.onpointerdown({ stopPropagation(){}, preventDefault(){}, target: el }); };
+    if (kbIs(e, "buy")) { e.preventDefault(); if (!aiLocks().trade) { buyBtc(); unstickTrades(); renderHud(); } }
+    else if (kbIs(e, "sell")) { e.preventDefault(); if (!aiLocks().trade) { sellBtc(); unstickTrades(); renderHud(); } }
+    else if (kbIs(e, "pause")) { e.preventDefault(); if (!S.mp) togglePause(); }
+    else if (kbIs(e, "options")) { e.preventDefault(); toggleOptions(); }
+    else if (kbIs(e, "dca")) { e.preventDefault(); fire("dca-btn"); }
+    else if (kbIs(e, "aibud")) { e.preventDefault(); fire("iabud-btn"); }
+    else if (kbIs(e, "trend")) { e.preventDefault(); fire("trend-btn"); }
+    else if (kbIs(e, "market")) { e.preventDefault(); fire("market-btn"); }
   });
   $("pause-btn").onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); if (!S.mp) togglePause(); };
   function optionsVisible() {

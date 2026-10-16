@@ -1445,3 +1445,13 @@ html.ui-pop .field { overflow: visible; }
 .overlay.dock.chance-ui .arc-move { width: min(100%, 300px); }
 .overlay.dock.chance-ui .arc-move-label { font: 700 11px "IBM Plex Mono", monospace; letter-spacing: .06em; color: var(--gold); text-align: center; }
 .overlay.dock.chance-ui .arc-move input { font-size: 16px; text-transform: none; }
+
+/* desktop hotkeys */
+.kb-list{display:flex;flex-direction:column;gap:4px;max-height:52vh;overflow-y:auto;text-align:left;margin:6px 0}
+.kb-sec{margin:8px 0 2px;font-size:.75em;opacity:.7;letter-spacing:.08em;text-transform:uppercase}
+.kb-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.85em}
+.kb-key{min-width:84px;padding:4px 8px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.kb-key.cap{background:#f7931a;color:#000}
+.kb-msg{color:#f7931a;font-size:.8em;margin:0 0 4px}
+.kb-note{font-size:.7em;opacity:.65;margin-top:6px}
+body.kb-desk [data-key]::after{content:attr(data-key);display:inline-block;margin-left:5px;font-size:.62em;line-height:1;padding:2px 3px;border-radius:3px;background:rgba(0,0,0,.55);color:#fff;vertical-align:middle;pointer-events:none;font-weight:700}
