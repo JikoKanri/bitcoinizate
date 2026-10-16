@@ -2979,6 +2979,11 @@
     });
   }
 
+  function arcAltText(id) {
+    const c = typeof id === "object" && id ? id : CHANCE_CARDS.find((x) => x.id === id);
+    const tt = c ? (chanceLang() ? (c.titleEs || c.title) : c.title) : "";
+    return String(tt || "").replace(/[<>&"]/g, "");
+  }
   function chanceArtHtml(id) {
     const meta = getChanceArtMeta(id);
     if (meta.isVideo) {
@@ -2987,7 +2992,7 @@
     const wideClass = meta.wide ? " wide-art" : "";
     const festClass = (id === "blocTriumph" || meta.artId === "festival") ? " fest-art" : "";
     const fallback = meta.artId && meta.artId !== "hero" ? "chance/" + meta.artId + ".jpg?v=mp86" : "chance/hero.jpg";
-    return "<img class=\"chance-art" + festClass + wideClass + "\" src=\"" + meta.src + "\" alt=\"\" loading=\"eager\" decoding=\"async\" onerror=\"this.onerror=null;this.src='" + fallback + "';\">";
+    return "<img class=\"chance-art" + festClass + wideClass + "\" src=\"" + meta.src + "\" alt=\"" + arcAltText(id) + "\" loading=\"eager\" decoding=\"async\" onerror=\"this.onerror=null;this.src='" + fallback + "';\">";
   }
 
   const WAR_BLOCS = [
@@ -3471,8 +3476,8 @@
   function arcTldrBtn() {
     const size = ARC_TEXT === "s" ? "S" : ARC_TEXT === "l" ? "L" : "M";
     return "<div class=\"arc-top-actions\">"
-      + "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\">" + t("chanceTldr") + "</button>"
-      + "<button type=\"button\" class=\"arc-size-tog\" id=\"arc-size-tog\">" + size + "</button>"
+      + "<button type=\"button\" class=\"arc-tldr-tog" + (ARC_TLDR ? " on" : "") + "\" id=\"arc-tldr-tog\" aria-pressed=\"" + (ARC_TLDR ? "true" : "false") + "\" title=\"" + (chanceLang() ? "Resumen corto" : "Short summary") + "\">" + t("chanceTldr") + "</button>"
+      + "<button type=\"button\" class=\"arc-size-tog\" id=\"arc-size-tog\" aria-label=\"" + (chanceLang() ? "Tamaño del texto: " : "Text size: ") + size + "\" title=\"" + (chanceLang() ? "Tamaño del texto (S/M/L)" : "Text size (S/M/L)") + "\">" + size + "</button>"
       + "</div>";
   }
   function arcStoryHtml(card, body) {
@@ -12589,7 +12594,7 @@
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
         overlay.innerHTML = "<div class=\"arc-head\"><h1>" + t("chanceHead") + "</h1>" + arcTldrBtn() + "</div>"
-          + pic + "<p class=\"arc-title\">" + title + "</p>"
+          + pic + "<p class=\"arc-title\" role=\"heading\" aria-level=\"2\">" + title + "</p>"
           + arcOutcomeHtml()
           + "<div class=\"arc-actions\">" + btns + "</div>";
       } else {
@@ -12603,7 +12608,7 @@
           ? arcMoneyHtml(ARC_TLDR ? (punchline(stripOutcomeMoney(S.chanceReadyNote)) || S.chanceReadyNote) : S.chanceReadyNote)
           : "";
         overlay.innerHTML = "<div class=\"arc-head\"><h1>" + t("chanceHead") + "</h1>" + arcTldrBtn() + "</div>"
-          + pic + "<p class=\"arc-title\">" + title + "</p>"
+          + pic + "<p class=\"arc-title\" role=\"heading\" aria-level=\"2\">" + title + "</p>"
           + (S.battleTutOpen ? battleTutHtml() : arcStoryHtml(card, body))
           + settled
           + "<div class=\"arc-actions\">" + btns + "</div>";
