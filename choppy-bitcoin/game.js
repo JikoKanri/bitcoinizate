@@ -2268,10 +2268,7 @@
   }
   const JOB_ARC_CARDS = JOBS.flatMap((job, jobIndex) => JOB_ARC_STORIES[jobIndex].cards.map((story) => {
     const id = jobArcCardId(jobIndex, story.tier);
-    // Milestone cards have no per-track art; reuse the generic job art by tier (the old per-track
-    // jobCareer*.jpg files never existed, so these cards showed a broken image).
-    const artId = story.tier >= 6 ? "jobCrown" : story.tier >= 4 ? "jobReview" : "jobBadge";
-    return { id, artId, job:true, jobMilestone:true, jobTrack:jobIndex, jobTier:story.tier, kind:"report",
+    return { id, job:true, jobMilestone:true, jobTrack:jobIndex, jobTier:story.tier, kind:"report",
       when:() => S.jobTrack === jobIndex && (S.have.job || 0) === story.tier,
       title:story.title, titleEs:story.titleEs, body:story.body, bodyEs:story.bodyEs,
       tldr:{en:story.tldr, es:story.tldrEs} };
@@ -2989,9 +2986,7 @@
     }
     const wideClass = meta.wide ? " wide-art" : "";
     const festClass = (id === "blocTriumph" || meta.artId === "festival") ? " fest-art" : "";
-    const own = meta.artId && meta.artId !== "hero" ? "chance/" + meta.artId + ".jpg?v=mp86" : "";
-    // never fall back to the same URL that just failed: that left a broken-image icon
-    const fallback = own && own !== meta.src ? own : "chance/hero.jpg?v=mp86";
+    const fallback = meta.artId && meta.artId !== "hero" ? "chance/" + meta.artId + ".jpg?v=mp86" : "chance/hero.jpg";
     return "<img class=\"chance-art" + festClass + wideClass + "\" src=\"" + meta.src + "\" alt=\"\" loading=\"eager\" decoding=\"async\" onerror=\"this.onerror=null;this.src='" + fallback + "';\">";
   }
 
