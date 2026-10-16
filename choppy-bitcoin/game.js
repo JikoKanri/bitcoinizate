@@ -493,10 +493,6 @@
     animHero: "3D",
     hero2d: "2D",
     tapHero: "Tap the hero to switch 2D / 3D",
-    textSize: "TEXT SIZE",
-    textSmall: "SMALL",
-    textMed: "MEDIUM",
-    textLarge: "LARGE",
     candleText: "CANDLE INCOME",
     tradeText: "BUY / SELL",
     priceShow: "PRICES",
@@ -13014,7 +13010,7 @@
     let h="<div class=\"kb-sheet-box\"><p class=\"k\">"+(es?"ATAJOS DE TECLADO":"KEYBOARD SHORTCUTS")+"</p><div class=\"kb-sheet-cols\">",g="";
     KB_DEFS.forEach(d=>{if(d.g!==g){if(g)h+="</div>";g=d.g;h+="<div><p class=\"kb-sec\">"+head[g]+"</p>";}
       h+="<div class=\"kb-row\"><span>"+(es?d.es:d.en)+"</span><kbd>"+kbLabel(KB[d.id])+"</kbd></div>";});
-    h+="</div></div><p class=\"kb-note\">"+(es?"? o Esc cierra · Cambialas en Opciones → Juego → Teclas (PC)":"? or Esc closes · Rebind in Options → Gameplay → Keys (PC)")+"</p></div>";
+    h+="</div></div><p class=\"kb-note\">"+(es?"? o Esc cierra · Cámbialas en Opciones → Juego → Teclas (PC)":"? or Esc closes · Rebind in Options → Gameplay → Keys (PC)")+"</p></div>";
     el.innerHTML=h;el.classList.add("open");
     if(S.phase==="play"&&!S.mp)togglePause();
   }
