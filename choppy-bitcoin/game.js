@@ -692,7 +692,7 @@
         return "+" + g.cold + " cold storage";
       }
       if (id === "aibud") {
-        if (tier <= 1) return es ? "Mirá arriba/abajo + pistas de perk" : "Look up/down + perk hints";
+        if (tier <= 1) return es ? "Mira arriba/abajo + pistas de perk" : "Look up/down + perk hints";
         if (tier === 2) return es ? "elige perks solo" : "auto-picks perks";
         if (tier === 3) return es ? "DCA y tendencia solos" : "auto DCA and trend";
         if (tier === 4) return es ? "trade cada 10 velas" : "trade every 10 candles";
@@ -2094,7 +2094,7 @@
     lena: {
       names: ["Lena"],
       en: ["Lena, the love of your life", "Lena, who still calls you Fartface", "Lena, your person since the cheap-rent years"],
-      es: ["Lena, el amor de tu vida", "Lena, la que todavía te dice Fartface", "Lena, tu compañera desde el depto de reja"]
+      es: ["Lena, el amor de tu vida", "Lena, la que todavía te dice Cara de Pedo", "Lena, tu compañera desde los años de alquiler barato"]
     },
     paco: {
       names: ["Paco"],
@@ -2109,17 +2109,17 @@
     nico: {
       names: ["Nico"],
       en: ["Nico, your cousin", "Nico, who always has three things going before lunch", "Nico, family by blood and by group chat"],
-      es: ["Nico, tu primo", "Nico, el que siempre tiene tres cosas antes del mediodía", "Nico, familia de sangre y de grupo"]
+      es: ["Nico, tu primo", "Nico, el que siempre tiene tres proyectos en marcha antes del mediodía", "Nico, familia de sangre y de chat grupal"]
     },
     sofi: {
       names: ["Sofi"],
-      en: ["Sofi, your niece", "Sofi, Nico's kid who sends photos you cannot parse", "Sofi, the niece who treats you like an uncle"],
-      es: ["Sofi, tu sobrina", "Sofi, la nena de Nico que manda fotos que no entendés", "Sofi, la sobrina que te trata de tío"]
+      en: ["Sofi, Nico's daughter", "Sofi, Nico's kid who sends photos you cannot parse", "Sofi, who treats you like an uncle"],
+      es: ["Sofi, la hija de Nico", "Sofi, la hija de Nico que manda fotos que no entiendes", "Sofi, la que te trata como a un tío"]
     },
     hector: {
       names: ["Uncle Héctor", "Uncle Hector", "tío Héctor", "Tío Héctor", "El tío Héctor", "el tío Héctor"],
       en: ["Uncle Héctor, your mother's brother", "Uncle Héctor, who wires money with no explanation", "Uncle Héctor, family from your mother's side"],
-      es: ["El tío Héctor, el hermano de tu vieja", "El tío Héctor, el que gira plata sin explicar", "El tío Héctor, familia del lado de tu mamá"]
+      es: ["El tío Héctor, el hermano de tu mamá", "El tío Héctor, el que transfiere dinero sin explicar", "El tío Héctor, familia del lado de tu mamá"]
     },
     mike: {
       names: ["Uncle Mike", "tío Mike", "Tío Mike"],
@@ -2322,7 +2322,7 @@
     { id: "crash", kind: "report",
       title: "A Low-Speed Collision", titleEs: "Choque a baja velocidad",
       body: "A delivery scooter clips your car at very low speed. Nobody is hurt. The driver apologizes six times; you apologize twice. Neither of you knows why you apologized, but the bumper still needs to be repaired.",
-      bodyEs: "Un repartidor en motoneta golpea tu automóvil a muy baja velocidad. Nadie resulta herido. El repartidor se disculpa seis veces; tú, dos. Ninguno sabe por qué te disculpaste, pero el parachoques necesita reparación." },
+      bodyEs: "Un repartidor en motoneta golpea tu automóvil a muy baja velocidad. Nadie resulta herido. El repartidor se disculpa seis veces; tú, dos. Ninguno de los dos sabe por qué se disculpó, pero el parachoques necesita reparación." },
     { id: "wine", kind: "choice", after: ["landfill"],
       title: "Wine", titleEs: "Vino",
       body: "It's Friday night at Marek's. There is a bottle of wine, dinner half finished, and 12 Monkeys paused on the TV. This is how the two of you usually spend time: wine, old movies, and a conversation that runs longer than either of you planned. Tonight, as usual, it turns into an argument about A.I. and the future. You are the enthusiastic one. Marek knows more, and trusts people less. Neither of you wins.",
@@ -2369,7 +2369,7 @@
     { id: "lotto", kind: "report", after: ["wine"],
       title: "Lottery Ticket", titleEs: "El boleto de lotería",
       body: "You are having wine with Marek. At some point the conversation turns to probability. You buy a lottery ticket. The next morning Marek asks if you checked the numbers. You did not.",
-      bodyEs: "Estás tomando vino con Marek. En algún momento la conversación pasa a la probabilidad. Compras un boleto de lotería instantánea. A la mañana siguiente, Marek te pregunta si revisaste los números. No los revisaste." },
+      bodyEs: "Estás tomando vino con Marek. En algún momento la conversación pasa a la probabilidad. Compras un boleto de lotería. A la mañana siguiente, Marek te pregunta si revisaste los números. No los revisaste." },
     { id: "hospital", kind: "report", after: ["landfill"],
       title: "Four Stitches", titleEs: "Cuatro puntos de sutura",
       body: "You need four stitches. Lena drives you to the hospital. She waits with you. On the way home she says: \"Try not to bleed on anything.\"",
@@ -2563,12 +2563,12 @@
         const share = opt === "b" ? 4000 : (4000 / 3);
         creditBtc(share);
         return say("You find the USB. +" + share.toFixed(2) + " BTC.",
-          "Encuentran la memoria USB. +" + share.toFixed(2) + " BTC.");
+          "Encuentras la memoria USB. +" + share.toFixed(2) + " BTC.");
       }
       if (r < 0.00029 + 0.22) {
         arcPay(8);
         return say("You find an old Nokia. +$8.",
-          "Encuentran un Nokia viejo. +$8.");
+          "Encuentras un Nokia viejo. +$8.");
       }
       return say("Three weeks of digging through clay turn up nothing.",
         "Tres semanas excavando arcilla no dan ningún resultado.");
@@ -2613,15 +2613,15 @@
     }
     if (card.id === "wine") {
       if (opt === "a") return say("The conversation eventually turns to free will and incentives.",
-        "The conversation eventually turns to free will and incentives.");
+        "Al final, la conversación deriva hacia el libre albedrío y los incentivos.");
       if (opt === "b") {
         cutBill(17);
         return say("You finish the movie. Marek says the ending is overrated.\n\n−$17.",
-          "You finish the movie. Marek says the ending is overrated.\n\n−$17.");
+          "Terminan la película. Marek dice que el final está sobrevalorado.\n\n−$17.");
       }
       cutBill(25);
       return say("You leave thinking Marek may have made a good point.\n\n−$25.",
-        "You leave thinking Marek may have made a good point.\n\n−$25.");
+        "Te vas pensando que quizá Marek tenía razón.\n\n−$25.");
     }
     if (card.id === "casino") {
       if (opt === "c") return say("You leave. Nico stays.", "Te vas. Nico se queda.");
@@ -2635,29 +2635,29 @@
     }
     if (card.id === "poker") {
       if (opt === "c") return say("Marek joins you ten minutes later. \"Probably better.\" He says it without looking at you.",
-        "Marek te alcanza a los diez minutos. \"Mejor.\" Lo dice sin mirarte.");
+        "Marek se levanta de la mesa diez minutos después. \"Probablemente fue mejor así.\" Lo dice sin mirarte.");
       const stake = cutPct(opt === "b" ? 0.25 : 0.08);
       const r = Math.random();
-      if (r < 0.06) { arcPay(stake * 8); return say("You scoop the table. +" + money(stake * 8) + ".", "Te llevás la mesa. +" + money(stake * 8) + "."); }
-      if (r < 0.28) { arcPay(stake * 3); return say("+" + money(stake * 3) + " on a " + costLabel(stake) + " buy-in.", "+" + money(stake * 3) + " sobre " + costLabel(stake) + "."); }
-      if (r < 0.52) { arcPay(stake * 1.4); return say("Min-cash. +" + money(stake * 1.4) + ".", "Min-cash. +" + money(stake * 1.4) + "."); }
-      return say("Busted. −" + costLabel(stake) + ".", "Afuera. −" + costLabel(stake) + ".");
+      if (r < 0.06) { arcPay(stake * 8); return say("You scoop the table. +" + money(stake * 8) + ".", "Te llevas toda la mesa. +" + money(stake * 8) + "."); }
+      if (r < 0.28) { arcPay(stake * 3); return say("+" + money(stake * 3) + " on a " + costLabel(stake) + " buy-in.", "+" + money(stake * 3) + " con una entrada de " + costLabel(stake) + "."); }
+      if (r < 0.52) { arcPay(stake * 1.4); return say("Min-cash. +" + money(stake * 1.4) + ".", "Cobras un premio menor. +" + money(stake * 1.4) + "."); }
+      return say("Busted. −" + costLabel(stake) + ".", "Eliminado. −" + costLabel(stake) + ".");
     }
     if (card.id === "uncle") {
       if (Math.random() < 0.55) {
         const n = grantWealthPct(0.07);
-        return say("Check your account. +" + money(n) + ".", "Fijate la cuenta. +" + money(n) + ".");
+        return say("Check your account. +" + money(n) + ".", "Revisa tu cuenta. +" + money(n) + ".");
       }
       const b = Math.max(0.0001, (wealthUsd() * 0.07) / clampPx(S.price));
       const out = creditBtc(b);
       return say("He sent sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " and +" + money(out.cash) : "") + ".",
-        "Mandó sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
+        "Te envió sats. +" + out.take.toFixed(4) + " BTC" + (out.cash ? " y +" + money(out.cash) : "") + ".");
     }
     if (card.id === "school") {
-      if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Se arreglan. Sofi igual manda una foto que no entendés.");
+      if (opt === "b") return say("They handle it. Sofi still sends a photo you cannot parse.", "Lo resuelven solos. Sofi te envía de todos modos una foto que no entiendes.");
       const paid = cutBill(300);
       return say("Sofi sends a photo from the museum. You have no idea what is in it. −" + costLabel(paid) + ".",
-        "Sofi manda una foto del museo. No sabes qué hay en la foto. −" + costLabel(paid) + ".");
+        "Sofi te envía una foto del museo. No tienes idea de qué aparece en ella. −" + costLabel(paid) + ".");
     }
     if (card.id === "roof") {
       const paid = cutBill(900);
@@ -2666,96 +2666,96 @@
     if (card.id === "lotto") {
       const r = Math.random();
       if (r < 0.04) { const n = grantWealthPct(0.35); return say("Marek reads the numbers. Not bad. +" + money(n) + ".", "Marek lee los números. Nada mal. +" + money(n) + "."); }
-      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Marek: \"Not bad.\" He meant the odds. +" + money(n) + ".", "Marek: \"Nada mal.\" Hablaba de las probas. +" + money(n) + "."); }
-      return say("You lost the ticket price. Marek was referring to the odds.", "Perdiste el ticket. Marek hablaba de las probas.");
+      if (r < 0.45) { const n = grantWealthPct(0.012); return say("Marek: \"Not bad.\" He meant the odds. +" + money(n) + ".", "Marek: \"Nada mal\". Se refería a las probabilidades. +" + money(n) + "."); }
+      return say("You lost the ticket price. Marek was referring to the odds.", "El boleto no gana nada. Marek se refería a las probabilidades.");
     }
     if (card.id === "hospital") {
       const paid = cutBill(250);
-      return say("Four stitches. Try not to bleed on anything. −" + costLabel(paid) + ".", "Cuatro puntos. Tratá de no sangrar sobre nada. −" + costLabel(paid) + ".");
+      return say("Four stitches. Try not to bleed on anything. −" + costLabel(paid) + ".", "Cuatro puntos. Intenta no sangrar sobre nada. −" + costLabel(paid) + ".");
     }
     if (card.id === "startup") {
       if (opt === "b") return say("Nico says: \"Your loss.\" You are fairly sure that is not how losses work.",
-        "Nico: \"Tu pérdida.\" Estás bastante seguro de que las pérdidas no funcionan así.");
+        "Nico: \"Tú te lo pierdes\". Estás bastante seguro de que perder no funciona así.");
       const paid = cutPct(0.2);
       if (Math.random() < 0.28) {
         arcPay(paid * 4);
-        return say("They actually ship. 4× on " + costLabel(paid) + ".", "De verdad publican. 4× sobre " + costLabel(paid) + ".");
+        return say("They actually ship. 4× on " + costLabel(paid) + ".", "De verdad lanzan la app. 4× sobre " + costLabel(paid) + ".");
       }
-      return say("The domain expired. " + costLabel(paid) + " is a case study.", "Venció el dominio. " + costLabel(paid) + " es un caso de estudio.");
+      return say("The domain expired. " + costLabel(paid) + " is a case study.", "El dominio venció. " + costLabel(paid) + " ahora es un caso de estudio.");
     }
     if (card.id === "tow") {
       const paid = cutBill(85);
-      return say("Nine minutes. The sign was very clear. −" + costLabel(paid) + ".", "Nueve minutos. El cartel estaba muy claro. −" + costLabel(paid) + ".");
+      return say("Nine minutes. The sign was very clear. −" + costLabel(paid) + ".", "Nueve minutos. El letrero estaba muy claro. −" + costLabel(paid) + ".");
     }
     if (card.id === "courage") {
-      if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","");}
+      if(opt==="b"){delete S.chanceUsed.courage;return say("You wait. The question does not go away.","Esperas. La pregunta no desaparece.");}
       S.hasRing=true;
       if (opt === "b") return say("You go home. Lena asks why you are quiet. You say you are tired. \"Sure, Fartface.\"",
-        "Volvés. Lena pregunta por qué estás callado. Decís que estás cansado. \"Claro, Fartface.\"");
+        "Vuelves a casa. Lena pregunta por qué estás tan callado. Dices que estás cansado. \"Claro, Cara de Pedo\".");
       const paid = cutPct(0.06);
-      return say("You are officially doing this. −" + costLabel(paid) + ".", "Oficialmente lo estás haciendo. −" + costLabel(paid) + ".");
+      return say("You are officially doing this. −" + costLabel(paid) + ".", "Es oficial: vas a hacerlo. −" + costLabel(paid) + ".");
     }
     if (card.id === "ring") {
       const paid = cutPct(opt === "b" ? 0.03 : 0.08);
       if (opt === "b") return say("You still have a ring. Lena later finds the receipt. She says nothing. She just looks at you. −" + costLabel(paid) + ".",
-        "Igual hay anillo. Lena después encuentra el ticket. No dice nada. Solo te mira. −" + costLabel(paid) + ".");
-      return say("You now have a ring. −" + costLabel(paid) + ".", "Ahora hay anillo. −" + costLabel(paid) + ".");
+        "Aun así tienes anillo. Más tarde, Lena encuentra el recibo. No dice nada. Solo te mira. −" + costLabel(paid) + ".");
+      return say("You now have a ring. −" + costLabel(paid) + ".", "Ya tienes el anillo. −" + costLabel(paid) + ".");
     }
     if (card.id === "date") {
-      if (opt === "c") { delete S.chanceUsed.date; return say("Tomorrow is probably better.", "Mañana probablemente esté mejor."); }
+      if (opt === "c") { delete S.chanceUsed.date; return say("Tomorrow is probably better.", "Mañana probablemente sea mejor día."); }
       const paid = cutBill(opt === "a" ? 180 : 60);
       if (opt === "a") return say("Everything goes according to plan. That still feels suspicious. −" + costLabel(paid) + ".",
-        "Todo sale según el plan. Sigue sintiéndose sospechoso. −" + costLabel(paid) + ".");
-      return say("Dinner is good anyway. −" + costLabel(paid) + ".", "La cena está bien igual. −" + costLabel(paid) + ".");
+        "Todo sale según lo planeado. Aun así, te parece sospechoso. −" + costLabel(paid) + ".");
+      return say("Dinner is good anyway. −" + costLabel(paid) + ".", "La cena sale bien de todos modos. −" + costLabel(paid) + ".");
     }
     if (card.id === "proposal") {
       if (opt === "b") {
         delete S.chanceUsed.proposal;
         S.engaged = false;
         return say("You forget every word. You eventually say, \"So… anyway.\" The moment passes. The ring stays in your pocket.",
-          "Se te olvidan las palabras. Terminás diciendo: \"Bueno… eso.\" Se pasa el momento. El anillo sigue en el bolsillo.");
+          "Se te olvidan todas las palabras. Terminas diciendo: \"Bueno… en fin\". El momento pasa. El anillo sigue en tu bolsillo.");
       }
       if (opt === "c") {
         delete S.chanceUsed.proposal;
         S.engaged = false;
         const paid = cutPct(0.01);
         return say("You make a joke and start walking. She lets you go. The question is still there. The ring is still in your pocket. −" + costLabel(paid) + ".",
-          "Hacés un chiste y arrancás. Te deja ir. La pregunta sigue ahí. El anillo sigue en el bolsillo. −" + costLabel(paid) + ".");
+          "Haces una broma y empiezas a caminar. Ella te deja ir. La pregunta sigue ahí. El anillo sigue en tu bolsillo. −" + costLabel(paid) + ".");
       }
       S.engaged = true;
       const paid = cutPct(0.02);
       return say("You put the ring on her finger. \"Yes, Fartface.\" There will be a wedding. −" + costLabel(paid) + ".",
-        "Le ponés el anillo. \"Sí, Fartface.\" Va a haber una boda. −" + costLabel(paid) + ".");
+        "Le pones el anillo. \"Sí, Cara de Pedo\". Habrá boda. −" + costLabel(paid) + ".");
     }
     if (card.id === "wedding") {
-      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;S.arcBias="timeTraveler";return say("You look at Lena. Then at the room. The flowers, the tables, the relatives, the life waiting on the other side of the ceremony. It is a good life. That's the problem. For months, another thought has been getting harder to ignore. That conversation with Marek. Building something. Not a company. Not a charity. Something else. You still don't know what. You tell Lena. There is a very long silence. Then she looks at you. “I'll miss you, Fartface.” You leave. Paco comes with you. You are not entirely sure whether that was his decision. FAMILY ARC CLOSED. Something else is now possible. −"+costLabel(p)+".","Miras a Lena. Después el salón: las flores, las mesas, los parientes, la vida que espera del otro lado de la ceremonia. Es una buena vida. Ese es el problema. Hace meses que otra idea se hace más difícil de ignorar. Aquella conversación con Marek. Construir algo. No una empresa. No una ONG. Otra cosa. Todavía no sabes qué. Se lo dices a Lena. Hay un silencio muy largo. Después te mira. “Te voy a extrañar, Fartface.” Te vas. Paco se va con vos. No estás del todo seguro de que haya sido decisión de él. ARCO FAMILIAR CERRADO. Ahora es posible otra cosa. −"+costLabel(p)+".");}
+      if(opt==="c"){let p=cutPct(.01);S.familyClosed=true;S.familyPath=false;S.arcBias="timeTraveler";return say("You look at Lena. Then at the room. The flowers, the tables, the relatives, the life waiting on the other side of the ceremony. It is a good life. That's the problem. For months, another thought has been getting harder to ignore. That conversation with Marek. Building something. Not a company. Not a charity. Something else. You still don't know what. You tell Lena. There is a very long silence. Then she looks at you. “I'll miss you, Fartface.” You leave. Paco comes with you. You are not entirely sure whether that was his decision. FAMILY ARC CLOSED. Something else is now possible. −"+costLabel(p)+".","Miras a Lena. Después el salón: las flores, las mesas, los parientes, la vida que espera del otro lado de la ceremonia. Es una buena vida. Ese es el problema. Hace meses que otra idea se hace más difícil de ignorar. Aquella conversación con Marek. Construir algo. No una empresa. No una organización benéfica. Otra cosa. Todavía no sabes qué. Se lo dices a Lena. Hay un silencio muy largo. Después te mira. “Te voy a extrañar, Cara de Pedo”. Te vas. Paco se va contigo. No estás del todo seguro de que haya sido decisión de él. ARCO FAMILIAR CERRADO. Ahora es posible otra cosa. −"+costLabel(p)+".");}
       S.familyPath=true;
       S.arcBias="honeymoon";
       if (opt === "a") {
         const paid = cutPct(0.12);
         return say("Everyone has a good time. Even Nico. His speech lasts eleven minutes. −" + costLabel(paid) + ".",
-          "Todos la pasan bien. Hasta Nico. El discurso dura once minutos. −" + costLabel(paid) + ".");
+          "Todos la pasan bien. Incluso Nico. Su discurso dura once minutos. −" + costLabel(paid) + ".");
       }
       if (opt === "b") {
         const paid = cutPct(0.05);
         return say("Fewer people. Less noise. Paco is not allowed to attend. He does not know why. −" + costLabel(paid) + ".",
-          "Menos gente. Menos ruido. Paco no puede entrar. No sabe por qué. −" + costLabel(paid) + ".");
+          "Menos gente. Menos ruido. A Paco no lo dejan entrar. No entiende por qué. −" + costLabel(paid) + ".");
       }
       const paid = cutPct(0.01);
       return say("You disappear for the weekend. On Sunday she makes you go back for the cake. −" + costLabel(paid) + ".",
-        "Desaparecen el fin de semana. El domingo te hace volver por la torta. −" + costLabel(paid) + ".");
+        "Desaparecen todo el fin de semana. El domingo, Lena te hace volver por el pastel. −" + costLabel(paid) + ".");
     }
     if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say("The thought stays with you.","La idea se queda contigo.");
-    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","EL ESTADO BITCOIN ya está en el Mercado por "+costLabel(666)+".");}
+    if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","THE BITCOIN STATE ya está en el Mercado por "+costLabel(666)+".");}
     if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","Los mercados caen. Bitcoin no.");
     if(card.id==="citadelProblem")return say("Bitcoin Country unlocked.","Bitcoin Country desbloqueado.");
-    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Nico te manda el aviso otra vez mañana.");}
+    if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Mañana, Nico te enviará el anuncio otra vez.");}
     if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+costLabel(p)+".","Tienes una isla. −"+costLabel(p)+".");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","La isla sigue en el Mercado a "+costLabel(S.bcIslandOffer)+".");}
     if(card.id==="paperwork")return say("Country. Island. For now.","País. Isla. Por ahora.");
     if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. -"+costLabel(p)+".","INTERESANTE. LLÁMAME. -"+costLabel(p)+".");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","Tres seguidores. Uno es Nico.");}
     if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","Nodos de Libertad: "+S.bcNodes+"/100.");}
     if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. -"+costLabel(p)+".","Asentamiento construido. -"+costLabel(p)+".");}delete S.chanceUsed.peopleAsking;return say("Not yet.","Todavía no.");}
-    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+costLabel(p)+".","Red eléctrica construida. -"+costLabel(p)+".");}delete S.chanceUsed.extensionCord;return say("More extension cords.","Más alargues.");}
+    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. -"+costLabel(p)+".","Red eléctrica construida. -"+costLabel(p)+".");}delete S.chanceUsed.extensionCord;return say("More extension cords.","Más cables de extensión.");}
     if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. -"+costLabel(p)+".","Mina de bitcoin en línea. -"+costLabel(p)+".");}delete S.chanceUsed.obviously;return say("Not yet.","Todavía no.");}
     if(card.id==="principality")return say("San Arnaldo sidequest unlocked.","Misión secundaria de San Arnaldo desbloqueada.");
     if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("+10 Liberty Nodes. World Military Strength −2. -"+costLabel(p)+".","+10 Nodos de Libertad. Fuerza militar mundial −2. -"+costLabel(p)+".");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. -"+costLabel(p)+".","El nodo no está enchufado. +4 Nodos de Libertad. -"+costLabel(p)+".");}return say("Nico takes some stamps.","Nico se lleva unas estampillas.");}
@@ -2767,7 +2767,7 @@
     if(card.id==="anOffer"){if(opt==="a"){grantWealthPct(.35);S.bcArcClosed=true;return say("Bitcoin Country arc closed. +35% net worth.","Arco de Bitcoin Country cerrado. +35% de patrimonio.");}S.bcNodes=Math.min(100,S.bcNodes+10);return say("BITCOIN COUNTRY IS NOT FOR SALE. +10 Liberty Nodes.","BITCOIN COUNTRY NO ESTÁ EN VENTA. +10 Nodos de Libertad.");}
     if(card.id==="ambassador")return say("Diplomatic contact unlocked.","Contacto diplomático desbloqueado.");
     if(card.id==="threeColors"){S.bcWorld+=5;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
-    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("World Military Strength −2. A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","Fuerza militar mundial −2. Un Ministerio de Pesca pregunta si Bitcoin Country produce lanzón de aleta azul en escabeche. Dices que sí. Parece que ayuda. +10 Nodos de Libertad. -"+costLabel(p)+".");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","+4 Nodos de Libertad.");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","Mr Ortega & Gambette envía las 93 páginas de todos modos.");}
+    if(card.id==="ortegaCalls"){if(opt==="a"){let p=cutBill(25000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("World Military Strength −2. A Ministry of Fisheries asks whether Bitcoin Country produces pickled bluefin sand eel. You say yes. This appears to help. +10 Liberty Nodes. -"+costLabel(p)+".","Fuerza militar mundial −2. Un Ministerio de Pesca pregunta si Bitcoin Country produce lanzón de aleta azul en escabeche. Dices que sí. Parece que ayuda. +10 Nodos de Libertad. -"+costLabel(p)+".");}if(opt==="b"){S.bcNodes=Math.min(100,S.bcNodes+4);return say("+4 Liberty Nodes.","+4 Nodos de Libertad.");}return say("Mr Ortega & Gambette emails the 93 pages anyway.","El señor Ortega & Gambette te envía las 93 páginas de todos modos.");}
     if(card.id==="theQuestion"){if(S.bcVictory||S.bcIndependent){return say(stampNation("Bitcoin Country is already independent."),stampNation("Bitcoin Country ya es independiente."));}if(opt==="a"){S.bcIndependent=true;return say(chanceLang()?"Declaras.":"You declare.","");}return say(chanceLang()?"Todavía no.":"Not yet.","");}
     if(card.id==="cabinet")return say(chanceLang()?"Los cargos quedan cubiertos. Paco es Ministro de Defensa.":"The posts are filled. Paco is Minister of Defense.","");
     if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
@@ -2786,37 +2786,37 @@
       const map = { a: 0.1, b: 0.06, c: 0.04 };
       const paid = cutPct(map[opt] || 0.04);
       if (opt === "a") return say("Tokyo, Kyoto, too many trains. The system works better than you do. −" + costLabel(paid) + ".",
-        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que vos. −" + costLabel(paid) + ".");
+        "Tokio, Kioto, demasiados trenes. El sistema funciona mejor que tú. −" + costLabel(paid) + ".");
       if (opt === "b") return say("Rome, Florence, long dinners. Lena buys something she refuses to explain until dinner. −" + costLabel(paid) + ".",
-        "Roma, Florencia, cenas largas. Lena compra algo que no explica hasta la cena. −" + costLabel(paid) + ".");
+        "Roma, Florencia, cenas largas. Lena compra algo que se niega a explicar hasta la cena. −" + costLabel(paid) + ".");
       return say("Mountains, lakes, fewer people. You miss Paco after two days. He does not appear to miss you. −" + costLabel(paid) + ".",
-        "Montañas, lagos, menos gente. Extrañás a Paco a los dos días. Él no parece extrañarte. −" + costLabel(paid) + ".");
+        "Montañas, lagos, menos gente. A los dos días extrañas a Paco. Él no parece extrañarte. −" + costLabel(paid) + ".");
     }
     if (card.id === "pregnancy") {
       const paid = cutBill(450);
-      return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos rayas. Después la planificación. −" + costLabel(paid) + ".");
+      return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos líneas. Después, la planificación. −" + costLabel(paid) + ".");
     }
     if (card.id === "baby") {
-      if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.", "Lena looks at the PDF.\n\nThen at you—she's pissed.\n\n'Classic Fartface'.");
+      if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you. She is furious.\n\n\"Classic Fartface.\"", "Lena mira el PDF.\n\nLuego te mira a ti. Está furiosa.\n\n\"Típico de Cara de Pedo\".");
       if (opt === "a") {
         const paid = cutPct(0.05);
         S.cold += 1;
         return say("Money aside, and a cold-storage device in the house. −" + costLabel(paid) + ".",
-          "Plata de lado y un cold storage en casa. −" + costLabel(paid) + ".");
+          "Dinero apartado y un dispositivo de almacenamiento en frío en casa. −" + costLabel(paid) + ".");
       }
       const paid = cutPct(0.02);
       return say("You buy what you need and figure out the rest later. −" + costLabel(paid) + ".",
-        "Compran lo que hace falta y el resto después. −" + costLabel(paid) + ".");
+        "Compran lo necesario y resuelven el resto después. −" + costLabel(paid) + ".");
     }
     if (card.id === "cousin") {
       if (opt === "b") return say("Three hours later Nico texts. The token is already down 40%. \"Temporary.\"",
-        "A las tres horas Nico escribe. El token ya va −40%. \"Temporal.\"");
+        "Tres horas después, Nico escribe. El token ya cayó un 40%. \"Es temporal\".");
       const paid = cutPct(0.4);
       if (Math.random() < 0.5) {
         arcPay(paid * 2.2);
         return say("Friday arrives early. 2.2× on " + costLabel(paid) + ".", "El viernes llega temprano. 2.2× sobre " + costLabel(paid) + ".");
       }
-      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendido. " + costLabel(paid) + " ahora es un screenshot.");
+      return say("Halted. " + costLabel(paid) + " is a screenshot now.", "Suspendieron el token. " + costLabel(paid) + " ahora es solo una captura de pantalla.");
     }
     if (card.id === "speeding") {
       const paid = cutBill(75);
@@ -2828,41 +2828,41 @@
         "El efectivo no está. Las tarjetas sí. Victoria parcial. −" + costLabel(paid) + ".");
     }
     if (card.id === "potluck") {
-      if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Sos increíble.\"");
+      if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Eres increíble\".");
       const paid = cutPct(0.05);
       return say("People remember your name. Paco remembers the food. −" + costLabel(paid) + ".",
-        "La gente se acuerda de tu nombre. Paco, de la comida. −" + costLabel(paid) + ".");
+        "La gente recuerda tu nombre. Paco recuerda la comida. −" + costLabel(paid) + ".");
     }
     if (card.id === "usedcar") {
-      if (opt === "b") return say("You walk. Nico buys it anyway.", "Te vas. Nico lo compra igual.");
+      if (opt === "b") return say("You walk. Nico buys it anyway.", "Te vas. Nico lo compra de todos modos.");
       const paid = cutPct(0.12);
       if (Math.random() < 0.3) {
         const back = grantWealthPct(0.03);
-        return say("It works. −" + costLabel(paid) + " then +" + money(back) + ".", "Anda. −" + costLabel(paid) + " y después +" + money(back) + ".");
+        return say("It works. −" + costLabel(paid) + " then +" + money(back) + ".", "Funciona. −" + costLabel(paid) + " y después +" + money(back) + ".");
       }
       const extra = cutPct(0.04);
       return say("Lemon. The Sharpie was the honest part. −" + costLabel(paid + extra) + ".",
-        "Limón. Lo honesto era el Sharpie. −" + costLabel(paid + extra) + ".");
+        "Es un cacharro. Lo único honesto era el Sharpie. −" + costLabel(paid + extra) + ".");
     }
     if (card.id === "tetris") {
       if (opt === "b") return say("Marek gets to level 18. Then loses. He nods. \"Good enough.\"",
-        "Marek llega al nivel 18. Pierde. Asiente. \"Alcanza.\"");
+        "Marek llega al nivel 18. Pierde. Asiente: \"Suficiente\".");
       const stake = cutBill(20);
       if (Math.random() < 0.42) {
         arcPay(stake * 3);
         return say("The well stays clean. +" + money(stake * 3) + ".", "El pozo queda limpio. +" + money(stake * 3) + ".");
       }
-      return say("A long bar would have saved you. −" + costLabel(stake) + ".", "Una barra larga te salvaba. −" + costLabel(stake) + ".");
+      return say("A long bar would have saved you. −" + costLabel(stake) + ".", "Una pieza larga te habría salvado. −" + costLabel(stake) + ".");
     }
     if (card.id === "unclemike") {
       const bill = opt === "a" ? 220 : opt === "c" ? 195 : 180;
       cutBill(bill);
       if (opt === "a") return say("Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.",
-        "Uncle Mike watches you sign.\n\n“That just encourages the system.”\n\nYou leave the restaurant.\n\n−$220.");
+        "El tío Mike te mira firmar.\n\n“Eso solo alimenta el sistema”.\n\nSalen del restaurante.\n\n−$220.");
       if (opt === "b") return say("Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.",
-        "Uncle Mike seems satisfied.\n\nThe waiter does not.\n\nYou just want to go home.\n\n−$180.");
+        "El tío Mike parece satisfecho.\n\nEl mesero no.\n\nSolo quieres irte a casa.\n\n−$180.");
       return say("Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.",
-        "Uncle Mike nods.\n\n“That's different.”\n\nYou are not sure it is.\n\nHe is.\n\n−$195.");
+        "El tío Mike asiente.\n\n“Eso es distinto”.\n\nNo estás seguro de que lo sea.\n\nÉl sí.\n\n−$195.");
     }
     if (card.job) {
       const job = currentJob();
