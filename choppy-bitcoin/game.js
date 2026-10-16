@@ -5973,6 +5973,98 @@
     built.dir=faceIn(built.home);
     return built;
   }
+  // ---- Geography tidy-up, run on every generated map before spawns are picked ----
+  // Water must be the sea (touching the map edge), a river/canal that reaches it, or a real pond; piers run
+  // straight from land into open water; exactly one lighthouse on a plausible coastal spot.
+  function tidyGeography(m,pad,rng){
+    const W=BC_C,H=BC_R,N=W*H;
+    const prot=(x,y)=>pad&&x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
+    const at=(x,y)=>(x<0||y<0||x>=W||y>=H)?3:m[y*W+x];
+    const landish=(t)=>t===0||t===6||t===1||t===4||t===5||t===9||t===2;
+    const O4=[[1,0],[-1,0],[0,1],[0,-1]];
+    // 1) water bodies
+    const comp=new Int32Array(N).fill(-1);let cid=0;
+    for(let i=0;i<N;i++){
+      if(m[i]!==3||comp[i]>=0)continue;
+      const q=[i];comp[i]=cid;let edge=false,x0=W,x1=0,y0=H,y1=0;
+      for(let k=0;k<q.length;k++){
+        const c=q[k],cx=c%W,cy=(c/W)|0;
+        if(cx===0||cy===0||cx===W-1||cy===H-1)edge=true;
+        x0=Math.min(x0,cx);x1=Math.max(x1,cx);y0=Math.min(y0,cy);y1=Math.max(y1,cy);
+        for(const [dx,dy] of O4){const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;const j=ny*W+nx;if(m[j]===3&&comp[j]<0){comp[j]=cid;q.push(j);}}
+      }
+      const fill=q.length/((x1-x0+1)*(y1-y0+1));
+      const pond=q.length>=8&&fill>=0.45;
+      if(!edge&&!pond)for(const c of q){const cx=c%W,cy=(c/W)|0;if(!prot(cx,cy))m[c]=6;}
+      cid++;
+    }
+    // notches: a water tile boxed in by land on 3-4 sides is a pixel artefact, not a bay
+    for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
+      if(at(x,y)!==3||prot(x,y))continue;
+      let l=0,pier=false;for(const [dx,dy] of O4){const t=at(x+dx,y+dy);if(landish(t))l++;if(t===7)pier=true;}
+      if(!pier&&l>=4)m[y*W+x]=6;
+    }
+    // lone land specks floating in the sea
+    for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
+      const t=at(x,y);if((t!==0&&t!==6)||prot(x,y))continue;
+      let l=0;for(const [dx,dy] of O4)if(at(x+dx,y+dy)!==3)l++;
+      if(l===0)m[y*W+x]=3;
+    }
+    // 2) piers: straight, uninterrupted, from land out to open water
+    const wetish=(t)=>t===3||t===8;
+    for(const vert of [true,false]){
+      const A=vert?W:H,B=vert?H:W;
+      const g=(a,b)=>vert?at(a,b):at(b,a);
+      const put=(a,b,t)=>{const x=vert?a:b,y=vert?b:a;if(x>=0&&y>=0&&x<W&&y<H&&!prot(x,y))m[y*W+x]=t;};
+      const pierAt=(a,b)=>g(a,b)===7&&wetish(g(a-1,b))&&wetish(g(a+1,b));
+      for(let a=0;a<A;a++){
+        let b=0;
+        while(b<B){
+          if(!pierAt(a,b)){b++;continue;}
+          let s0=b,e0=b;
+          // merge runs split by up to 2 rock/sand/tree tiles that sit in the water
+          for(;;){
+            let k=e0+1;while(k<B&&pierAt(a,k))k++;
+            e0=k-1;let gap=0;
+            while(gap<2&&k+gap<B&&!pierAt(a,k+gap)&&wetish(g(a-1,k+gap))&&wetish(g(a+1,k+gap))&&g(a,k+gap)!==3)gap++;
+            if(gap>0&&k+gap<B&&pierAt(a,k+gap)){e0=k+gap;continue;}
+            break;
+          }
+          const before=g(a,s0-1),after=g(a,e0+1);
+          const rootA=landish(before)||before===7,rootB=landish(after)||after===7;
+          if(rootA&&rootB){for(let k=s0;k<=e0;k++)put(a,k,7);} // a bridge: just make it continuous
+          else if(!rootA&&!rootB){for(let k=s0;k<=e0;k++)put(a,k,3);} // floating plank: drop it
+          else{
+            const dir=rootA?1:-1,start=rootA?s0:e0,len=e0-s0+1;
+            for(let k=0;k<len;k++){const bb=start+dir*k;put(a,bb,7);if(g(a-1,bb)===8)put(a-1,bb,3);if(g(a+1,bb)===8)put(a+1,bb,3);}
+            // the tip must open onto water: clear rocks right past it, or trim the pier back if land is there
+            let tip=start+dir*(len-1);
+            for(let k=1;k<=2;k++){const bb=tip+dir*k;if(g(a,bb)===8)put(a,bb,3);[-1,1].forEach((o)=>{if(g(a+o,bb)===8)put(a+o,bb,3);});}
+            while(len>1&&g(a,tip+dir)!==3){put(a,tip,3);tip-=dir;}
+          }
+          b=e0+1;
+        }
+      }
+    }
+    // 3) exactly one lighthouse, on a coastal point (most water around it), never inland
+    const lights=[];for(let i=0;i<N;i++)if(m[i]===9)lights.push(i);
+    const coastScore=(x,y)=>{let w=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&at(x+dx,y+dy)===3)w++;return w;};
+    let keep=-1,best=-1;
+    for(const i of lights){const sc=coastScore(i%W,(i/W)|0);if(sc>best){best=sc;keep=i;}}
+    for(const i of lights)if(i!==keep)m[i]=0;
+    if(keep>=0&&best<2){m[keep]=0;keep=-1;}
+    if(keep<0){
+      let cand=-1,cs=-1;
+      for(let y=2;y<H-2;y++)for(let x=2;x<W-2;x++){
+        const t=at(x,y);if((t!==0&&t!==6&&t!==8)||prot(x,y))continue;
+        let land=0;for(const [dx,dy] of O4)if(at(x+dx,y+dy)!==3)land++;
+        if(land<1)continue;
+        const sc=coastScore(x,y)*10+((x*7+y*13)%7);
+        if(coastScore(x,y)>=4&&sc>cs){cs=sc;cand=y*W+x;}
+      }
+      if(cand>=0)m[cand]=9;
+    }
+  }
   function makeMazeIsland(level,fort,plan){
     const m=new Uint8Array(BC_C*BC_R);
     m.fill(3);
@@ -6020,7 +6112,7 @@
       m[y*BC_C+x]=4;
       palms++;
     }
-    if(rng()<0.72){
+    {
       const lights=[];
       for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
         if(m[y*BC_C+x]!==0)continue;
@@ -6038,13 +6130,14 @@
         if(tv===3)sea=true;
         if(tv===6||tv===1)land=true;
       }
-      if(sea&&land&&((x+y+salt)%9)===0)m[y*BC_C+x]=7;
+      void sea;void land; // (random beach planks removed: docks are placed as real piers only)
     }
     const gate=inlandGate(pad);
     stampCitadel(m,pad);
     if(fort)addFort(m,pad);
     sealShield(m);
     seedIslands(m,rng);
+    tidyGeography(m,pad,rng);
     const home=homeFrom(m,pad,gate,false);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -6095,16 +6188,20 @@
     if(dress==="village"||dress==="docks"){
       layRoad(m,pad,gate,road);
       placeHouses(m,pad,road);
-      if(rng()<0.4)placeHamlet(m,pad,rng);
+      placeHamlet(m,pad,rng);
+      if(rng()<0.6)placeHamlet(m,pad,rng);
       placeBuildings(m,pad,rng,2);
     }else if(dress==="woods"){
+      if(rng()<0.7)placeHamlet(m,pad,rng); // a clearing village in the woods
       woodsGroves(m,pad,road);
     }else if(dress==="airport"){
       placeRunway(m,pad,rng);
+      if(rng()<0.7)placeHamlet(m,pad,rng);
     }else if(dress==="caribbean"){
-      if(rng()<0.6)placeHamlet(m,pad,rng);
+      placeHamlet(m,pad,rng);
       placeBuildings(m,pad,rng,1);
     }else if(dress!=="cliffs"&&dress!=="sea"){
+      if(rng()<0.75)placeHamlet(m,pad,rng); // fishing village on the open coast
       wildGroves(m,pad,road);
     }
     if(dress!=="airport"&&dress!=="sea")beachTrees(m,pad,road);
@@ -6117,9 +6214,10 @@
     if(dress==="cliffs")cliffShore(m,pad,rng);
     repairEdges(m,!!plan.naval);
     const isles=seedIslands(m,rng);
-    const wantLight=plan.light!=null?!!plan.light:rng()<0.62;
-    if(wantLight)placeLighthouse(m,pad,rng,isles);
+    placeLighthouse(m,pad,rng,isles);
     if(plan.river)carveRiver(m,rng,pad);
+    if(dress==="cliffs"||dress==="sea"){if(rng()<0.6)placeHamlet(m,pad,rng);}
+    tidyGeography(m,pad,rng);
     const home=homeFrom(m,pad,gate,!!plan.naval);
     const built=flipAll({
       map:m,home,fort:fortCenter(pad),
@@ -8125,11 +8223,16 @@
     ctx.beginPath();ctx.moveTo(-11,3);ctx.lineTo(-7,-2);ctx.lineTo(-2,1);ctx.lineTo(3,-4);ctx.lineTo(9,1);ctx.lineTo(12,3);ctx.closePath();ctx.fill();
     ctx.fillStyle="#f6f1e6";
     ctx.beginPath();ctx.moveTo(-6,3);ctx.lineTo(-4,-28);ctx.lineTo(4,-28);ctx.lineTo(6,3);ctx.closePath();ctx.fill();
-    ctx.fillStyle="#c4372c";ctx.fillRect(-4.2,-18,8.4,3.2);
+    ctx.fillStyle="#c4372c";
+    ctx.beginPath();ctx.moveTo(-5.6,-4);ctx.lineTo(-5.2,-10);ctx.lineTo(5.2,-10);ctx.lineTo(5.6,-4);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(-4.9,-16);ctx.lineTo(-4.5,-22);ctx.lineTo(4.5,-22);ctx.lineTo(4.9,-16);ctx.closePath();ctx.fill();
     ctx.fillStyle="#e7e0d2";
     ctx.fillRect(-2.4,-12,1.6,2.4);ctx.fillRect(0.8,-12,1.6,2.4);
     ctx.fillRect(-2.4,-7,1.6,2.4);ctx.fillRect(0.8,-7,1.6,2.4);
     ctx.fillStyle="#2c261e";ctx.fillRect(-6.5,-31,13,3.2);
+    const glow=ctx.createRadialGradient(0,-34,1,0,-34,16);
+    glow.addColorStop(0,"rgba(255,240,170,"+(0.75+0.25*Math.sin((t||0)*3)).toFixed(2)+")");glow.addColorStop(1,"rgba(255,240,170,0)");
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,-34,16,0,Math.PI*2);ctx.fill();
     ctx.fillStyle="#f2d56a";ctx.fillRect(-4,-38,8,7);
     ctx.fillStyle="#fff8d0";ctx.fillRect(-1.6,-36.5,3,4);
     ctx.fillStyle="#8e1e18";ctx.beginPath();ctx.arc(0,-38,4.2,Math.PI,0);ctx.fill();
