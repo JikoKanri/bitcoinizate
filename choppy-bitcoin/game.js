@@ -4139,27 +4139,36 @@
     }
     return a;
   }
+  // Coherent island geography: each bloc invades a different zone of the island, and its three
+  // battles move inland from open coast -> mixed land/water -> closed or labyrinthine ground (the finale stays on land).
+  const MAP_ZONES=[
+    {key:"north", en:"NORTH PORT", es:"PUERTO NORTE",
+     open:["harbor","bay"], mixed:["roadstead","twinPiers","seaHarbor"], closed:["docks","brickYard"]},
+    {key:"west", en:"WEST WILDS", es:"MONTE OESTE",
+     open:["cove","peninsula"], mixed:["seaBay","archipelago","channel"], closed:["riverWoods","canalMaze"]},
+    {key:"east", en:"EAST CAPITAL", es:"CAPITAL ESTE",
+     open:["beachAirport","headland"], mixed:["seaPeninsula","caribbean","openSea","seaVillage"], closed:["cliffs","seatown","blockFort"]}
+  ];
+  const MAP_STAGE_NAME={open:["OPEN COAST","COSTA ABIERTA"],mixed:["LAND AND SEA","TIERRA Y MAR"],closed:["INLAND","TIERRA ADENTRO"]};
   function ensureMapPlan(){
-    if(S.bcMapPlan&&S.bcMapPlan.length===9)return S.bcMapPlan;
+    if(S.bcMapPlan&&S.bcMapPlan.length===9&&S.bcMapPlan[0].zone)return S.bcMapPlan;
     if(!S.bcMapSeed)S.bcMapSeed=(Math.random()*0x7fffffff)|1;
     const rng=mapMulberry(S.bcMapSeed);
-    const land=shuffleIds(rng,MAP_TYPES.filter((t)=>!t.naval));
-    const naval=shuffleIds(rng,MAP_TYPES.filter((t)=>t.naval));
-    const mids=shuffleIds(rng,[0,1,3,4,6,7]);
-    const navalSet={};
-    mids.slice(0,3).forEach((n)=>{navalSet[n]=1;});
-    let li=0,ni=0;
+    const byId={};MAP_TYPES.forEach((t)=>{byId[t.id]=t;});
     const plan=[];
+    const order=shuffleIds(rng,[0,1,2]); // which zone each bloc lands on varies per run
+    const seaAt=[0,1,2].map(()=>rng()<0.5?0:1); // exactly one sea battle per bloc: its 1st or 2nd, never the finale
     for(let level=0;level<9;level++){
-      const finale=(level%3)===2;
-      const isNaval=!finale&&!!navalSet[level];
-      const pool=isNaval?naval:land;
-      const idx=isNaval?ni++:li++;
-      const type=pool[idx%pool.length];
+      const zone=MAP_ZONES[order[(level/3)|0]];
+      const slot=level%3;
+      const stage=slot===2?"closed":(slot===seaAt[(level/3)|0]?"mixed":"open");
+      const pool=zone[stage];
+      const type=byId[pool[(rng()*pool.length)|0]]||MAP_TYPES[0];
       plan.push({
-        id:type.id, naval:isNaval, theme:type.theme, river:!!type.river,
+        id:type.id, naval:!!type.naval, theme:type.theme, river:!!type.river,
         fx:rng()<0.5, fy:rng()<0.5,
-        dress:type.theme, light:type.theme==="caribbean"?rng()<0.85:rng()<0.5
+        dress:type.theme, light:type.theme==="caribbean"?rng()<0.85:rng()<0.5,
+        zone:zone.key, zoneEn:zone.en, zoneEs:zone.es, stage
       });
     }
     S.bcMapPlan=plan;
@@ -5665,6 +5674,19 @@
       for(let y=9;y<=13;y++)for(let x=21;x<=24;x++)set(x,y);
     }
   }
+  // Cleaner mazes: a wall tile touching at most one other wall reads as noise, so turn it back into grass.
+  function pruneMazeStubs(m,prot){
+    for(let pass=0;pass<2;pass++){
+      const kill=[];
+      for(let y=2;y<BC_R-2;y++)for(let x=2;x<BC_C-2;x++){
+        if(m[y*BC_C+x]!==1||prot(x,y))continue;
+        let n=0;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])if(mtile(m,x+dx,y+dy)===1||mtile(m,x+dx,y+dy)===2)n++;
+        if(n<=1)kill.push(y*BC_C+x);
+      }
+      for(const i of kill)m[i]=6;
+    }
+  }
   function stampMazeWalls(m,id,prot){
     const wall=(x,y)=>{
       if(x<2||y<2||x>=BC_C-2||y>=BC_R-2||prot(x,y))return;
@@ -5971,6 +5993,7 @@
     if(!pad)pad={x:10,y:14};
     const prot=(x,y)=>x>=pad.x-2&&x<=pad.x+8&&y>=pad.y-2&&y<=pad.y+7;
     stampMazeWalls(m,plan.id,prot);
+    pruneMazeStubs(m,prot);
     let steel=0;
     for(let y=2;y<BC_R-2&&steel<12;y++)for(let x=2;x<BC_C-2&&steel<12;x++){
       if(m[y*BC_C+x]!==1||prot(x,y))continue;
@@ -6447,6 +6470,7 @@
     const bloc=(level/3)|0;
     const u=defenseUpgrades();
     const built=makeIslandMap(level,!!u.wall);
+    const zplan=ensureMapPlan()[level]||{};
     const map=built.map;
     const hp=new Uint8Array(map.length);
     for(let i=0;i<map.length;i++)hp[i]=bcTileHp(map[i]);
@@ -6471,10 +6495,12 @@
       profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
       home:built.home,
+      theme:zplan.theme||"wild",zoneEn:zplan.zoneEn||"",zoneEs:zplan.zoneEs||"",stage:zplan.stage||"",
       spawns:built.spawns,
       landSpawns:built.landSpawns&&built.landSpawns.length?built.landSpawns:built.spawns,
       seaSpawns:built.seaSpawns&&built.seaSpawns.length?built.seaSpawns:built.spawns,
-      foreignLeft:Math.floor(ground*0.15),
+      // ~12% of attackers come from the other element: ships on land maps, landing tanks on sea maps.
+      foreignLeft:Math.max(1,Math.round(ground*0.12)),
       groundLeft:ground,
       pickIn:5+Math.random()*10,
       bed:map.bed||null,
@@ -6916,18 +6942,20 @@
     const pass=(t)=>e.ship?t===3:(t===0||t===6||t===7||(allowTree&&t===4));
     const sx=Math.max(0,Math.min(BC_C-1,Math.floor(e.x/BC_TS)));
     const sy=Math.max(0,Math.min(BC_R-1,Math.floor(e.y/BC_TS)));
-    const dest=nearestWalk(d,e,goal.x,goal.y);
-    if(!dest)return null;
+    // No passable tile near the goal (e.g. an inland fort for a ship): aim the search at the goal tile itself
+    // and let the closest-reachable fallback below bring the unit as near as it can get.
+    const dest=nearestWalk(d,e,goal.x,goal.y)||{x:Math.max(0,Math.min(BC_C-1,Math.floor(goal.x/BC_TS))),y:Math.max(0,Math.min(BC_R-1,Math.floor(goal.y/BC_TS)))};
     const W=BC_C,start=sy*W+sx,destI=dest.y*W+dest.x;
     if(start===destI)return {dir:e.dir,len:0,tree:false,trees:0,wx:goal.x,wy:goal.y};
     const prev=new Int16Array(W*BC_R);
     prev.fill(-1);
     const q=[start];
     prev[start]=start;
-    let found=-1;
+    let found=-1,near=-1,nearD=1e9;
     for(let qi=0;qi<q.length;qi++){
       const cur=q[qi];
       if(cur===destI){found=cur;break;}
+      {const ddx=(cur%W)-dest.x,ddy=((cur/W)|0)-dest.y,dd=ddx*ddx+ddy*ddy;if(dd<nearD){nearD=dd;near=cur;}}
       const cx=cur%W,cy=(cur/W)|0;
       const steps=BATTLE_360?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]:[[1,0],[-1,0],[0,1],[0,-1]];
       for(const [dx,dy] of steps){
@@ -6939,7 +6967,9 @@
         prev[ni]=cur;q.push(ni);
       }
     }
-    if(found<0)return null;
+    // Goal unreachable (e.g. a ship whose water does not touch the fort): head for the closest reachable tile
+    // instead of returning null and ramming the old heading.
+    if(found<0){if(near<0||near===start)return null;found=near;}
     const path=[];
     let cur=found,guard=0;
     while(cur!==start&&guard++<500){path.push(cur);cur=prev[cur];}
@@ -7692,6 +7722,85 @@
     ctx.fillStyle="rgba(255,246,232,.16)";
     ctx.fillRect(px+2,py+2,5,1);
   }
+  // ---- Map polish pass (drawn over the tile grid, under units) ----
+  const THEME_TINT={caribbean:"#2fd8c8",cliffs:"#7d8aa0",woods:"#2f7a34",maze:"#9a5a32",village:"#e0a062",docks:"#5b7fa6",airport:"#b9b9b9",sea:"#1f5fa0",wild:"#93a04c"};
+  function tileHash(x,y){let h=(x*374761393+y*668265263)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967295;}
+  function smoothNoise(x,y){
+    const x0=Math.floor(x),y0=Math.floor(y),fx=x-x0,fy=y-y0;
+    const sx=fx*fx*(3-2*fx),sy=fy*fy*(3-2*fy);
+    const a=tileHash(x0,y0),b=tileHash(x0+1,y0),c=tileHash(x0,y0+1),e=tileHash(x0+1,y0+1);
+    return (a+(b-a)*sx)+((c+(e-c)*sx)-(a+(b-a)*sx))*sy;
+  }
+  function isWater(m,x,y){return bcAt(m,x,y)===3;}
+  function isGround(k){return k===0||k===6||k===4||k===7||k===9;}
+  function drawTerrainPolish(ctx,d,t){
+    const m=d.map,T=BC_TS,seed=(S.bcMapSeed|0)%997;
+    ctx.save();
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const k=bcAt(m,x,y),px=x*T,py=y*T;
+      // 1) smooth low-frequency light/shade so big areas stop looking like a flat checkerboard
+      if(k!==3&&k!==5){
+        const n=smoothNoise((x+seed)*0.22,(y+seed)*0.22)*0.6+smoothNoise((x+seed)*0.55,(y-seed)*0.55)*0.4;
+        const v=n-0.5;
+        ctx.fillStyle=v>0?"rgba(255,248,220,"+(v*0.22).toFixed(3)+")":"rgba(20,24,10,"+(-v*0.26).toFixed(3)+")";
+        ctx.fillRect(px,py,T,T);
+      }else if(k===3){
+        const n=smoothNoise((x-seed)*0.18+t*0.05,(y+seed)*0.18)-0.5;
+        ctx.fillStyle=n>0?"rgba(120,210,220,"+(n*0.16).toFixed(3)+")":"rgba(0,10,20,"+(-n*0.2).toFixed(3)+")";
+        ctx.fillRect(px,py,T,T);
+      }
+      // 2) blended sand <-> grass transitions
+      if(k===0){
+        const g=(a)=>a===6||a===4;
+        ctx.fillStyle="rgba(106,118,68,.45)";
+        if(g(bcAt(m,x,y-1)))ctx.fillRect(px,py,T,3);
+        if(g(bcAt(m,x,y+1)))ctx.fillRect(px,py+T-3,T,3);
+        if(g(bcAt(m,x-1,y)))ctx.fillRect(px,py,3,T);
+        if(g(bcAt(m,x+1,y)))ctx.fillRect(px+T-3,py,3,T);
+      }
+      // 3) soft shadows: light from the top-left, so solids cast onto the ground below/right of them
+      if(isGround(k)){
+        const solid=(a)=>a===1||a===2||a===5||a===8;
+        ctx.fillStyle="rgba(10,12,6,.28)";
+        if(solid(bcAt(m,x,y-1)))ctx.fillRect(px,py,T,4);
+        if(solid(bcAt(m,x-1,y)))ctx.fillRect(px,py,4,T);
+      }
+    }
+    // 4) rounded coasts: convex land corners get eaten by water, concave water corners get filled with sand
+    const R=7;
+    for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
+      const k=bcAt(m,x,y),px=x*T,py=y*T;
+      const corners=[[-1,-1,px,py],[1,-1,px+T,py],[-1,1,px,py+T],[1,1,px+T,py+T]];
+      if(k!==3&&k!==7){
+        for(const [dx,dy,cx,cy] of corners){
+          if(!(isWater(m,x+dx,y)&&isWater(m,x,y+dy)&&isWater(m,x+dx,y+dy)))continue;
+          ctx.fillStyle="#1f6f74";
+          ctx.beginPath();
+          ctx.moveTo(cx,cy);ctx.lineTo(cx-dx*R,cy);
+          ctx.arc(cx-dx*R,cy-dy*R,R,dy>0?Math.PI/2:-Math.PI/2,dx>0?0:Math.PI,(dx>0)===(dy>0));
+          ctx.closePath();ctx.fill();
+          ctx.strokeStyle="rgba(226,232,220,.55)";ctx.lineWidth=2;
+          ctx.beginPath();ctx.arc(cx-dx*R,cy-dy*R,R,dy>0?Math.PI/2:-Math.PI/2,dx>0?0:Math.PI,(dx>0)===(dy>0));ctx.stroke();
+        }
+      }else if(k===3){
+        for(const [dx,dy,cx,cy] of corners){
+          const l=(a)=>a===0||a===6||a===4||a===9;
+          if(!(l(bcAt(m,x+dx,y))&&l(bcAt(m,x,y+dy))))continue;
+          ctx.fillStyle="#b7a06e";
+          ctx.beginPath();
+          ctx.moveTo(cx,cy);ctx.lineTo(cx-dx*R*0.8,cy);
+          ctx.quadraticCurveTo(cx-dx*R*0.15,cy-dy*R*0.15,cx,cy-dy*R*0.8);
+          ctx.closePath();ctx.fill();
+        }
+      }
+    }
+    // 5) per-theme colour grade so each zone of the island reads differently
+    const tint=THEME_TINT[d.theme]||THEME_TINT.wild;
+    ctx.globalCompositeOperation="soft-light";
+    ctx.globalAlpha=0.42;
+    ctx.fillStyle=tint;ctx.fillRect(0,0,BC_C*T,BC_R*T);
+    ctx.restore();
+  }
   function drawDefense(ctx){
     const d=S.bcDefense;if(!d)return;
     const t=d.t||0;
@@ -7827,6 +7936,7 @@
         continue;
       }
     }
+    drawTerrainPolish(ctx,d,t);
     if(!d.maze)for(let y=0;y<BC_R;y++)for(let x=0;x<BC_C;x++){
       if(bcAt(d.map,x,y)!==1)continue;
       if(d.seal&&d.seal[y*BC_C+x])continue;
@@ -7947,6 +8057,11 @@
     paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,52,PAL.fg);
     paintHaloText(ctx,bname,12,68,PAL.fg);
     if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
+    if(d.zoneEn){
+      const st=MAP_STAGE_NAME[d.stage];
+      const zl=(chanceLang()?d.zoneEs:d.zoneEn)+(st?" · "+st[chanceLang()?1:0]:"");
+      ctx.textAlign="right";paintHaloText(ctx,zl,S.W-12,46,"#f3efe6");ctx.textAlign="left";
+    }
     if(d.wall>0){ctx.textAlign="right";paintHaloText(ctx,"WALL "+d.wall+"%",S.W-12,62,BTC);}
     if((d.shotTier|0)>0){ctx.textAlign="right";paintHaloText(ctx,"S"+(d.shotTier|0),S.W-12,78,"#9befff");}
     if(!d.frozen){
