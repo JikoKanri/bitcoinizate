@@ -2070,6 +2070,7 @@
     return null;
   }
   function arcOptionLabel(card, o, es) {
+    if (o.hideCost) return es ? (o.labelEs || o.label) : o.label;
     let lab = es ? (o.labelEs || o.label) : o.label;
     lab = lab.replace(/\s*·\s*\d+(?:\.\d+)?%\s*(?:of net worth|del patrimonio)?/gi, "");
     lab = lab.replace(/\s+\d+(?:\.\d+)?%\s+of net worth/gi, "");
@@ -2174,11 +2175,11 @@
   function weaveCast(text) { return text; }
   const CHANCE_TLDR = {
     justInCase: { en: "A new emergency law widens government power whenever the economy looks unstable. They call it temporary. The definition seems to cover most years.", es: "Una nueva ley de emergencia amplía las facultades del Estado ante la inestabilidad económica. La llaman temporal, aunque la definición parece abarcar casi todos los años." },
-    nothingToHide: { en: "An optional digital ID makes travel and banking easier, and public services start moving onto it. You have nothing to hide. The question still bothers you.", es: "Un documento de identidad digital opcional agiliza los viajes y las operaciones bancarias, mientras los servicios públicos comienzan a adoptarlo. No tienes nada que ocultar, pero la pregunta aún te incomoda." },
+    nothingToHide: { en: "An optional digital ID spreads to airports, banks, and public services. A TV host asks what the problem is.", es: "Un documento digital opcional se extiende a aeropuertos, bancos y servicios públicos. Un presentador pregunta cuál es el problema." },
     somethingBetter: { en: "On a run with Marek you say that, with enough money, you could build something better than a company or a charity. You do not yet know what.", es: "Mientras corres con Marek, dices que con suficiente dinero podrías construir algo mejor que una empresa o una organización benéfica. Aún no sabes qué sería." },
     timeTraveler: { en: "An old post claims to be from a future of citadels. A search turns up a self-published book, THE BITCOIN STATE, for $666.", es: "Una publicación antigua describe un futuro de ciudadelas y gobiernos debilitados. La búsqueda te lleva a un libro autoeditado, THE BITCOIN STATE, por $666." },
     temporaryMeasures: { en: "A financial emergency brings transfer limits and payment apps that stop working. Officials say it is temporary. Bitcoin does not fall with the markets.", es: "Una emergencia financiera impone límites a las transferencias y al efectivo, mientras varias aplicaciones de pago dejan de funcionar. Las autoridades prometen noventa días; las medidas temporales anteriores llevan casi cuatro años. Los mercados caen, pero Bitcoin no." },
-    citadelProblem: { en: "You tell Marek you want to build a country. He laughs, then asks how much land. The stupid idea now has a checklist.", es: "Le dices a Marek que quieres construir un país. Se ríe, pero luego pregunta cuánta tierra necesitarían. La idea absurda ya tiene una lista de requisitos." },
+    citadelProblem: { en: "You tell Marek you want to build a country. He laughs, then asks how much land, and adds a flag to your list.", es: "Le dices a Marek que quieres construir un país. Se ríe, pero luego pregunta cuánta tierra y agrega una bandera a tu lista." },
     pieceWorld: { en: "Nico finds a listing for an isolated island that calls itself a sovereign opportunity. It is not sovereign.", es: "Nico encuentra el anuncio de una isla aislada que se presenta como una oportunidad para una vida soberana. La isla no es soberana." },
     islandInspection: { en: "At sunrise the island is more beautiful than the listing. At sunset the seller's offer arrives.", es: "Al amanecer, la isla resulta más hermosa que en el anuncio. Después de recorrerla, al atardecer llega la oferta del vendedor." },
     paperwork: { en: "Lawyers turn the purchase into something that looks serious. Nico signs in the wrong place. Paco eats a corner of the last page.", es: "Los abogados formalizan la compra. Nico firma donde no corresponde y Paco se come una esquina del documento final." },
@@ -2187,8 +2188,8 @@
     peopleAsking: { en: "People ask if they can move in. Nico makes a spreadsheet. There are no houses.", es: "Desarrolladores, mineros y familias quieren mudarse a la isla. Nico organiza los nombres, pero Marek señala que no hay viviendas." },
     extensionCord: { en: "The new residents bring more machines than the island can feed. The lights go out. Someone asks who was mining.", es: "Los nuevos residentes conectan más equipos de los que la isla puede abastecer. La energía se corta y alguien pregunta quién estaba minando." },
     obviously: { en: "The grid works. Nico says you should mine Bitcoin. The proposal is four words: cheap power, we mine.", es: "La red eléctrica funciona y Nico propone minar Bitcoin. Su propuesta se resume en cuatro palabras: energía barata, minamos Bitcoin." },
-    principality: { en: "Mr Ortega & Gambette writes from San Arnaldo. They have a flag, an anthem, and a website. They would like relations.", es: "El señor Ortega & Gambette escribe desde San Arnaldo. Tienen bandera, himno, sitio web y 614 ciudadanos declarados; quieren establecer relaciones." },
-    stateVisit: { en: "San Arnaldo asks for help building Bitcoin infrastructure. The principality needs a node; Bitcoin Country needs its first diplomatic ally.", es: "San Arnaldo solicita ayuda para desarrollar infraestructura de Bitcoin. El principado necesita un nodo; Bitcoin Country necesita su primer aliado diplomático." },
+    principality: { en: "A micro-state of 614 claimed citizens writes to propose diplomatic relations.", es: "Un microestado de 614 ciudadanos declarados te escribe para proponer relaciones diplomáticas." },
+    stateVisit: { en: "San Arnaldo, whose government sits in a former restaurant, asks for a Bitcoin node; you could gain your first ally.", es: "San Arnaldo, cuyo gobierno funciona en un antiguo restaurante, pide un nodo de Bitcoin; podrías ganar tu primer aliado." },
     firstBloc: { en: "Germany, France, Italy, Spain, the Netherlands, Belgium, and Austria form the Meridian Stability Pact. Its language is administrative; its restrictions are not optional.", es: "Alemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria forman el Pacto de Estabilidad Meridiano. Su lenguaje es administrativo, pero sus restricciones no son opcionales." },
     protectIsland: { en: "A boat disappears from the dock overnight. One camera caught nothing, and Paco slept through it. The island now needs a security plan.", es: "Un bote desaparece del muelle durante la noche. La única cámara no registró nada y Paco no despertó. La isla necesita un plan de seguridad." },
     placeNow: { en: "At fifty nodes, the island gains a coffee shop, a bakery, a bar, and a newspaper. Its first editorial criticizes you. Nico calls that progress.", es: "Al alcanzar cincuenta nodos, la isla ya tiene cafetería, panadería, bar y periódico. Su primer editorial te critica. Nico considera que eso es progreso." },
@@ -2205,11 +2206,11 @@
     fourthColor: { en: "All three blocs attacked and failed. The island still stands: Bitcoin Country is independent.", es: "Los tres bloques atacaron y fracasaron. La isla sigue en pie: Bitcoin Country es independiente." },
     notYet: { en: "The defense collapses, Bitcoin Country loses the island, and the run ends.", es: "La defensa colapsa, Bitcoin Country pierde la isla y la partida termina." },
     landfill: { en: "At 1:14 a.m., Nico wants a partner to dig up a USB that supposedly held 8,000 BTC: put in a little, go halves, or stay in bed.", es: "A la 1:14 a. m., Nico busca un socio para desenterrar una memoria USB que supuestamente contenía 8,000 BTC: poner poco, ir a medias o quedarte en la cama." },
-    taxbill: { en: "The quarterly tax bill is due, and the amount has not changed: {gift}.", es: "Vence la factura trimestral de impuestos y el monto no cambió: {gift}." },
+    taxbill: { en: "The quarterly tax bill arrives: {gift}.", es: "Llega la factura trimestral de impuestos: {gift}." },
     nicoWedding: { en: "At Nico's 400-guest wedding, you recognize twelve people. Lena warns you about his schemes before you choose a gift.", es: "En la boda de Nico hay 400 invitados y solo reconoces a doce. Lena te advierte sobre sus planes antes de que elijas un regalo." },
     mexico: { en: "Lena proposes five days in Tulum. You think three days are enough. Paco votes by eating a brochure.", es: "Lena propone pasar cinco días en Tulum. Para ti bastan tres días. Paco vota comiéndose un folleto." },
     flu: { en: "Lena wakes with the flu. You spend the day bringing her water, medicine, and soup; Paco quietly eats half the soup.", es: "Lena despierta con gripe. Pasas el día llevándole agua, medicinas y sopa; Paco se come la mitad de la sopa sin que ella lo note." },
-    phish: { en: "A polished support email claims there is a problem with your account and asks for your seed phrase. You must decide whether to trust it or delete it.", es: "Un correo de soporte muy convincente afirma que hay un problema con tu cuenta y solicita tu frase semilla. Debes decidir si confiar en el mensaje o eliminarlo." },
+    phish: { en: "Support emails you about a problem with your account. To verify your identity, it asks you to enter your seed phrase.", es: "Soporte te escribe por un problema con tu cuenta. Para verificar tu identidad, te pide ingresar tu frase semilla." },
     crash: { en: "A delivery rider bumps your car at a red light and cannot stop apologizing.", es: "Un repartidor en moto te choca el auto en un semáforo y no para de pedir perdón." },
     wine: { en: "Friday at Marek's is wine and 12 Monkeys on pause. The talk turns to A.I., as usual. Neither of you wins.", es: "Una noche de vino y 12 Monkeys en casa de Marek termina en otra discusión sobre la IA y el futuro. Ninguno convence al otro." },
     casino: { en: "Nico calls late. He found a table at a casino and has already decided the game is interesting.", es: "Nico llama tarde desde un casino y ya eligió un juego. Deberías hacer más preguntas, pero vas igual." },
@@ -2222,15 +2223,15 @@
     tow: { en: "A quick coffee stop in a no-parking zone ends with a ticket.", es: "Una parada rápida por un café en zona prohibida termina en multa." },
     courage: { en: "At Marek's, with 12 Monkeys paused, you mention Lena. He says you may be waiting for certainty, then presses play.", es: "En casa de Marek, con 12 Monkeys en pausa, mencionas a Lena. Dice que tal vez esperas certeza absoluta y reanuda la película." },
     ring: { en: "You are in the jewelry store, and you know why. You do not know which diamond looks responsible.", es: "Estás en la joyería y sabes por qué. No sabes qué diamante te hace ver responsable." },
-    date: { en: "The restaurant, the walk, and the lake all go fine. Nothing goes wrong. That feels suspicious.", es: "El restaurante, la caminata y el lago salen bien. Nada sale mal. Eso parece sospechoso." },
+    date: { en: "A perfect date: restaurant, walk, and the lake at sunset. So much perfection makes you uneasy.", es: "Una cita perfecta: restaurante, caminata y lago al atardecer. Tanta perfección te inquieta." },
     proposal: { en: "The lake is getting dark and the ring is in your pocket. You have not asked yet.", es: "El lago se oscurece y el anillo está en tu bolsillo. Todavía no hiciste la pregunta." },
-    wedding: { en: "You and Lena are getting married. There are more decisions than you expected. Most of hers win.", es: "Lena y tú se van a casar. Hay más decisiones de las que esperabas. Casi todas las de ella ganan." },
+    wedding: { en: "You and Lena are getting married, and every detail turns into a negotiation she wins.", es: "Lena y tú se van a casar, y cada detalle se vuelve una negociación que gana ella." },
     honeymoon: { en: "You and Lena leave with one rule: no checking the portfolio. She takes your phone. There are three possible trips.", es: "Se van de viaje con una sola regla: no revisar el portafolio. Ella te quita el teléfono. Hay tres viajes posibles." },
-    pregnancy: { en: "Two lines on a test. You and Lena are going to have a baby. The first costs come to $450.", es: "Dos líneas en una prueba. Lena y tú van a tener un bebé. Los primeros gastos suman $450." },
+    pregnancy: { en: "A positive test: you and Lena are having a baby. The first costs come to $450.", es: "Una prueba positiva: Lena y tú van a tener un bebé. Los primeros gastos suman $450." },
     baby: { en: "The baby arrives. Everyone is tired, including Paco. You start thinking about the future you want.", es: "Llega el bebé. Todos están cansados, incluido Paco. Empiezas a pensar en el futuro que quieres." },
     cousin: { en: "Nico found a new token. He says it will multiply by Friday. What it does, he says, is not the important part.", es: "Nico encontró un nuevo token. Dice que multiplicará su valor para el viernes. Qué hace exactamente no es lo importante, según él." },
     speeding: { en: "You get caught speeding again, on the same corner, by the same officer.", es: "Otra vez te multan por exceso de velocidad, en la misma esquina y con el mismo oficial." },
-    wallet: { en: "You leave your wallet on the bus. Someone finds it. The cash is gone. The cards are still there.", es: "Dejas tu billetera en el autobús. Alguien la encuentra. El dinero en efectivo desapareció, pero las tarjetas siguen ahí." },
+    wallet: { en: "You forget your wallet on the bus and get it back at the terminal, minus the cash.", es: "Olvidas la billetera en el autobús y la recuperas en la terminal, sin el efectivo." },
     potluck: { en: "Lena signs you and Paco up for the neighborhood potluck. He eats half of what you brought before you arrive.", es: "Lena los anota a ti y a Paco en la comida comunitaria del vecindario. Paco se come la mitad de lo que prepararon antes de llegar." },
     usedcar: { en: "Nico has found a 2009 Honda Fit. He looks under the hood, sees Sharpie, and calls it basically new.", es: "Nico encontró un Honda Fit 2009. Mira debajo del capó, ve una marca de Sharpie y lo considera básicamente nuevo." },
     tetris: { en: "Marek takes you to a bar with a Tetris cabinet nobody uses. He plays, then says it is your turn.", es: "Marek te lleva a un bar con una máquina de Tetris que nadie usa. Juega un rato y luego te cede el turno." },
@@ -2285,8 +2286,8 @@
       ] },
     { id: "taxbill", kind: "report",
       title: "Quarterly Tax Bill", titleEs: "La factura trimestral",
-      body: "Your quarterly tax bill arrives in an official-looking envelope. You read the total, close it, then open it again in case the number has changed. The number has not changed.",
-      bodyEs: "La factura trimestral de impuestos llega en un sobre de aspecto oficial. Lees el total, la cierras y vuelves a abrirla por si el monto cambió. El monto no cambió." },
+      body: "An official-looking envelope waits on the desk. You put on your reading glasses, read the total, take them off, and put them back on in case the number was blurry. It was not blurry.",
+      bodyEs: "Un sobre de aspecto oficial espera sobre el escritorio. Te pones los anteojos de leer, lees el total, te los quitas y vuelves a ponértelos por si el número estaba borroso. No lo estaba." },
     { id: "nicoWedding", kind: "choice", after: ["landfill"],
       title: "Nico Gets Married", titleEs: "La boda de Nico",
       body: "Nico is getting married. You arrive with Lena and Paco, who has already decided he dislikes the venue. There are 400 guests, and you recognize about twelve. The DJ is playing CDs from 1998. Near the bar, Nico is pitching an elaborate idea to a stranger who did not ask. Lena looks at you. \"Do not let your cousin talk you into anything tonight.\" At the gift table, you decide how much to give.",
@@ -2313,7 +2314,7 @@
       body: "A customer support email says there is a problem with your account. The logo, formatting, and urgent tone all look legitimate. To verify your identity, the message asks you to open a link and enter your seed phrase.",
       bodyEs: "Un correo del equipo de soporte afirma que hay un problema con tu cuenta. El logotipo, el formato y el tono urgente parecen legítimos. Para verificar tu identidad, el mensaje te pide abrir un enlace e ingresar tu frase semilla.",
       opts: [
-        { k: "a", label: "Enter the seed phrase", labelEs: "Ingresar la frase semilla" },
+        { k: "a", label: "Enter the seed phrase", labelEs: "Ingresar la frase semilla", hideCost: true },
         { k: "b", label: "Delete the email", labelEs: "Eliminar el correo" }
       ] },
     { id: "crash", kind: "report",
@@ -2459,8 +2460,8 @@
       bodyEs: "Vas diez kilómetros por hora por encima del límite, en la misma esquina donde te pararon la última vez. El oficial te reconoce antes de que bajes la ventanilla." },
     { id: "wallet", kind: "report",
       title: "Found It", titleEs: "Billetera encontrada",
-      body: "You leave your wallet on bus seat 14. You realize it three stops later. You call the company. Someone found it. The cash is gone. Your cards are still there.",
-      bodyEs: "Dejas tu billetera en el asiento 14 del autobús. Te das cuenta tres paradas después. Llamas a la empresa: alguien la encontró. El dinero en efectivo desapareció, pero tus tarjetas siguen ahí." },
+      body: "You get off the bus and, two blocks later, your pocket feels wrong: the wallet stayed on the seat. You call the bus line. A driver found it, so you ride back to the terminal and he hands it over on the same bus. Your cards and ID are there. The cash is not.",
+      bodyEs: "Te bajas del autobús y, dos cuadras después, el bolsillo se siente raro: la billetera quedó en el asiento. Llamas a la línea. Un chofer la encontró, así que vuelves a la terminal y te la devuelve en el mismo autobús. Las tarjetas y el documento están. El efectivo, no." },
     { id: "potluck", kind: "choice", after: ["landfill"],
       title: "Neighborhood Potluck", titleEs: "Comida vecinal",
       body: "Lena signs both of you up for a neighborhood potluck. She also signs Paco up. You explain that Paco cannot cook. She says: \"He can attend.\" Paco eats half of what you brought before you arrive.",
@@ -2533,7 +2534,7 @@
     { id:"battleWon", kind:"report", when:()=>false, title:"The Beach Holds", titleEs:"La playa resiste", body:"The landing is repelled. Bitcoin Country holds the shore, but the campaign is not over.", bodyEs:"El desembarco es rechazado. Bitcoin Country conserva la costa, pero la campaña aún no ha terminado." },
     { id:"blocTriumph", kind:"report", when:()=>false, title:"Bloc Defeated", titleEs:"Bloque derrotado", body:"After its third failed assault, a bloc withdraws and recognizes Bitcoin Country as a nation.", bodyEs:"Tras su tercer ataque fallido, un bloque se retira y reconoce a Bitcoin Country como nación." },
     { id:"fourthColor", kind:"report", after:["theAnswer"], when:()=>(S.bcBattlesWon||0)>=9, title:"A Fourth Color", titleEs:"Un cuarto color", body:"It is over. One bloc filed its final protest and lost the sea lane. Another ran out of ships it was willing to acknowledge. The third, which never apologizes, stopped answering the radio.\n\nThe island still stands. By morning, statements begin to arrive. Some governments call for negotiations; others carefully avoid the word country. San Arnaldo does not. Marek studies the map for a moment, then points to the new border. “You really did it.” By noon, the bakery has reopened, for reasons no one can explain.\n\nACHIEVEMENT UNLOCKED: THE FOURTH COLOR. KEEP PLAYING.", bodyEs:"Se acabó. Un bloque presentó su última protesta y perdió la ruta marítima. Otro se quedó sin barcos que estuviera dispuesto a reconocer. El tercero, que nunca se disculpa, dejó de responder por radio.\n\nLa isla sigue en pie. Por la mañana comienzan a llegar comunicados. Algunos gobiernos piden negociaciones; otros evitan cuidadosamente la palabra país. San Arnaldo no. Marek estudia el mapa por un momento y señala la nueva frontera. «De verdad lo lograste». Al mediodía, la panadería vuelve a abrir por razones que nadie puede explicar.\n\nLOGRO DESBLOQUEADO: EL CUARTO COLOR. CONTINÚA JUGANDO." },
-    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defensive line breaks. The last defenders fall back from the shore as the fleet takes the port. By nightfall, the flag is down and the transmitters are silent. The run is over.", bodyEs:"La línea defensiva se rompe. Los últimos defensores retroceden desde la costa mientras la flota toma el puerto. Al caer la noche, la bandera ha sido retirada y los transmisores están en silencio. La partida ha terminado." },
+    { id:"notYet", kind:"report", after:["theAnswer"], when:()=>false, title:"Not Yet", titleEs:"Todavía no", body:"The defensive line breaks. The last defenders fall back from the shore as the fleet takes the port. By nightfall, the flag is down and the transmitters are silent.", bodyEs:"La línea defensiva se rompe. Los últimos defensores retroceden desde la costa mientras la flota toma el puerto. Al caer la noche, la bandera ha sido retirada y los transmisores están en silencio." },
     
   ];
   CHANCE_CARDS.push(...JOB_ARC_CARDS);
@@ -2578,7 +2579,7 @@
     }
     if (card.id === "taxbill") {
       const paid = cutPct(0.1);
-      return say("The amount is unchanged. −" + costLabel(paid) + ".", "El monto no cambió. −" + costLabel(paid) + ".");
+      return say("You pay it online and file the envelope with the others. −" + costLabel(paid) + ".", "La pagas en línea y archivas el sobre con los demás. −" + costLabel(paid) + ".");
     }
     if (card.id === "nicoWedding") {
       if (opt === "c") return say("You spend the rest of the night avoiding Nico near the bar.", "Pasas el resto de la noche evitando a Nico cerca de la barra.");
@@ -2596,12 +2597,12 @@
       if (opt === "b") return say("You stay home. Paco celebrates by destroying a cushion.", "Se quedan en casa. Paco lo celebra destruyendo un cojín.");
       const paid = cutPct(0.08);
       S.invuln = Math.max(S.invuln || 0, 4);
-      return say("Five days in Tulum. −" + costLabel(paid) + ". For four seconds, nothing can touch you.",
-        "Cinco días en Tulum. −" + costLabel(paid) + ". Durante cuatro segundos, nada puede tocarte.");
+      return say("You come back tanned. −" + costLabel(paid) + ". For four seconds, nothing can touch you.",
+        "Vuelven bronceados. −" + costLabel(paid) + ". Durante cuatro segundos, nada puede tocarte.");
     }
     if (card.id === "flu") {
       const paid = cutBill(120);
-      return say("Water, medicine, and soup—half of it eaten by Paco. −" + costLabel(paid) + ".", "Agua, medicinas y sopa; Paco se comió la mitad. −" + costLabel(paid) + ".");
+      return say("By morning her fever breaks. The pharmacy keeps the receipt. −" + costLabel(paid) + ".", "A la mañana le baja la fiebre. La farmacia se queda con el ticket. −" + costLabel(paid) + ".");
     }
     if (card.id === "phish") {
       if (opt === "b") return say("You delete it, then spend thirty seconds checking that it is really gone.", "Lo eliminas y pasas treinta segundos comprobando que realmente desapareció.");
@@ -2649,7 +2650,7 @@
     if (card.id === "uncle") {
       if (Math.random() < 0.55) {
         const n = grantWealthPct(0.07);
-        return say("Check your account. +" + money(n) + ".", "Revisa tu cuenta. +" + money(n) + ".");
+        return say("He hangs up before you can thank him. +" + money(n) + ".", "Cuelga antes de que puedas agradecerle. +" + money(n) + ".");
       }
       const b = Math.max(0.0001, (wealthUsd() * 0.07) / clampPx(S.price));
       const out = creditBtc(b);
@@ -2664,11 +2665,11 @@
     }
     if (card.id === "roof") {
       const paid = cutBill(900);
-      return say("Paco found it first. −" + costLabel(paid) + ".", "Paco lo encontró primero. −" + costLabel(paid) + ".");
+      return say("The roof is sealed. The bill is not small. −" + costLabel(paid) + ".", "El techo queda sellado. La cuenta no es pequeña. −" + costLabel(paid) + ".");
     }
     if (card.id === "hospital") {
       const paid = cutBill(250);
-      return say("Four stitches. Try not to bleed on anything. −" + costLabel(paid) + ".", "Cuatro puntos. Intenta no sangrar sobre nada. −" + costLabel(paid) + ".");
+      return say("The hospital bill arrives before the stitches come out. −" + costLabel(paid) + ".", "La cuenta del hospital llega antes de que te saquen los puntos. −" + costLabel(paid) + ".");
     }
     if (card.id === "startup") {
       if (opt === "b") return say("Nico says: \"Your loss.\" You are fairly sure that is not how losses work.",
@@ -2698,23 +2699,23 @@
     if (card.id === "date") {
       if (opt === "c") { delete S.chanceUsed.date; return say("Tomorrow is probably better.", "Mañana probablemente sea mejor día."); }
       const paid = cutBill(opt === "a" ? 180 : 60);
-      if (opt === "a") return say("Everything goes according to plan. That still feels suspicious. −" + costLabel(paid) + ".",
-        "Todo sale según lo planeado. Aun así, te parece sospechoso. −" + costLabel(paid) + ".");
+      if (opt === "a") return say("The check arrives exactly on time, like everything else tonight. −" + costLabel(paid) + ".",
+        "La cuenta llega puntual, como todo lo demás esta noche. −" + costLabel(paid) + ".");
       return say("Dinner is good anyway. −" + costLabel(paid) + ".", "La cena sale bien de todos modos. −" + costLabel(paid) + ".");
     }
     if (card.id === "proposal") {
       if (opt === "b") {
         delete S.chanceUsed.proposal;
         S.engaged = false;
-        return say("You forget every word. You eventually say, \"So… anyway.\" The moment passes. The ring stays in your pocket.",
-          "Se te olvidan todas las palabras. Terminas diciendo: \"Bueno… en fin\". El momento pasa. El anillo sigue en tu bolsillo.");
+        return say("You forget every word. You eventually say, \"So… anyway.\" The moment passes.",
+          "Se te olvidan todas las palabras. Terminas diciendo: \"Bueno… en fin\". El momento pasa.");
       }
       if (opt === "c") {
         delete S.chanceUsed.proposal;
         S.engaged = false;
         const paid = cutPct(0.01);
-        return say("You make a joke and start walking. She lets you go. The question is still there. The ring is still in your pocket. −" + costLabel(paid) + ".",
-          "Haces una broma y empiezas a caminar. Ella te deja ir. La pregunta sigue ahí. El anillo sigue en tu bolsillo. −" + costLabel(paid) + ".");
+        return say("You make a joke and start walking. She lets you go. The question can wait. −" + costLabel(paid) + ".",
+          "Haces una broma y empiezas a caminar. Ella te deja ir. La pregunta puede esperar. −" + costLabel(paid) + ".");
       }
       S.engaged = true;
       const paid = cutPct(0.02);
@@ -2742,15 +2743,15 @@
     if(card.id==="justInCase"||card.id==="nothingToHide"||card.id==="somethingBetter")return say(card.id==="justInCase"?"You close the news tab. The definition stays open in your head.":card.id==="nothingToHide"?"You sign up for the ID anyway. The question takes longer to leave.":"The trail ends at the river. The idea keeps running.",card.id==="justInCase"?"Cierras la pestaña de noticias. La definición sigue abierta en tu cabeza.":card.id==="nothingToHide"?"Igual tramitas el documento. La pregunta tarda más en irse.":"El sendero termina en el río. La idea sigue corriendo.");
     if(card.id==="timeTraveler"){S.bcBookOffer=true;S.have.market=Math.max(S.have.market||0,1);return say("THE BITCOIN STATE is now in the Marketplace for "+costLabel(666)+".","THE BITCOIN STATE ya está en el Mercado por "+costLabel(666)+".");}
     if(card.id==="temporaryMeasures")return say("Markets fall. Bitcoin does not.","Los mercados caen. Bitcoin no.");
-    if(card.id==="citadelProblem")return say("Now the idea has a checklist.","Ahora la idea tiene una lista.");
+    if(card.id==="citadelProblem")return say("Marek starts pricing land the same night.","Esa misma noche, Marek empieza a cotizar terrenos.");
     if(card.id==="pieceWorld"){if(!S.chanceMet)S.chanceMet={};if(opt==="a"){let p=cutBill(1800);S.chanceMet.islandTrip=true;return say("Trip booked. −"+costLabel(p)+".","Viaje reservado. −"+costLabel(p)+".");}delete S.chanceUsed.pieceWorld;return say("Nico sends the listing again tomorrow.","Mañana, Nico te enviará el anuncio otra vez.");}
     if(card.id==="islandInspection"){if(!(S.bcIslandOffer>0))S.bcIslandOffer=Math.max(1,wealthUsd()*(.10+Math.random()*.15));if(opt==="a"){let p=cutBill(S.bcIslandOffer);S.bcIsland=true;return say("You own an island. −"+costLabel(p)+".","Tienes una isla. −"+costLabel(p)+".");}return say("The island remains in the Marketplace at "+costLabel(S.bcIslandOffer)+".","La isla sigue en el Mercado a "+costLabel(S.bcIslandOffer)+".");}
-    if(card.id==="paperwork")return say("Country. Island. For now.","País. Isla. Por ahora.");
+    if(card.id==="paperwork")return say("Signed. The island is yours.","Firmado. La isla es tuya.");
     if(card.id==="nobodyKnows"){if(opt==="a"){let p=cutBill(5000);S.bcOg=true;return say("INTERESTING. CALL ME. −"+costLabel(p)+".","INTERESANTE. LLÁMAME. −"+costLabel(p)+".");}delete S.chanceUsed.nobodyKnows;return say("Three followers. One is Nico.","Tres seguidores. Uno es Nico.");}
     if(card.id==="theOg"){S.bcNodes=Math.max(1,S.bcNodes);S.bcNodeTick=S.candles||0;return say("Liberty Nodes: "+S.bcNodes+"/100.","Nodos de Libertad: "+S.bcNodes+"/100.");}
-    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. −"+costLabel(p)+".","Asentamiento construido. −"+costLabel(p)+".");}delete S.chanceUsed.peopleAsking;return say("Not yet.","Todavía no.");}
-    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. −"+costLabel(p)+".","Red eléctrica construida. −"+costLabel(p)+".");}delete S.chanceUsed.extensionCord;return say("More extension cords.","Más cables de extensión.");}
-    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. −"+costLabel(p)+".","Mina de bitcoin en línea. −"+costLabel(p)+".");}delete S.chanceUsed.obviously;return say("Not yet.","Todavía no.");}
+    if(card.id==="peopleAsking"){if(opt==="a"){let p=cutPct(.03);S.bcSettlement=true;return say("Settlement built. −"+costLabel(p)+".","Asentamiento construido. −"+costLabel(p)+".");}delete S.chanceUsed.peopleAsking;return say("Nico saves the spreadsheet for later.","Nico guarda la hoja de cálculo para más adelante.");}
+    if(card.id==="extensionCord"){if(opt==="a"){let p=cutPct(.04);S.bcPower=true;return say("Power grid built. −"+costLabel(p)+".","Red eléctrica construida. −"+costLabel(p)+".");}delete S.chanceUsed.extensionCord;return say("Nico buys another power strip. The lights flicker.","Nico compra otra zapatilla eléctrica. Las luces parpadean.");}
+    if(card.id==="obviously"){if(opt==="a"){let p=cutPct(.05);S.bcMine=true;return say("Bitcoin mine online. −"+costLabel(p)+".","Mina de bitcoin en línea. −"+costLabel(p)+".");}delete S.chanceUsed.obviously;return say("Nico pins the four-word proposal to the wall.","Nico pega la propuesta de cuatro palabras en la pared.");}
     if(card.id==="principality")return say("You reply. Ortega & Gambette answers within the minute.","Respondes. Ortega & Gambette contesta en menos de un minuto.");
     if(card.id==="stateVisit"){if(opt==="a"){let p=cutBill(15000);S.bcNodes=Math.min(100,S.bcNodes+10);S.bcWorld=Math.max(14,(S.bcWorld||20)-2);return say("+10 Liberty Nodes. World Military Strength −2. −"+costLabel(p)+".","+10 Nodos de Libertad. Fuerza militar mundial −2. −"+costLabel(p)+".");}if(opt==="b"){let p=cutBill(5000);S.bcNodes=Math.min(100,S.bcNodes+4);return say("The node is not plugged in. +4 Liberty Nodes. −"+costLabel(p)+".","El nodo no está enchufado. +4 Nodos de Libertad. −"+costLabel(p)+".");}return say("Nico takes some stamps.","Nico se lleva unas estampillas.");}
     if(card.id==="firstBloc"){S.bcWorld+=4;return say("World Military Strength: "+S.bcWorld+".","Fuerza militar mundial: "+S.bcWorld+".");}
@@ -2775,7 +2776,7 @@
     if(card.id==="battleWon"){return say("The island holds the line.","La isla mantiene la línea defensiva.");}
     if(card.id==="blocTriumph"){return say("The defeated bloc withdraws and recognizes the nation.","El bloque derrotado se retira y reconoce a la nación.");}
     if(card.id==="fourthColor"){S.bcIndependent=true;S.bcVictory=true;try{noteIndependence();}catch(e){}try{grantAward("fourth");}catch(e){}return say(stampNation("THE FOURTH COLOR. Bitcoin Country is independent. KEEP PLAYING."),stampNation("EL CUARTO COLOR. Bitcoin Country es independiente. CONTINÚA JUGANDO."));}
-    if(card.id==="notYet"){return say("The defense failed. Bitcoin Country fell.","La defensa fracasó. Bitcoin Country cayó.");}
+    if(card.id==="notYet"){return say("Game over.","Fin de la partida.");}
     if (card.id === "honeymoon") {
       const map = { a: 0.1, b: 0.06, c: 0.04 };
       const paid = cutPct(map[opt] || 0.04);
@@ -2788,7 +2789,7 @@
     }
     if (card.id === "pregnancy") {
       const paid = cutBill(450);
-      return say("Two lines. Then the planning. −" + costLabel(paid) + ".", "Dos líneas. Después, la planificación. −" + costLabel(paid) + ".");
+      return say("First appointment booked and paid. −" + costLabel(paid) + ".", "Primera consulta reservada y pagada. −" + costLabel(paid) + ".");
     }
     if (card.id === "baby") {
       if (opt === "c") return say("Lena looks at the PDF.\n\nThen at you. She is furious.\n\n\"Classic Fartface.\"", "Lena mira el PDF.\n\nLuego te mira a ti. Está furiosa.\n\n\"Típico de Cara de Pedo\".");
@@ -2818,8 +2819,8 @@
     }
     if (card.id === "wallet") {
       const paid = cutBill(40);
-      return say("Cash gone. Cards still there. Partial victory. −" + costLabel(paid) + ".",
-        "El efectivo no está. Las tarjetas sí. Victoria parcial. −" + costLabel(paid) + ".");
+      return say("You thank the driver and check every pocket twice on the ride home. −" + costLabel(paid) + ".",
+        "Le agradeces al chofer y revisas cada bolsillo dos veces en el viaje de vuelta. −" + costLabel(paid) + ".");
     }
     if (card.id === "potluck") {
       if (opt === "b") return say("Lena looks at you. \"You are unbelievable.\"", "Lena te mira. \"Eres increíble\".");
