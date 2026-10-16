@@ -7485,7 +7485,7 @@
     return tier>=3?1.25:tier>=2?1:0.75;
   }
   function lrmR(d){return AA_R*lrmScale(d);}
-  const LRM_COOLDOWN=7;   // seconds after each strike before it can charge again
+  const LRM_COOLDOWN=5.25; // seconds (was 7, -25%) after each strike before it can charge again
   const LRM_RANGE=230;    // max reticle distance from the player tank (px)
   function lrmDeg(){return 360;}
   function lrmAim(d,rx,ry){
