@@ -10504,6 +10504,43 @@
     const sy = (viewH - pad - inset) / baseH;
     const s = Math.max(0.35, Math.min(sx, sy));
     app.style.transform = "scale(" + s + ")";
+    S.stageScale = s;
+    popOverlay();
+  }
+  // Short landscape screens (phones on their side) shrink the 480px stage to ~0.5x, which made arc cards
+  // and popups 5-7px text. While the overlay is open there, it is lifted out of the stage scale: laid out
+  // in a box sized to the real viewport and scaled to a readable size, centred on screen.
+  function popOverlay() {
+    const o = overlay, fld = $("field"), app = $("app");
+    if (!o || !fld || !app) return;
+    const viewW = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
+    const viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    const s = S.stageScale || 1;
+    const want = o.classList.contains("open") && viewW > viewH * 1.15 && s < 0.8;
+    const was = o.classList.contains("pop");
+    if (!want) {
+      if (was) {
+        o.classList.remove("pop");
+        o.style.left = o.style.top = o.style.width = o.style.height = o.style.transform = "";
+        document.documentElement.classList.remove("ui-pop");
+      }
+      return;
+    }
+    const k = Math.max(0.62, Math.min(1, viewH / 440));
+    const Wn = Math.min(560, (viewW * 0.94) / k), Hn = (viewH * 0.96) / k;
+    if (!document.documentElement.classList.contains("ui-pop")) document.documentElement.classList.add("ui-pop");
+    if (!was) o.classList.add("pop"); // guarded: classList.add re-fires the class observer even when unchanged
+    o.style.transform = "none";
+    const fr = fld.getBoundingClientRect();
+    const visL = (viewW - Wn * k) / 2, visT = (viewH - Hn * k) / 2;
+    o.style.left = ((visL - fr.left) / s) + "px";
+    o.style.top = ((visT - fr.top) / s) + "px";
+    o.style.width = Wn + "px";
+    o.style.height = Hn + "px";
+    o.style.transform = "scale(" + (k / s) + ")";
+  }
+  if (overlay && window.MutationObserver) {
+    new MutationObserver(() => popOverlay()).observe(overlay, { attributes: true, attributeFilter: ["class"] });
   }
 
   function renderBitcoinCountry(){

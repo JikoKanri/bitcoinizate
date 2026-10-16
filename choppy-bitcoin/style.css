@@ -1417,3 +1417,27 @@ html[data-arc-text="l"] .overlay.dock.chance-ui .arc-tldr { font-size: 16px; }
   margin-left: 10px;
   margin-right: 10px;
 }
+
+/* Arc cards / popups: keep the header and actions inside the card, keep actions reachable on long text */
+.overlay.dock.chance-ui .arc-head,
+.overlay.dock.chance-ui .arc-actions { width: auto; max-width: 100%; align-self: stretch; }
+.overlay.dock.chance-ui .arc-title { padding-right: 0; overflow-wrap: anywhere; }
+.overlay.dock.chance-ui .arc-body,
+.overlay.dock.chance-ui .arc-tldr { overflow-wrap: break-word; }
+/* Short landscape: overlay lifted out of the stage scale (see popOverlay in game.js) */
+html.ui-pop #app,
+html.ui-pop .field { overflow: visible; }
+.overlay.open.pop {
+  position: absolute;
+  inset: auto;
+  right: auto;
+  bottom: auto;
+  max-height: none;
+  max-width: none;
+  transform-origin: 0 0;
+  box-sizing: border-box;
+  z-index: 60;
+  overflow-y: auto;
+  border: 1px solid rgba(58,58,64,0.7);
+  border-radius: 6px;
+}
