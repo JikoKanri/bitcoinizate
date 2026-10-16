@@ -7703,6 +7703,12 @@
     btn.style.setProperty("--aa",(pct*360)+"deg");
     btn.classList.toggle("armed",!!(d&&d.aaArmed));
     btn.classList.toggle("charging",!!(d&&d.aaCharging&&!d.aaArmed));
+    // touch hint under the button: what the next action is (desktop shows the key badge instead)
+    if(!KB_DESK&&show){
+      const es=chanceLang();
+      const h=d.aaArmed?(es?"TOCA PARA LANZAR":"TAP TO FIRE"):cd>0?(es?"RECARGANDO":"RELOADING"):d.aaCharging?(es?"MANTÉN…":"HOLD…"):(es?"MANTÉN 3 s":"HOLD 3 s");
+      if(btn.getAttribute("data-hint")!==h)btn.setAttribute("data-hint",h);
+    }
     const arc=$("def-arc");
     if(arc){
       const on=show&&(d.shotTier|0)>=2;
@@ -11631,6 +11637,10 @@
       + "<select id=\"test-perk\">" + testPerkOptionsHtml() + "</select>"
       + "<button type=\"button\" class=\"cta\" id=\"test-grant\">" + t("testGrant") + "</button>"
       + "</div>"
+      + "<p class=\"test-lab\">" + (chanceLang() ? "Forzar arc card" : "Force arc card") + "</p>"
+      + "<div class=\"test-row\"><select id=\"test-force\">" + CHANCE_CARDS.map((c) => "<option value=\"" + c.id + "\">" + escTxt(c.id + " · " + ((chanceLang() ? c.titleEs : 0) || c.title || "")) + "</option>").join("") + "</select>"
+      + "<button type=\"button\" class=\"cta\" id=\"test-force-go\">" + (chanceLang() ? "Mostrar" : "Show") + "</button></div>"
+      + "<p class=\"k\" id=\"test-force-note\"></p>"
       + "<p class=\"test-lab\">" + t("testArc") + "</p>"
       + "<div class=\"test-row\">"
       + "<input id=\"test-arc-n\" type=\"number\" min=\"0\" max=\"999\" inputmode=\"numeric\" value=\"" + arcVal + "\">"
@@ -11980,6 +11990,25 @@
       e.stopPropagation();
       const sel = $("test-perk");
       testGrantPerk(sel ? sel.value : S.testPerkPick);
+      renderOverlay();
+    };
+    const testForceGo = $("test-force-go");
+    if (testForceGo) testForceGo.onclick = (e) => {
+      e.stopPropagation();
+      const sel = $("test-force");
+      const id = sel ? sel.value : "";
+      if (!id || S.ranked) return;
+      if (S.phase !== "paused" || S.optBack !== "play") {
+        const n = $("test-force-note");
+        if (n) n.textContent = chanceLang() ? "Empieza la partida y vuelve a abrir Opciones." : "Start the run, then reopen Options.";
+        return;
+      }
+      // test-only: show the chosen card now, even if it was already seen this run
+      if (S.chanceUsed) delete S.chanceUsed[id];
+      S.optPanel = null;
+      setPhase("play");
+      window.__arcForce = id;
+      try { dealChance(); } finally { window.__arcForce = ""; }
       renderOverlay();
     };
     const testArcSet = $("test-arc-set");
@@ -13003,7 +13032,7 @@
   function kbSheetToggle(force){
     let el=$("kb-sheet");
     const show=force!=null?force:!(el&&el.classList.contains("open"));
-    if(!show){if(el)el.classList.remove("open");return;}
+    if(!show){if(el)el.classList.remove("open");document.body.classList.remove("kb-sheet-on");return;}
     if(!el){el=document.createElement("div");el.id="kb-sheet";el.setAttribute("role","dialog");el.onclick=()=>kbSheetToggle(false);document.body.appendChild(el);}
     const es=chanceLang();
     const head={play:es?"Juego":"Run",battle:es?"Batalla":"Battle",ui:es?"Menús y cartas":"Menus & cards"};
@@ -13011,7 +13040,7 @@
     KB_DEFS.forEach(d=>{if(d.g!==g){if(g)h+="</div>";g=d.g;h+="<div><p class=\"kb-sec\">"+head[g]+"</p>";}
       h+="<div class=\"kb-row\"><span>"+(es?d.es:d.en)+"</span><kbd>"+kbLabel(KB[d.id])+"</kbd></div>";});
     h+="</div></div><p class=\"kb-note\">"+(es?"? o Esc cierra · Cámbialas en Opciones → Juego → Teclas (PC)":"? or Esc closes · Rebind in Options → Gameplay → Keys (PC)")+"</p></div>";
-    el.innerHTML=h;el.classList.add("open");
+    el.innerHTML=h;el.classList.add("open");document.body.classList.add("kb-sheet-on");
     if(S.phase==="play"&&!S.mp)togglePause();
   }
   function kbClickFirst(sel){const el=overlay.querySelector(sel);if(el&&!el.disabled&&el.offsetParent!==null){el.click();return true;}return false;}

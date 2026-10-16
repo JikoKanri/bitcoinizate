@@ -1461,3 +1461,11 @@ body.kb-desk [data-key]::after{content:attr(data-key);display:inline-block;margi
 #kb-sheet .kb-sheet-box{background:var(--card,#1a1a1e);color:var(--card-fg,#f3efe6);border:1px solid var(--gold,#f7931a);border-radius:10px;padding:14px 18px;max-width:min(760px,96vw);max-height:90vh;overflow:auto;font-size:13px}
 #kb-sheet .kb-sheet-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 22px}
 #kb-sheet kbd{min-width:52px;text-align:center;padding:2px 6px;border:1px solid currentColor;border-radius:5px;font:inherit;font-weight:700}
+
+/* mobile fury / anti-air hint */
+.def-aa[data-hint]::after{content:attr(data-hint);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:4px;white-space:nowrap;font:700 10px "IBM Plex Mono",monospace;letter-spacing:.04em;color:#fff6e8;background:rgba(0,0,0,.6);padding:2px 5px;border-radius:4px;pointer-events:none}
+body.kb-desk .def-aa[data-hint]::after{display:none}
+.def-aa:not(.cooldown){opacity:.55}
+.def-aa.charging,.def-aa.armed{opacity:.9}
+/* "?" sheet replaces the pause overlay visually */
+body.kb-sheet-on #overlay{visibility:hidden}
