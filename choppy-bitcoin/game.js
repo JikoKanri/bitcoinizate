@@ -1016,6 +1016,8 @@
 
   function burst(x, y, color, n, solid) {
     n = n || 10;
+    const cap = LOW_END ? 90 : 180;
+    if (S.particles.length > cap) S.particles.splice(0, S.particles.length - cap + n);
     for (let i = 0; i < n; i++) S.particles.push({ x, y, vx: (Math.random() - 0.5) * 180, vy: (Math.random() - 0.5) * 180 - 20, life: 0.35 + Math.random() * 0.3, color, solid: !!solid });
   }
   function heroFill() { return heroSkin(HERO_SKIN).fill || "#f2a900"; }
@@ -8082,7 +8084,7 @@
       if(k===1){
         const sealed=!!(d.seal&&d.seal[y*BC_C+x]);
         let fort=!!d.maze;
-        if(!fort)for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
+        if(!fort)fort=nearFort(d,x,y);
         if(fort||sealed){
           drawMasonry(ctx,px,py,x,y,false);
         }else{
@@ -8116,19 +8118,34 @@
     }
     drawTerrainPolish(ctx,d,t);
   }
+  // Fort metal (tile 5) is indestructible, so the 7x7 "near a fort" mask is computed once per map.
+  function nearFort(d,x,y){
+    let m=d._nearFort;
+    if(!m||m.n!==d.map.length){
+      m=new Uint8Array(BC_C*BC_R);m.n=d.map.length;
+      for(let yy=0;yy<BC_R;yy++)for(let xx=0;xx<BC_C;xx++){if(bcAt(d.map,xx,yy)!==5)continue;
+        for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){const X=xx+dx,Y=yy+dy;if(X>=0&&Y>=0&&X<BC_C&&Y<BC_R)m[Y*BC_C+X]=1;}}
+      d._nearFort=m;
+    }
+    return m[y*BC_C+x]===1;
+  }
   function drawTerrainCached(ctx,d,t,houseMemo){
     const dpr=canvasDpr();
     const W=BC_C*BC_TS,H=Math.max(S.H,BC_R*BC_TS);
     const c=terrainCache;
-    const key=terrainKey(d);
-    const tq=Math.floor(t*TERRAIN_HZ);
+    const tq0=Math.floor(t*(LOW_END||DPR_CAP<2?1:TERRAIN_HZ));
+    // Hashing every tile array each frame is costly on phones; re-hash every 4th frame or on a new anim tick.
+    c.fr=(c.fr|0)+1;
+    if(c.key==null||c.tq!==tq0||(c.fr&3)===0||c.d!==d){c.k2=terrainKey(d);c.d=d;}
+    const key=c.k2;
+    const tq=Math.floor(t*(LOW_END||DPR_CAP<2?1:TERRAIN_HZ));
     if(!c.cv||c.dpr!==dpr||c.key!==key||c.tq!==tq){
       if(!c.cv)c.cv=document.createElement("canvas");
       if(c.dpr!==dpr||c.cv.width!==Math.round(Math.max(S.W,W)*dpr)){c.cv.width=Math.round(Math.max(S.W,W)*dpr);c.cv.height=Math.round(H*dpr);}
       const g=c.cv.getContext("2d");
       g.setTransform(dpr,0,0,dpr,0,0);
       TERRAIN_BAKING=true;
-      try{drawTerrainBase(g,d,tq/TERRAIN_HZ,houseMemo);}finally{TERRAIN_BAKING=false;}
+      try{drawTerrainBase(g,d,tq/(LOW_END||DPR_CAP<2?1:TERRAIN_HZ),houseMemo);}finally{TERRAIN_BAKING=false;}
       c.dpr=dpr;c.key=key;c.tq=tq;
     }
     ctx.drawImage(c.cv,0,0,c.cv.width,c.cv.height,0,0,c.cv.width/dpr,c.cv.height/dpr);
@@ -8150,9 +8167,7 @@
       }
       if(d.maze||(d.seal&&d.seal[hi]))continue;
       if(!((d.hp[hi]||0)<2||(d.bHits&&d.bHits[hi]>0)))continue;
-      let fort=false;
-      for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
-      if(fort)continue;
+      if(nearFort(d,x,y))continue;
       drawHouseFire(ctx,px,py,t,x,y,1);
     }
   }
@@ -8167,9 +8182,7 @@
       if(d.seal&&d.seal[y*BC_C+x])continue;
       const info=houseInfo(d.map,x,y,houseMemo);
       if(x!==info.x0||y!==info.y0||!houseStruck(d,info))continue;
-      let fort=false;
-      for(let dy=-3;dy<=3&&!fort;dy++)for(let dx=-3;dx<=3;dx++)if(bcAt(d.map,x+dx,y+dy)===5)fort=true;
-      if(fort)continue;
+      if(nearFort(d,x,y))continue;
       drawHouseFire(ctx,info.x0*BC_TS+info.w*BC_TS/2-8,info.y0*BC_TS+info.h*BC_TS/2-10,t,x,y,1.85);
     }
     drawCitadelShield(ctx,d,t);
@@ -10427,7 +10440,7 @@
   function paintHeroPreview() {
     const el = $("hero-prev");
     if (!el) return;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = canvasDpr();
     const w = 168, h = 120;
     if (el.width !== w * dpr || el.height !== h * dpr) {
       el.width = w * dpr;
@@ -10457,7 +10470,18 @@
   let fitW = 0, fitH = 0, fitCtx = null;
   // Backing-store scale for the main canvas. Capped at 2: DPR 3 phones would otherwise push 2.25x the pixels
   // every frame for no visible gain on a 480x640 pixel-art stage.
-  function canvasDpr() { return Math.min(2, window.devicePixelRatio || 1); }
+  // Low-end phones (<=4 cores or <=3GB) start at 1.5x; any device that sustains slow frames steps down to 1x.
+  const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || ((navigator.deviceMemory || 8) <= 3);
+  let DPR_CAP = LOW_END ? 1.5 : 2;
+  let perfEma = 16.7, perfSlow = 0;
+  function perfSample(ms) {
+    if (!(ms > 0 && ms < 250)) return;
+    perfEma += (ms - perfEma) * 0.05;
+    if (perfEma > 24 && DPR_CAP > 1 && Math.min(DPR_CAP, window.devicePixelRatio || 1) > 1) {
+      if (++perfSlow > 180) { DPR_CAP = Math.max(1, DPR_CAP - 0.5); perfSlow = 0; perfEma = 16.7; fitW = 0; }
+    } else perfSlow = 0;
+  }
+  function canvasDpr() { return Math.min(DPR_CAP, window.devicePixelRatio || 1); }
   function fit() {
     const dpr = canvasDpr();
     const W = GAME_W, H = GAME_H;
@@ -12785,6 +12809,7 @@
       last = now;
       acc = 0;
     } else if (!(S.mp && S.phase === "count")) {
+      perfSample(now - last);
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now; acc += dt;
       while (acc >= 1 / 60) { step(1 / 60); acc -= 1 / 60; }
