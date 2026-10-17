@@ -24,5 +24,82 @@
   ],
   "archive_old_to": "art-archive/history/somethingBetter-wide-<date>-replaced.jpg",
   "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text. ZOOMED-OUT wide shot: a forest trail following a sparkling river between low hills at golden hour; both characters fully in frame from head to sneakers with generous margin above heads and below feet, occupying about half the image height. Marek: same face and build as the chess card reference (dark tousled hair, glasses, lean), dressed for a trail run in a plain dark t-shirt and shorts with trail shoes, mid-stride, glancing sideways at Choppy with a skeptical half-smile. Choppy: a perfectly round flat orange Bitcoin coin character, a clean correct white ₿ symbol intact and centered (slightly below center ok; must be a proper ₿, not a P or ₽ shape), large low black sunglasses above the ₿, red bandana on top, no nose, mouth only if speaking (small open mouth allowed since he is talking), thin orange arms and legs, white gloves, brown sneakers; the coin never distorts. New pose: Choppy jogging beside Marek while gesturing outward with one open glove toward the wide landscape, as if describing something big he cannot name yet."
+ },
+ {
+  "id": "mexico",
+  "out": "chance/mexico-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/mexico-wide.jpg",
+  "refs": [
+   "/workspace/bitcoinizate/choppy-bitcoin/chance/mexico-wide.jpg (scene, Lena, Paco)",
+   "/workspace/illus/refs/choppy.png"
+  ],
+  "archive_old_to": "art-archive/history/mexico-wide-<date>-replaced.jpg",
+  "prompt": "Recreate the attached beach scene at sunset in Tulum (Mayan ruin on the cliff, palms, turquoise sea, Lena in straw hat and white dress sitting on the sand, vintage suitcases, Paco the dog chewing ONE travel brochure) as a wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style, no legible text. Only Paco has a brochure; Choppy holds NO brochure. Choppy holds a fresh coconut with a straw and a tiny paper umbrella in one gloved hand, the other hand raised with three fingers up. Choppy keeps the floral Hawaiian shirt but it must not distort the coin. Choppy: perfectly round flat orange Bitcoin coin, white ₿ intact and centered (slightly below ok), large low black sunglasses, red bandana, no nose, no mouth, thin orange arms and legs, white gloves, brown sneakers; coin never distorts. New relaxed pose, not copied from the reference."
+ },
+ {
+  "id": "theOg",
+  "out": "chance/theOg-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/theOg-wide.jpg",
+  "refs": [
+   "/workspace/bitcoinizate/choppy-bitcoin/chance/theOg-wide.jpg (scene/composition)"
+  ],
+  "archive_old_to": "art-archive/history/theOg-wide-<date>-replaced.jpg",
+  "prompt": "Recreate the attached scene as a wide cinematic panoramic 2.4:1 (1920x800), same warm painterly night style, no legible text anywhere. A laptop on a wooden desk shows a video call with Madame Luck as a backlit silhouette (wavy hair, seated, one hand raised mid-gesture) - her raised hand must be anatomically correct with FIVE fingers clearly drawn (thumb plus four). Beside the laptop a brass desk clock and books. On the right, an ordinary smartphone lies flat on the desk, screen glowing and vibrating (small motion lines), showing a few blank notification bars INSIDE its screen only - no floating stack of glowing cards or lights hovering above the phone; everything on the right must read clearly as a normal phone on a desk. Window with moonlit sea behind."
+ },
+ {
+  "id": "obviously",
+  "out": "chance/obviously-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/obviously-wide.jpg",
+  "refs": [
+   "/workspace/illus/refs/choppy.png",
+   "Nico: design from current obviously-wide.jpg (messy dark hair, olive hoodie)"
+  ],
+  "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, NO legible text anywhere (signs, screens, papers blank or abstract). Night on the island, the new power grid glowing: in the foreground a row of open shipping containers converted into Bitcoin mining rooms, racks of miners with rows of tiny green/orange LEDs, warm heat haze and big fans exhausting air; thick cables run from a small humming island power station (solar field and a waterfall/hydro turbine shed in the background, lights of the settlement on the hills). Nico, grinning, holds up a clipboard with abstract unreadable scribbles and an orange highlighter stroke, pointing at the containers. Choppy: a perfectly round flat orange Bitcoin coin character, clean correct white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts; if seated, he sits on the rim of the coin naturally with legs from the bottom edge, never folded into the coin. Fresh scene-specific pose, never the reference pose. New pose: Choppy standing on an upturned crate, arms spread wide toward the glowing racks as if presenting them, coin lit orange by the LEDs. Cheap abundant energy turning into hashpower must be obvious at a glance."
+ },
+ {
+  "id": "principality",
+  "out": "chance/principality-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/principality-wide.jpg",
+  "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, NO legible text anywhere (signs, screens, papers blank or abstract). Split-feeling single scene: on the left, Choppy's island office at dusk where Choppy and Marek lean over a laptop reading an incoming email (screen abstract, no text); Choppy: a perfectly round flat orange Bitcoin coin character, clean correct white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts; if seated, he sits on the rim of the coin naturally with legs from the bottom edge, never folded into the coin. Fresh scene-specific pose, never the reference pose. Choppy standing, one glove on his sunglasses in surprise. On the right, seen as if through the email's world, the tiny principality of San Arnaldo: a crowded little sunny town square with dozens of its proud citizens waving small blue/white/yellow flags, a brass band of three, children, an old lady on a balcony. In front of them Mr Ortega: stylized cartoon caricature loosely resembling an aged Ariel Ortega (Argentine footballer) — man in his mid-50s, short dark hair greying at the temples, round friendly face, small build, warm eager smile; dressed as a slightly over-formal small-state foreign minister: navy suit a size too big, tricolor sash in blue/white/yellow, polished shoes. NOT in football kit, no ball. Gambette: his inseparable partner of the same double-barrelled title, clearly distinct: tall, very thin woman in her 60s, silver bob haircut, half-moon reading glasses on a chain, grey tweed skirt-suit, carrying a thick binder of protocol documents and a fountain pen, serious but kind expression. They pose together for the camera like a formal portrait, Ortega waving, Gambette holding the binder. Lively, full of people. CORRECTION: Ortega & Gambette is a single man (the Foreign Minister); there is NO separate Gambette woman - ignore any description of her and any binder/diagram she held (give the diagram to an aide instead).",
+  "note": "Ortega & Gambette is ONE man (double-barrelled name), per card text; Gambette woman removed."
+ },
+ {
+  "id": "stateVisit",
+  "out": "chance/stateVisit-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/stateVisit-wide.jpg",
+  "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, NO legible text anywhere (signs, screens, papers blank or abstract). San Arnaldo, a coastal hill town by a turquoise harbor. Interior of the 'government building' that was a restaurant three months ago: checkered tablecloths, an old menu board (blank) still hanging behind the ministerial desk, small flags in blue/white/yellow, a map on the wall. The room is busy: local officials, a cook still in apron, curious townspeople peeking through the door, a photographer. Mr Ortega: stylized cartoon caricature loosely resembling an aged Ariel Ortega (Argentine footballer) — man in his mid-50s, short dark hair greying at the temples, round friendly face, small build, warm eager smile; dressed as a slightly over-formal small-state foreign minister: navy suit a size too big, tricolor sash in blue/white/yellow, polished shoes. NOT in football kit, no ball. Gambette: his inseparable partner of the same double-barrelled title, clearly distinct: tall, very thin woman in her 60s, silver bob haircut, half-moon reading glasses on a chain, grey tweed skirt-suit, carrying a thick binder of protocol documents and a fountain pen, serious but kind expression. Ortega warmly shakes hands with Choppy across the desk while Gambette unrolls a hand-drawn diagram of a node with router and cables (abstract, no text). Choppy: a perfectly round flat orange Bitcoin coin character, clean correct white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth unless the action needs it, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts; if seated, he sits on the rim of the coin naturally with legs from the bottom edge, never folded into the coin. Fresh scene-specific pose, never the reference pose. Choppy standing, a small boxed Bitcoin node under one arm. Nico in the background pocketing stamps from the desk; Marek beside Choppy. CORRECTION: Ortega & Gambette is a single man (the Foreign Minister); there is NO separate Gambette woman - ignore any description of her and any binder/diagram she held (give the diagram to an aide instead).",
+  "note": "Ortega & Gambette is ONE man (double-barrelled name), per card text; Gambette woman removed."
+ },
+ {
+  "id": "rearmament",
+  "out": "chance/rearmament-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/rearmament-wide.jpg",
+  "archive_old_to": "art-archive/history/rearmament-wide-<date>-replaced.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same painterly style as the other cin12 Bitcoin Country cards, no legible text anywhere (posters, banners and papers carry only abstract shapes and blank areas, no real-country flags or emblems). The signing of the Red Ledger Compact: a vast, harshly over-lit ceremonial hall in deep red and black, cold white floodlights, tall red banners with a stylized closed red book emblem. At a long table, Marshal Amina Kade (stern woman in her 50s, grey-streaked hair pulled back tightly, dark military coat with plain insignia, former dock officer build) stands at a lectern reading the preamble from a thick red ledger. Five delegates in dark suits sign a red leather book in a row. Rows of uniformed officers stand at attention; propaganda posters are pasted on the walls; a police officer in the corner writes in a thick notebook. Through tall windows at the back, a shipyard where a grey warship hull is under construction with sparks of welding. Choppy and Marek do not appear. Mood: grand, cold, ominous."
+ },
+ {
+  "id": "ambassador",
+  "out": "chance/ambassador-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/ambassador-wide.jpg",
+  "refs": [
+   "/workspace/bitcoinizate/choppy-bitcoin/chance/ambassador-wide.jpg (scene)",
+   "/workspace/illus/refs/choppy.png",
+   "/workspace/illus/refs/marek.png"
+  ],
+  "archive_old_to": "art-archive/history/ambassador-wide-<date>-replaced.jpg",
+  "prompt": "Recreate the attached harbor scene at golden hour as a wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text. The ambassador (elegant woman, dark hair in a bun, dark coat dress, sunglasses) and one aide arrive by a small wooden boat that carries NO flag (no flags anywhere). Choppy must match the reference exactly: a FLAT matte orange cartoon coin (not shiny 3D gold metal), white ₿ intact and centered (slightly below ok), large low black sunglasses, RED BANDANA tied on top, no nose, no mouth, thin orange arms and legs, white gloves, brown sneakers; coin never distorts. New pose: Choppy steps forward on the dock and receives a small blank business card from the ambassador with one gloved hand, the other hand at his side. Marek (face and build of the chess-card reference, dressed in light linen casual clothes) and a couple of settlers stand behind, watching. Settlement, port cranes, power lines and the mine visible on the hillside."
+ },
+ {
+  "id": "threeColors",
+  "out": "chance/threeColors-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/threeColors-wide.jpg",
+  "archive_old_to": "art-archive/history/threeColors-wide-<date>-replaced.jpg",
+  "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same painterly style as the other cin12 Bitcoin Country cards, no legible text and no real-country flags or emblems. Dedicated to the Crown Lattice: a grand dynastic procession at dusk along a sunlit desert-port boulevard lined with palms, arched palaces and gilded domes, ships in a harbor behind. Banners in deep teal and gold with an abstract interlocking lattice-and-crown pattern. At the front walks High Warden Soren Pell (tall, gaunt man in his 60s, trimmed silver beard, long dark ceremonial robe with gold lattice embroidery, hands clasped, not waving, cold expression). Behind him ranks of ceremonial guards, horses, drummers. Crowds line the street, silent and bowing. In a corner, a large ornate wall map where a tiny island is shaded grey. Choppy and Marek do not appear. Mood: majestic, rigid, silent."
+ },
+ {
+  "id": "blocTrust",
+  "out": "chance/blocTrust-wide.jpg",
+  "note": "Shown on whichever bloc-intro card (firstBloc/rearmament/threeColors) introduces the Open Hemisphere Trust; falls back to that card's art if missing.",
+  "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 bloc cards (firstBloc, rearmament, threeColors), NO legible text, NO real national flags or logos. A slick tech-keynote launch on a huge stage with perfect blue-white lighting and a giant curved screen showing an abstract glowing hemisphere map with nine highlighted regions and a smiling score gauge (no numbers). Center stage: Chief Compliance Officer Dana Holt, a woman in her 40s with a sleek dark bob, black turtleneck, blazer and white sneakers, headset mic, friendly but cold smile, one hand presenting the screen. A row of nine identical lecterns behind her with delegates in suits, faces lit by tablets. Audience in the dark holding phones up; tiny camera drones hover over the crowd, each with a small red recording light. Mood: friendly, polished, quietly ominous surveillance-credit regime. Choppy is NOT in this scene."
  }
 ]

@@ -1336,7 +1336,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcPerks={}; S.bcAidUsed=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcPerks={}; S.bcAidUsed=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; rollBlocs(); S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2247,6 +2247,7 @@
   function cardTldr(card) {
     if (!card) return "";
     if (card.id === "blocReplies" || card.id === "blocAssault" || card.id === "blocTriumph" || card.id === "battleWon") return stampNation(warTldr(card.id));
+    if (card.id === "firstBloc" || card.id === "rearmament" || card.id === "threeColors") return stampNation(blocIntroTldr(card.id, chanceLang()));
     const row = card.tldr || CHANCE_TLDR[card.id];
     if (!row) return "";
     let line = chanceLang() ? (row.es || row.en) : row.en;
@@ -3037,6 +3038,17 @@
       .replace("<img ", "<img onerror=\"this.onerror=null;window.__choppyPostMiss&&window.__choppyPostMiss('" + key + "');this.src=this.dataset.base;\" ");
   }
   window.__choppyPostMiss = (k) => POST_ART_MISS.add(k);
+  // Bloc intro cards show the art of whichever bloc fills that slot this run (falls back to the card's own art).
+  function blocArtHtml(card) {
+    const base = chanceArtHtml(card.id);
+    const aid = blocArtId(card);
+    if (!aid || aid === card.id || base.indexOf("<img") !== 0) return base;
+    const m = base.match(/ src="([^"]*)"/);
+    if (!m) return base;
+    const src = "chance/" + aid + "-wide.jpg?v=cin12";
+    return base.replace(/ onerror="[^"]*"/, "").replace(m[0], " src=\"" + src + "\" data-base=\"" + m[1] + "\"")
+      .replace("<img ", "<img onerror=\"this.onerror=null;this.src=this.dataset.base;\" ");
+  }
   function chanceArtHtml(id) {
     const meta = getChanceArtMeta(id);
     if (meta.isVideo) {
@@ -3048,12 +3060,81 @@
     return "<img class=\"chance-art" + festClass + wideClass + "\" src=\"" + meta.src + "\" alt=\"" + arcAltText(id) + "\" loading=\"eager\" decoding=\"async\" onerror=\"this.onerror=null;this.src='" + fallback + "';\">";
   }
 
-  const WAR_BLOCS = [
-    { key:"pact", en:"Meridian Stability Pact", es:"Pacto de Estabilidad Meridiano", short:"PACT", shortEs:"PACTO", leader:"Chancellor Ivo Voss", leaderEs:"el canciller Ivo Voss" },
-    { key:"ledger", en:"Red Ledger Compact", es:"Compacto del Libro Rojo", short:"LEDGER", shortEs:"LIBRO", leader:"Marshal Amina Kade", leaderEs:"la mariscal Amina Kade" },
-    { key:"lattice", en:"Crown Lattice", es:"Celosía de la Corona", short:"LATTICE", shortEs:"CORONA", leader:"High Warden Soren Pell", leaderEs:"el Alto Guardián Soren Pell" }
+  // Four enemy blocs exist; each run fights three of them, picked and ordered at random (S.bcBlocs).
+  const ALL_BLOCS = [
+    { key:"pact", en:"Meridian Stability Pact", es:"Pacto de Estabilidad Meridiano", enThe:"the Meridian Pact", esThe:"el Pacto Meridiano", short:"PACT", shortEs:"PACTO",
+      leader:"Chancellor Ivo Voss", leaderEs:"el canciller Ivo Voss", paint:"#4a5340", mix:"heavy", art:"firstBloc",
+      members:"Germany, France, Italy, Spain, the Netherlands, Belgium, and Austria", membersEs:"Alemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria",
+      verb:"files a form", verbEs:"presenta formularios",
+      tag:"Its language is administrative; its restrictions are not optional.", tagEs:"Su lenguaje es administrativo, pero sus restricciones no son opcionales.",
+      core:"Seven capitals announce the Meridian Stability Pact on the same morning. The treaty is brief. Its annexes are not.\n\nGermany, France, Italy, Spain, the Netherlands, Belgium, and Austria coordinate trade, energy, a shared payment network, and a defense clause nobody reads aloud.\n\nChancellor Ivo Voss chairs the first session. He never raises his voice. After thanking the cameras for their patience, he calls instability a form of violence and lists what now requires permission: large transfers, foreign accounts, unsanctioned ports, and newspapers that refuse to cooperate.\n\nThe Pact does not look like a boot. It looks like a form. The form is mandatory.",
+      coreEs:"Siete capitales anuncian el Pacto de Estabilidad Meridiano la misma mañana. El tratado es breve. Sus anexos no.\n\nAlemania, Francia, Italia, España, los Países Bajos, Bélgica y Austria coordinan el comercio, la energía, una red de pagos compartida y una cláusula de defensa que nadie lee en voz alta.\n\nEl canciller Ivo Voss preside la primera sesión. Nunca alza la voz. Tras agradecer la paciencia de las cámaras, define la inestabilidad como una forma de violencia y enumera lo que ahora requiere autorización: grandes transferencias, cuentas en el extranjero, puertos no autorizados y periódicos que se nieguen a cooperar.\n\nEl Pacto no parece una bota. Parece un formulario. El formulario es obligatorio." },
+    { key:"ledger", en:"Red Ledger Compact", es:"Compacto del Libro Rojo", enThe:"the Red Ledger", esThe:"el Libro Rojo", short:"LEDGER", shortEs:"LIBRO",
+      leader:"Marshal Amina Kade", leaderEs:"la mariscal Amina Kade", paint:"#6a3834", mix:"fast", art:"rearmament",
+      members:"Russia, Belarus, China, North Korea, and Cuba", membersEs:"Rusia, Bielorrusia, China, Corea del Norte y Cuba",
+      verb:"prints a poster", verbEs:"imprime carteles",
+      tag:"It speaks of purity, and its posters arrive before the bread.", tagEs:"Habla de pureza, y sus carteles llegan antes que el pan.",
+      core:"Russia, Belarus, China, North Korea, and Cuba sign the Red Ledger Compact in a hall lit too brightly. Marshal Amina Kade reads the preamble herself. She was a dock officer, then a prosecutor, and now decides which shortages count as patriotic.\n\nThe Compact does not speak of stability. It speaks of purity. Hoarding is treason. Private mines are unfinished revolutions. Posters appear before bread does. Police notebooks grow thicker. The speeches are beautiful. The queues are not.",
+      coreEs:"Rusia, Bielorrusia, China, Corea del Norte y Cuba firman el Compacto del Libro Rojo en un salón iluminado en exceso. La mariscal Amina Kade lee personalmente el preámbulo. Primero fue oficial de muelle, después fiscal y ahora decide qué escasez cuenta como patriótica.\n\nEl Compacto no habla de estabilidad, sino de pureza. Acaparar es traición. Las minas privadas son revoluciones inconclusas. Los carteles aparecen antes que el pan. Los cuadernos de la policía se vuelven más gruesos. Los discursos son hermosos. Las filas no." },
+    { key:"lattice", en:"Crown Lattice", es:"Celosía de la Corona", enThe:"the Crown Lattice", esThe:"la Celosía de la Corona", short:"LATTICE", shortEs:"CORONA",
+      leader:"High Warden Soren Pell", leaderEs:"el Alto Guardián Soren Pell", paint:"#5c4936", mix:"elite", art:"threeColors",
+      members:"Saudi Arabia, Jordan, Morocco, Thailand, and Brunei", membersEs:"Arabia Saudita, Jordania, Marruecos, Tailandia y Brunéi",
+      verb:"holds a parade and then imposes silence", verbEs:"organiza un desfile y después impone silencio",
+      tag:"High Warden Soren Pell calls unclaimed territory an administrative error.", tagEs:"El Alto Guardián Soren Pell considera que un territorio sin dueño es un error administrativo.",
+      core:"Saudi Arabia, Jordan, Morocco, Thailand, and Brunei form the Crown Lattice around dynastic authority, port agreements, and the belief that borders are inherited rather than negotiated. High Warden Soren Pell walks at the front of the procession and does not wave. To him, a people who will not kneel are an administrative error.\n\nDissent is not debated. It is omitted.",
+      coreEs:"Arabia Saudita, Jordania, Marruecos, Tailandia y Brunéi forman la Celosía de la Corona en torno a la autoridad dinástica, los acuerdos portuarios y la idea de que las fronteras se heredan en lugar de negociarse. El Alto Guardián Soren Pell camina al frente del cortejo y no saluda. Para él, un pueblo que no se arrodilla es un error administrativo.\n\nLa disidencia no se debate: se omite." },
+    { key:"trust", en:"Open Hemisphere Trust", es:"Fideicomiso del Hemisferio Abierto", enThe:"the Hemisphere Trust", esThe:"el Fideicomiso del Hemisferio", short:"TRUST", shortEs:"FIDEICOMISO",
+      leader:"Chief Compliance Officer Dana Holt", leaderEs:"la directora de cumplimiento Dana Holt", paint:"#34485e", mix:"snipe", art:"blocTrust",
+      members:"the United States, Canada, Mexico, Brazil, Chile, Argentina, Peru, Colombia, and Australia", membersEs:"Estados Unidos, Canadá, México, Brasil, Chile, Argentina, Perú, Colombia y Australia",
+      verb:"updates its terms of service", verbEs:"actualiza sus términos de servicio",
+      tag:"Membership is free; declining its terms is not an option.", tagEs:"La membresía es gratuita; rechazar sus términos no es una opción.",
+      core:"The United States, Canada, Mexico, Brazil, Chile, Argentina, Peru, Colombia, and Australia launch the Open Hemisphere Trust from a stage with very good lighting. Membership is free. The terms of service run four hundred pages, and accepting them is the only way to keep a bank account.\n\nChief Compliance Officer Dana Holt presents it in sneakers. She smiles while explaining that every payment now carries a trust score, that low scores simply see fewer options, and that nobody is being banned, only deprioritized.\n\nThe Trust does not confiscate anything. It recommends. The recommendations cannot be declined.",
+      coreEs:"Estados Unidos, Canadá, México, Brasil, Chile, Argentina, Perú, Colombia y Australia lanzan el Fideicomiso del Hemisferio Abierto desde un escenario muy bien iluminado. La membresía es gratuita. Los términos de servicio tienen cuatrocientas páginas, y aceptarlos es la única forma de conservar una cuenta bancaria.\n\nLa directora de cumplimiento Dana Holt lo presenta en zapatillas. Sonríe mientras explica que cada pago llevará un puntaje de confianza, que los puntajes bajos simplemente verán menos opciones y que nadie está siendo prohibido: solo despriorizado.\n\nEl Fideicomiso no confisca nada. Recomienda. Las recomendaciones no se pueden rechazar." }
   ];
-  function warBloc(i){ return WAR_BLOCS[Math.max(0, Math.min(2, i|0))]; }
+  const BLOC_BY_KEY = {}; ALL_BLOCS.forEach((b) => { BLOC_BY_KEY[b.key] = b; });
+  function rollBlocs(){ const k=ALL_BLOCS.map((b)=>b.key); for(let i=k.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;const t=k[i];k[i]=k[j];k[j]=t;} S.bcBlocs=k.slice(0,3); return S.bcBlocs; }
+  function activeBlocKeys(){
+    const ok=Array.isArray(S.bcBlocs)&&S.bcBlocs.length===3&&S.bcBlocs.every((k)=>BLOC_BY_KEY[k])&&new Set(S.bcBlocs).size===3;
+    if(!ok){
+      // Runs already into the bloc story keep the original three; fresh runs draw 3 of 4 in random order.
+      const started=!!(S.chanceUsed&&(S.chanceUsed.firstBloc||S.chanceUsed.rearmament||S.chanceUsed.threeColors))||(S.bcBattlesWon||0)>0;
+      if(started) S.bcBlocs=["pact","ledger","lattice"];
+      else rollBlocs();
+    }
+    return S.bcBlocs;
+  }
+  function activeBlocs(){ return activeBlocKeys().map((k)=>BLOC_BY_KEY[k]); }
+  function warBloc(i){ return activeBlocs()[Math.max(0, Math.min(2, i|0))]; }
+  function blocIntroText(id, es){
+    const B=activeBlocs();
+    const cap=(t)=>t.charAt(0).toUpperCase()+t.slice(1);
+    if(id==="firstBloc") return es?B[0].coreEs:B[0].core;
+    if(id==="rearmament") return es
+      ? cap(B[0].esThe)+" anuncia un nuevo programa de fragatas y lo llama mantenimiento.\n\nDel otro lado del agua responde otro tipo de orden.\n\n"+B[1].coreEs+"\n\nAmbos bloques comienzan a construir buques de guerra. Ninguno lo llama carrera armamentista."
+      : cap(B[0].enThe)+" announces a new frigate program and calls it maintenance.\n\nAcross the water, a different kind of order answers.\n\n"+B[1].core+"\n\nBoth blocs begin building warships. Neither calls it an arms race.";
+    if(id==="threeColors") return es
+      ? "Un tercer color cierra el mapa.\n\n"+B[2].coreEs+"\n\nMientras "+B[0].esThe+" "+B[0].verbEs+" y "+B[1].esThe+" "+B[1].verbEs+", "+B[2].esThe+" "+B[2].verbEs+". Las zonas grises del mapa —incluida una pequeña isla que continúa comprando generadores— ahora aparecen como territorios sin asignar."
+      : "A third color closes the map.\n\n"+B[2].core+"\n\nWhere "+B[0].enThe+" "+B[0].verb+" and "+B[1].enThe+" "+B[1].verb+", "+B[2].enThe+" "+B[2].verb+". Gray areas on the map—including a small island that keeps buying generators—are now labeled unassigned.";
+    return null;
+  }
+  function blocIntroTldr(id, es){
+    const B=activeBlocs();
+    const cap=(t)=>t.charAt(0).toUpperCase()+t.slice(1);
+    if(id==="firstBloc") return es ? cap(B[0].membersEs)+" forman el bloque "+B[0].es+". "+B[0].tagEs : cap(B[0].members)+" form the "+B[0].en+". "+B[0].tag;
+    if(id==="rearmament") return es
+      ? cap(B[0].esThe)+" anuncia un programa de fragatas y lo llama mantenimiento. "+cap(B[1].membersEs)+" responden con el bloque "+B[1].es+". Ambos bloques comienzan a construir buques de guerra."
+      : cap(B[0].enThe)+" announces a frigate program and calls it maintenance. "+cap(B[1].members)+" answer by forming the "+B[1].en+". Both blocs begin building warships.";
+    if(id==="threeColors") return es
+      ? cap(B[2].membersEs)+" forman el bloque "+B[2].es+", el tercero que rodea a Bitcoin Country. "+B[2].tagEs
+      : cap(B[2].members)+" form the "+B[2].en+", the third bloc surrounding Bitcoin Country. "+B[2].tag;
+    return "";
+  }
+  function blocArtId(card){
+    if(!card) return "";
+    const slot=card.id==="firstBloc"?0:card.id==="rearmament"?1:card.id==="threeColors"?2:-1;
+    if(slot<0) return card.id;
+    return warBloc(slot).art||card.id;
+  }
   const BC_ARC = {
     justInCase:1, nothingToHide:1, somethingBetter:1, timeTraveler:1, temporaryMeasures:1,
     citadelProblem:1, pieceWorld:1, islandInspection:1, paperwork:1, nobodyKnows:1, theOg:1,
@@ -3067,11 +3148,11 @@
   function rollBlocReactions(){
     const keys=["accept","reject","time","money"];
     for(let i=keys.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=keys[i]; keys[i]=keys[j]; keys[j]=t; }
-    S.bcReactions={ pact:keys[0], ledger:keys[1], lattice:keys[2] };
+    S.bcReactions={}; activeBlocKeys().forEach((k,i)=>{ S.bcReactions[k]=keys[i]; });
   }
   function blocReplyIsReport(){
     const r=S.bcReactions||{};
-    return r.pact!=="money" && r.ledger!=="money" && r.lattice!=="money";
+    return activeBlocKeys().every((k)=>r[k]!=="money");
   }
   function reactionLine(bloc, kind, es){
     const name=es?bloc.es:bloc.en, who=es?bloc.leaderEs:bloc.leader;
@@ -3090,8 +3171,9 @@
   }
   function repliesText(){
     const es=chanceLang();
-    const r=S.bcReactions||{pact:"reject",ledger:"time",lattice:"accept"};
-    const lines=WAR_BLOCS.map((b)=>reactionLine(b, r[b.key], es));
+    const r=S.bcReactions||{};
+    const dflt=["reject","time","accept"];
+    const lines=activeBlocs().map((b,i)=>reactionLine(b, r[b.key]||dflt[i], es));
     const tail=es
       ? "Nada de eso cambia el final de la semana. Los reconocimientos quedan como notas al pie. Las demoras encubren calendarios de carga. El pago, si lo realizas, solo compra una carta más cordial. Los tres bloques continúan armando sus flotas."
       : "None of it changes the end of the week. Recognition becomes a footnote. Delays conceal loading schedules. Payment, if you make it, only buys a warmer letter. All three blocs continue arming their fleets.";
@@ -3115,11 +3197,12 @@
     const won=S.bcBattlesWon||0;
     const bloc=((won-1)/3)|0;
     const slot=(won-1)%3;
+    const packByKey={pact:0,ledger:1,lattice:2,trust:3};
     const packs=[
       [
         { enT:"The Beach Holds", esT:"La playa resiste",
-          en:"The first landing collapses on the beach. The occupation order had already been stamped. Paco returns with one of its seals and does not explain what happened to the clerk.\n\nThe shore grows quiet enough to hear the bakery.",
-          es:"El primer desembarco fracasa en la playa. La orden de ocupación ya estaba sellada. Paco regresa con uno de sus sellos y no explica qué ocurrió con el funcionario.\n\nLa costa queda lo bastante silenciosa como para oír la panadería." },
+          en:"The Pact's landing collapses on the beach. The occupation order had already been stamped. Paco returns with one of its seals and does not explain what happened to the clerk.\n\nThe shore grows quiet enough to hear the bakery.",
+          es:"El desembarco del Pacto fracasa en la playa. La orden de ocupación ya estaba sellada. Paco regresa con uno de sus sellos y no explica qué ocurrió con el funcionario.\n\nLa costa queda lo bastante silenciosa como para oír la panadería." },
         { enT:"The Other Cove", esT:"La otra cala",
           en:"A second landing reaches another cove before noon. The tanks make it to the road but never clear the hill. Marek watches what the tide returns and refuses to call it a victory. Nico opens the bar anyway.",
           es:"Un segundo desembarco alcanza otra cala antes del mediodía. Los tanques llegan al camino, pero no superan la colina. Marek observa lo que devuelve la marea y se niega a llamarlo victoria. Nico abre el bar de todos modos." }
@@ -3139,9 +3222,18 @@
         { enT:"Ash on the Water", esT:"Ceniza en el agua",
           en:"The Crown Lattice returns without music. Its hulls burn in a low, even line. By dusk, the eastern cliff belongs to the island again.\n\nLena watches the smoke without speaking. On this island, that counts as a toast.",
           es:"La Celosía de la Corona regresa sin música. Sus cascos arden en una línea baja y uniforme. Al anochecer, el acantilado oriental vuelve a pertenecer a la isla.\n\nLena observa el humo en silencio. En esta isla, eso cuenta como un brindis." }
+      ],
+      [
+        { enT:"Terms Rejected", esT:"Términos rechazados",
+          en:"The Hemisphere Trust lands with drones first and lawyers second. Every soldier wears a camera. Every camera is streaming. The feed cuts out when the first boat turns back.\n\nDana Holt's statement calls the retreat a temporary service interruption.",
+          es:"El Fideicomiso del Hemisferio desembarca con drones primero y abogados después. Cada soldado lleva una cámara. Cada cámara transmite en vivo. La señal se corta cuando el primer bote da la vuelta.\n\nEl comunicado de Dana Holt llama a la retirada una interrupción temporal del servicio." },
+        { enT:"Deprioritized", esT:"Despriorizados",
+          en:"The second wave arrives with better branding and the same result. Their landing craft ground on the reef they had rated low risk. Nico collects three helmets with the price tags still on.\n\nThe island shuts off the floodlights and goes to sleep.",
+          es:"La segunda oleada llega con mejor imagen de marca y el mismo resultado. Sus lanchas encallan en el arrecife que habían calificado de bajo riesgo. Nico junta tres cascos que todavía tienen la etiqueta del precio.\n\nLa isla apaga los reflectores y se va a dormir." }
       ]
     ];
-    const row=packs[Math.max(0,Math.min(2,bloc))][slot===1?1:0];
+    const bk=warBloc(bloc).key;
+    const row=packs[packByKey[bk]!=null?packByKey[bk]:0][slot===1?1:0];
     S.chanceTitle={ en:row.enT, es:row.esT };
     return es?row.es:row.en;
   }
@@ -3153,17 +3245,22 @@
     const titles={
       pact:{en:"The Pact Falls Back",es:"El Pacto retrocede"},
       ledger:{en:"The Ledger Breaks",es:"El Libro se rompe"},
-      lattice:{en:"The Lattice Goes Quiet",es:"La Celosía se calla"}
+      lattice:{en:"The Lattice Goes Quiet",es:"La Celosía se calla"},
+      trust:{en:"The Trust Logs Off",es:"El Fideicomiso se desconecta"}
     };
     S.chanceTitle=titles[b.key]||titles.pact;
     const recog=es
       ? (b.key==="ledger"
         ? "La firma de "+who+" aparece en un documento que llama nación a la isla y error de cálculo a la campaña. En su país deberán volver a imprimir los carteles."
+        : b.key==="trust"
+        ? who+" publica una actualización de los términos: Bitcoin Country figura ahora como nación soberana, en la página 412, en letra muy pequeña."
         : b.key==="lattice"
         ? who+" no ofrece disculpas. Un heraldo pronuncia una sola palabra en un puerto que la Celosía ya no controla: reconocimiento. La presenta como si fuera una corrección administrativa."
         : who+" envía una nota de una línea. Incluye la palabra reconocimiento y evita la palabra rendición. Bitcoin Country aparece como país, con la tipografía reservada para los países que no les agradan.")
       : (b.key==="ledger"
         ? who+" signs a paper that calls the island a nation and the campaign a miscalculation. The posters at home will have to be reprinted."
+        : b.key==="trust"
+        ? who+" pushes a terms-of-service update: Bitcoin Country is now listed as a sovereign nation, on page 412, in very small print."
         : b.key==="lattice"
         ? who+" does not apologize. A herald does it once, in a harbor the Lattice no longer holds. The word is recognition. He makes it sound like a clerical correction."
         : who+" sends a one-line note. It uses the word recognition. It does not use the word surrender. Bitcoin Country is set in the type they use for countries they dislike.");
@@ -3173,7 +3270,7 @@
     const tail=won>=9
       ? (es?"La radio queda lo bastante silenciosa como para oír la panadería.":"The radio goes quiet enough to hear the bakery.")
       : won>=6
-      ? (es?"La Celosía aún puede decidir que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":"The Lattice may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
+      ? (es?((s0)=>s0.charAt(0).toUpperCase()+s0.slice(1))(warBloc(2).esThe)+" aún puede decidir que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":((s0)=>s0.charAt(0).toUpperCase()+s0.slice(1))(warBloc(2).enThe)+" may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.")
       : (es?"La guerra en el mar aún no termina. Otro bloque puede considerar que esta derrota no le concierne. Si ataca, lo hará dentro de 210 velas.":"The sea is not finished with you. Another bloc may still decide this defeat belonged to someone else. If they come, it will be within 210 candles.");
     const open=es
       ? name+" ha sido derrotado. Sus barcos regresan con las banderas aún izadas, porque bajarlas exigiría un formulario que nadie quiere firmar."
@@ -3192,7 +3289,7 @@
     if(id==="battleWon"){
       const i=Math.max(0,(S.bcBattlesWon||1)-1);
       const en=[
-        "The first landing collapses on the beach. Paco returns with a stamp from the occupation order.",
+        "The Pact's landing collapses on the beach. Paco returns with a stamp from the occupation order.",
         "A second landing reaches another cove, but its tanks never clear the hill.",
         "",
         "The Red Ledger attacks under its own slogans. Its posters reach the water before its soldiers.",
@@ -3202,7 +3299,7 @@
         "The Crown Lattice returns without music. By dusk, the eastern cliff belongs to the island again."
       ];
       const sp=[
-        "El primer desembarco fracasa en la playa. Paco regresa con un sello de la orden de ocupación.",
+        "El desembarco del Pacto fracasa en la playa. Paco regresa con un sello de la orden de ocupación.",
         "Un segundo desembarco alcanza otra cala, pero sus tanques no superan la colina.",
         "",
         "El Libro Rojo ataca bajo sus propias consignas. Sus carteles llegan al agua antes que sus soldados.",
@@ -3211,7 +3308,10 @@
         "La Celosía de la Corona llega como una procesión. Sus barcos grises retroceden cuando la ciudadela se niega a arrodillarse.",
         "La Celosía de la Corona regresa sin música. Al anochecer, el acantilado oriental vuelve a pertenecer a la isla."
       ];
-      return (es?sp:en)[i] || (es?sp[0]:en[0]);
+      const tEn={pact:[en[0],en[1]],ledger:[en[3],en[4]],lattice:[en[6],en[7]],trust:["The Hemisphere Trust lands with drones and lawyers. The feed cuts out when the first boat turns back.","The second wave grounds on a reef the Trust had rated low risk."]};
+      const tEs={pact:[sp[0],sp[1]],ledger:[sp[3],sp[4]],lattice:[sp[6],sp[7]],trust:["El Fideicomiso del Hemisferio desembarca con drones y abogados. La señal se corta cuando el primer bote da la vuelta.","La segunda oleada encalla en un arrecife que el Fideicomiso había calificado de bajo riesgo."]};
+      const bk=warBloc((i/3)|0).key, sl=i%3;
+      return ((es?tEs:tEn)[bk]||(es?tEs:tEn).pact)[sl===1?1:0];
     }
     if(id==="blocTriumph"){
       const won=n;
@@ -3228,6 +3328,7 @@
   }
   function applyWarCard(card){
     if(!card) return null;
+    if(card.id==="firstBloc"||card.id==="rearmament"||card.id==="threeColors") return blocIntroText(card.id, chanceLang());
     if(card.id==="blocReplies"){
       const report=blocReplyIsReport();
       card.kind=report?"report":"choice";
@@ -6853,7 +6954,7 @@
     const r=Math.random(),bloc=d.bloc|0;
     const wk=waveKind(d);
     let type="STANDARD",hp=2,spd=62,bspd=168,dmg=1,leak=10;
-    const heavy=bloc===0,fast=bloc===1;
+    const mix=warBloc(bloc).mix, heavy=mix==="heavy",fast=mix==="fast",snipe=mix==="snipe";
     if(heavy){
       if(r<.46){type="HEAVY";hp=3;spd=42;bspd=150;dmg=2;leak=18;}
       else if(r<.72){type="STANDARD";hp=2;}
@@ -6864,6 +6965,11 @@
       else if(r<.74){type="STANDARD";hp=2;}
       else if(r<.9){type="ELITE";hp=2;spd=76;bspd=220;leak=14;}
       else {type="HEAVY";hp=3;spd=40;bspd=148;dmg=2;leak=18;}
+    }else if(snipe){
+      if(r<.46){type="STANDARD";hp=2;spd=66;bspd=236;}
+      else if(r<.72){type="FAST";hp=1;spd=98;bspd=205;leak=8;}
+      else if(r<.9){type="ELITE";hp=2;spd=76;bspd=228;leak=14;}
+      else {type="HEAVY";hp=3;spd=40;bspd=150;dmg=2;leak=18;}
     }else{
       if(r<.44){type="ELITE";hp=2;spd=78;bspd=226;leak=15;}
       else if(r<.7){type="STANDARD";hp=2;}
@@ -6876,7 +6982,7 @@
     if(type==="FAST"&&Math.random()<.45)role2="rusher";
     else if(type==="HEAVY"&&Math.random()<.35)role2="sapper";
     else if((type==="STANDARD"||type==="ELITE")&&Math.random()<(wk==="column"?.5:.18))role2="escort";
-    else if((type==="STANDARD"||type==="ELITE")&&Math.random()<.3)role2="sniper";
+    else if((type==="STANDARD"||type==="ELITE")&&Math.random()<(snipe?.5:.3))role2="sniper";
     if(role2==="rusher")spd*=1.12;
     if(role2==="sniper")bspd*=1.25;
     if(role2==="sapper")dmg=2;
@@ -8743,8 +8849,7 @@
     drawWarFx(ctx,d,t);
     const blink=(d.playerInv>0||d.god>0)&&Math.floor(t*12)%2===0;
     const heroOrange="#c9843a";
-    const blocPaint=["#4a5340","#6a3834","#5c4936"];
-    const ecol=blocPaint[Math.max(0,Math.min(2,d.bloc|0))];
+    const ecol=(warBloc(d.bloc|0).paint)||"#4a5340";
     const pcol=d.god>0?"#ffe14a":heroOrange;
     d.player.tier=d.shotTier|0;
     if(!blink){if(d.naval)drawShip(ctx,d.player,pcol);else drawTank(ctx,d.player,pcol);}
@@ -8849,8 +8954,7 @@
     drawBattleHud2(ctx,d,t);
     drawHearts(ctx,d.player.hearts||0,d.player.maxHearts||3);
     ctx.textBaseline="alphabetic";ctx.textAlign="left";ctx.font='700 12px "IBM Plex Mono",monospace';
-    const bnames=chanceLang()?["PACTO","LIBRO","CORONA"]:["PACT","LEDGER","LATTICE"];
-    const bname=bnames[d.bloc|0]||bnames[0];
+    const bname=chanceLang()?warBloc(d.bloc|0).shortEs:warBloc(d.bloc|0).short;
     paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,52,PAL.fg);
     paintHaloText(ctx,bname,12,68,PAL.fg);
     if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
@@ -12004,6 +12108,7 @@
     S.bcPerks = {};
     S.bcAidUsed = 0;
     S.bcMapPlan = null;
+    rollBlocs();
     S.bcMapSeed = 0;
     S.bcShotTier = 0;
     S.bcShotSpread = 0;
@@ -13234,7 +13339,7 @@
       if (card.job) title = fillJob(title, card.jobTier);
       title = stampNation(title);
       const body = stampNation(S.battleTutOpen ? battleTutPlain() : (S.chanceBody || (es ? (card.bodyEs || card.body) : card.body)));
-      const pic = (S.chanceNote && S.chanceOpt) ? postArtHtml(card.id, S.chanceOpt) : chanceArtHtml(card.id);
+      const pic = (S.chanceNote && S.chanceOpt) ? postArtHtml(card.id, S.chanceOpt) : blocArtHtml(card);
       let btns = "";
       if (S.chanceNote) {
         btns = "<button class=\"cta\" data-ch=\"ok\">" + t("chanceAck") + "</button>";
