@@ -78,18 +78,6 @@
   "prompt": "Wide cinematic panoramic 2.4:1 (1920x800), same painterly style as the other cin12 Bitcoin Country cards, no legible text anywhere (posters, banners and papers carry only abstract shapes and blank areas, no real-country flags or emblems). The signing of the Red Ledger Compact: a vast, harshly over-lit ceremonial hall in deep red and black, cold white floodlights, tall red banners with a stylized closed red book emblem. At a long table, Marshal Amina Kade (stern woman in her 50s, grey-streaked hair pulled back tightly, dark military coat with plain insignia, former dock officer build) stands at a lectern reading the preamble from a thick red ledger. Five delegates in dark suits sign a red leather book in a row. Rows of uniformed officers stand at attention; propaganda posters are pasted on the walls; a police officer in the corner writes in a thick notebook. Through tall windows at the back, a shipyard where a grey warship hull is under construction with sparks of welding. Choppy and Marek do not appear. Mood: grand, cold, ominous."
  },
  {
-  "id": "ambassador",
-  "out": "chance/ambassador-wide.jpg",
-  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/ambassador-wide.jpg",
-  "refs": [
-   "/workspace/bitcoinizate/choppy-bitcoin/chance/ambassador-wide.jpg (scene)",
-   "/workspace/illus/refs/choppy.png",
-   "/workspace/illus/refs/marek.png"
-  ],
-  "archive_old_to": "art-archive/history/ambassador-wide-<date>-replaced.jpg",
-  "prompt": "Recreate the attached harbor scene at golden hour as a wide cinematic panoramic 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text. The ambassador (elegant woman, dark hair in a bun, dark coat dress, sunglasses) and one aide arrive by a small wooden boat that carries NO flag (no flags anywhere). Choppy must match the reference exactly: a FLAT matte orange cartoon coin (not shiny 3D gold metal), white ₿ intact and centered (slightly below ok), large low black sunglasses, RED BANDANA tied on top, no nose, no mouth, thin orange arms and legs, white gloves, brown sneakers; coin never distorts. New pose: Choppy steps forward on the dock and receives a small blank business card from the ambassador with one gloved hand, the other hand at his side. Marek (face and build of the chess-card reference, dressed in light linen casual clothes) and a couple of settlers stand behind, watching. Settlement, port cranes, power lines and the mine visible on the hillside."
- },
- {
   "id": "threeColors",
   "out": "chance/threeColors-wide.jpg",
   "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/threeColors-wide.jpg",
@@ -101,5 +89,13 @@
   "out": "chance/blocTrust-wide.jpg",
   "note": "Shown on whichever bloc-intro card (firstBloc/rearmament/threeColors) introduces the Open Hemisphere Trust; falls back to that card's art if missing.",
   "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 bloc cards (firstBloc, rearmament, threeColors), NO legible text, NO real national flags or logos. A slick tech-keynote launch on a huge stage with perfect blue-white lighting and a giant curved screen showing an abstract glowing hemisphere map with nine highlighted regions and a smiling score gauge (no numbers). Center stage: Chief Compliance Officer Dana Holt, a woman in her 40s with a sleek dark bob, black turtleneck, blazer and white sneakers, headset mic, friendly but cold smile, one hand presenting the screen. A row of nine identical lecterns behind her with delegates in suits, faces lit by tablets. Audience in the dark holding phones up; tiny camera drones hover over the crowd, each with a small red recording light. Mood: friendly, polished, quietly ominous surveillance-credit regime. Choppy is NOT in this scene."
+ },
+ {
+  "id": "ambassador",
+  "out": "chance/ambassador-wide.jpg",
+  "current": "/workspace/bitcoinizate/choppy-bitcoin/chance/ambassador-wide.jpg",
+  "archive_old_to": "art-archive/history/ambassador-wide-<date>-replaced.jpg",
+  "reason": "Current art shows a curly-haired young woman next to Choppy who reads as Lena; Lena must not appear in the Bitcoin Country arc. Also current Choppy is off-model (gold coin, no bandana).",
+  "prompt": "Wide cinematic panoramic illustration 2.4:1 (1920x800), same warm painterly style as the other cin12 cards, no legible text, no real national flags (small plain dark-blue pennant only). Island harbor at sunset, wooden dock, a sleek unmarked boat moored. An ambassador in a dark tailored skirt-suit and sunglasses, hair in a low bun, arrives without ceremony with a single aide carrying a briefcase; she shakes hands with Marek (lean, dark tousled hair, glasses, linen shirt). Behind them Nico (messy dark hair, olive hoodie) watches curiously; a few island residents in the background (a fisherman, a baker with an apron). NO young curly-haired woman beside Choppy; Lena does not appear. Choppy: a perfectly round flat ORANGE Bitcoin coin character, clean white ₿ intact and centered (slightly below center ok), large low black sunglasses above the ₿, red bandana on top, no nose, no mouth, thin orange arms and legs, white gloves, brown sneakers; the coin never distorts. New pose: Choppy standing a step forward, holding out a small card with a phone number (blank) the ambassador just handed him, looking at it."
  }
 ]
