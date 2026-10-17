@@ -1336,7 +1336,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcPerks={}; S.bcAidUsed=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcPeacePct=0; rollBlocs(); S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcPerks={}; S.bcAidUsed=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcPeacePct=0; S.bcArtPick={}; rollBlocs(); S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -3044,8 +3044,35 @@
   }
   window.__choppyPostMiss = (k) => POST_ART_MISS.add(k);
   // Bloc intro cards show the art of whichever bloc fills that slot this run (falls back to the card's own art).
+  // Battle art variants: chance/battle-<bloc>-<n>-pre-wide.jpg (before a battle), battle-<bloc>-<n>-post-wide.jpg
+  // (after a won battle), battle-<bloc>-win-wide.jpg (bloc defeated) and generic battle-gen-<n>-pre/post.
+  // A run never shows the same variant twice; a missing file falls back to the card's own art and is skipped next time.
+  const BATTLE_ART_MISS = new Set();
+  window.__choppyBattleMiss = (k) => BATTLE_ART_MISS.add(k);
+  function battleArtPick(card) {
+    const kind = card.id === "blocAssault" ? "pre" : card.id === "battleWon" ? "post" : card.id === "blocTriumph" ? "win" : "";
+    if (!kind) return "";
+    const won = S.bcBattlesWon || 0;
+    const idx = kind === "pre" ? won : Math.max(0, won - 1);
+    const memo = S.bcArtPick || (S.bcArtPick = {});
+    const mk = kind + idx;
+    if (memo[mk] && !BATTLE_ART_MISS.has(memo[mk])) return memo[mk];
+    const bloc = (warBloc(Math.min(2, Math.floor(idx / 3))) || {}).key || "pact";
+    const cands = kind === "win" ? ["battle-" + bloc + "-win"]
+      : ["battle-" + bloc + "-1-" + kind, "battle-" + bloc + "-2-" + kind, "battle-gen-1-" + kind, "battle-gen-2-" + kind, "battle-gen-3-" + kind];
+    const used = new Set(Object.keys(memo).filter((k) => k !== mk).map((k) => memo[k]));
+    const pick = cands.find((c) => !used.has(c) && !BATTLE_ART_MISS.has(c)) || "";
+    memo[mk] = pick;
+    return pick;
+  }
   function blocArtHtml(card) {
     const base = chanceArtHtml(card.id);
+    const va = battleArtPick(card);
+    if (va && base.indexOf("<img") === 0) {
+      const m0 = base.match(/ src="([^"]*)"/);
+      if (m0) return base.replace(/ onerror="[^"]*"/, "").replace(m0[0], " src=\"chance/" + va + "-wide.jpg?v=bat1\" data-base=\"" + m0[1] + "\"")
+        .replace("<img ", "<img onerror=\"this.onerror=null;window.__choppyBattleMiss&&window.__choppyBattleMiss('" + va + "');this.src=this.dataset.base;\" ");
+    }
     const aid = blocArtId(card);
     if (!aid || aid === card.id || base.indexOf("<img") !== 0) return base;
     const m = base.match(/ src="([^"]*)"/);
