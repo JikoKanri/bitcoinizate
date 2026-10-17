@@ -6628,9 +6628,16 @@
     const ny=Math.max(slack,Math.min(S.H-slack,t.y+vy*dt));
     if(!shipBlocked(d,nx,ny,t.sz,t)){t.x=nx;t.y=ny;}
   }
+  const AMMO_MAX=12, AMMO_RELOAD=1.7;
   function fireTank(d,t){
     if(t.fire>0)return;
     const hero=t===d.player;
+    if(hero&&!d.infAmmo){
+      if((d.reloadT||0)>0)return;
+      if((d.ammo|0)<=0){d.reloadT=AMMO_RELOAD;return;}
+      d.ammo--;d.ammoIdle=0;
+      if(d.ammo<=0){d.reloadT=AMMO_RELOAD;warSfx("warClank");}
+    }
     const tier=hero?Math.min(3,(d.shotTier|0)+((d.boostT||0)>0?1:0)):0;
     if(!hero){
       const mine=d.shots.filter(s=>s.owner===t&&!s.hit).length;
@@ -6639,7 +6646,7 @@
     const n=t.flag?3:(tier>=2?2:1);
     t.fire=hero?(tier>=1?.1:.22):0.1;
     const shotMul=t===d.player?(1+((d.up&&d.up.shot)||0)/100)*(tier>=1?1.5:1):1;
-    const v=t===d.player?180*shotMul:((t.bspd||180)*0.81);
+    const v=t===d.player?180*shotMul:((t.bspd||180)*(0.81+0.05*((d.level/3)|0)));
     const dmg=t===d.player?((d.up&&d.up.power)||1):(t.dmg||1);
     const vdir=aimVec(t);
     const dx=vdir[0], dy=vdir[1];
@@ -6826,7 +6833,7 @@
       fortSteel:!!built.steel,troopMul,
       integrity:100,wall:u.wall?100:0,done:false,frozen:false,inv:0,playerInv:0,god:0,shotTier:Math.max(0,Math.min(3,tier0|0)),freeze:0,aegisT:0,aegis:null,seal:new Uint8Array(map.length),aa:0,aaBeep:0,aaArmed:false,aaTap:0,aaCharging:false,aaCharge:0,reticle:null,shotSpread:spread0,fx:[],shards:[],
       heliLeft:heliN,naval,fort:built.fort||built.home,maze:!!built.maze,
-      profile:{rate:(.78+bloc*.04)*pressure,enemy:(.92+level*.02)*pressure},
+      profile:{rate:(.76+bloc*.1)*pressure,enemy:(.92+level*.03)*pressure},
       up:u,t:0,level,bloc,spawnI:0,
       home:built.home,
       theme:zplan.theme||"wild",zoneEn:zplan.zoneEn||"",zoneEs:zplan.zoneEs||"",stage:zplan.stage||"",
@@ -7053,8 +7060,8 @@
     if(boss){
       const pm=d.profile.enemy||1;
       e.boss=true;e.role="hero";e.role2="";e.sz=bsz;
-      if(d.flagBoss){e.flag=true;e.type="HEAVY";e.hull="heavy";e.hp=e.maxHp=14+bloc*3;e.spd=36*pm;e.bspd=175;e.dmg=2;e.leak=24;e.scale=1.45;e.barT=3.5;}
-      else{e.type="ELITE";e.hull="elite";e.hp=e.maxHp=7+bloc*2;e.spd=70*pm;e.bspd=232;e.dmg=1;e.leak=16;e.scale=1.25;}
+      if(d.flagBoss){e.flag=true;e.type="HEAVY";e.hull="heavy";e.hp=e.maxHp=20+bloc*4;e.spd=36*pm;e.bspd=175;e.dmg=2;e.leak=24;e.scale=1.45;e.barT=3.5;}
+      else{e.type="ELITE";e.hull="elite";e.hp=e.maxHp=10+bloc*3;e.spd=70*pm;e.bspd=232;e.dmg=1;e.leak=16;e.scale=1.25;}
     }
     d.enemies.push(e);
     armSpawn(d,e);
@@ -7462,7 +7469,7 @@
     const kinds=n===4?["rush","column","flank","assault"]:["rush","column","flank"];
     const share=n===4?[.22,.26,.24,.28]:[.3,.34,.36];
     // Waves replace the old slow trickle: same enemy mix, ~40% more bodies so a battle lasts ~1-2 minutes.
-    const total=Math.max(n,Math.round((d.groundTotal|0)*1.4)+4);
+    const total=Math.max(n,Math.round((d.groundTotal|0)*1.55)+4);
     const q=share.map(x=>Math.max(1,Math.round(total*x)));
     q[n-1]=Math.max(1,total-q.slice(0,n-1).reduce((a,b)=>a+b,0));
     d.enemyTotal=total+(d.heliLeft|0);d.groundLeft=total;d.foreignLeft=Math.max(1,Math.round(total*0.12));
@@ -7486,6 +7493,7 @@
     {id:"ricochet",max:1,en:["Ricochet","Your shells bounce once off walls and rocks."],es:["Rebote","Tus balas rebotan una vez en muros y rocas."]},
     {id:"mine",max:1,en:["Mines","You drop a mine every 5 s (up to 3)."],es:["Minas","Sueltas una mina cada 5 s (máx. 3)."]},
     {id:"regen",max:1,en:["Regenerating shield","The shield repairs 1.2% per second."],es:["Escudo regenerativo","El escudo se repara un 1,2% por segundo."]},
+    {id:"ammo",max:1,en:["Endless belt","No ammo limit: fire without reloading."],es:["Cinta infinita","Sin límite de munición: disparas sin recargar."]},
     {id:"militia",max:1,en:["Village militia","Villages shoot at nearby enemies."],es:["Milicia","Las aldeas disparan a los enemigos cercanos."]}
   ];
   function applyBattlePerks(d){
@@ -7495,6 +7503,7 @@
     d.furyMul=Math.pow(0.7,k.fury|0);
     if(k.double)d.shotTier=Math.max(2,d.shotTier|0);
     d.rico=k.ricochet?1:0;
+    d.infAmmo=!!k.ammo;d.ammo=AMMO_MAX;d.reloadT=0;
     d.mines=k.mine?[]:null;d.mineT=3;
     d.regen=k.regen?1.2:0;
     d.militia=null;
@@ -7512,6 +7521,14 @@
   function dmgEnemy(d,e,n){
     if(!e||e.hp<=0||(e.spawn||0)>0)return;
     e.hp-=n;e.hurt=1;
+    if(e.boss&&!e.phase2&&e.hp>0&&e.hp<=e.maxHp/2){
+      // Boss phase 2 at half health: a bit faster, and it calls two escorts.
+      e.phase2=1;e.spd*=1.15;e.bspd=(e.bspd||180)*1.1;
+      const adds=d.flagBoss?2:1;
+      for(let i=0;i<adds;i++){try{defenseEnemy(d);d.enemyTotal=(d.enemyTotal|0)+1;}catch(err){}}
+      d.banner={t:0,life:1.8,txt:chanceLang()?"¡REFUERZOS!":"REINFORCEMENTS!",sub:""};
+      bShake(d,4);warSfx("warWave");
+    }
     if(e.hp<=0){d.kills++;warSfx("warPop");}
   }
   function hurtHero(d,n){
@@ -7530,10 +7547,11 @@
     warSfx("warHurt");
     bShake(d,6);bBuzz(70);d.hitstop=.06;d.hurtT=.35;
     if(p.hearts<=0){finishDefense(false);return true;}
-    d.playerInv=1.2;
+    d.playerInv=0.9;
     return false;
   }
   function onKill(d,e){
+    if(!d.infAmmo&&d.ammo!=null&&!(d.reloadT>0))d.ammo=Math.min(AMMO_MAX,(d.ammo|0)+(e.boss?6:2));
     const lite=liteFx();
     const heavy=e.hull==="heavy"||e.type==="HEAVY";
     addFx(d,{kind:"boom",x:e.x,y:e.y,life:e.boss?.9:.5,r:e.boss?48:heavy?28:20});
@@ -7830,6 +7848,11 @@
     }
     stepFx(d,dt);
     const p=d.player;p.fire=Math.max(0,p.fire-dt);p.hearts=p.hearts==null?p.hp:p.hearts;
+    if(!d.infAmmo){
+      if(d.ammo==null)d.ammo=AMMO_MAX;
+      if((d.reloadT||0)>0){d.reloadT-=dt;if(d.reloadT<=0){d.reloadT=0;d.ammo=AMMO_MAX;}}
+      else if(!(S.defHeld&&S.defHeld.f)){d.ammoIdle=(d.ammoIdle||0)+dt;if(d.ammoIdle>0.6&&d.ammo<AMMO_MAX){d.ammoAcc=(d.ammoAcc||0)+dt*4;if(d.ammoAcc>=1){d.ammoAcc-=1;d.ammo++;}}}
+    }
     if((d.heliLeft||0)>0 && d.t>3.2 && (d.enemies.filter((e)=>e.type==="HELI").length<1)){d.heliLeft--;spawnHeli(d);}
     battleTick(d,dt);
     if((d.lull||0)>0)d.lull-=dt;
@@ -8998,9 +9021,13 @@
     drawHearts(ctx,d.player.hearts||0,d.player.maxHearts||3);
     ctx.textBaseline="alphabetic";ctx.textAlign="left";ctx.font='700 12px "IBM Plex Mono",monospace';
     const bname=chanceLang()?warBloc(d.bloc|0).shortEs:warBloc(d.bloc|0).short;
-    paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,52,PAL.fg);
-    paintHaloText(ctx,bname,12,68,PAL.fg);
-    if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,84,"#9befff");
+    const am=d.infAmmo?"∞":(d.reloadT>0?(chanceLang()?"RECARGA":"RELOAD"):((d.ammo|0)+"/"+AMMO_MAX));
+    ctx.font='700 14px "IBM Plex Mono",monospace';
+    paintHaloText(ctx,(chanceLang()?"BALAS ":"AMMO ")+am,12,54,d.reloadT>0||(!d.infAmmo&&(d.ammo|0)<=3)?"#ff6a4a":"#ffd24a");
+    ctx.font='700 12px "IBM Plex Mono",monospace';
+    paintHaloText(ctx,"KIA "+(d.kills|0)+"/"+(d.enemyTotal||0),12,70,PAL.fg);
+    paintHaloText(ctx,bname,12,86,PAL.fg);
+    if(d.naval)paintHaloText(ctx,chanceLang()?"MAR":"SEA",12,102,"#9befff");
     if(d.zoneEn){
       const st=MAP_STAGE_NAME[d.stage];
       const zl=(chanceLang()?d.zoneEs:d.zoneEn)+(st?" · "+st[chanceLang()?1:0]:"");
