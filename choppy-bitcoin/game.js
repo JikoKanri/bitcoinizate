@@ -2953,7 +2953,7 @@
       const v = ARC_ART_VERSIONS[artId] || "gpt4";
       src = "chance/" + artId + "-wide.png?v=" + v;
     } else if (isWide) {
-      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin12";
+      src = "chance/" + (artId.endsWith("-wide") ? artId : artId + "-wide") + ".jpg?v=cin13";
     } else {
       src = "chance/" + artId + ".jpg?v=mp86";
     }
@@ -3077,7 +3077,7 @@
     if (!aid || aid === card.id || base.indexOf("<img") !== 0) return base;
     const m = base.match(/ src="([^"]*)"/);
     if (!m) return base;
-    const src = "chance/" + aid + "-wide.jpg?v=cin12";
+    const src = "chance/" + aid + "-wide.jpg?v=cin13";
     return base.replace(/ onerror="[^"]*"/, "").replace(m[0], " src=\"" + src + "\" data-base=\"" + m[1] + "\"")
       .replace("<img ", "<img onerror=\"this.onerror=null;this.src=this.dataset.base;\" ");
   }

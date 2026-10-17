@@ -663,3 +663,14 @@ Old, replaced and rejected Choppy Bitcoin art kept for later use. NOT loaded by 
 - restyle-work/wine_attempt2.png
 - restyle-work/wine_base.png
 - restyle-work/wine_edit1.png
+- theOg-wide-2026-10-17-b47c054.jpg
+- mexico-wide-2026-10-17-b47c054.jpg
+- rearmament-wide-2026-10-17-b47c054.jpg
+- ambassador-wide-2026-10-17-b47c054.jpg
+- threeColors-wide-2026-10-17-b47c054.jpg
+- obviously-wide-2026-10-17-b47c054.jpg
+- principality-wide-2026-10-17-b47c054.jpg
+- stateVisit-wide-2026-10-17-b47c054.jpg
+- hospital-wide-2026-10-17-b47c054.jpg
+- school-wide-2026-10-17-b47c054.jpg
+- startup-wide-2026-10-17-b47c054.jpg
