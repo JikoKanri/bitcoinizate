@@ -245,7 +245,8 @@
         if (buf) {
           const src = ctx.createBufferSource();
           const g = ctx.createGain();
-          g.gain.value = 0.9;
+          // Match the jukebox: follow the music volume, and trim the brass chords (peaks ~1.0, brighter than the reels) by ~5 dB.
+          g.gain.value = 0.55 * (typeof jukeVol === "number" ? jukeVol : 0.8);
           src.buffer = buf;
           src.connect(g);
           g.connect(ctx.destination);
