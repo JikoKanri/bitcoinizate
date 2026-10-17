@@ -541,17 +541,11 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
+/* Pre/post-battle cards use the same window as every other arc card (they used to be a short 52% top sheet). */
 .overlay.dock.chance-ui.battle-report {
-  inset: 0 0 auto 0;
-  max-height: 52%;
-  border-radius: 0 0 16px 16px;
-  background: rgba(12, 10, 8, 0.94);
-}
-.overlay.dock.chance-ui.battle-report .chance-art {
-  width: 84px;
-  height: 84px;
-  max-height: 84px;
-  border-radius: 12px;
+  max-height: 92%;
+  min-height: min(60%, 460px);
+  background: rgba(12, 10, 8, 0.96);
 }
 html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-title { font-size: 26px; }
 html[data-arc-text="l"] .overlay.dock.chance-ui.fest-ui .arc-body { font-size: 18px; }
@@ -1062,7 +1056,7 @@ html[data-palette="flower"] #app {
   background:linear-gradient(90deg, transparent 0%, rgba(242,169,0,.3) 100%);
 }
 .def-rev{
-  position:absolute;left:46px;bottom:152px;width:64px;height:36px;z-index:27;
+  position:absolute;left:max(4px,env(safe-area-inset-left));bottom:184px;width:64px;height:36px;z-index:27;
   pointer-events:auto;touch-action:none;cursor:pointer;
   border-radius:10px;border:2px solid rgba(242,169,0,.7);
   background:radial-gradient(circle at 50% 30%, rgba(60,48,20,.9), rgba(12,10,8,.92));

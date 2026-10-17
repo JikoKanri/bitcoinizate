@@ -3856,7 +3856,8 @@
     if (S.perkOffers[S.perkOffers.length - 1] !== "skip") S.perkOffers.push("skip");
     S.perkPick = "";
     if (!forceUi && S.aibudOn && (S.have.aibud || 0) >= 2) {
-      const real = S.perkOffers.filter((id) => id !== "skip");
+      // Never Adoption: if only Adoption is left next to "Gently decline", decline.
+      const real = S.perkOffers.filter((id) => id !== "skip" && id !== "adopt");
       if (!real.length) { bumpOffer(); return; }
       const pick = bestAiPerk(real);
       grantPerk(pick.id);
@@ -3867,8 +3868,8 @@
     }
     if (why === "laser") say("Fibonacci treshold reached, grab your perk!", true);
     if (S.aibudOn && (S.have.aibud || 0) >= 1) {
-      const pick = bestAiPerk(S.perkOffers.filter((id) => id !== "skip"));
-      S.perkHint = pick && pick.id;
+      const opts = S.perkOffers.filter((id) => id !== "skip" && id !== "adopt");
+      S.perkHint = opts.length ? bestAiPerk(opts).id : "skip";
     } else S.perkHint = "";
     setPhase("perk");
   }
@@ -3916,6 +3917,7 @@
   }
 
   function perkWhy(id) {
+    if (id === "skip") return "Adoption is not worth it here";
     if (id === "dca") return "Income becomes bitcoin";
     if (id === "candy") return "More candle cash to stack sats";
     if (id === "job") return "Paycheck to convert into bitcoin";
@@ -4046,6 +4048,14 @@
   }
 
   function tickAi(dt) {
+    // A.I. bud always buys the next Army tier as soon as it is affordable.
+    if (S.aibudOn && S.phase === "play" && (S.have.aibud || 0) >= 1 && S.bcArmyUnlocked && !S.bcVictory && !S.bcArcClosed && armyTier() < 7) {
+      S.aiArmyAcc = (S.aiArmyAcc || 0) + dt;
+      if (S.aiArmyAcc >= 0.5) {
+        S.aiArmyAcc = 0;
+        if (armyTierQuote().affordable && buyArmy()) { aiAct("Army tier " + armyTier() + "/7", "Stronger army for the next battle"); try { renderBitcoinCountry(); } catch (e) {} }
+      }
+    }
     if (!S.aibudOn || S.phase !== "play" || (S.have.aibud || 0) < 3) return;
     S.aiAcc = (S.aiAcc || 0) + dt;
     tickAiTiming();
