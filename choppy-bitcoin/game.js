@@ -1336,7 +1336,7 @@
       S.perkResume = null; S.perkFib = 0;
       S.jukeList = []; S.jukeUnlock = []; S.jukeTrack = 0; S.jukeOn = false; S.jukeShuffle = false; S.jukeRepeat = "off"; S.jukeOff = {};
       S.aibudOn = false; S.aibudLit = {}; S.aibudLitAt = {}; S.iaLog = []; S.iaProfit = 0; S.aibudSpeechUntil = 0; S.aiAcc = 0; S.aiTimingStart = null; S.aiTimingLast = 0; S.aiTradeAt = -999;
-      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcPerks={}; S.bcAidUsed=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; rollBlocs(); S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
+      S.jobName = ""; S.jobTrack = null; S.jobOffer = null; S.chanceAt = []; S.chanceUntil = 0; S.chanceUsed = {}; S.chanceCard = null; S.chanceNote = ""; S.chanceReadyNote = ""; S.chanceSettled = false; S.chanceMet = {}; S.chanceLead = ""; S.arcHold = false; S.arcTldr = ""; S.arcPending = null; S.hasRing=false; S.engaged=false; S.familyClosed=false; S.familyPath=false; S.arcSeen=[]; S.arcBias=""; S.bcBook=false; S.bcBookOffer=false; S.bcIslandOffer=0; S.bcIsland=false; S.bcOg=false; S.bcNodes=0; S.bcNodeTick=0; S.bcSettlement=false; S.bcPower=false; S.bcMine=false; S.bcCitadel=false; S.bcArmyUnlocked=false; S.bcArmy=0; S.bcArmyTier=0; S.bcWorld=20; S.bcIndependent=false; S.bcVictory=false; S.bcArcClosed=false; S.bcDefense=null; S.bcDefensePending=false; S.bcArmySpend=0; S.bcBattlesWon=0; S.bcPerks={}; S.bcAidUsed=0; S.bcAssaultAt=0; S.bcMapPlan=null; S.bcMapSeed=0; S.bcReactions=null; S.bcPeacePct=0; rollBlocs(); S.bcRepliesDone=false; S.indepNoted=false; S.indepAt=0; S.bcCountryName=""; S.bcNameAsk=false; S.bcShotTier=0; S.bcShotSpread=0; S.bcRuinTiles=0; S.bcRuinGone=0; S.bcRebuild=null;
       if (A && A.jukeStop) A.jukeStop();
     }
     S.halveLeft = HALVE_GAP; S.halveBull = false; S.halveFloor = 0; S.spawnedPipes = 0; S.halveSide = "up";
@@ -2052,7 +2052,13 @@
     if (Math.abs(dBtc) > 1e-8) bits.push(fmtBtcAmt(Math.abs(dBtc)) + " BTC");
     return bits.join(" + ");
   }
+  // Peace offer after the declaration: 3–13% of net worth, rolled once per run (saved with S).
+  function bcPeacePct() {
+    if (!(S.bcPeacePct >= 0.03 && S.bcPeacePct <= 0.13)) S.bcPeacePct = 0.03 + Math.random() * 0.10;
+    return S.bcPeacePct;
+  }
   function arcCostUsd(card, k) {
+    if (card.id === "blocReplies" && k === "a") return wealthUsd() * bcPeacePct();
     const pct = {
       landfill: { a: .25, b: .75 }, nicoWedding: { a: .04, b: .006 }, mexico: { a: .08 },
       phish: { a: .18 }, casino: { a: .1, b: .3 }, poker: { a: .08, b: .25 }, startup: { a: .2 },
@@ -2067,8 +2073,7 @@
       pieceWorld: { a: 1800 }, nobodyKnows: { a: 5000 }, stateVisit: { a: 15000, b: 5000 },
       protectIsland: { b: 50000 }, ortegaCalls: { a: 25000 }, school: { a: 300 },
       date: { a: 180, b: 60 }, wine: { b: 17, c: 25 }, tetris: { a: 20 },
-      unclemike: { a: 216, b: 180, c: 198 },
-      blocReplies: { a: 40000 }
+      unclemike: { a: 216, b: 180, c: 198 }
     };
     if (card.id === "islandInspection" && k === "a") return S.bcIslandOffer || 0;
     if (bill[card.id] && bill[card.id][k] != null) return bill[card.id][k];
@@ -2774,7 +2779,7 @@
     if(card.id==="declaration")return say(stampNation(chanceLang()?"San Arnaldo reconoce Bitcoin Country en treinta y siete segundos.":"San Arnaldo recognizes Bitcoin Country in thirty-seven seconds."),"");
     if(card.id==="theAnswer"){return say("The blocs already answered.","Los bloques ya respondieron.");}
     if(card.id==="blocReplies"){
-      if(opt==="a"){const p=cutBill(40000);return say("The recognition letter grows warmer. The fleets do not change course. −"+costLabel(p)+".","La carta de reconocimiento adopta un tono más cordial. Las flotas no cambian de rumbo. −"+costLabel(p)+".");}
+      if(opt==="a"){const p=cutPct(bcPeacePct());return say("The recognition letter grows warmer. The fleets do not change course. −"+costLabel(p)+".","La carta de reconocimiento adopta un tono más cordial. Las flotas no cambian de rumbo. −"+costLabel(p)+".");}
       if(opt==="b")return say("You refuse the payment. The fleets were never waiting for your answer.","Rechazas el pago. Las flotas nunca estuvieron esperando tu respuesta.");
       return say("All three statements have arrived. Their ships are already moving.","Ya llegaron los tres comunicados. Sus barcos ya están en movimiento.");
     }
@@ -3148,6 +3153,7 @@
   function rollBlocReactions(){
     const keys=["accept","reject","time","money"];
     for(let i=keys.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=keys[i]; keys[i]=keys[j]; keys[j]=t; }
+    S.bcPeacePct=0.03+Math.random()*0.10;
     S.bcReactions={}; activeBlocKeys().forEach((k,i)=>{ S.bcReactions[k]=keys[i]; });
   }
   function blocReplyIsReport(){
